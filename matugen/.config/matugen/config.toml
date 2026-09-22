@@ -1,0 +1,47 @@
+[config]
+source_color_index = 0
+
+[config.wallpaper]
+set = true
+command = "awww img --transition-type center {{image}}"
+
+[templates.waybar]
+input_path = "~/.config/matugen/templates/waybar-colors.css"
+output_path = "~/.config/matugen/generated/waybar-colors.css"
+post_hook = "pkill -SIGUSR2 waybar"
+
+[templates.fuzzel]
+input_path = "~/.config/matugen/templates/fuzzel-colors.ini"
+output_path = "~/.config/matugen/generated/fuzzel-colors.ini"
+
+[templates.mako]
+input_path = "~/.config/matugen/templates/mako-colors"
+output_path = "~/.config/matugen/generated/mako-colors"
+post_hook = "makoctl reload"
+
+[templates.kitty]
+input_path = "~/.config/matugen/templates/kitty-colors.conf"
+output_path = "~/.config/matugen/generated/kitty-colors.conf"
+post_hook = "pkill -USR1 kitty"
+
+[templates.starship]
+input_path = "~/.config/matugen/templates/starship.toml"
+output_path = "~/.config/matugen/generated/starship.toml"
+
+[templates.sway]
+input_path = "~/.config/matugen/templates/sway-colors.conf"
+output_path = "~/.config/matugen/generated/sway-colors.conf"
+post_hook = "swaymsg reload"
+
+[templates.audio]
+input_path = "~/.config/matugen/templates/audio-popup.css"
+output_path = "~/.config/matugen/generated/audio-popup.css"
+
+
+[templates.media]
+input_path = "~/.config/matugen/templates/media-popup.css"
+output_path = "~/.config/matugen/generated/media-popup.css"
+
+[templates.quickshell]
+input_path = "~/.config/matugen/templates/quickshell-theme.qml"
+output_path = "~/.config/quickshell/generated/Theme.qml"

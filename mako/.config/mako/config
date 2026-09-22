@@ -1,0 +1,12 @@
+font=JetBrains Mono Nerd Font 10
+
+width=380
+height=120
+padding=14
+margin=12
+
+default-timeout=5000
+max-visible=5
+layer=overlay
+
+include=~/.config/matugen/generated/mako-colors

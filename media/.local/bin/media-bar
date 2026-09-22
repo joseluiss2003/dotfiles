@@ -1,0 +1,5 @@
+#!/bin/sh
+
+playerctl --player=playerctld metadata \
+    --format='{"text":"{{artist}} — {{title}}","tooltip":"{{album}}","alt":"{{status}}"}' \
+    --follow

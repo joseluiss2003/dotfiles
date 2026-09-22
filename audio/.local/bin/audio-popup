@@ -1,0 +1,375 @@
+#!/usr/bin/env python3
+
+from ctypes import CDLL
+CDLL("libgtk4-layer-shell.so")
+
+import re
+import subprocess
+
+import gi
+
+gi.require_version("Gtk", "4.0")
+gi.require_version("Gtk4LayerShell", "1.0")
+
+from gi.repository import Gtk, GLib
+from gi.repository import Gtk4LayerShell as LayerShell
+
+
+APP_ID = "com.joseluis.audio-popup"
+
+
+def run(*args):
+    return subprocess.run(
+        args,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    ).stdout
+
+
+def get_default_volume():
+    output = run("wpctl", "get-volume", "@DEFAULT_SINK@")
+    match = re.search(r"Volume:\s+([0-9.]+)", output)
+
+    if not match:
+        return 0.0
+
+    return min(float(match.group(1)) * 100.0, 150.0)
+
+
+def is_muted():
+    return "[MUTED]" in run("wpctl", "get-volume", "@DEFAULT_SINK@")
+
+
+def get_sinks():
+    sinks = []
+
+    output = run("wpctl", "list", "audio", "sinks")
+
+    for line in output.splitlines():
+        parts = line.split("\t")
+
+        if len(parts) < 4:
+            continue
+
+        try:
+            sink_id = int(parts[0].strip())
+        except ValueError:
+            continue
+
+        node_name = parts[1].strip()
+        default = parts[3].strip() == "*"
+
+        description = node_name
+
+        inspect = run("wpctl", "inspect", str(sink_id))
+
+        match = re.search(r'node\.description\s*=\s*"([^"]+)"', inspect)
+
+        if match:
+            description = match.group(1)
+
+        sinks.append({
+            "id": sink_id,
+            "name": description,
+            "node": node_name,
+            "default": default,
+        })
+
+    return sinks
+
+
+class AudioPopup(Gtk.Application):
+    def __init__(self):
+        super().__init__(
+            application_id=APP_ID,
+            flags=0
+        )
+
+        self.window = None
+        self.volume_scale = None
+        self.volume_label = None
+        self.mute_button = None
+        self.sinks_box = None
+
+        self.updating = False
+
+    def do_activate(self):
+        if self.window is not None:
+            self.window.present()
+            return
+
+        self.window = Gtk.Window(application=self)
+
+        self.window.set_default_size(370, 350)
+        self.window.set_resizable(False)
+        self.window.set_decorated(False)
+
+        # Wayland Layer Shell
+        LayerShell.init_for_window(self.window)
+        LayerShell.set_layer(
+            self.window,
+            LayerShell.Layer.TOP
+        )
+
+        LayerShell.set_anchor(
+            self.window,
+            LayerShell.Edge.TOP,
+            True
+        )
+
+        LayerShell.set_anchor(
+            self.window,
+            LayerShell.Edge.RIGHT,
+            True
+        )
+
+        # Ajusta esto según la posición final de tu módulo de audio.
+        LayerShell.set_margin(
+            self.window,
+            LayerShell.Edge.TOP,
+            2
+        )
+
+        LayerShell.set_margin(
+            self.window,
+            LayerShell.Edge.RIGHT,
+            2
+        )
+
+        # Contenedor exterior
+        root = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=10
+        )
+
+        root.set_name("popup")
+
+        root.set_margin_top(18)
+        root.set_margin_bottom(18)
+        root.set_margin_start(18)
+        root.set_margin_end(18)
+
+        self.window.set_child(root)
+
+        # HEADER
+        header = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            spacing=8
+        )
+
+        title = Gtk.Label(label="Salida de audio")
+        title.set_hexpand(True)
+        title.set_xalign(0)
+
+        title.add_css_class("title")
+
+        close_button = Gtk.Button(label="×")
+        close_button.set_has_frame(False)
+        close_button.add_css_class("close")
+
+        close_button.connect(
+            "clicked",
+            lambda *_: self.window.close()
+        )
+
+        header.append(title)
+        header.append(close_button)
+
+        root.append(header)
+
+        # VOLUMEN
+        volume_row = Gtk.Box(
+            orientation=Gtk.Orientation.HORIZONTAL,
+            spacing=14
+        )
+
+        volume_icon = Gtk.Label(label="󰕾")
+        volume_icon.add_css_class("volume-icon")
+        self.volume_label = Gtk.Label()
+        self.volume_label.add_css_class("volume-label")
+        self.volume_label.set_width_chars(4)
+        self.volume_label.set_xalign(1)
+
+        self.volume_scale = Gtk.Scale.new_with_range(
+            Gtk.Orientation.HORIZONTAL,
+            0,
+            100,
+            1
+        )
+
+        self.volume_scale.set_hexpand(True)
+        self.volume_scale.set_draw_value(False)
+
+        self.volume_scale.connect(
+            "value-changed",
+            self.on_volume_changed
+        )
+
+        volume_row.append(volume_icon)
+        volume_row.append(self.volume_scale)
+        volume_row.append(self.volume_label)
+
+        root.append(volume_row)
+
+        # MUTE
+        self.mute_button = Gtk.Button()
+
+        self.mute_button.set_has_frame(True)
+        self.mute_button.connect(
+            "clicked",
+            self.toggle_mute
+        )
+
+        root.append(self.mute_button)
+
+        # SEPARADOR
+        separator = Gtk.Separator(
+            orientation=Gtk.Orientation.HORIZONTAL
+        )
+
+        root.append(separator)
+
+        output_title = Gtk.Label(label="Dispositivos de salida")
+        output_title.set_xalign(0)
+        output_title.add_css_class("section")
+
+        root.append(output_title)
+
+        self.sinks_box = Gtk.Box(
+            orientation=Gtk.Orientation.VERTICAL,
+            spacing=4
+        )
+
+        root.append(self.sinks_box)
+
+        # CSS
+        provider = Gtk.CssProvider()
+
+        provider.load_from_path(
+            GLib.get_user_config_dir()
+            + "/matugen/generated/audio-popup.css"
+        )
+
+        Gtk.StyleContext.add_provider_for_display(
+            self.window.get_display(),
+            provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+
+        self.refresh()
+
+        self.window.present()
+
+    def on_volume_changed(self, scale):
+        if self.updating:
+            return
+
+        value = scale.get_value()
+
+        subprocess.Popen(
+            [
+                "wpctl",
+                "set-volume",
+                "@DEFAULT_SINK@",
+                f"{value / 100:.2f}"
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
+        self.volume_label.set_text(
+            f"{round(value)}%"
+        )
+
+    def toggle_mute(self, *_):
+        subprocess.run(
+            [
+                "wpctl",
+                "set-mute",
+                "@DEFAULT_SINK@",
+                "toggle"
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
+        self.refresh()
+
+    def select_sink(self, sink_id):
+        subprocess.run(
+            [
+                "wpctl",
+                "set-default",
+                str(sink_id)
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
+        self.refresh()
+
+    def refresh(self):
+        if not self.window:
+            return
+
+        volume = get_default_volume()
+
+        self.updating = True
+        self.volume_scale.set_value(min(volume, 100))
+        self.updating = False
+
+        self.volume_label.set_text(
+            f"{round(volume)}%"
+        )
+
+        if is_muted():
+            self.mute_button.set_label("󰖁  Silenciado")
+        else:
+            self.mute_button.set_label("󰕾  Silenciar")
+
+        while child := self.sinks_box.get_first_child():
+            self.sinks_box.remove(child)
+
+        for sink in get_sinks():
+            prefix = "●" if sink["default"] else "○"
+
+            button = Gtk.Button(
+                label=f"{prefix}  {sink['name']}"
+            )
+
+            button.set_has_frame(False)
+            button.set_halign(Gtk.Align.FILL)
+
+            button.add_css_class("sink")
+
+            if sink["default"]:
+                button.add_css_class("active")
+            else:
+                button.add_css_class("inactive")
+
+            button.connect(
+                "clicked",
+                lambda _button, sid=sink["id"]:
+                    self.select_sink(sid)
+            )
+
+            self.sinks_box.append(button)
+
+        GLib.timeout_add_seconds(
+            2,
+            self.poll
+        )
+
+    def poll(self):
+        if self.window is None:
+            return False
+
+        self.refresh()
+
+        return False
+
+
+app = AudioPopup()
+app.run(None)
