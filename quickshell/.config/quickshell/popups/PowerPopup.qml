@@ -1,359 +1,492 @@
 import Quickshell
 import QtQuick
+
 import "../generated" as Theme
 
 PopupWindow {
     id: root
 
-    required property var anchorItem
-
-    anchor.item: anchorItem
-    anchor.margins.bottom: 6
-
-    width: 240
-    height: 250
+    property Item anchorItem
+    property bool confirmAction: false
+    property string pendingAction: ""
 
     visible: false
+
+    implicitWidth: 190
+    implicitHeight: confirmAction ? 176 : 208
+
     color: "transparent"
+
+    anchor.item: anchorItem
+    anchor.edges: Edges.Bottom | Edges.Left
+    anchor.gravity: Edges.Top | Edges.Left
+
     grabFocus: true
+
+    onVisibleChanged: {
+        if (!visible) {
+            confirmAction = false
+            pendingAction = ""
+        }
+    }
+
+    function accent(alpha) {
+        return Qt.rgba(
+            Theme.Theme.accent.r,
+            Theme.Theme.accent.g,
+            Theme.Theme.accent.b,
+            alpha
+        )
+    }
+
+    function textMuted(alpha) {
+        return Qt.rgba(
+            Theme.Theme.textMuted.r,
+            Theme.Theme.textMuted.g,
+            Theme.Theme.textMuted.b,
+            alpha
+        )
+    }
+
+    function runAction(action) {
+        root.visible = false
+
+        if (action === "lock") {
+            Quickshell.execDetached([
+                "hyprlock"
+            ])
+            return
+        }
+
+        if (action === "logout") {
+            Quickshell.execDetached([
+                "swaymsg",
+                "exit"
+            ])
+            return
+        }
+
+        if (action === "restart") {
+            Quickshell.execDetached([
+                "systemctl",
+                "reboot"
+            ])
+            return
+        }
+
+        if (action === "shutdown") {
+            Quickshell.execDetached([
+                "systemctl",
+                "poweroff"
+            ])
+        }
+    }
+
+    function askConfirmation(action) {
+        confirmAction = true
+        pendingAction = action
+    }
+
+    function executePendingAction() {
+        if (pendingAction.length === 0)
+            return
+
+        var action = pendingAction
+
+        confirmAction = false
+        pendingAction = ""
+
+        runAction(action)
+    }
+
     Rectangle {
         anchors.fill: parent
 
-        color: Qt.rgba(
-            Theme.Theme.background.r,
-            Theme.Theme.background.g,
-            Theme.Theme.background.b,
-            0.97
-        )
+        color: Theme.Theme.background
 
-        border.width: 1
+        border.width: 2
+        border.color: Theme.Theme.accent
+    }
 
-        border.color: Qt.rgba(
-            Theme.Theme.outline.r,
-            Theme.Theme.outline.g,
-            Theme.Theme.outline.b,
-            0.75
-        )
+    Column {
+        anchors.fill: parent
+        anchors.margins: 10
 
-        Column {
-            anchors.fill: parent
-            anchors.margins: 12
-            spacing: 6
+        spacing: 6
 
-            Rectangle {
-                width: parent.width
-                height: 42
+        Text {
+            width: parent.width
 
-                color: Qt.rgba(
-                    Theme.Theme.accent.r,
-                    Theme.Theme.accent.g,
-                    Theme.Theme.accent.b,
-                    0.10
-                )
+            text: confirmAction ? "CONFIRM POWER ACTION" : "POWER"
 
-                border.width: 1
-                border.color: Qt.rgba(
-                    Theme.Theme.accent.r,
-                    Theme.Theme.accent.g,
-                    Theme.Theme.accent.b,
-                    0.22
-                )
+            color: Theme.Theme.accent
 
-                Row {
-                    anchors.fill: parent
-                    anchors.leftMargin: 12
-                    anchors.rightMargin: 12
-                    spacing: 10
+            font.family: "JetBrains Mono Nerd Font"
+            font.pixelSize: 9
+            font.bold: true
+        }
 
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
+        Rectangle {
+            width: parent.width
+            height: 1
 
-                        text: ""
+            color: accent(0.35)
+        }
 
-                        color: Theme.Theme.accent
+        Item {
+            width: parent.width
+            height: confirmAction ? 70 : 156
 
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 20
+            Column {
+                anchors.fill: parent
+
+                spacing: 4
+
+                visible: !root.confirmAction
+
+                Item {
+                    width: parent.width
+                    height: 36
+
+                    Rectangle {
+                        anchors.fill: parent
+
+                        color: lockMouse.containsMouse
+                            ? accent(0.12)
+                            : "transparent"
+
+                        border.width: lockMouse.containsMouse ? 1 : 0
+                        border.color: accent(0.80)
                     }
 
-                    Column {
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 1
+                    Row {
+                        anchors.fill: parent
+                        anchors.leftMargin: 10
+                        anchors.rightMargin: 10
+
+                        spacing: 12
 
                         Text {
-                            text: "SYSTEM"
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            text: "󰌾"
+
+                            color: Theme.Theme.accent
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 16
+                        }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            text: "LOCK"
 
                             color: Theme.Theme.text
 
                             font.family: "JetBrains Mono Nerd Font"
-                            font.pixelSize: 11
+                            font.pixelSize: 9
                             font.bold: true
+                        }
+                    }
+
+                    MouseArea {
+                        id: lockMouse
+
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onClicked: root.runAction("lock")
+                    }
+                }
+
+                Item {
+                    width: parent.width
+                    height: 36
+
+                    Rectangle {
+                        anchors.fill: parent
+
+                        color: logoutMouse.containsMouse
+                            ? accent(0.12)
+                            : "transparent"
+
+                        border.width: logoutMouse.containsMouse ? 1 : 0
+                        border.color: accent(0.80)
+                    }
+
+                    Row {
+                        anchors.fill: parent
+                        anchors.leftMargin: 10
+                        anchors.rightMargin: 10
+
+                        spacing: 12
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            text: "󰍃"
+
+                            color: Theme.Theme.accent
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 16
                         }
 
                         Text {
-                            text: "Power & session"
+                            anchors.verticalCenter: parent.verticalCenter
 
-                            color: Theme.Theme.textMuted
+                            text: "LOGOUT"
+
+                            color: Theme.Theme.text
 
                             font.family: "JetBrains Mono Nerd Font"
                             font.pixelSize: 9
+                            font.bold: true
                         }
                     }
+
+                    MouseArea {
+                        id: logoutMouse
+
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onClicked: root.runAction("logout")
+                    }
+                }
+
+                Item {
+                    width: parent.width
+                    height: 36
+
+                    Rectangle {
+                        anchors.fill: parent
+
+                        color: restartMouse.containsMouse
+                            ? accent(0.12)
+                            : "transparent"
+
+                        border.width: restartMouse.containsMouse ? 1 : 0
+                        border.color: accent(0.80)
+                    }
+
+                    Row {
+                        anchors.fill: parent
+                        anchors.leftMargin: 10
+                        anchors.rightMargin: 10
+
+                        spacing: 12
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            text: "󰜉"
+
+                            color: Theme.Theme.accent
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 16
+                        }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            text: "RESTART"
+
+                            color: Theme.Theme.text
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 9
+                            font.bold: true
+                        }
+                    }
+
+                    MouseArea {
+                        id: restartMouse
+
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onClicked: root.askConfirmation("restart")
+                    }
+                }
+
+                Item {
+                    width: parent.width
+                    height: 36
+
+                    Rectangle {
+                        anchors.fill: parent
+
+                        color: shutdownMouse.containsMouse
+                            ? accent(0.12)
+                            : "transparent"
+
+                        border.width: shutdownMouse.containsMouse ? 1 : 0
+                        border.color: accent(0.80)
+                    }
+
+                    Row {
+                        anchors.fill: parent
+                        anchors.leftMargin: 10
+                        anchors.rightMargin: 10
+
+                        spacing: 12
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            text: "󰐥"
+
+                            color: Theme.Theme.accent
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 16
+                        }
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            text: "SHUTDOWN"
+
+                            color: Theme.Theme.text
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 9
+                            font.bold: true
+                        }
+                    }
+
+                    MouseArea {
+                        id: shutdownMouse
+
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onClicked: root.askConfirmation("shutdown")
+                    }
                 }
             }
 
-            Rectangle {
-                width: parent.width
-                height: 1
+            Column {
+                anchors.fill: parent
 
-                color: Qt.rgba(
-                    Theme.Theme.outline.r,
-                    Theme.Theme.outline.g,
-                    Theme.Theme.outline.b,
-                    0.30
-                )
-            }
+                spacing: 8
 
-            Rectangle {
-                width: parent.width
-                height: 34
+                visible: root.confirmAction
 
-                color: logoutMouse.containsMouse
-                    ? Qt.rgba(
-                        Theme.Theme.accent.r,
-                        Theme.Theme.accent.g,
-                        Theme.Theme.accent.b,
-                        0.16
-                    )
-                    : "transparent"
+                Text {
+                    width: parent.width
+
+                    text: root.pendingAction === "restart"
+                        ? "Restart the system?"
+                        : "Shut down the system?"
+
+                    color: Theme.Theme.text
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 10
+                    font.bold: true
+                }
+
+                Text {
+                    width: parent.width
+
+                    text: "Click CONFIRM to continue."
+
+                    color: Theme.Theme.textMuted
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 8
+                }
 
                 Row {
-                    anchors.fill: parent
-                    anchors.leftMargin: 10
-                    spacing: 12
+                    width: parent.width
+                    height: 34
 
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
+                    spacing: 5
 
-                        text: "󰍁"
+                    Item {
+                        width: (parent.width - 5) / 2
+                        height: 34
 
-                        color: logoutMouse.containsMouse
-                            ? Theme.Theme.accent
-                            : Theme.Theme.textMuted
+                        Rectangle {
+                            anchors.fill: parent
 
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 17
+                            color: cancelMouse.containsMouse
+                                ? accent(0.12)
+                                : "transparent"
+
+                            border.width: 1
+                            border.color: cancelMouse.containsMouse
+                                ? Theme.Theme.accent
+                                : accent(0.35)
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+
+                            text: "CANCEL"
+
+                            color: Theme.Theme.text
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 8
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            id: cancelMouse
+
+                            anchors.fill: parent
+                            hoverEnabled: true
+
+                            onClicked: {
+                                root.confirmAction = false
+                                root.pendingAction = ""
+                            }
+                        }
                     }
 
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
+                    Item {
+                        width: (parent.width - 5) / 2
+                        height: 34
 
-                        text: "Cerrar sesión"
+                        Rectangle {
+                            anchors.fill: parent
 
-                        color: Theme.Theme.text
+                            color: confirmMouse.containsMouse
+                                ? accent(0.20)
+                                : accent(0.08)
 
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 10
-                    }
-                }
+                            border.width: 1
+                            border.color: Theme.Theme.accent
+                        }
 
-                MouseArea {
-                    id: logoutMouse
+                        Text {
+                            anchors.centerIn: parent
 
-                    anchors.fill: parent
-                    hoverEnabled: true
+                            text: "CONFIRM"
 
-                    onClicked: {
-                        root.visible = false
+                            color: Theme.Theme.accent
 
-                        Quickshell.execDetached([
-                            "swaymsg",
-                            "exit"
-                        ])
-                    }
-                }
-            }
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 8
+                            font.bold: true
+                        }
 
-            Rectangle {
-                width: parent.width
-                height: 34
+                        MouseArea {
+                            id: confirmMouse
 
-                color: suspendMouse.containsMouse
-                    ? Qt.rgba(
-                        Theme.Theme.accent.r,
-                        Theme.Theme.accent.g,
-                        Theme.Theme.accent.b,
-                        0.16
-                    )
-                    : "transparent"
+                            anchors.fill: parent
+                            hoverEnabled: true
 
-                Row {
-                    anchors.fill: parent
-                    anchors.leftMargin: 10
-                    spacing: 12
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        text: "󰒲"
-
-                        color: suspendMouse.containsMouse
-                            ? Theme.Theme.accent
-                            : Theme.Theme.textMuted
-
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 17
-                    }
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        text: "Suspender"
-
-                        color: Theme.Theme.text
-
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 10
-                    }
-                }
-
-                MouseArea {
-                    id: suspendMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-
-                    onClicked: {
-                        root.visible = false
-
-                        Quickshell.execDetached([
-                            "systemctl",
-                            "suspend"
-                        ])
-                    }
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: 34
-
-                color: rebootMouse.containsMouse
-                    ? Qt.rgba(
-                        Theme.Theme.accent.r,
-                        Theme.Theme.accent.g,
-                        Theme.Theme.accent.b,
-                        0.16
-                    )
-                    : "transparent"
-
-                Row {
-                    anchors.fill: parent
-                    anchors.leftMargin: 10
-                    spacing: 12
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        text: "󰜉"
-
-                        color: rebootMouse.containsMouse
-                            ? Theme.Theme.accent
-                            : Theme.Theme.textMuted
-
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 17
-                    }
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        text: "Reiniciar"
-
-                        color: Theme.Theme.text
-
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 10
-                    }
-                }
-
-                MouseArea {
-                    id: rebootMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-
-                    onClicked: {
-                        root.visible = false
-
-                        Quickshell.execDetached([
-                            "systemctl",
-                            "reboot"
-                        ])
-                    }
-                }
-            }
-
-            Rectangle {
-                width: parent.width
-                height: 34
-
-                color: poweroffMouse.containsMouse
-                    ? Qt.rgba(
-                        Theme.Theme.error.r,
-                        Theme.Theme.error.g,
-                        Theme.Theme.error.b,
-                        0.18
-                    )
-                    : "transparent"
-
-                Row {
-                    anchors.fill: parent
-                    anchors.leftMargin: 10
-                    spacing: 12
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        text: "󰐥"
-
-                        color: poweroffMouse.containsMouse
-                            ? Theme.Theme.error
-                            : Theme.Theme.textMuted
-
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 17
-                    }
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        text: "Apagar"
-
-                        color: Theme.Theme.text
-
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 10
-                    }
-                }
-
-                MouseArea {
-                    id: poweroffMouse
-
-                    anchors.fill: parent
-                    hoverEnabled: true
-
-                    onClicked: {
-                        root.visible = false
-
-                        Quickshell.execDetached([
-                            "systemctl",
-                            "poweroff"
-                        ])
+                            onClicked: root.executePendingAction()
+                        }
                     }
                 }
             }
         }
     }
 }
-

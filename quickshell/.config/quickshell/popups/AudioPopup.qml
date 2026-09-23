@@ -4,9 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../generated" as Theme
 
-
 PopupWindow {
-
     id: root
 
     required property var anchorItem
@@ -15,44 +13,94 @@ PopupWindow {
     anchor.item: anchorItem
     anchor.margins.bottom: 6
 
-    width: 340
-    height: 250
+    width: 330
+    height: 226
 
     visible: false
     grabFocus: true
-
     color: "transparent"
 
+    property var output: sink
+    property var input: Pipewire.defaultAudioSource
 
-    function volumePercent() {
+    PwObjectTracker {
+        objects: [
+            root.output,
+            root.input
+        ]
+    }
 
-        if (!root.sink ||
-            !root.sink.ready ||
-            !root.sink.audio)
+    function volume(node) {
+        if (!node || !node.ready || !node.audio)
             return 0
 
-        return Math.round(
-            root.sink.audio.volume * 100
+        return Math.max(
+            0,
+            Math.min(1, node.audio.volume)
         )
     }
 
+    function percent(node) {
+        return Math.round(volume(node) * 100)
+    }
 
+    function deviceName(node, fallback) {
+        if (!node)
+            return fallback
+
+        if (node.description)
+            return node.description
+
+        if (node.nickname)
+            return node.nickname
+
+        if (node.name)
+            return node.name
+
+        return fallback
+    }
+
+    function setOutput(node) {
+        if (!node)
+            return
+
+        root.output = node
+        Pipewire.preferredDefaultAudioSink = node
+    }
+
+    function setInput(node) {
+        if (!node)
+            return
+
+        root.input = node
+        Pipewire.preferredDefaultAudioSource = node
+    }
+
+    Connections {
+        target: Pipewire
+
+        function onDefaultAudioSinkChanged() {
+            if (Pipewire.defaultAudioSink)
+                root.output = Pipewire.defaultAudioSink
+        }
+
+        function onDefaultAudioSourceChanged() {
+            if (Pipewire.defaultAudioSource)
+                root.input = Pipewire.defaultAudioSource
+        }
+    }
 
     Rectangle {
-
         anchors.fill: parent
-
 
         color: Qt.rgba(
             Theme.Theme.background.r,
             Theme.Theme.background.g,
             Theme.Theme.background.b,
-            0.97
+            0.98
         )
 
-
         border.width: 1
-
 
         border.color: Qt.rgba(
             Theme.Theme.outline.r,
@@ -61,435 +109,682 @@ PopupWindow {
             0.7
         )
 
-
-
         ColumnLayout {
-
-
             anchors.fill: parent
 
             anchors.margins: 12
 
-            spacing: 10
-
-
-
-            // HEADER
-
-            Rectangle {
-
-                Layout.fillWidth: true
-
-                height: 42
-
-
-                color: Qt.rgba(
-                    Theme.Theme.accent.r,
-                    Theme.Theme.accent.g,
-                    Theme.Theme.accent.b,
-                    0.10
-                )
-
-
-                border.width:1
-
-
-                border.color: Qt.rgba(
-                    Theme.Theme.accent.r,
-                    Theme.Theme.accent.g,
-                    Theme.Theme.accent.b,
-                    0.25
-                )
-
-
-
-                Row {
-
-                    anchors.fill: parent
-
-                    anchors.leftMargin:12
-
-
-                    spacing:10
-
-
-
-                    Text {
-
-                        anchors.verticalCenter: parent.verticalCenter
-
-
-                        text:
-                            root.sink &&
-                            root.sink.audio &&
-                            root.sink.audio.muted
-
-                            ? "󰖁"
-
-                            : "󰕾"
-
-
-                        color:
-                            Theme.Theme.accent
-
-
-                        font.family:
-                            "JetBrains Mono Nerd Font"
-
-                        font.pixelSize:20
-
-                    }
-
-
-
-                    Text {
-
-
-                        anchors.verticalCenter: parent.verticalCenter
-
-
-                        text:"AUDIO"
-
-
-                        color:
-                            Theme.Theme.text
-
-
-                        font.family:
-                            "JetBrains Mono Nerd Font"
-
-                        font.pixelSize:11
-
-                        font.bold:true
-
-                    }
-
-                }
-
-            }
-
-
-
-            // VOLUME
-
-            Rectangle {
-
-
-                Layout.fillWidth:true
-
-                height:80
-
-
-
-                color: Qt.rgba(
-                    Theme.Theme.background.r,
-                    Theme.Theme.background.g,
-                    Theme.Theme.background.b,
-                    0.55
-                )
-
-
-
-                border.width:1
-
-
-                border.color: Qt.rgba(
-                    Theme.Theme.outline.r,
-                    Theme.Theme.outline.g,
-                    Theme.Theme.outline.b,
-                    0.25
-                )
-
-
-
-                Column {
-
-
-                    anchors.centerIn:parent
-
-
-                    spacing:8
-
-
-
-                    Text {
-
-
-                        anchors.horizontalCenter: parent.horizontalCenter
-
-
-                        text:
-                            root.volumePercent()+"%"
-
-
-                        color:
-                            Theme.Theme.text
-
-
-                        font.family:
-                            "JetBrains Mono Nerd Font"
-
-                        font.pixelSize:28
-
-                        font.bold:true
-
-                    }
-
-
-
-                    Text {
-
-
-                        anchors.horizontalCenter: parent.horizontalCenter
-
-
-                        text:
-                            root.sink &&
-                            root.sink.audio &&
-                            root.sink.audio.muted
-
-                            ? "Muted"
-
-                            : "Volume"
-
-
-                        color:
-                            Theme.Theme.textMuted
-
-
-                        font.family:
-                            "JetBrains Mono Nerd Font"
-
-                        font.pixelSize:10
-
-                    }
-
-
-                }
-
-            }
-
-
-
-
-
-            // SLIDER
-
-
-            Rectangle {
-
-                Layout.fillWidth:true
-
-                height:8
-
-
-                radius:4
-
-
-                color: Qt.rgba(
-                    Theme.Theme.outline.r,
-                    Theme.Theme.outline.g,
-                    Theme.Theme.outline.b,
-                    0.35
-                )
-
-
-
-                Rectangle {
-
-                    width:
-                        root.sink &&
-                        root.sink.audio
-
-                        ? parent.width *
-                          root.sink.audio.volume
-
-                        : 0
-
-
-                    height:parent.height
-
-
-                    radius:4
-
-
-                    color:
-                        Theme.Theme.accent
-
-                }
-
-
-
-                MouseArea {
-
-
-                    anchors.fill:parent
-
-
-                    onClicked:function(mouse){
-
-
-                        if (!root.sink ||
-                            !root.sink.audio)
-                            return
-
-
-
-                        root.sink.audio.volume =
-                            Math.max(
-                                0,
-                                Math.min(
-                                    1,
-                                    mouse.x /
-                                    width
-                                )
-                            )
-
-                    }
-
-                }
-
-            }
-
-
-
-
-            // BUTTONS
-
+            spacing: 8
+
+            // =========================================================
+            // OUTPUT
+            // =========================================================
 
             RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
 
+                Text {
+                    text:
+                        root.output &&
+                        root.output.audio &&
+                        root.output.audio.muted
+                        ? "󰖁"
+                        : "󰕾"
 
-                Layout.fillWidth:true
+                    color: Theme.Theme.accent
 
-
-                spacing:8
-
-
-
-                Rectangle {
-
-
-                    Layout.fillWidth:true
-
-                    height:38
-
-
-
-                    color:
-                        muteMouse.containsMouse
-
-                        ? Qt.rgba(
-                            Theme.Theme.accent.r,
-                            Theme.Theme.accent.g,
-                            Theme.Theme.accent.b,
-                            0.16
-                        )
-
-                        :"transparent"
-
-
-
-                    Text {
-
-                        anchors.centerIn:parent
-
-
-                        text:
-                            root.sink &&
-                            root.sink.audio &&
-                            root.sink.audio.muted
-
-                            ? "󰝟 Unmute"
-
-                            :"󰕾 Mute"
-
-
-                        color:
-                            Theme.Theme.text
-
-
-                        font.family:
-                            "JetBrains Mono Nerd Font"
-
-                        font.pixelSize:10
-
-                    }
-
-
-
-                    MouseArea {
-
-
-                        id:muteMouse
-
-
-                        anchors.fill:parent
-
-
-                        hoverEnabled:true
-
-
-
-                        onClicked:{
-
-
-                            if(root.sink &&
-                               root.sink.audio)
-
-                                root.sink.audio.muted =
-                                    !root.sink.audio.muted
-
-                        }
-
-                    }
-
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 17
                 }
 
+                Text {
+                    text: "SALIDA"
 
+                    color: Theme.Theme.text
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 10
+                    font.bold: true
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                Text {
+                    text: root.percent(root.output) + "%"
+
+                    color: Theme.Theme.textMuted
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 9
+                }
+
+                Text {
+                    text:
+                        root.output &&
+                        root.output.audio &&
+                        root.output.audio.muted
+                        ? "󰖁"
+                        : "󰝟"
+
+                    color: Theme.Theme.text
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 15
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            if (
+                                root.output &&
+                                root.output.audio
+                            ) {
+                                root.output.audio.muted =
+                                    !root.output.audio.muted
+                            }
+                        }
+                    }
+                }
             }
 
+            // Output device
 
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 22
 
-            // DEVICE
+                Text {
+                    anchors.left: parent.left
+                    anchors.right: arrow.left
 
+                    anchors.verticalCenter: parent.verticalCenter
 
-            Text {
+                    text: root.deviceName(
+                        root.output,
+                        "Sin dispositivo de salida"
+                    )
 
+                    color: Theme.Theme.text
 
-                Layout.fillWidth:true
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 9
 
+                    elide: Text.ElideRight
+                }
 
-                text:
-                    root.sink
+                Text {
+                    id: arrow
 
-                    ? root.sink.description
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
 
-                    :"No audio device"
+                    text: outputMenu.visible ? "󰅀" : "󰅂"
 
+                    color: Theme.Theme.textMuted
 
-                color:
-                    Theme.Theme.textMuted
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 12
+                }
 
+                MouseArea {
+                    anchors.fill: parent
 
-                horizontalAlignment:
-                    Text.AlignHCenter
+                    hoverEnabled: true
 
-
-                font.family:
-                    "JetBrains Mono Nerd Font"
-
-
-                font.pixelSize:9
-
-
-                elide:
-                    Text.ElideRight
-
+                    onClicked: {
+                        outputMenu.visible =
+                            !outputMenu.visible
+                    }
+                }
             }
 
+            // Output slider
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                spacing: 8
+
+                Rectangle {
+                    id: outputSlider
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 5
+
+                    color: Qt.rgba(
+                        Theme.Theme.outline.r,
+                        Theme.Theme.outline.g,
+                        Theme.Theme.outline.b,
+                        0.4
+                    )
+
+                    Rectangle {
+                        width:
+                            outputSlider.width *
+                            root.volume(root.output)
+
+                        height: parent.height
+
+                        color: Theme.Theme.accent
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        function updateVolume(x) {
+                            if (
+                                !root.output ||
+                                !root.output.audio
+                            )
+                                return
+
+                            root.output.audio.volume =
+                                Math.max(
+                                    0,
+                                    Math.min(
+                                        1,
+                                        x / width
+                                    )
+                                )
+                        }
+
+                        onPressed: function(mouse) {
+                            updateVolume(mouse.x)
+                        }
+
+                        onPositionChanged: function(mouse) {
+                            if (pressed)
+                                updateVolume(mouse.x)
+                        }
+                    }
+                }
+            }
+
+            // =========================================================
+            // SEPARATOR
+            // =========================================================
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+
+                color: Qt.rgba(
+                    Theme.Theme.outline.r,
+                    Theme.Theme.outline.g,
+                    Theme.Theme.outline.b,
+                    0.25
+                )
+            }
+
+            // =========================================================
+            // INPUT
+            // =========================================================
+
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 8
+
+                Text {
+                    text:
+                        root.input &&
+                        root.input.audio &&
+                        root.input.audio.muted
+                        ? "󰍭"
+                        : "󰍬"
+
+                    color: Theme.Theme.accent
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 17
+                }
+
+                Text {
+                    text: "ENTRADA"
+
+                    color: Theme.Theme.text
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 10
+                    font.bold: true
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                Text {
+                    text: root.percent(root.input) + "%"
+
+                    color: Theme.Theme.textMuted
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 9
+                }
+
+                Text {
+                    text:
+                        root.input &&
+                        root.input.audio &&
+                        root.input.audio.muted
+                        ? "󰍭"
+                        : "󰍬"
+
+                    color: Theme.Theme.text
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 15
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            if (
+                                root.input &&
+                                root.input.audio
+                            ) {
+                                root.input.audio.muted =
+                                    !root.input.audio.muted
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Input device
+
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 22
+
+                Text {
+                    anchors.left: parent.left
+                    anchors.right: inputArrow.left
+
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: root.deviceName(
+                        root.input,
+                        "Sin dispositivo de entrada"
+                    )
+
+                    color: Theme.Theme.text
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 9
+
+                    elide: Text.ElideRight
+                }
+
+                Text {
+                    id: inputArrow
+
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: inputMenu.visible ? "󰅀" : "󰅂"
+
+                    color: Theme.Theme.textMuted
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 12
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    hoverEnabled: true
+
+                    onClicked: {
+                        inputMenu.visible =
+                            !inputMenu.visible
+                    }
+                }
+            }
+
+            // Input slider
+
+            RowLayout {
+                Layout.fillWidth: true
+
+                Rectangle {
+                    id: inputSlider
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 5
+
+                    color: Qt.rgba(
+                        Theme.Theme.outline.r,
+                        Theme.Theme.outline.g,
+                        Theme.Theme.outline.b,
+                        0.4
+                    )
+
+                    Rectangle {
+                        width:
+                            inputSlider.width *
+                            root.volume(root.input)
+
+                        height: parent.height
+
+                        color: Theme.Theme.accent
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        function updateVolume(x) {
+                            if (
+                                !root.input ||
+                                !root.input.audio
+                            )
+                                return
+
+                            root.input.audio.volume =
+                                Math.max(
+                                    0,
+                                    Math.min(
+                                        1,
+                                        x / width
+                                    )
+                                )
+                        }
+
+                        onPressed: function(mouse) {
+                            updateVolume(mouse.x)
+                        }
+
+                        onPositionChanged: function(mouse) {
+                            if (pressed)
+                                updateVolume(mouse.x)
+                        }
+                    }
+                }
+            }
         }
-
     }
 
+    // ================================================================
+    // OUTPUT MENU
+    // ================================================================
+
+    PopupWindow {
+        id: outputMenu
+
+        anchor.item: root
+
+        anchor.edges: Edges.Bottom
+        anchor.gravity: Edges.Bottom
+
+        width: 330
+        height: Math.min(
+            220,
+            Math.max(
+                42,
+                outputModel.count * 34 + 4
+            )
+        )
+
+        color: "transparent"
+
+        Rectangle {
+            anchors.fill: parent
+
+            color: Qt.rgba(
+                Theme.Theme.background.r,
+                Theme.Theme.background.g,
+                Theme.Theme.background.b,
+                0.99
+            )
+
+            border.width: 1
+
+            border.color: Qt.rgba(
+                Theme.Theme.outline.r,
+                Theme.Theme.outline.g,
+                Theme.Theme.outline.b,
+                0.7
+            )
+
+            ListView {
+                anchors.fill: parent
+                anchors.margins: 2
+
+                clip: true
+
+                model: outputModel
+
+                delegate: Item {
+                    required property var modelData
+
+                    width: ListView.view.width
+                    height: 34
+
+                    Rectangle {
+                        anchors.fill: parent
+
+                        color:
+                            root.output === modelData
+                            ? Qt.rgba(
+                                Theme.Theme.accent.r,
+                                Theme.Theme.accent.g,
+                                Theme.Theme.accent.b,
+                                0.12
+                            )
+                            : "transparent"
+                    }
+
+                    RowLayout {
+                        anchors.fill: parent
+
+                        anchors.leftMargin: 8
+                        anchors.rightMargin: 8
+
+                        Text {
+                            text:
+                                root.output === modelData
+                                ? "󰄬"
+                                : "󰕾"
+
+                            color:
+                                root.output === modelData
+                                ? Theme.Theme.accent
+                                : Theme.Theme.textMuted
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 13
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+
+                            text: root.deviceName(
+                                modelData,
+                                "Salida"
+                            )
+
+                            color: Theme.Theme.text
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 9
+
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            root.setOutput(modelData)
+                            outputMenu.visible = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ================================================================
+    // INPUT MENU
+    // ================================================================
+
+    PopupWindow {
+        id: inputMenu
+
+        anchor.item: root
+
+        anchor.edges: Edges.Bottom
+        anchor.gravity: Edges.Bottom
+
+        width: 330
+        height: Math.min(
+            220,
+            Math.max(
+                42,
+                inputModel.count * 34 + 4
+            )
+        )
+
+        color: "transparent"
+
+        Rectangle {
+            anchors.fill: parent
+
+            color: Qt.rgba(
+                Theme.Theme.background.r,
+                Theme.Theme.background.g,
+                Theme.Theme.background.b,
+                0.99
+            )
+
+            border.width: 1
+
+            border.color: Qt.rgba(
+                Theme.Theme.outline.r,
+                Theme.Theme.outline.g,
+                Theme.Theme.outline.b,
+                0.7
+            )
+
+            ListView {
+                anchors.fill: parent
+                anchors.margins: 2
+
+                clip: true
+
+                model: inputModel
+
+                delegate: Item {
+                    required property var modelData
+
+                    width: ListView.view.width
+                    height: 34
+
+                    Rectangle {
+                        anchors.fill: parent
+
+                        color:
+                            root.input === modelData
+                            ? Qt.rgba(
+                                Theme.Theme.accent.r,
+                                Theme.Theme.accent.g,
+                                Theme.Theme.accent.b,
+                                0.12
+                            )
+                            : "transparent"
+                    }
+
+                    RowLayout {
+                        anchors.fill: parent
+
+                        anchors.leftMargin: 8
+                        anchors.rightMargin: 8
+
+                        Text {
+                            text:
+                                root.input === modelData
+                                ? "󰄬"
+                                : "󰍬"
+
+                            color:
+                                root.input === modelData
+                                ? Theme.Theme.accent
+                                : Theme.Theme.textMuted
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 13
+                        }
+
+                        Text {
+                            Layout.fillWidth: true
+
+                            text: root.deviceName(
+                                modelData,
+                                "Entrada"
+                            )
+
+                            color: Theme.Theme.text
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 9
+
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+
+                        onClicked: {
+                            root.setInput(modelData)
+                            inputMenu.visible = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ================================================================
+    // DEVICE MODELS
+    // ================================================================
+
+    ScriptModel {
+        id: outputModel
+
+        values: {
+            if (!Pipewire.ready)
+                return []
+
+            return Array.from(Pipewire.nodes).filter(
+                node =>
+                    node &&
+                    node.ready &&
+                    node.audio &&
+                    node.isSink &&
+                    !node.isStream
+            )
+        }
+    }
+
+    ScriptModel {
+        id: inputModel
+
+        values: {
+            if (!Pipewire.ready)
+                return []
+
+            return Array.from(Pipewire.nodes).filter(
+                node =>
+                    node &&
+                    node.ready &&
+                    node.audio &&
+                    !node.isSink &&
+                    !node.isStream
+            )
+        }
+    }
 }

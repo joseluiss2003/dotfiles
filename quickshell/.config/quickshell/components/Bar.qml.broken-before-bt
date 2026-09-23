@@ -27,7 +27,7 @@ PanelWindow {
     }
 
     // Compact floating bar.
-    // The actual frame is 36px high with a small outer margin.
+    // The actual frame is 36px high with a tiny outer margin.
     implicitHeight: 46
     exclusiveZone: 42
     color: "transparent"
@@ -40,18 +40,14 @@ PanelWindow {
     property bool networkConnected: false
     property string networkType: ""
 
-    // Bluetooth adapter.
-    // null means there is no Bluetooth adapter on this machine.
-    property var bluetoothAdapter: Bluetooth.defaultAdapter
+    property int batteryPercent: -1
+    property string batteryStatus: ""
 
     // Cover for the currently playing track.
     property string mediaArtUrl: ""
     property string mediaArtFile: ""
     property bool mediaArtLocalReady: false
     property int mediaArtVersion: 0
-
-    property int batteryPercent: -1
-    property string batteryStatus: ""
 
     property var player: {
         var players = Mpris.players.values
@@ -65,7 +61,7 @@ PanelWindow {
     }
 
     property var sink: Pipewire.defaultAudioSink
-
+    property var bluetoothAdapter: Bluetooth.defaultAdapter
     PwObjectTracker {
         objects: root.sink ? [root.sink] : []
     }
@@ -118,15 +114,9 @@ PanelWindow {
             return "󰓇"
         if (value.indexOf("discord") >= 0)
             return "󰙯"
-        if (
-            value.indexOf("dolphin") >= 0 ||
-            value.indexOf("thunar") >= 0
-        )
+        if (value.indexOf("dolphin") >= 0 || value.indexOf("thunar") >= 0)
             return "󰉋"
-        if (
-            value.indexOf("nvim") >= 0 ||
-            value.indexOf("neovim") >= 0
-        )
+        if (value.indexOf("nvim") >= 0 || value.indexOf("neovim") >= 0)
             return ""
 
         return "󰣆"
@@ -140,10 +130,7 @@ PanelWindow {
 
         if (!url && root.player.metadata) {
             var meta = root.player.metadata
-            url =
-                meta["mpris:artUrl"] ||
-                meta["xesam:artUrl"] ||
-                ""
+            url = meta["mpris:artUrl"] || meta["xesam:artUrl"] || ""
         }
 
         return String(url)
@@ -163,14 +150,10 @@ PanelWindow {
         }
 
         var id = String(root.player.uniqueId)
-
         if (!id.length)
             id = "current"
 
-        root.mediaArtFile =
-            Quickshell.cachePath(
-                "media-cover-" + id + ".img"
-            )
+        root.mediaArtFile = Quickshell.cachePath("media-cover-" + id + ".img")
 
         mediaArtDownloader.command = [
             "curl",
@@ -206,21 +189,16 @@ PanelWindow {
         interval: 600
         repeat: false
 
-        onTriggered:
-            root.refreshMediaArt()
+        onTriggered: root.refreshMediaArt()
     }
 
     Process {
         id: mediaArtDownloader
 
-        onExited:
-            function(exitCode, exitStatus) {
-                if (
-                    exitCode === 0 &&
-                    root.mediaArtFile.length
-                )
-                    root.mediaArtLocalReady = true
-            }
+        onExited: function(exitCode, exitStatus) {
+            if (exitCode === 0 && root.mediaArtFile.length)
+                root.mediaArtLocalReady = true
+        }
     }
 
     function appLabel(appId) {
@@ -251,11 +229,11 @@ PanelWindow {
         powerPopup.visible = false
         mediaPopup.visible = false
         networkPopup.visible = false
-        bluetoothPopup.visible = false
         audioPopup.visible = false
         batteryPopup.visible = false
         calendarPopup.visible = false
-    }
+        bluetoothPopup.visible = false    
+}
 
     function togglePopup(popup) {
         var wasVisible = popup.visible
@@ -324,8 +302,7 @@ PanelWindow {
                 var fields = value.split("\t")
 
                 root.focusedApp =
-                    fields.length > 0 &&
-                    fields[0].length
+                    fields.length > 0 && fields[0].length
                     ? fields[0]
                     : "Desktop"
 
@@ -350,19 +327,13 @@ PanelWindow {
             waitForEnd: true
 
             onStreamFinished: {
-                var lines =
-                    text.trim().split(/\r?\n/)
+                var lines = text.trim().split(/\r?\n/)
 
                 root.networkConnected = false
                 root.networkType = ""
 
-                for (
-                    var i = 0;
-                    i < lines.length;
-                    ++i
-                ) {
-                    var fields =
-                        lines[i].split(":")
+                for (var i = 0; i < lines.length; ++i) {
+                    var fields = lines[i].split(":")
 
                     if (
                         fields.length >= 2 &&
@@ -390,21 +361,11 @@ PanelWindow {
             waitForEnd: true
 
             onStreamFinished: {
-                var fields =
-                    text.trim().split("\t")
+                var fields = text.trim().split("\t")
+                var value = parseInt(fields[0])
 
-                var value =
-                    parseInt(fields[0])
-
-                root.batteryPercent =
-                    isNaN(value)
-                    ? -1
-                    : value
-
-                root.batteryStatus =
-                    fields.length > 1
-                    ? fields[1]
-                    : ""
+                root.batteryPercent = isNaN(value) ? -1 : value
+                root.batteryStatus = fields.length > 1 ? fields[1] : ""
             }
         }
     }
@@ -429,6 +390,7 @@ PanelWindow {
         width: parent.width - 6
         height: 36
 
+        // Same base color as the working popups.
         color: Qt.rgba(
             Theme.Theme.background.r,
             Theme.Theme.background.g,
@@ -440,6 +402,7 @@ PanelWindow {
         border.color: root.border()
     }
 
+    // A subtle accent wash, clipped by the square frame.
     Rectangle {
         x: frame.x
         y: frame.y
@@ -469,8 +432,7 @@ PanelWindow {
             width: 38
             height: frame.height
 
-            color:
-                archMouse.containsMouse
+            color: archMouse.containsMouse
                 ? root.hover(0.11)
                 : "transparent"
 
@@ -481,9 +443,7 @@ PanelWindow {
 
                 color: Theme.Theme.accent
 
-                font.family:
-                    "JetBrains Mono Nerd Font"
-
+                font.family: "JetBrains Mono Nerd Font"
                 font.pixelSize: 19
             }
 
@@ -493,8 +453,7 @@ PanelWindow {
                 anchors.fill: parent
                 hoverEnabled: true
 
-                onClicked:
-                    root.togglePopup(powerPopup)
+                onClicked: root.togglePopup(powerPopup)
             }
         }
 
@@ -511,8 +470,7 @@ PanelWindow {
             width: 188
             height: frame.height
 
-            color:
-                focusMouse.containsMouse
+            color: focusMouse.containsMouse
                 ? root.hover(0.055)
                 : "transparent"
 
@@ -525,26 +483,18 @@ PanelWindow {
                 spacing: 7
 
                 Text {
-                    anchors.verticalCenter:
-                        parent.verticalCenter
+                    anchors.verticalCenter: parent.verticalCenter
 
-                    text:
-                        root.appIcon(
-                            root.focusedApp
-                        )
+                    text: root.appIcon(root.focusedApp)
 
-                    color:
-                        Theme.Theme.accent
+                    color: Theme.Theme.accent
 
-                    font.family:
-                        "JetBrains Mono Nerd Font"
-
+                    font.family: "JetBrains Mono Nerd Font"
                     font.pixelSize: 15
                 }
 
                 Column {
-                    anchors.verticalCenter:
-                        parent.verticalCenter
+                    anchors.verticalCenter: parent.verticalCenter
 
                     width: 157
                     spacing: 0
@@ -552,42 +502,30 @@ PanelWindow {
                     Text {
                         width: parent.width
 
-                        text:
-                            root.appLabel(
-                                root.focusedApp
-                            )
+                        text: root.appLabel(root.focusedApp)
 
-                        color:
-                            Theme.Theme.text
+                        color: Theme.Theme.text
 
-                        font.family:
-                            "JetBrains Mono Nerd Font"
-
+                        font.family: "JetBrains Mono Nerd Font"
                         font.pixelSize: 10
                         font.bold: true
 
-                        elide:
-                            Text.ElideRight
+                        elide: Text.ElideRight
                     }
 
                     Text {
                         width: parent.width
 
-                        visible:
-                            root.focusedTitle.length > 0
+                        visible: root.focusedTitle.length > 0
 
                         text: root.focusedTitle
 
-                        color:
-                            Theme.Theme.textMuted
+                        color: Theme.Theme.textMuted
 
-                        font.family:
-                            "JetBrains Mono Nerd Font"
-
+                        font.family: "JetBrains Mono Nerd Font"
                         font.pixelSize: 8
 
-                        elide:
-                            Text.ElideRight
+                        elide: Text.ElideRight
                     }
                 }
             }
@@ -612,15 +550,10 @@ PanelWindow {
 
             visible: root.player !== null
 
-            width:
-                visible
-                ? 238
-                : 0
-
+            width: visible ? 238 : 0
             height: frame.height
 
-            color:
-                mediaMouse.containsMouse
+            color: mediaMouse.containsMouse
                 ? root.hover(0.055)
                 : "transparent"
 
@@ -632,73 +565,58 @@ PanelWindow {
 
                 spacing: 5
 
+                // Album / track cover
                 Item {
                     id: mediaArt
 
                     width: 22
                     height: 22
 
-                    anchors.verticalCenter:
-                        parent.verticalCenter
+                    anchors.verticalCenter: parent.verticalCenter
 
                     Rectangle {
                         anchors.fill: parent
 
-                        color:
-                            root.tint(0.08)
-
+                        color: root.tint(0.08)
                         border.width: 1
-
-                        border.color:
-                            root.tint(0.42)
+                        border.color: root.tint(0.42)
 
                         Image {
                             id: mediaArtImage
 
                             anchors.fill: parent
 
-                            source:
-                                root.mediaArtLocalReady
-                                ? "file://" +
-                                  root.mediaArtFile +
-                                  "?v=" +
-                                  root.mediaArtVersion
+                            // First try the MPRIS URL, then use the local
+                            // cached copy. This makes Spotify artwork reliable
+                            // even when its artwork URL is remote.
+                            source: root.mediaArtLocalReady
+                                ? "file://" + root.mediaArtFile + "?v=" + root.mediaArtVersion
                                 : root.mediaArtUrl
 
                             asynchronous: true
                             cache: false
                             smooth: true
+                            fillMode: Image.PreserveAspectCrop
 
-                            fillMode:
-                                Image.PreserveAspectCrop
-
-                            visible:
-                                status === Image.Ready
+                            visible: status === Image.Ready
                         }
 
                         Text {
-                            anchors.centerIn:
-                                parent
+                            anchors.centerIn: parent
 
-                            visible:
-                                !mediaArtImage.visible
-
+                            visible: !mediaArtImage.visible
                             text: "󰎈"
 
-                            color:
-                                Theme.Theme.accent
+                            color: Theme.Theme.accent
 
-                            font.family:
-                                "JetBrains Mono Nerd Font"
-
+                            font.family: "JetBrains Mono Nerd Font"
                             font.pixelSize: 15
                         }
                     }
                 }
 
                 Text {
-                    anchors.verticalCenter:
-                        parent.verticalCenter
+                    anchors.verticalCenter: parent.verticalCenter
 
                     text:
                         root.player &&
@@ -706,18 +624,14 @@ PanelWindow {
                         ? "󰐊"
                         : "󰏤"
 
-                    color:
-                        Theme.Theme.accent
+                    color: Theme.Theme.accent
 
-                    font.family:
-                        "JetBrains Mono Nerd Font"
-
+                    font.family: "JetBrains Mono Nerd Font"
                     font.pixelSize: 14
                 }
 
                 Column {
-                    anchors.verticalCenter:
-                        parent.verticalCenter
+                    anchors.verticalCenter: parent.verticalCenter
 
                     width: 166
                     spacing: 0
@@ -734,17 +648,13 @@ PanelWindow {
                             )
                             : ""
 
-                        color:
-                            Theme.Theme.text
+                        color: Theme.Theme.text
 
-                        font.family:
-                            "JetBrains Mono Nerd Font"
-
+                        font.family: "JetBrains Mono Nerd Font"
                         font.pixelSize: 10
                         font.bold: true
 
-                        elide:
-                            Text.ElideRight
+                        elide: Text.ElideRight
                     }
 
                     Text {
@@ -752,22 +662,15 @@ PanelWindow {
 
                         text:
                             root.player
-                            ? (
-                                root.player.trackArtist ||
-                                ""
-                            )
+                            ? (root.player.trackArtist || "")
                             : ""
 
-                        color:
-                            Theme.Theme.textMuted
+                        color: Theme.Theme.textMuted
 
-                        font.family:
-                            "JetBrains Mono Nerd Font"
-
+                        font.family: "JetBrains Mono Nerd Font"
                         font.pixelSize: 8
 
-                        elide:
-                            Text.ElideRight
+                        elide: Text.ElideRight
                     }
                 }
             }
@@ -778,8 +681,7 @@ PanelWindow {
                 anchors.fill: parent
                 hoverEnabled: true
 
-                onClicked:
-                    root.togglePopup(mediaPopup)
+                onClicked: root.togglePopup(mediaPopup)
             }
         }
     }
@@ -810,15 +712,8 @@ PanelWindow {
                 Rectangle {
                     anchors.centerIn: parent
 
-                    width:
-                        modelData.focused
-                        ? 12
-                        : 9
-
-                    height:
-                        modelData.focused
-                        ? 12
-                        : 9
+                    width: modelData.focused ? 12 : 9
+                    height: modelData.focused ? 12 : 9
 
                     color:
                         modelData.focused
@@ -846,24 +741,19 @@ PanelWindow {
     }
 
     // =========================================================
-    // RIGHT:
-    // TRAY | NETWORK | BLUETOOTH | AUDIO | BATTERY | CLOCK
+    // RIGHT: TRAY | NETWORK | AUDIO | BATTERY | CLOCK
     // =========================================================
 
     Row {
         id: rightModules
 
         anchors.right: frame.right
-        anchors.verticalCenter:
-            frame.verticalCenter
+        anchors.verticalCenter: frame.verticalCenter
 
         height: frame.height
         spacing: 0
 
-        // -----------------------------------------------------
-        // TRAY
-        // -----------------------------------------------------
-
+        // Tray is a single clean zone. NO separators between icons.
         Row {
             id: tray
 
@@ -892,57 +782,27 @@ PanelWindow {
                         width: 18
                         height: 18
 
-                        source:
-                            modelData.icon
+                        source: modelData.icon
 
-                        fillMode:
-                            Image.PreserveAspectFit
-
+                        fillMode: Image.PreserveAspectFit
                         smooth: true
+
                         visible: false
                     }
 
                     MultiEffect {
-                        anchors.fill:
-                            traySource
+                        anchors.fill: traySource
 
-                        source:
-                            traySource
+                        source: traySource
 
-                        colorizationColor:
-                            Theme.Theme.accent
-
+                        colorizationColor: Theme.Theme.accent
                         colorization: 1.0
-                    }
-
-                    // Proper native tray menu.
-                    // This is more reliable than calling
-                    // SystemTrayItem.display() manually.
-                    QsMenuAnchor {
-                        id: trayMenu
-
-                        menu:
-                            modelData.hasMenu
-                            ? modelData.menu
-                            : null
-
-                        anchor.item:
-                            trayMouse
-
-                        anchor.edges:
-                            Edges.Bottom
-
-                        anchor.gravity:
-                            Edges.Bottom
-
-                        anchor.margins.bottom: 4
                     }
 
                     MouseArea {
                         id: trayMouse
 
                         anchors.fill: parent
-
                         hoverEnabled: true
 
                         acceptedButtons:
@@ -950,45 +810,28 @@ PanelWindow {
                             Qt.RightButton |
                             Qt.MiddleButton
 
-                        onClicked:
-                            function(mouse) {
-                                // Right click -> native tray menu.
-                                if (
-                                    mouse.button ===
-                                    Qt.RightButton
-                                ) {
-                                    if (
-                                        modelData.hasMenu
-                                    ) {
-                                        trayMenu.open()
-                                    }
-
-                                    return
-                                }
-
-                                // Middle click -> secondary
-                                // tray activation.
-                                if (
-                                    mouse.button ===
-                                    Qt.MiddleButton
-                                ) {
-                                    modelData.secondaryActivate()
-                                    return
-                                }
-
-                                // Left click.
-                                // Some tray applications are
-                                // menu-only, so open their menu.
-                                if (
-                                    modelData.onlyMenu &&
-                                    modelData.hasMenu
-                                ) {
-                                    trayMenu.open()
-                                    return
-                                }
-
-                                modelData.activate()
+                        onClicked: function(mouse) {
+                            if (
+                                mouse.button === Qt.RightButton &&
+                                modelData.hasMenu
+                            ) {
+                                modelData.display(
+                                    root,
+                                    0,
+                                    frame.height
+                                )
+                                return
                             }
+
+                            if (
+                                mouse.button === Qt.MiddleButton
+                            ) {
+                                modelData.secondaryActivate()
+                                return
+                            }
+
+                            modelData.activate()
+                        }
                     }
                 }
             }
@@ -1000,8 +843,7 @@ PanelWindow {
             width: 30
             height: frame.height
 
-            color:
-                networkMouse.containsMouse
+            color: networkMouse.containsMouse
                 ? root.hover(0.08)
                 : "transparent"
 
@@ -1022,9 +864,7 @@ PanelWindow {
                     ? Theme.Theme.accent
                     : Theme.Theme.textMuted
 
-                font.family:
-                    "JetBrains Mono Nerd Font"
-
+                font.family: "JetBrains Mono Nerd Font"
                 font.pixelSize: 17
             }
 
@@ -1039,63 +879,62 @@ PanelWindow {
             }
         }
 
-        // -----------------------------------------------------
-        // BLUETOOTH
-        // -----------------------------------------------------
-
         Rectangle {
-            id: bluetooth
+         id: bluetooth
 
-            width: 30
-            height: frame.height
+    width: 34
+    height: 30
 
-            color:
-                bluetoothMouse.containsMouse
-                ? root.hover(0.08)
-                : "transparent"
+    color:
+        bluetoothMouse.containsMouse
+            ? Qt.rgba(
+                Theme.Theme.accent.r,
+                Theme.Theme.accent.g,
+                Theme.Theme.accent.b,
+                0.12
+              )
+            : "transparent"
 
-            Text {
-                anchors.centerIn: parent
+    Text {
+        anchors.centerIn: parent
 
-                text:
-                    !root.bluetoothAdapter
-                    ? "󰂲"
-                    : root.bluetoothAdapter.enabled
-                    ? "󰂯"
-                    : "󰂲"
+        text:
+            root.bluetoothAdapter
+                ? (
+                    root.bluetoothAdapter.enabled
+                        ? "󰂯"
+                        : "󰂲"
+                  )
+                : "󰂲"
 
-                color:
-                    !root.bluetoothAdapter
-                    ? Theme.Theme.textMuted
-                    : root.bluetoothAdapter.enabled
-                    ? Theme.Theme.accent
-                    : Theme.Theme.textMuted
+        color:
+            root.bluetoothAdapter &&
+            root.bluetoothAdapter.enabled
+                ? Theme.Theme.accent
+                : Theme.Theme.textMuted
 
-                font.family:
-                    "JetBrains Mono Nerd Font"
+        font.family:
+            "JetBrains Mono Nerd Font"
 
-                font.pixelSize: 17
-            }
+        font.pixelSize: 17
+    }
 
-            MouseArea {
-                id: bluetoothMouse
+    MouseArea {
+        id: bluetoothMouse
 
-                anchors.fill: parent
-                hoverEnabled: true
+        anchors.fill: parent
+        hoverEnabled: true
 
-                onClicked:
-                    root.togglePopup(bluetoothPopup)
-            }
-        }
-
-        Rectangle {
-            id: audio
+        onClicked:
+            root.togglePopup(bluetoothPopup)
+    }
+}   
+         id: audio
 
             width: 52
             height: frame.height
 
-            color:
-                audioMouse.containsMouse
+            color: audioMouse.containsMouse
                 ? root.hover(0.08)
                 : "transparent"
 
@@ -1110,30 +949,22 @@ PanelWindow {
                     )
                         return "󰕾"
 
-                    if (
-                        root.sink.audio.muted
-                    )
+                    if (root.sink.audio.muted)
                         return "󰖁"
 
-                    return (
-                        "󰕾 " +
+                    return "󰕾 " +
                         Math.round(
                             root.sink.audio.volume * 100
                         ) +
                         "%"
-                    )
                 }
 
                 color:
-                    root.sink &&
-                    root.sink.ready &&
-                    root.sink.audio
+                    root.sink && root.sink.ready && root.sink.audio
                     ? Theme.Theme.accent
                     : Theme.Theme.textMuted
 
-                font.family:
-                    "JetBrains Mono Nerd Font"
-
+                font.family: "JetBrains Mono Nerd Font"
                 font.pixelSize: 10
                 font.bold: true
             }
@@ -1147,30 +978,28 @@ PanelWindow {
                 onClicked:
                     root.togglePopup(audioPopup)
 
-                onWheel:
-                    function(wheel) {
-                        if (
-                            !root.sink ||
-                            !root.sink.ready ||
-                            !root.sink.audio
-                        )
-                            return
+                onWheel: function(wheel) {
+                    if (
+                        !root.sink ||
+                        !root.sink.ready ||
+                        !root.sink.audio
+                    )
+                        return
 
-                        var step =
-                            wheel.angleDelta.y > 0
-                            ? 0.03
-                            : -0.03
+                    var step =
+                        wheel.angleDelta.y > 0
+                        ? 0.03
+                        : -0.03
 
-                        root.sink.audio.volume =
-                            Math.max(
-                                0,
-                                Math.min(
-                                    1,
-                                    root.sink.audio.volume +
-                                    step
-                                )
+                    root.sink.audio.volume =
+                        Math.max(
+                            0,
+                            Math.min(
+                                1,
+                                root.sink.audio.volume + step
                             )
-                    }
+                        )
+                }
             }
         }
 
@@ -1180,8 +1009,7 @@ PanelWindow {
             width: 56
             height: frame.height
 
-            color:
-                batteryMouse.containsMouse
+            color: batteryMouse.containsMouse
                 ? root.hover(0.08)
                 : "transparent"
 
@@ -1189,62 +1017,39 @@ PanelWindow {
                 anchors.centerIn: parent
 
                 text: {
-                    if (
-                        root.batteryPercent < 0
-                    )
+                    if (root.batteryPercent < 0)
                         return "󰂑 —"
 
                     if (
-                        root.batteryStatus ===
-                        "Charging"
+                        root.batteryStatus === "Charging"
                     )
-                        return (
-                            "󰂄 " +
+                        return "󰂄 " +
                             root.batteryPercent +
                             "%"
-                        )
 
-                    if (
-                        root.batteryPercent <= 15
-                    )
-                        return (
-                            "󰁺 " +
+                    if (root.batteryPercent <= 15)
+                        return "󰁺 " +
                             root.batteryPercent +
                             "%"
-                        )
 
-                    if (
-                        root.batteryPercent <= 35
-                    )
-                        return (
-                            "󰁼 " +
+                    if (root.batteryPercent <= 35)
+                        return "󰁼 " +
                             root.batteryPercent +
                             "%"
-                        )
 
-                    if (
-                        root.batteryPercent <= 60
-                    )
-                        return (
-                            "󰁾 " +
+                    if (root.batteryPercent <= 60)
+                        return "󰁾 " +
                             root.batteryPercent +
                             "%"
-                        )
 
-                    if (
-                        root.batteryPercent <= 85
-                    )
-                        return (
-                            "󰂀 " +
+                    if (root.batteryPercent <= 85)
+                        return "󰂀 " +
                             root.batteryPercent +
                             "%"
-                        )
 
-                    return (
-                        "󰁹 " +
+                    return "󰁹 " +
                         root.batteryPercent +
                         "%"
-                    )
                 }
 
                 color:
@@ -1252,9 +1057,7 @@ PanelWindow {
                     ? Theme.Theme.accent
                     : Theme.Theme.textMuted
 
-                font.family:
-                    "JetBrains Mono Nerd Font"
-
+                font.family: "JetBrains Mono Nerd Font"
                 font.pixelSize: 10
                 font.bold: true
             }
@@ -1276,8 +1079,7 @@ PanelWindow {
             width: 60
             height: frame.height
 
-            color:
-                clockMouse.containsMouse
+            color: clockMouse.containsMouse
                 ? root.hover(0.08)
                 : "transparent"
 
@@ -1290,12 +1092,9 @@ PanelWindow {
                         "HH:mm"
                     )
 
-                color:
-                    Theme.Theme.accent
+                color: Theme.Theme.accent
 
-                font.family:
-                    "JetBrains Mono Nerd Font"
-
+                font.family: "JetBrains Mono Nerd Font"
                 font.pixelSize: 12
                 font.bold: true
             }
@@ -1310,141 +1109,53 @@ PanelWindow {
                     root.togglePopup(calendarPopup)
             }
         }
+
+// =========================================================
+// POPUPS
+// =========================================================
+
+        Popups.PowerPopup {
+            id: powerPopup
+
+            anchorItem: archButton
+        }
+
+        Popups.MediaPopup {
+            id: mediaPopup
+
+            anchorItem: mediaModule
+            player: root.player
+        }
+
+        Popups.NetworkPopup {
+            id: networkPopup
+
+            anchorItem: network
+        }
+
+        Popups.BluetoothPopup {
+            id: bluetoothPopup
+
+            anchorItem: bluetooth
+        }
+
+        Popups.AudioPopup {
+            id: audioPopup
+
+            anchorItem: audio
+            sink: root.sink
+        }
+
+        Popups.BatteryPopup {
+            id: batteryPopup
+
+            anchorItem: battery
+        }
+
+        Popups.CalendarPopup {
+            id: calendarPopup
+
+            anchorItem: clock
+        }
+
     }
-
-    // =========================================================
-    // POPUPS
-    //
-    // All are anchored to the BOTTOM of their applet and
-    // expand DOWNWARD. The 10px bottom margin keeps them
-    // clearly separated from the bar.
-    // =========================================================
-
-    Popups.PowerPopup {
-        id: powerPopup
-
-        anchorItem: archButton
-
-        anchor.edges:
-            Edges.Bottom | Edges.Left
-
-        anchor.gravity:
-            Edges.Bottom | Edges.Right
-
-        anchor.adjustment:
-            PopupAdjustment.SlideX |
-            PopupAdjustment.ResizeY
-
-        anchor.margins.bottom: 10
-    }
-
-    Popups.MediaPopup {
-        id: mediaPopup
-
-        anchorItem: mediaModule
-        player: root.player
-
-        anchor.edges:
-            Edges.Bottom | Edges.Left
-
-        anchor.gravity:
-            Edges.Bottom | Edges.Right
-
-        anchor.adjustment:
-            PopupAdjustment.SlideX |
-            PopupAdjustment.ResizeY
-
-        anchor.margins.bottom: 10
-    }
-
-    Popups.NetworkPopup {
-        id: networkPopup
-
-        anchorItem: network
-
-        anchor.edges:
-            Edges.Bottom | Edges.Right
-
-        anchor.gravity:
-            Edges.Bottom | Edges.Left
-
-        anchor.adjustment:
-            PopupAdjustment.SlideX |
-            PopupAdjustment.ResizeY
-
-        anchor.margins.bottom: 10
-    }
-
-    Popups.BluetoothPopup {
-        id: bluetoothPopup
-
-        anchorItem: bluetooth
-
-        anchor.edges:
-            Edges.Bottom | Edges.Right
-
-        anchor.gravity:
-            Edges.Bottom | Edges.Left
-
-        anchor.adjustment:
-            PopupAdjustment.SlideX |
-            PopupAdjustment.ResizeY
-
-        anchor.margins.bottom: 10
-    }
-
-    Popups.AudioPopup {
-        id: audioPopup
-
-        anchorItem: audio
-        sink: root.sink
-
-        anchor.edges:
-            Edges.Bottom | Edges.Right
-
-        anchor.gravity:
-            Edges.Bottom | Edges.Left
-
-        anchor.adjustment:
-            PopupAdjustment.SlideX |
-            PopupAdjustment.ResizeY
-
-        anchor.margins.bottom: 10
-    }
-
-    Popups.BatteryPopup {
-        id: batteryPopup
-
-        anchorItem: battery
-
-        anchor.edges:
-            Edges.Bottom | Edges.Right
-
-        anchor.gravity:
-            Edges.Bottom | Edges.Left
-
-        anchor.adjustment:
-            PopupAdjustment.SlideX |
-            PopupAdjustment.ResizeY
-
-        anchor.margins.bottom: 10
-    }
-
-    Popups.CalendarPopup {
-        id: calendarPopup
-
-        anchorItem: clock
-
-        anchor.edges:
-            Edges.Bottom | Edges.Right
-
-        anchor.gravity:
-            Edges.Bottom | Edges.Left
-
-        anchor.adjustment:
-            PopupAdjustment.SlideX |
-            PopupAdjustment.ResizeY
-
-        anchor.margins.bottom: 10
-    }
-}
