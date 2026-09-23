@@ -5,11 +5,6 @@ source_color_index = 0
 set = true
 command = "awww img --transition-type center {{image}}"
 
-[templates.waybar]
-input_path = "~/.config/matugen/templates/waybar-colors.css"
-output_path = "~/.config/matugen/generated/waybar-colors.css"
-post_hook = "pkill -SIGUSR2 waybar"
-
 [templates.fuzzel]
 input_path = "~/.config/matugen/templates/fuzzel-colors.ini"
 output_path = "~/.config/matugen/generated/fuzzel-colors.ini"
@@ -33,14 +28,6 @@ input_path = "~/.config/matugen/templates/sway-colors.conf"
 output_path = "~/.config/matugen/generated/sway-colors.conf"
 post_hook = "~/.local/bin/update-hyprlock && swaymsg reload"
 
-[templates.audio]
-input_path = "~/.config/matugen/templates/audio-popup.css"
-output_path = "~/.config/matugen/generated/audio-popup.css"
-
-
-[templates.media]
-input_path = "~/.config/matugen/templates/media-popup.css"
-output_path = "~/.config/matugen/generated/media-popup.css"
 
 [templates.quickshell]
 input_path = "~/.config/matugen/templates/quickshell-theme.qml"

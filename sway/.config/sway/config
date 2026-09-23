@@ -137,7 +137,7 @@ bindsym $mod+Shift+s exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y-%m
 ### =========================
 
 exec awww-daemon
-exec --no-startup-id qs -p ~/.config/quickshell
+exec qs
 exec mako
 exec playerctld daemon
 
