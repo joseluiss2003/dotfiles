@@ -1,222 +1,668 @@
 import Quickshell
 import QtQuick
-
+import QtQuick.Layouts
 import "../generated" as Theme
 
+
 PopupWindow {
+
     id: root
 
     required property var anchorItem
 
-    property date monthDate: new Date()
 
     anchor.item: anchorItem
-    anchor.margins.bottom: 6
+    anchor.margins.bottom: 8
 
-    width: 300
-    height: 285
+
+    width: 360
+    height: 390
+
 
     visible: false
-    color: "transparent"
     grabFocus: true
+    color: "transparent"
 
-    function daysInMonth(year, month) {
-        return new Date(year, month + 1, 0).getDate()
+
+    property date currentDate: new Date()
+
+    property int viewMonth:
+        currentDate.getMonth()
+
+    property int viewYear:
+        currentDate.getFullYear()
+
+
+
+    function daysInMonth() {
+
+        return new Date(
+            viewYear,
+            viewMonth + 1,
+            0
+        ).getDate()
+
     }
 
-    function firstDay(year, month) {
-        var d = new Date(year, month, 1).getDay()
-        return d === 0 ? 6 : d - 1
+
+
+    function firstDay() {
+
+        var d = new Date(
+            viewYear,
+            viewMonth,
+            1
+        )
+
+        return (d.getDay() + 6) % 7
+
     }
+
+
+
+    function monthText() {
+
+        return Qt.formatDate(
+            new Date(
+                viewYear,
+                viewMonth,
+                1
+            ),
+            "MMMM yyyy"
+        )
+
+    }
+
+
+
 
     Rectangle {
+
         anchors.fill: parent
 
-        color: Theme.Theme.surface
+
+        color: Qt.rgba(
+            Theme.Theme.background.r,
+            Theme.Theme.background.g,
+            Theme.Theme.background.b,
+            0.97
+        )
+
+
         border.width: 1
-        border.color: Theme.Theme.outline
-        radius: 0
 
-        Column {
+
+        border.color: Qt.rgba(
+            Theme.Theme.outline.r,
+            Theme.Theme.outline.g,
+            Theme.Theme.outline.b,
+            0.7
+        )
+
+
+
+        ColumnLayout {
+
+
             anchors.fill: parent
-            anchors.margins: 16
 
-            spacing: 12
+            anchors.margins: 12
 
-            Row {
-                width: parent.width
+            spacing: 10
 
-                Text {
-                    width: parent.width - 70
 
-                    text: Qt.formatDate(
-                        root.monthDate,
-                        "MMMM yyyy"
-                    )
 
-                    color: Theme.Theme.text
 
-                    font.family: "JetBrains Mono Nerd Font"
-                    font.pixelSize: 14
-                    font.bold: true
-                }
+            // HEADER
 
-                Rectangle {
-                    width: 30
-                    height: 28
 
-                    color: previousMonthMouse.containsMouse
-                        ? Theme.Theme.accentSoft
-                        : "transparent"
+            Rectangle {
 
-                    Text {
-                        anchors.centerIn: parent
 
-                        text: "󰁍"
+                Layout.fillWidth: true
 
-                        color: Theme.Theme.text
+                height: 60
 
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 16
-                    }
 
-                    MouseArea {
-                        id: previousMonthMouse
 
-                        anchors.fill: parent
-                        hoverEnabled: true
+                color: Qt.rgba(
+                    Theme.Theme.accent.r,
+                    Theme.Theme.accent.g,
+                    Theme.Theme.accent.b,
+                    0.12
+                )
 
-                        onClicked: {
-                            root.monthDate = new Date(
-                                root.monthDate.getFullYear(),
-                                root.monthDate.getMonth() - 1,
-                                1
-                            )
-                        }
-                    }
-                }
 
-                Rectangle {
-                    width: 30
-                    height: 28
 
-                    color: nextMonthMouse.containsMouse
-                        ? Theme.Theme.accentSoft
-                        : "transparent"
+                border.width:1
+
+
+                border.color: Qt.rgba(
+                    Theme.Theme.accent.r,
+                    Theme.Theme.accent.g,
+                    Theme.Theme.accent.b,
+                    0.3
+                )
+
+
+
+                Row {
+
+
+                    anchors.fill: parent
+
+                    anchors.leftMargin: 14
+
+
+                    spacing: 12
+
+
 
                     Text {
-                        anchors.centerIn: parent
 
-                        text: "󰁔"
 
-                        color: Theme.Theme.text
+                        anchors.verticalCenter: parent.verticalCenter
 
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 16
+
+                        text:"󰃭"
+
+
+                        color:
+                            Theme.Theme.accent
+
+
+                        font.family:
+                            "JetBrains Mono Nerd Font"
+
+
+                        font.pixelSize:24
+
                     }
 
-                    MouseArea {
-                        id: nextMonthMouse
 
-                        anchors.fill: parent
-                        hoverEnabled: true
 
-                        onClicked: {
-                            root.monthDate = new Date(
-                                root.monthDate.getFullYear(),
-                                root.monthDate.getMonth() + 1,
-                                1
-                            )
+                    Column {
+
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+
+                        spacing:2
+
+
+
+                        Text {
+
+
+                            text:
+                                Qt.formatDate(
+                                    root.currentDate,
+                                    "dddd"
+                                )
+
+
+                            color:
+                                Theme.Theme.text
+
+
+                            font.family:
+                                "JetBrains Mono Nerd Font"
+
+
+                            font.pixelSize:14
+
+
+                            font.bold:true
+
                         }
+
+
+
+                        Text {
+
+
+                            text:
+                                Qt.formatDate(
+                                    root.currentDate,
+                                    "dd MMMM yyyy"
+                                )
+
+
+                            color:
+                                Theme.Theme.textMuted
+
+
+                            font.family:
+                                "JetBrains Mono Nerd Font"
+
+
+                            font.pixelSize:10
+
+                        }
+
                     }
+
                 }
+
             }
 
+
+
+
+
+            // MONTH CONTROL
+
+
+            RowLayout {
+
+
+                Layout.fillWidth:true
+
+
+                spacing:8
+
+
+
+
+                Rectangle {
+
+
+                    Layout.preferredWidth:35
+
+                    Layout.preferredHeight:30
+
+
+                    radius:6
+
+
+
+                    color:
+                        leftMouse.containsMouse
+
+                        ? Qt.rgba(
+                            Theme.Theme.accent.r,
+                            Theme.Theme.accent.g,
+                            Theme.Theme.accent.b,
+                            0.18
+                        )
+
+                        :"transparent"
+
+
+
+                    Text {
+
+                        anchors.centerIn:parent
+
+
+                        text:"󰁍"
+
+
+                        color:
+                            Theme.Theme.text
+
+
+                        font.family:
+                            "JetBrains Mono Nerd Font"
+
+
+                        font.pixelSize:16
+
+                    }
+
+
+
+                    MouseArea {
+
+
+                        id:leftMouse
+
+
+                        anchors.fill:parent
+
+
+                        hoverEnabled:true
+
+
+
+                        onClicked:{
+
+
+                            if(root.viewMonth === 0){
+
+                                root.viewMonth = 11
+                                root.viewYear--
+
+                            }else{
+
+                                root.viewMonth--
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+
+
+
+
+                Text {
+
+
+                    Layout.fillWidth:true
+
+
+                    horizontalAlignment:
+                        Text.AlignHCenter
+
+
+                    text:
+                        root.monthText()
+
+
+
+                    color:
+                        Theme.Theme.text
+
+
+
+                    font.family:
+                        "JetBrains Mono Nerd Font"
+
+
+                    font.pixelSize:13
+
+
+                    font.bold:true
+
+                }
+
+
+
+
+
+                Rectangle {
+
+
+                    Layout.preferredWidth:35
+
+                    Layout.preferredHeight:30
+
+
+                    radius:6
+
+
+
+                    color:
+                        rightMouse.containsMouse
+
+                        ? Qt.rgba(
+                            Theme.Theme.accent.r,
+                            Theme.Theme.accent.g,
+                            Theme.Theme.accent.b,
+                            0.18
+                        )
+
+                        :"transparent"
+
+
+
+                    Text {
+
+
+                        anchors.centerIn:parent
+
+
+                        text:"󰁔"
+
+
+                        color:
+                            Theme.Theme.text
+
+
+                        font.family:
+                            "JetBrains Mono Nerd Font"
+
+
+                        font.pixelSize:16
+
+                    }
+
+
+
+                    MouseArea {
+
+
+                        id:rightMouse
+
+
+                        anchors.fill:parent
+
+
+                        hoverEnabled:true
+
+
+
+                        onClicked:{
+
+
+                            if(root.viewMonth === 11){
+
+                                root.viewMonth = 0
+                                root.viewYear++
+
+                            }else{
+
+                                root.viewMonth++
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+
+
+
+
+
+            // WEEK DAYS
+
+
             Grid {
-                columns: 7
-                spacing: 0
+
+
+                Layout.fillWidth:true
+
+
+                columns:7
+
+
+                spacing:4
+
+
 
                 Repeater {
-                    model: [
-                        "L", "M", "X", "J",
-                        "V", "S", "D"
+
+
+                    model:[
+                        "L",
+                        "M",
+                        "X",
+                        "J",
+                        "V",
+                        "S",
+                        "D"
                     ]
 
-                    delegate: Text {
-                        width: 38
-                        height: 24
+
+
+                    Text {
+
+
+                        width:44
+
+                        height:22
+
 
                         horizontalAlignment:
                             Text.AlignHCenter
 
-                        verticalAlignment:
-                            Text.AlignVCenter
 
-                        text: modelData
+                        text:modelData
 
-                        color: Theme.Theme.textMuted
 
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 10
-                        font.bold: true
+                        color:
+                            Theme.Theme.textMuted
+
+
+                        font.family:
+                            "JetBrains Mono Nerd Font"
+
+
+                        font.pixelSize:10
+
                     }
+
                 }
+
             }
+
+
+
+
+
+
+
+            // DAYS
+
 
             Grid {
-                columns: 7
-                rows: 6
-                spacing: 0
+
+
+                Layout.fillWidth:true
+
+
+                columns:7
+
+
+                spacing:4
+
+
+
 
                 Repeater {
-                    model: 42
+
+
+                    model:
+                        root.firstDay()
+                        +
+                        root.daysInMonth()
+
+
 
                     delegate: Rectangle {
-                        width: 38
-                        height: 30
 
-                        property int indexInMonth:
+
+                        width:44
+
+                        height:38
+
+
+                        radius:8
+
+
+
+                        property int dayNumber:
                             index -
-                            root.firstDay(
-                                root.monthDate.getFullYear(),
-                                root.monthDate.getMonth()
-                            ) + 1
+                            root.firstDay()
+                            +
+                            1
 
-                        property bool validDay:
-                            indexInMonth >= 1 &&
-                            indexInMonth <= root.daysInMonth(
-                                root.monthDate.getFullYear(),
-                                root.monthDate.getMonth()
+
+
+                        property bool valid:
+                            dayNumber > 0 &&
+                            dayNumber <= root.daysInMonth()
+
+
+
+                        color:
+
+
+                            valid &&
+                            dayNumber === root.currentDate.getDate() &&
+                            root.viewMonth === root.currentDate.getMonth() &&
+                            root.viewYear === root.currentDate.getFullYear()
+
+
+                            ?
+
+                            Qt.rgba(
+                                Theme.Theme.accent.r,
+                                Theme.Theme.accent.g,
+                                Theme.Theme.accent.b,
+                                0.35
                             )
 
-                        property bool today:
-                            validDay &&
-                            indexInMonth === new Date().getDate() &&
-                            root.monthDate.getMonth() === new Date().getMonth() &&
-                            root.monthDate.getFullYear() === new Date().getFullYear()
 
-                        color: today
-                            ? Theme.Theme.accent
-                            : "transparent"
+                            :
+
+                            "transparent"
+
+
+
 
                         Text {
-                            anchors.centerIn: parent
 
-                            text: parent.validDay
-                                ? parent.indexInMonth
-                                : ""
 
-                            color: parent.today
-                                ? Theme.Theme.accentText
-                                : Theme.Theme.text
+                            anchors.centerIn:parent
 
-                            font.family: "JetBrains Mono Nerd Font"
-                            font.pixelSize: 11
-                            font.bold: parent.today
+
+                            visible:
+                                parent.valid
+
+
+                            text:
+                                parent.dayNumber
+
+
+                            color:
+                                parent.color === "transparent"
+
+                                ? Theme.Theme.text
+
+                                : Theme.Theme.accent
+
+
+
+                            font.family:
+                                "JetBrains Mono Nerd Font"
+
+
+                            font.pixelSize:12
+
+
+                            font.bold:
+                                parent.color !== "transparent"
+
                         }
+
                     }
+
                 }
+
             }
+
         }
+
     }
+
 }

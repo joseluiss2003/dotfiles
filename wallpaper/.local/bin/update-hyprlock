@@ -1,0 +1,131 @@
+#!/bin/bash
+
+set -euo pipefail
+
+THEME="$HOME/.config/quickshell/generated/Theme.qml"
+WALLPAPER_STATE="$HOME/.local/state/wallpaper/current"
+HYPRLOCK="$HOME/.config/hypr/hyprlock.conf"
+
+get_color() {
+    local key="$1"
+
+    sed -nE \
+        "s/.*property color ${key}: *\"?#([0-9A-Fa-f]{6})\"?.*/\1/p" \
+        "$THEME" |
+        head -n1
+}
+
+WALLPAPER="$(cat "$WALLPAPER_STATE")"
+
+BACKGROUND="$(get_color background)"
+TEXT="$(get_color foreground)"
+MUTED="$(get_color onSurfaceVariant)"
+ACCENT="$(get_color primary)"
+
+BACKGROUND="${BACKGROUND:-12140e}"
+TEXT="${TEXT:-e2e3d8}"
+MUTED="${MUTED:-c5c8b9}"
+ACCENT="${ACCENT:-b3d088}"
+
+cat > "$HYPRLOCK" <<EOF
+general {
+    hide_cursor = true
+    ignore_empty_input = true
+    immediate_render = true
+    text_trim = true
+}
+
+background {
+    monitor =
+    path = $WALLPAPER
+    color = rgba(${BACKGROUND}ff)
+
+    blur_passes = 1
+    blur_size = 4
+    brightness = 0.72
+    contrast = 1.02
+    vibrancy = 0.08
+}
+
+label {
+    monitor =
+    text = \$TIME
+
+    color = rgba(${TEXT}ff)
+    font_size = 92
+    font_family = JetBrains Mono Nerd Font
+
+    position = 0, 155
+    halign = center
+    valign = center
+
+    shadow_passes = 2
+    shadow_size = 4
+    shadow_color = rgba(0, 0, 0, 0.55)
+}
+
+label {
+    monitor =
+    text = cmd[update:60000] date '+%A, %d %B %Y'
+
+    color = rgba(${MUTED}ff)
+    font_size = 19
+    font_family = JetBrains Mono Nerd Font
+
+    position = 0, 48
+    halign = center
+    valign = center
+
+    shadow_passes = 2
+    shadow_size = 3
+    shadow_color = rgba(0, 0, 0, 0.5)
+}
+
+label {
+    monitor =
+    text = \$USER
+
+    color = rgba(${ACCENT}ff)
+    font_size = 15
+    font_family = JetBrains Mono Nerd Font
+
+    position = 0, -165
+    halign = center
+    valign = center
+}
+
+input-field {
+    monitor =
+
+    size = 440, 70
+
+    outline_thickness = 2
+    rounding = 0
+
+    inner_color = rgba(${BACKGROUND}d9)
+    outer_color = rgba(${ACCENT}ff)
+
+    font_color = rgba(${TEXT}ff)
+    font_family = JetBrains Mono Nerd Font
+
+    dots_size = 0.24
+    dots_spacing = 0.16
+    dots_center = true
+
+    fade_on_empty = false
+
+    placeholder_text = <span foreground="##${MUTED}">Enter password</span>
+    fail_text = <span foreground="##ffb4ab">\$FAIL</span>
+
+    check_color = rgba(${ACCENT}ff)
+    fail_color = rgba(ff6b6bff)
+
+    position = 0, -105
+    halign = center
+    valign = center
+
+    shadow_passes = 2
+    shadow_size = 5
+    shadow_color = rgba(0, 0, 0, 0.55)
+}
+EOF

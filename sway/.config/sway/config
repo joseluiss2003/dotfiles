@@ -13,6 +13,10 @@ set $term kitty
 ### Launcher
 set $menu fuzzel
 
+###Layout tabbed
+workspace_layout tabbed
+default_orientation horizontal
+
 ### =========================
 ### Apariencia
 ### =========================
@@ -47,15 +51,6 @@ bindsym $mod+Shift+c reload
 # Salir de Sway
 bindsym $mod+Shift+e exit
 
-### =========================
-### Movimiento de foco
-### =========================
-
-bindsym $mod+h focus left
-bindsym $mod+j focus down
-bindsym $mod+k focus up
-bindsym $mod+l focus right
-
 ### Movimiento con flechas
 bindsym $mod+Left  focus left
 bindsym $mod+Down  focus down
@@ -70,17 +65,6 @@ bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
-
-### =========================
-### Modos de layout
-### =========================
-
-bindsym $mod+b splith
-bindsym $mod+v splitv
-
-bindsym $mod+s layout stacking
-bindsym $mod+t layout tabbed
-bindsym $mod+e layout toggle split
 
 ### Floating
 bindsym $mod+Shift+Space floating toggle
@@ -153,7 +137,7 @@ bindsym $mod+Shift+s exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y-%m
 ### =========================
 
 exec awww-daemon
-exec_always --no-startup-id qs -p ~/.config/quickshell
+exec --no-startup-id qs -p ~/.config/quickshell
 exec mako
 exec playerctld daemon
 
@@ -167,7 +151,6 @@ exec gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
 ### Defaults
 ### =========================
 
-
 default_border pixel 2
 default_floating_border normal 2
 focus_follows_mouse yes
@@ -177,11 +160,6 @@ gaps inner 2
 
 # Margen entre ventanas y los bordes de la pantalla
 gaps outer 2
-
-
-### =========================
-### Bar
-### =========================
 
 
 ### =========================
@@ -195,5 +173,7 @@ include /etc/sway/config.d/*
 ### =========================
 for_window [app_id="pavucontrol"] floating enable, sticky enable, border pixel 1
 
+# Bloqueo manual
+bindsym $mod+l exec hyprlock
 
 

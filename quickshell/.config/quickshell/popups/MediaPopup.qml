@@ -1,6 +1,6 @@
 import Quickshell
 import QtQuick
-
+import QtQuick.Layouts
 import "../generated" as Theme
 
 PopupWindow {
@@ -12,46 +12,151 @@ PopupWindow {
     anchor.item: anchorItem
     anchor.margins.bottom: 6
 
-    width: 340
-    height: 190
+    width: 360
+    height: 245
 
     visible: false
-    color: "transparent"
     grabFocus: true
+    color: "transparent"
+
+    property real progress: 0
+
+    Timer {
+        interval: 500
+        running: root.visible && root.player !== null
+        repeat: true
+
+        onTriggered: {
+            if (!root.player)
+                return
+
+            if (root.player.length > 0)
+                root.progress = Math.max(
+                    0,
+                    Math.min(
+                        1,
+                        root.player.position / root.player.length
+                    )
+                )
+        }
+    }
 
     Rectangle {
         anchors.fill: parent
 
-        color: Theme.Theme.surface
+        color: Qt.rgba(
+            Theme.Theme.background.r,
+            Theme.Theme.background.g,
+            Theme.Theme.background.b,
+            0.97
+        )
+
         border.width: 1
-        border.color: Theme.Theme.outline
-        radius: 0
 
-        Column {
+        border.color: Qt.rgba(
+            Theme.Theme.outline.r,
+            Theme.Theme.outline.g,
+            Theme.Theme.outline.b,
+            0.75
+        )
+
+        ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 16
-            spacing: 12
+            anchors.margins: 14
+            spacing: 10
 
-            Row {
-                width: parent.width
-                height: 82
+            Rectangle {
+                Layout.fillWidth: true
+                height: 34
+
+                color: Qt.rgba(
+                    Theme.Theme.accent.r,
+                    Theme.Theme.accent.g,
+                    Theme.Theme.accent.b,
+                    0.10
+                )
+
+                border.width: 1
+                border.color: Qt.rgba(
+                    Theme.Theme.accent.r,
+                    Theme.Theme.accent.g,
+                    Theme.Theme.accent.b,
+                    0.22
+                )
+
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 10
+                    anchors.rightMargin: 10
+                    spacing: 8
+
+                    Text {
+                        text: "󰎈"
+                        color: Theme.Theme.accent
+                        font.family: "JetBrains Mono Nerd Font"
+                        font.pixelSize: 16
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: root.player
+                            ? (root.player.identity || "MEDIA")
+                            : "MEDIA"
+                        color: Theme.Theme.text
+                        font.family: "JetBrains Mono Nerd Font"
+                        font.pixelSize: 10
+                        font.bold: true
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        text: root.player && root.player.isPlaying
+                            ? "PLAYING"
+                            : "PAUSED"
+                        color: Theme.Theme.textMuted
+                        font.family: "JetBrains Mono Nerd Font"
+                        font.pixelSize: 8
+                        font.bold: true
+                    }
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
                 spacing: 14
 
                 Rectangle {
-                    width: 82
-                    height: 82
+                    Layout.preferredWidth: 104
+                    Layout.preferredHeight: 104
 
-                    color: Theme.Theme.surfaceAlt
+                    color: Qt.rgba(
+                        Theme.Theme.surfaceVariant.r,
+                        Theme.Theme.surfaceVariant.g,
+                        Theme.Theme.surfaceVariant.b,
+                        0.35
+                    )
+
+                    border.width: 1
+
+                    border.color: Qt.rgba(
+                        Theme.Theme.outline.r,
+                        Theme.Theme.outline.g,
+                        Theme.Theme.outline.b,
+                        0.40
+                    )
 
                     Image {
                         anchors.fill: parent
+                        anchors.margins: 1
 
                         source: root.player
                             ? root.player.trackArtUrl
                             : ""
 
                         fillMode: Image.PreserveAspectCrop
-                        smooth: true
+                        asynchronous: true
+                        cache: true
 
                         visible: source !== ""
                     }
@@ -59,32 +164,29 @@ PopupWindow {
                     Text {
                         anchors.centerIn: parent
 
-                        text: "󰎆"
+                        text: "󰎈"
 
                         color: Theme.Theme.accent
 
                         font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 30
+                        font.pixelSize: 34
 
-                        visible: !root.player ||
-                                 root.player.trackArtUrl === ""
+                        visible:
+                            !root.player ||
+                            !root.player.trackArtUrl
                     }
                 }
 
-                Column {
-                    width: parent.width - 96
-                    anchors.verticalCenter: parent.verticalCenter
-
+                ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignVCenter
                     spacing: 5
 
                     Text {
-                        width: parent.width
+                        Layout.fillWidth: true
 
                         text: root.player
-                            ? (
-                                root.player.trackTitle ||
-                                "Unknown title"
-                              )
+                            ? (root.player.trackTitle || "Unknown title")
                             : "No media"
 
                         color: Theme.Theme.text
@@ -97,29 +199,10 @@ PopupWindow {
                     }
 
                     Text {
-                        width: parent.width
+                        Layout.fillWidth: true
 
                         text: root.player
-                            ? (
-                                root.player.trackArtist ||
-                                root.player.identity ||
-                                ""
-                              )
-                            : ""
-
-                        color: Theme.Theme.textMuted
-
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 11
-
-                        elide: Text.ElideRight
-                    }
-
-                    Text {
-                        width: parent.width
-
-                        text: root.player
-                            ? root.player.identity
+                            ? (root.player.trackArtist || "Unknown artist")
                             : ""
 
                         color: Theme.Theme.textMuted
@@ -129,17 +212,58 @@ PopupWindow {
 
                         elide: Text.ElideRight
                     }
+
+                    Text {
+                        Layout.fillWidth: true
+
+                        visible: root.player &&
+                                 root.player.trackAlbum !== ""
+
+                        text: root.player
+                            ? (root.player.trackAlbum || "")
+                            : ""
+
+                        color: Theme.Theme.textMuted
+
+                        font.family: "JetBrains Mono Nerd Font"
+                        font.pixelSize: 9
+
+                        elide: Text.ElideRight
+                    }
                 }
             }
 
-            Row {
-                anchors.horizontalCenter: parent.horizontalCenter
+            Rectangle {
+                Layout.fillWidth: true
+                height: 3
 
-                spacing: 18
+                color: Qt.rgba(
+                    Theme.Theme.outline.r,
+                    Theme.Theme.outline.g,
+                    Theme.Theme.outline.b,
+                    0.30
+                )
 
                 Rectangle {
-                    width: 42
-                    height: 34
+                    width: parent.width * root.progress
+                    height: parent.height
+
+                    color: Theme.Theme.accent
+                }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 38
+                spacing: 4
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                Rectangle {
+                    width: 34
+                    height: 32
 
                     color: previousMouse.containsMouse
                         ? Theme.Theme.accentSoft
@@ -147,13 +271,10 @@ PopupWindow {
 
                     Text {
                         anchors.centerIn: parent
-
                         text: "󰒮"
-
                         color: Theme.Theme.text
-
                         font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 18
+                        font.pixelSize: 19
                     }
 
                     MouseArea {
@@ -166,35 +287,40 @@ PopupWindow {
                             if (
                                 root.player &&
                                 root.player.canGoPrevious
-                            )
+                            ) {
                                 root.player.previous()
+                            }
                         }
                     }
                 }
 
                 Rectangle {
-                    width: 50
-                    height: 34
+                    width: 42
+                    height: 32
 
                     color: playMouse.containsMouse
-                        ? Theme.Theme.accentSoft
-                        : Theme.Theme.accent
+                        ? Theme.Theme.accent
+                        : "transparent"
+
+                    border.width: 1
+                    border.color: Theme.Theme.accent
 
                     Text {
                         anchors.centerIn: parent
 
-                        text: root.player &&
-                              root.player.isPlaying
-                            ? "󰏤"
-                            : "󰐊"
+                        text:
+                            root.player &&
+                            root.player.isPlaying
+                                ? "󰏤"
+                                : "󰐊"
 
-                        color: root.player &&
-                               root.player.isPlaying
-                            ? Theme.Theme.text
-                            : Theme.Theme.accentText
+                        color:
+                            playMouse.containsMouse
+                            ? Theme.Theme.onPrimary
+                            : Theme.Theme.accent
 
                         font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 18
+                        font.pixelSize: 20
                     }
 
                     MouseArea {
@@ -207,15 +333,16 @@ PopupWindow {
                             if (
                                 root.player &&
                                 root.player.canTogglePlaying
-                            )
+                            ) {
                                 root.player.togglePlaying()
+                            }
                         }
                     }
                 }
 
                 Rectangle {
-                    width: 42
-                    height: 34
+                    width: 34
+                    height: 32
 
                     color: nextMouse.containsMouse
                         ? Theme.Theme.accentSoft
@@ -223,13 +350,10 @@ PopupWindow {
 
                     Text {
                         anchors.centerIn: parent
-
                         text: "󰒭"
-
                         color: Theme.Theme.text
-
                         font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 18
+                        font.pixelSize: 19
                     }
 
                     MouseArea {
@@ -242,10 +366,15 @@ PopupWindow {
                             if (
                                 root.player &&
                                 root.player.canGoNext
-                            )
+                            ) {
                                 root.player.next()
+                            }
                         }
                     }
+                }
+
+                Item {
+                    Layout.fillWidth: true
                 }
             }
         }

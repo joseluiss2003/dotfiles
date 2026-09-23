@@ -1,9 +1,12 @@
 import Quickshell
+import Quickshell.Services.Pipewire
 import QtQuick
-
+import QtQuick.Layouts
 import "../generated" as Theme
 
+
 PopupWindow {
+
     id: root
 
     required property var anchorItem
@@ -12,158 +15,481 @@ PopupWindow {
     anchor.item: anchorItem
     anchor.margins.bottom: 6
 
-    width: 300
-    height: 150
+    width: 340
+    height: 250
 
     visible: false
-    color: "transparent"
     grabFocus: true
 
+    color: "transparent"
+
+
+    function volumePercent() {
+
+        if (!root.sink ||
+            !root.sink.ready ||
+            !root.sink.audio)
+            return 0
+
+        return Math.round(
+            root.sink.audio.volume * 100
+        )
+    }
+
+
+
     Rectangle {
+
         anchors.fill: parent
 
-        color: Theme.Theme.surface
+
+        color: Qt.rgba(
+            Theme.Theme.background.r,
+            Theme.Theme.background.g,
+            Theme.Theme.background.b,
+            0.97
+        )
+
+
         border.width: 1
-        border.color: Theme.Theme.outline
-        radius: 0
 
-        Column {
+
+        border.color: Qt.rgba(
+            Theme.Theme.outline.r,
+            Theme.Theme.outline.g,
+            Theme.Theme.outline.b,
+            0.7
+        )
+
+
+
+        ColumnLayout {
+
+
             anchors.fill: parent
-            anchors.margins: 18
-            spacing: 14
 
-            Text {
-                text: "AUDIO"
+            anchors.margins: 12
 
-                color: Theme.Theme.text
-                font.family: "JetBrains Mono Nerd Font"
-                font.pixelSize: 12
-                font.bold: true
-            }
+            spacing: 10
 
-            Row {
-                width: parent.width
-                spacing: 12
 
-                Text {
-                    width: 32
-                    anchors.verticalCenter: parent.verticalCenter
 
-                    text: {
-                        if (!root.sink || !root.sink.audio)
-                            return "󰕾"
-
-                        if (root.sink.audio.muted)
-                            return "󰝟"
-
-                        return "󰖀"
-                    }
-
-                    color: Theme.Theme.accent
-                    font.family: "JetBrains Mono Nerd Font"
-                    font.pixelSize: 22
-                }
-
-                Rectangle {
-                    width: parent.width - 80
-                    height: 8
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    color: Theme.Theme.surfaceAlt
-
-                    Rectangle {
-                        width: parent.width *
-                            (
-                                root.sink &&
-                                root.sink.audio
-                                    ? root.sink.audio.volume
-                                    : 0
-                            )
-
-                        height: parent.height
-
-                        color: Theme.Theme.accent
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-
-                        onClicked: function(mouse) {
-                            if (!root.sink || !root.sink.audio)
-                                return
-
-                            root.sink.audio.volume =
-                                Math.max(
-                                    0,
-                                    Math.min(
-                                        1,
-                                        mouse.x / width
-                                    )
-                                )
-                        }
-                    }
-                }
-
-                Text {
-                    width: 36
-
-                    anchors.verticalCenter: parent.verticalCenter
-
-                    horizontalAlignment: Text.AlignRight
-
-                    text: root.sink && root.sink.audio
-                        ? Math.round(
-                            root.sink.audio.volume * 100
-                          ) + "%"
-                        : "0%"
-
-                    color: Theme.Theme.text
-
-                    font.family: "JetBrains Mono Nerd Font"
-                    font.pixelSize: 12
-                }
-            }
+            // HEADER
 
             Rectangle {
-                width: parent.width
-                height: 34
 
-                color: muteMouse.containsMouse
-                    ? Theme.Theme.accentSoft
-                    : "transparent"
+                Layout.fillWidth: true
 
-                Text {
-                    anchors.centerIn: parent
+                height: 42
 
-                    text: root.sink &&
-                          root.sink.audio &&
-                          root.sink.audio.muted
-                        ? "󰝟  Unmute"
-                        : "󰕾  Mute"
 
-                    color: Theme.Theme.text
+                color: Qt.rgba(
+                    Theme.Theme.accent.r,
+                    Theme.Theme.accent.g,
+                    Theme.Theme.accent.b,
+                    0.10
+                )
 
-                    font.family: "JetBrains Mono Nerd Font"
-                    font.pixelSize: 12
-                }
 
-                MouseArea {
-                    id: muteMouse
+                border.width:1
+
+
+                border.color: Qt.rgba(
+                    Theme.Theme.accent.r,
+                    Theme.Theme.accent.g,
+                    Theme.Theme.accent.b,
+                    0.25
+                )
+
+
+
+                Row {
 
                     anchors.fill: parent
-                    hoverEnabled: true
 
-                    onClicked: {
-                        if (
+                    anchors.leftMargin:12
+
+
+                    spacing:10
+
+
+
+                    Text {
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+
+                        text:
                             root.sink &&
-                            root.sink.audio
-                        ) {
-                            root.sink.audio.muted =
-                                !root.sink.audio.muted
-                        }
+                            root.sink.audio &&
+                            root.sink.audio.muted
+
+                            ? "󰖁"
+
+                            : "󰕾"
+
+
+                        color:
+                            Theme.Theme.accent
+
+
+                        font.family:
+                            "JetBrains Mono Nerd Font"
+
+                        font.pixelSize:20
+
                     }
+
+
+
+                    Text {
+
+
+                        anchors.verticalCenter: parent.verticalCenter
+
+
+                        text:"AUDIO"
+
+
+                        color:
+                            Theme.Theme.text
+
+
+                        font.family:
+                            "JetBrains Mono Nerd Font"
+
+                        font.pixelSize:11
+
+                        font.bold:true
+
+                    }
+
                 }
+
             }
+
+
+
+            // VOLUME
+
+            Rectangle {
+
+
+                Layout.fillWidth:true
+
+                height:80
+
+
+
+                color: Qt.rgba(
+                    Theme.Theme.background.r,
+                    Theme.Theme.background.g,
+                    Theme.Theme.background.b,
+                    0.55
+                )
+
+
+
+                border.width:1
+
+
+                border.color: Qt.rgba(
+                    Theme.Theme.outline.r,
+                    Theme.Theme.outline.g,
+                    Theme.Theme.outline.b,
+                    0.25
+                )
+
+
+
+                Column {
+
+
+                    anchors.centerIn:parent
+
+
+                    spacing:8
+
+
+
+                    Text {
+
+
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+
+                        text:
+                            root.volumePercent()+"%"
+
+
+                        color:
+                            Theme.Theme.text
+
+
+                        font.family:
+                            "JetBrains Mono Nerd Font"
+
+                        font.pixelSize:28
+
+                        font.bold:true
+
+                    }
+
+
+
+                    Text {
+
+
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+
+                        text:
+                            root.sink &&
+                            root.sink.audio &&
+                            root.sink.audio.muted
+
+                            ? "Muted"
+
+                            : "Volume"
+
+
+                        color:
+                            Theme.Theme.textMuted
+
+
+                        font.family:
+                            "JetBrains Mono Nerd Font"
+
+                        font.pixelSize:10
+
+                    }
+
+
+                }
+
+            }
+
+
+
+
+
+            // SLIDER
+
+
+            Rectangle {
+
+                Layout.fillWidth:true
+
+                height:8
+
+
+                radius:4
+
+
+                color: Qt.rgba(
+                    Theme.Theme.outline.r,
+                    Theme.Theme.outline.g,
+                    Theme.Theme.outline.b,
+                    0.35
+                )
+
+
+
+                Rectangle {
+
+                    width:
+                        root.sink &&
+                        root.sink.audio
+
+                        ? parent.width *
+                          root.sink.audio.volume
+
+                        : 0
+
+
+                    height:parent.height
+
+
+                    radius:4
+
+
+                    color:
+                        Theme.Theme.accent
+
+                }
+
+
+
+                MouseArea {
+
+
+                    anchors.fill:parent
+
+
+                    onClicked:function(mouse){
+
+
+                        if (!root.sink ||
+                            !root.sink.audio)
+                            return
+
+
+
+                        root.sink.audio.volume =
+                            Math.max(
+                                0,
+                                Math.min(
+                                    1,
+                                    mouse.x /
+                                    width
+                                )
+                            )
+
+                    }
+
+                }
+
+            }
+
+
+
+
+            // BUTTONS
+
+
+            RowLayout {
+
+
+                Layout.fillWidth:true
+
+
+                spacing:8
+
+
+
+                Rectangle {
+
+
+                    Layout.fillWidth:true
+
+                    height:38
+
+
+
+                    color:
+                        muteMouse.containsMouse
+
+                        ? Qt.rgba(
+                            Theme.Theme.accent.r,
+                            Theme.Theme.accent.g,
+                            Theme.Theme.accent.b,
+                            0.16
+                        )
+
+                        :"transparent"
+
+
+
+                    Text {
+
+                        anchors.centerIn:parent
+
+
+                        text:
+                            root.sink &&
+                            root.sink.audio &&
+                            root.sink.audio.muted
+
+                            ? "󰝟 Unmute"
+
+                            :"󰕾 Mute"
+
+
+                        color:
+                            Theme.Theme.text
+
+
+                        font.family:
+                            "JetBrains Mono Nerd Font"
+
+                        font.pixelSize:10
+
+                    }
+
+
+
+                    MouseArea {
+
+
+                        id:muteMouse
+
+
+                        anchors.fill:parent
+
+
+                        hoverEnabled:true
+
+
+
+                        onClicked:{
+
+
+                            if(root.sink &&
+                               root.sink.audio)
+
+                                root.sink.audio.muted =
+                                    !root.sink.audio.muted
+
+                        }
+
+                    }
+
+                }
+
+
+            }
+
+
+
+            // DEVICE
+
+
+            Text {
+
+
+                Layout.fillWidth:true
+
+
+                text:
+                    root.sink
+
+                    ? root.sink.description
+
+                    :"No audio device"
+
+
+                color:
+                    Theme.Theme.textMuted
+
+
+                horizontalAlignment:
+                    Text.AlignHCenter
+
+
+                font.family:
+                    "JetBrains Mono Nerd Font"
+
+
+                font.pixelSize:9
+
+
+                elide:
+                    Text.ElideRight
+
+            }
+
         }
+
     }
+
 }

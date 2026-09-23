@@ -6,10 +6,11 @@ import Quickshell.Services.Pipewire
 import Quickshell.Services.SystemTray
 
 import QtQuick
+import QtQuick.Effects
 
 import "../generated" as Theme
 import "../popups" as Popups
-import "." as Components
+
 
 PanelWindow {
     id: root
@@ -24,9 +25,28 @@ PanelWindow {
         right: true
     }
 
-    implicitHeight: 34
-    exclusiveZone: 34
+    // Compact floating bar.
+    // The actual frame is 36px high with a tiny outer margin.
+    implicitHeight: 46
+    exclusiveZone: 42
     color: "transparent"
+
+    property date now: new Date()
+
+    property string focusedApp: "Desktop"
+    property string focusedTitle: ""
+
+    property bool networkConnected: false
+    property string networkType: ""
+
+    property int batteryPercent: -1
+    property string batteryStatus: ""
+
+    // Cover for the currently playing track.
+    property string mediaArtUrl: ""
+    property string mediaArtFile: ""
+    property bool mediaArtLocalReady: false
+    property int mediaArtVersion: 0
 
     property var player: {
         var players = Mpris.players.values
@@ -40,24 +60,185 @@ PanelWindow {
     }
 
     property var sink: Pipewire.defaultAudioSink
-    property date currentTime: new Date()
 
     PwObjectTracker {
         objects: root.sink ? [root.sink] : []
     }
 
-    function togglePopup(popup) {
-        var oldState = popup.visible
+    // =========================================================
+    // THE SAME PALETTE USED BY THE WORKING POPUPS
+    // =========================================================
 
-        audioPopup.visible = false
+    function tint(alpha) {
+        return Qt.rgba(
+            Theme.Theme.accent.r,
+            Theme.Theme.accent.g,
+            Theme.Theme.accent.b,
+            alpha
+        )
+    }
+
+    function border() {
+        return Qt.rgba(
+            Theme.Theme.accent.r,
+            Theme.Theme.accent.g,
+            Theme.Theme.accent.b,
+            0.88
+        )
+    }
+
+    function hover(alpha) {
+        return Qt.rgba(
+            Theme.Theme.accent.r,
+            Theme.Theme.accent.g,
+            Theme.Theme.accent.b,
+            alpha
+        )
+    }
+
+    function appIcon(appId) {
+        var value = String(appId).toLowerCase()
+
+        if (value.indexOf("firefox") >= 0)
+            return "󰈹"
+        if (value.indexOf("kitty") >= 0)
+            return "󰄛"
+        if (value.indexOf("foot") >= 0)
+            return "󰆍"
+        if (value.indexOf("code") >= 0 || value.indexOf("codium") >= 0)
+            return "󰨞"
+        if (value.indexOf("steam") >= 0)
+            return "󰓓"
+        if (value.indexOf("spotify") >= 0)
+            return "󰓇"
+        if (value.indexOf("discord") >= 0)
+            return "󰙯"
+        if (value.indexOf("dolphin") >= 0 || value.indexOf("thunar") >= 0)
+            return "󰉋"
+        if (value.indexOf("nvim") >= 0 || value.indexOf("neovim") >= 0)
+            return ""
+
+        return "󰣆"
+    }
+
+    function mediaArtValue() {
+        if (!root.player)
+            return ""
+
+        var url = root.player.trackArtUrl || ""
+
+        if (!url && root.player.metadata) {
+            var meta = root.player.metadata
+            url = meta["mpris:artUrl"] || meta["xesam:artUrl"] || ""
+        }
+
+        return String(url)
+    }
+
+    function refreshMediaArt() {
+        if (mediaArtDownloader.running)
+            mediaArtDownloader.running = false
+
+        root.mediaArtUrl = mediaArtValue()
+        root.mediaArtLocalReady = false
+        root.mediaArtVersion += 1
+
+        if (!root.mediaArtUrl || !root.player) {
+            root.mediaArtFile = ""
+            return
+        }
+
+        var id = String(root.player.uniqueId)
+        if (!id.length)
+            id = "current"
+
+        root.mediaArtFile = Quickshell.cachePath("media-cover-" + id + ".img")
+
+        mediaArtDownloader.command = [
+            "curl",
+            "-L",
+            "--fail",
+            "--silent",
+            "--show-error",
+            "--max-time",
+            "12",
+            "--output",
+            root.mediaArtFile,
+            root.mediaArtUrl
+        ]
+
+        mediaArtDownloader.running = true
+    }
+
+    Connections {
+        target: root.player
+
+        function onPostTrackChanged() {
+            mediaArtDelay.restart()
+        }
+
+        function onTrackArtUrlChanged() {
+            mediaArtDelay.restart()
+        }
+    }
+
+    Timer {
+        id: mediaArtDelay
+
+        interval: 600
+        repeat: false
+
+        onTriggered: root.refreshMediaArt()
+    }
+
+    Process {
+        id: mediaArtDownloader
+
+        onExited: function(exitCode, exitStatus) {
+            if (exitCode === 0 && root.mediaArtFile.length)
+                root.mediaArtLocalReady = true
+        }
+    }
+
+    function appLabel(appId) {
+        var value = String(appId)
+        var lower = value.toLowerCase()
+
+        if (lower.indexOf("firefox") >= 0)
+            return "Firefox"
+        if (lower.indexOf("kitty") >= 0)
+            return "kitty"
+        if (lower.indexOf("foot") >= 0)
+            return "foot"
+        if (lower.indexOf("steam") >= 0)
+            return "Steam"
+        if (lower.indexOf("spotify") >= 0)
+            return "Spotify"
+        if (lower.indexOf("discord") >= 0)
+            return "Discord"
+        if (lower.indexOf("dolphin") >= 0)
+            return "Dolphin"
+        if (lower.indexOf("thunar") >= 0)
+            return "Thunar"
+
+        return value.length ? value : "Desktop"
+    }
+
+    function closePopups() {
+        powerPopup.visible = false
         mediaPopup.visible = false
         networkPopup.visible = false
+        audioPopup.visible = false
+        batteryPopup.visible = false
         calendarPopup.visible = false
-        powerPopup.visible = false
-        clipboardPopup.visible = false
-        screenshotPopup.visible = false
+    }
 
-        popup.visible = !oldState
+    function togglePopup(popup) {
+        var wasVisible = popup.visible
+
+        closePopups()
+
+        popup.visible = !wasVisible
     }
 
     Timer {
@@ -66,192 +247,429 @@ PanelWindow {
         repeat: true
 
         onTriggered: {
-            root.currentTime = new Date()
+            root.now = new Date()
+
+            if (!focusedProbe.running)
+                focusedProbe.running = true
         }
     }
 
-    Rectangle {
-        anchors.fill: parent
+    Timer {
+        interval: 5000
+        running: true
+        repeat: true
 
+        onTriggered: {
+            if (!networkProbe.running)
+                networkProbe.running = true
+        }
+    }
+
+    Timer {
+        interval: 30000
+        running: true
+        repeat: true
+
+        onTriggered: {
+            if (!batteryProbe.running)
+                batteryProbe.running = true
+        }
+    }
+
+    Process {
+        id: focusedProbe
+
+        command: [
+            "sh",
+            "-lc",
+            "swaymsg -t get_tree 2>/dev/null | jq -r '.. | objects | select(.focused? == true) | [(.app_id // .window_properties.class // \"Desktop\"), (.name // \"\")] | @tsv' | head -n1"
+        ]
+
+        stdout: StdioCollector {
+            waitForEnd: true
+
+            onStreamFinished: {
+                var value = text.trim()
+
+                if (!value.length) {
+                    root.focusedApp = "Desktop"
+                    root.focusedTitle = ""
+                    return
+                }
+
+                var fields = value.split("\t")
+
+                root.focusedApp =
+                    fields.length > 0 && fields[0].length
+                    ? fields[0]
+                    : "Desktop"
+
+                root.focusedTitle =
+                    fields.length > 1
+                    ? fields.slice(1).join(" ")
+                    : ""
+            }
+        }
+    }
+
+    Process {
+        id: networkProbe
+
+        command: [
+            "sh",
+            "-lc",
+            "nmcli -t -f TYPE,STATE device 2>/dev/null"
+        ]
+
+        stdout: StdioCollector {
+            waitForEnd: true
+
+            onStreamFinished: {
+                var lines = text.trim().split(/\r?\n/)
+
+                root.networkConnected = false
+                root.networkType = ""
+
+                for (var i = 0; i < lines.length; ++i) {
+                    var fields = lines[i].split(":")
+
+                    if (
+                        fields.length >= 2 &&
+                        fields[1] === "connected"
+                    ) {
+                        root.networkConnected = true
+                        root.networkType = fields[0]
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    Process {
+        id: batteryProbe
+
+        command: [
+            "sh",
+            "-lc",
+            "b=$(find /sys/class/power_supply -maxdepth 2 -name capacity 2>/dev/null | head -n1); if [ -r \"$b\" ]; then s=${b%/capacity}/status; printf '%s\\t%s' \"$(cat \"$b\")\" \"$(cat \"$s\" 2>/dev/null)\"; else printf '%s\\t%s' '-1' ''; fi"
+        ]
+
+        stdout: StdioCollector {
+            waitForEnd: true
+
+            onStreamFinished: {
+                var fields = text.trim().split("\t")
+                var value = parseInt(fields[0])
+
+                root.batteryPercent = isNaN(value) ? -1 : value
+                root.batteryStatus = fields.length > 1 ? fields[1] : ""
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        focusedProbe.running = true
+        networkProbe.running = true
+        batteryProbe.running = true
+        root.refreshMediaArt()
+    }
+
+    // =========================================================
+    // FLOATING BAR
+    // =========================================================
+
+    Rectangle {
+        id: frame
+
+        x: 3
+        y: 4
+
+        width: parent.width - 6
+        height: 36
+
+        // Same base color as the working popups.
         color: Qt.rgba(
             Theme.Theme.background.r,
             Theme.Theme.background.g,
             Theme.Theme.background.b,
-            0.82
+            0.92
         )
 
-        border.width: 1
+        border.width: 2
+        border.color: root.border()
+    }
 
-        border.color: Qt.rgba(
-            Theme.Theme.outline.r,
-            Theme.Theme.outline.g,
-            Theme.Theme.outline.b,
-            0.22
-        )
+    // A subtle accent wash, clipped by the square frame.
+    Rectangle {
+        x: frame.x
+        y: frame.y
+
+        width: frame.width
+        height: frame.height
+
+        color: root.tint(0.045)
     }
 
     // =========================================================
-    // LEFT SIDE
+    // LEFT: ARCH | FOCUS | MEDIA
     // =========================================================
 
     Row {
-        anchors.left: parent.left
-        anchors.leftMargin: 6
-        anchors.verticalCenter: parent.verticalCenter
+        id: leftModules
 
-        spacing: 1
+        anchors.left: frame.left
+        anchors.verticalCenter: frame.verticalCenter
 
-        // Launcher
+        height: frame.height
+        spacing: 0
+
         Rectangle {
-            width: 30
-            height: 28
+            id: archButton
 
-            color: launcherMouse.containsMouse
-                ? Qt.rgba(
-                    Theme.Theme.text.r,
-                    Theme.Theme.text.g,
-                    Theme.Theme.text.b,
-                    0.08
-                )
+            width: 38
+            height: frame.height
+
+            color: archMouse.containsMouse
+                ? root.hover(0.11)
                 : "transparent"
 
             Text {
                 anchors.centerIn: parent
 
-                text: "󰣇"
+                text: ""
 
                 color: Theme.Theme.accent
 
                 font.family: "JetBrains Mono Nerd Font"
-                font.pixelSize: 18
+                font.pixelSize: 19
             }
 
             MouseArea {
-                id: launcherMouse
+                id: archMouse
 
                 anchors.fill: parent
                 hoverEnabled: true
 
-                onClicked: {
-                    Quickshell.execDetached([
-                        "sh",
-                        "-lc",
-                        "if command -v fuzzel >/dev/null 2>&1; then fuzzel --show drun; elif command -v wofi >/dev/null 2>&1; then wofi --show drun; fi"
-                    ])
-                }
+                onClicked: root.togglePopup(powerPopup)
             }
         }
 
-        // Workspaces
-        Row {
-            spacing: 0
-
-            Repeater {
-                model: I3.workspaces
-
-                delegate: Rectangle {
-                    required property var modelData
-
-                    width: modelData.focused ? 28 : 24
-                    height: 28
-
-                    color: modelData.focused
-                        ? Qt.rgba(
-                            Theme.Theme.accent.r,
-                            Theme.Theme.accent.g,
-                            Theme.Theme.accent.b,
-                            0.18
-                        )
-                        : "transparent"
-
-                    Text {
-                        anchors.centerIn: parent
-
-                        text: String(modelData.name)
-
-                        color: modelData.focused
-                            ? Theme.Theme.accent
-                            : Theme.Theme.textMuted
-
-                        font.family: "JetBrains Mono Nerd Font"
-                        font.pixelSize: 13
-                        font.weight: modelData.focused
-                            ? Font.Bold
-                            : Font.Medium
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-
-                        onClicked: {
-                            modelData.activate()
-                        }
-                    }
-                }
-            }
-        }
-
-        // Media
         Rectangle {
-            id: mediaModule
+            width: 2
+            height: frame.height
 
-            visible: root.player !== null
+            color: root.border()
+        }
 
-            width: visible ? 170 : 0
-            height: 28
+        Rectangle {
+            id: focusModule
 
-            color: mediaMouse.containsMouse
-                ? Qt.rgba(
-                    Theme.Theme.text.r,
-                    Theme.Theme.text.g,
-                    Theme.Theme.text.b,
-                    0.08
-                )
+            width: 188
+            height: frame.height
+
+            color: focusMouse.containsMouse
+                ? root.hover(0.055)
                 : "transparent"
 
             Row {
                 anchors.fill: parent
 
-                anchors.leftMargin: 7
-                anchors.rightMargin: 7
+                anchors.leftMargin: 8
+                anchors.rightMargin: 8
 
                 spacing: 7
 
                 Text {
-                    width: 20
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text: root.appIcon(root.focusedApp)
+
+                    color: Theme.Theme.accent
+
+                    font.family: "JetBrains Mono Nerd Font"
+                    font.pixelSize: 15
+                }
+
+                Column {
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    width: 157
+                    spacing: 0
+
+                    Text {
+                        width: parent.width
+
+                        text: root.appLabel(root.focusedApp)
+
+                        color: Theme.Theme.text
+
+                        font.family: "JetBrains Mono Nerd Font"
+                        font.pixelSize: 10
+                        font.bold: true
+
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        width: parent.width
+
+                        visible: root.focusedTitle.length > 0
+
+                        text: root.focusedTitle
+
+                        color: Theme.Theme.textMuted
+
+                        font.family: "JetBrains Mono Nerd Font"
+                        font.pixelSize: 8
+
+                        elide: Text.ElideRight
+                    }
+                }
+            }
+
+            MouseArea {
+                id: focusMouse
+
+                anchors.fill: parent
+                hoverEnabled: true
+            }
+        }
+
+        Rectangle {
+            width: 2
+            height: frame.height
+
+            color: root.border()
+        }
+
+        Rectangle {
+            id: mediaModule
+
+            visible: root.player !== null
+
+            width: visible ? 238 : 0
+            height: frame.height
+
+            color: mediaMouse.containsMouse
+                ? root.hover(0.055)
+                : "transparent"
+
+            Row {
+                anchors.fill: parent
+
+                anchors.leftMargin: 6
+                anchors.rightMargin: 6
+
+                spacing: 5
+
+                // Album / track cover
+                Item {
+                    id: mediaArt
+
+                    width: 22
+                    height: 22
 
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: root.player &&
-                          root.player.isPlaying
+                    Rectangle {
+                        anchors.fill: parent
+
+                        color: root.tint(0.08)
+                        border.width: 1
+                        border.color: root.tint(0.42)
+
+                        Image {
+                            id: mediaArtImage
+
+                            anchors.fill: parent
+
+                            // First try the MPRIS URL, then use the local
+                            // cached copy. This makes Spotify artwork reliable
+                            // even when its artwork URL is remote.
+                            source: root.mediaArtLocalReady
+                                ? "file://" + root.mediaArtFile + "?v=" + root.mediaArtVersion
+                                : root.mediaArtUrl
+
+                            asynchronous: true
+                            cache: false
+                            smooth: true
+                            fillMode: Image.PreserveAspectCrop
+
+                            visible: status === Image.Ready
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+
+                            visible: !mediaArtImage.visible
+                            text: "󰎈"
+
+                            color: Theme.Theme.accent
+
+                            font.family: "JetBrains Mono Nerd Font"
+                            font.pixelSize: 15
+                        }
+                    }
+                }
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    text:
+                        root.player &&
+                        root.player.isPlaying
                         ? "󰐊"
                         : "󰏤"
 
                     color: Theme.Theme.accent
 
                     font.family: "JetBrains Mono Nerd Font"
-                    font.pixelSize: 16
+                    font.pixelSize: 14
                 }
 
-                Text {
-                    width: parent.width - 27
-
+                Column {
                     anchors.verticalCenter: parent.verticalCenter
 
-                    text: root.player
-                        ? (
-                            root.player.trackTitle ||
-                            root.player.identity ||
-                            ""
-                        )
-                        : ""
+                    width: 166
+                    spacing: 0
 
-                    color: Theme.Theme.text
+                    Text {
+                        width: parent.width
 
-                    font.family: "JetBrains Mono Nerd Font"
-                    font.pixelSize: 12
+                        text:
+                            root.player
+                            ? (
+                                root.player.trackTitle ||
+                                root.player.identity ||
+                                "Media"
+                            )
+                            : ""
 
-                    elide: Text.ElideRight
+                        color: Theme.Theme.text
+
+                        font.family: "JetBrains Mono Nerd Font"
+                        font.pixelSize: 10
+                        font.bold: true
+
+                        elide: Text.ElideRight
+                    }
+
+                    Text {
+                        width: parent.width
+
+                        text:
+                            root.player
+                            ? (root.player.trackArtist || "")
+                            : ""
+
+                        color: Theme.Theme.textMuted
+
+                        font.family: "JetBrains Mono Nerd Font"
+                        font.pixelSize: 8
+
+                        elide: Text.ElideRight
+                    }
                 }
             }
 
@@ -261,225 +679,191 @@ PanelWindow {
                 anchors.fill: parent
                 hoverEnabled: true
 
-                onClicked: {
-                    root.togglePopup(mediaPopup)
-                }
+                onClicked: root.togglePopup(mediaPopup)
             }
         }
     }
 
     // =========================================================
-    // CLOCK
-    // =========================================================
-
-    Rectangle {
-        id: clock
-
-        anchors.centerIn: parent
-
-        width: 72
-        height: 28
-
-        color: clockMouse.containsMouse
-            ? Qt.rgba(
-                Theme.Theme.text.r,
-                Theme.Theme.text.g,
-                Theme.Theme.text.b,
-                0.08
-            )
-            : "transparent"
-
-        Text {
-            anchors.centerIn: parent
-
-            text: Qt.formatDateTime(
-                root.currentTime,
-                "HH:mm"
-            )
-
-            color: Theme.Theme.text
-
-            font.family: "JetBrains Mono Nerd Font"
-            font.pixelSize: 13
-            font.weight: Font.Medium
-        }
-
-        MouseArea {
-            id: clockMouse
-
-            anchors.fill: parent
-            hoverEnabled: true
-
-            onClicked: {
-                root.togglePopup(calendarPopup)
-            }
-        }
-    }
-
-    // =========================================================
-    // RIGHT SIDE
+    // CENTER: SIMPLE WORKSPACE MARKERS
     // =========================================================
 
     Row {
-        anchors.right: parent.right
-        anchors.rightMargin: 6
-        anchors.verticalCenter: parent.verticalCenter
+        id: workspaceRow
 
-        spacing: 1
+        anchors.centerIn: frame
 
-        // System tray
+        height: frame.height
+        spacing: 7
+
         Repeater {
-            model: SystemTray.items
+            model: I3.workspaces
 
             delegate: Rectangle {
-                width: 28
-                height: 28
+                required property var modelData
 
-                color: trayMouse.containsMouse
-                    ? Qt.rgba(
-                        Theme.Theme.text.r,
-                        Theme.Theme.text.g,
-                        Theme.Theme.text.b,
-                        0.08
-                    )
-                    : "transparent"
+                width: 15
+                height: frame.height
 
-                Image {
+                color: "transparent"
+
+                Rectangle {
                     anchors.centerIn: parent
 
-                    width: 17
-                    height: 17
+                    width: modelData.focused ? 12 : 9
+                    height: modelData.focused ? 12 : 9
 
-                    source: modelData.icon
+                    color:
+                        modelData.focused
+                        ? Theme.Theme.accent
+                        : "transparent"
 
-                    fillMode: Image.PreserveAspectFit
-                    smooth: true
+                    border.width:
+                        modelData.focused
+                        ? 0
+                        : 1
+
+                    border.color:
+                        root.border()
                 }
 
                 MouseArea {
-                    id: trayMouse
-
                     anchors.fill: parent
                     hoverEnabled: true
 
-                    onClicked: {
+                    onClicked:
                         modelData.activate()
-                    }
                 }
             }
         }
+    }
 
-        // Clipboard
-        Components.ClipboardButton {
-            id: clipboardButton
+    // =========================================================
+    // RIGHT: TRAY | NETWORK | AUDIO | BATTERY | CLOCK
+    // =========================================================
 
-            anchors.verticalCenter: parent.verticalCenter
+    Row {
+        id: rightModules
 
+        anchors.right: frame.right
+        anchors.verticalCenter: frame.verticalCenter
 
-            onClicked: {
-                root.togglePopup(clipboardPopup)
-            }
-        }
+        height: frame.height
+        spacing: 0
 
-        // Screenshot
-        Components.ScreenshotButton {
-            id: screenshotButton
+        // Tray is a single clean zone. NO separators between icons.
+        Row {
+            id: tray
 
-            anchors.verticalCenter: parent.verticalCenter
+            height: frame.height
+            spacing: 1
 
+            Repeater {
+                model: SystemTray.items
 
-            onClicked: {
-                root.togglePopup(screenshotPopup)
-            }
-        }
+                delegate: Rectangle {
+                    required property var modelData
 
-        // Network
-        Rectangle {
-            id: network
+                    width: 24
+                    height: frame.height
 
-            width: 30
-            height: 28
+                    color:
+                        trayMouse.containsMouse
+                        ? root.hover(0.09)
+                        : "transparent"
 
-            property bool connected: false
-            property string type: ""
+                    Image {
+                        id: traySource
 
-            color: networkMouse.containsMouse
-                ? Qt.rgba(
-                    Theme.Theme.text.r,
-                    Theme.Theme.text.g,
-                    Theme.Theme.text.b,
-                    0.08
-                )
-                : "transparent"
+                        anchors.centerIn: parent
 
-            Process {
-                id: networkProbe
+                        width: 18
+                        height: 18
 
-                command: [
-                    "nmcli",
-                    "-t",
-                    "-f",
-                    "TYPE,STATE",
-                    "device"
-                ]
+                        source: modelData.icon
 
-                stdout: StdioCollector {
-                    waitForEnd: true
+                        fillMode: Image.PreserveAspectFit
+                        smooth: true
 
-                    onStreamFinished: {
-                        var lines = text.trim().split(/\r?\n/)
+                        visible: false
+                    }
 
-                        network.connected = false
-                        network.type = ""
+                    MultiEffect {
+                        anchors.fill: traySource
 
-                        for (var i = 0; i < lines.length; ++i) {
-                            var p = lines[i].split(":")
+                        source: traySource
+
+                        colorizationColor: Theme.Theme.accent
+                        colorization: 1.0
+                    }
+
+                    MouseArea {
+                        id: trayMouse
+
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        acceptedButtons:
+                            Qt.LeftButton |
+                            Qt.RightButton |
+                            Qt.MiddleButton
+
+                        onClicked: function(mouse) {
+                            if (
+                                mouse.button === Qt.RightButton &&
+                                modelData.hasMenu
+                            ) {
+                                modelData.display(
+                                    root,
+                                    0,
+                                    frame.height
+                                )
+                                return
+                            }
 
                             if (
-                                p.length >= 2 &&
-                                p[1] === "connected"
+                                mouse.button === Qt.MiddleButton
                             ) {
-                                network.connected = true
-                                network.type = p[0]
-                                break
+                                modelData.secondaryActivate()
+                                return
                             }
+
+                            modelData.activate()
                         }
                     }
                 }
             }
+        }
 
-            Component.onCompleted: {
-                networkProbe.running = true
-            }
+        Rectangle {
+            id: network
 
-            Timer {
-                interval: 5000
-                running: true
-                repeat: true
+            width: 30
+            height: frame.height
 
-                onTriggered: {
-                    if (!networkProbe.running)
-                        networkProbe.running = true
-                }
-            }
+            color: networkMouse.containsMouse
+                ? root.hover(0.08)
+                : "transparent"
 
             Text {
                 anchors.centerIn: parent
 
-                text: network.connected
+                text:
+                    root.networkConnected
                     ? (
-                        network.type === "wifi"
-                            ? "󰖩"
-                            : "󰈀"
+                        root.networkType === "wifi"
+                        ? "󰖩"
+                        : "󰈀"
                     )
                     : "󰖪"
 
-                color: network.connected
+                color:
+                    root.networkConnected
                     ? Theme.Theme.accent
                     : Theme.Theme.textMuted
 
                 font.family: "JetBrains Mono Nerd Font"
-                font.pixelSize: 18
+                font.pixelSize: 17
             }
 
             MouseArea {
@@ -488,26 +872,19 @@ PanelWindow {
                 anchors.fill: parent
                 hoverEnabled: true
 
-                onClicked: {
+                onClicked:
                     root.togglePopup(networkPopup)
-                }
             }
         }
 
-        // Audio
         Rectangle {
             id: audio
 
-            width: 30
-            height: 28
+            width: 52
+            height: frame.height
 
             color: audioMouse.containsMouse
-                ? Qt.rgba(
-                    Theme.Theme.text.r,
-                    Theme.Theme.text.g,
-                    Theme.Theme.text.b,
-                    0.08
-                )
+                ? root.hover(0.08)
                 : "transparent"
 
             Text {
@@ -522,29 +899,23 @@ PanelWindow {
                         return "󰕾"
 
                     if (root.sink.audio.muted)
-                        return "󰝟"
+                        return "󰖁"
 
-                    if (root.sink.audio.volume < 0.35)
-                        return "󰕿"
-
-                    return "󰖀"
+                    return "󰕾 " +
+                        Math.round(
+                            root.sink.audio.volume * 100
+                        ) +
+                        "%"
                 }
 
-                color: {
-                    if (
-                        !root.sink ||
-                        !root.sink.ready ||
-                        !root.sink.audio
-                    )
-                        return Theme.Theme.textMuted
-
-                    return root.sink.audio.muted
-                        ? Theme.Theme.textMuted
-                        : Theme.Theme.accent
-                }
+                color:
+                    root.sink && root.sink.ready && root.sink.audio
+                    ? Theme.Theme.accent
+                    : Theme.Theme.textMuted
 
                 font.family: "JetBrains Mono Nerd Font"
-                font.pixelSize: 18
+                font.pixelSize: 10
+                font.bold: true
             }
 
             MouseArea {
@@ -553,9 +924,8 @@ PanelWindow {
                 anchors.fill: parent
                 hoverEnabled: true
 
-                onClicked: {
+                onClicked:
                     root.togglePopup(audioPopup)
-                }
 
                 onWheel: function(wheel) {
                     if (
@@ -582,55 +952,126 @@ PanelWindow {
             }
         }
 
-        // Power
         Rectangle {
-            id: power
+            id: battery
 
-            width: 30
-            height: 28
+            width: 56
+            height: frame.height
 
-            color: powerMouse.containsMouse
-                ? Qt.rgba(
-                    Theme.Theme.text.r,
-                    Theme.Theme.text.g,
-                    Theme.Theme.text.b,
-                    0.08
-                )
+            color: batteryMouse.containsMouse
+                ? root.hover(0.08)
                 : "transparent"
 
             Text {
                 anchors.centerIn: parent
 
-                text: "󰐥"
+                text: {
+                    if (root.batteryPercent < 0)
+                        return "󰂑 —"
 
-                color: Theme.Theme.accent
+                    if (
+                        root.batteryStatus === "Charging"
+                    )
+                        return "󰂄 " +
+                            root.batteryPercent +
+                            "%"
+
+                    if (root.batteryPercent <= 15)
+                        return "󰁺 " +
+                            root.batteryPercent +
+                            "%"
+
+                    if (root.batteryPercent <= 35)
+                        return "󰁼 " +
+                            root.batteryPercent +
+                            "%"
+
+                    if (root.batteryPercent <= 60)
+                        return "󰁾 " +
+                            root.batteryPercent +
+                            "%"
+
+                    if (root.batteryPercent <= 85)
+                        return "󰂀 " +
+                            root.batteryPercent +
+                            "%"
+
+                    return "󰁹 " +
+                        root.batteryPercent +
+                        "%"
+                }
+
+                color:
+                    root.batteryPercent >= 0
+                    ? Theme.Theme.accent
+                    : Theme.Theme.textMuted
 
                 font.family: "JetBrains Mono Nerd Font"
-                font.pixelSize: 18
+                font.pixelSize: 10
+                font.bold: true
             }
 
             MouseArea {
-                id: powerMouse
+                id: batteryMouse
 
                 anchors.fill: parent
                 hoverEnabled: true
 
-                onClicked: {
-                    root.togglePopup(powerPopup)
-                }
+                onClicked:
+                    root.togglePopup(batteryPopup)
+            }
+        }
+
+        Rectangle {
+            id: clock
+
+            width: 60
+            height: frame.height
+
+            color: clockMouse.containsMouse
+                ? root.hover(0.08)
+                : "transparent"
+
+            Text {
+                anchors.centerIn: parent
+
+                text:
+                    Qt.formatDateTime(
+                        root.now,
+                        "HH:mm"
+                    )
+
+                color: Theme.Theme.accent
+
+                font.family: "JetBrains Mono Nerd Font"
+                font.pixelSize: 12
+                font.bold: true
+            }
+
+            MouseArea {
+                id: clockMouse
+
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onClicked:
+                    root.togglePopup(calendarPopup)
             }
         }
     }
 
     // =========================================================
-    // POPUPS
+    // POPUPS: ALWAYS OPEN BELOW THE BAR
     // =========================================================
 
-    Popups.AudioPopup {
-        id: audioPopup
+    Popups.PowerPopup {
+        id: powerPopup
 
-        anchorItem: audio
-        sink: root.sink
+        anchorItem: archButton
+        anchor.edges: Edges.Bottom | Edges.Left
+        anchor.gravity: Edges.Bottom | Edges.Right
+        anchor.adjustment: PopupAdjustment.SlideX | PopupAdjustment.ResizeY
+        anchor.margins.bottom: 6
     }
 
     Popups.MediaPopup {
@@ -638,36 +1079,50 @@ PanelWindow {
 
         anchorItem: mediaModule
         player: root.player
+        anchor.edges: Edges.Bottom | Edges.Left
+        anchor.gravity: Edges.Bottom | Edges.Right
+        anchor.adjustment: PopupAdjustment.SlideX | PopupAdjustment.ResizeY
+        anchor.margins.bottom: 6
     }
 
     Popups.NetworkPopup {
         id: networkPopup
 
         anchorItem: network
+        anchor.edges: Edges.Bottom | Edges.Right
+        anchor.gravity: Edges.Bottom | Edges.Left
+        anchor.adjustment: PopupAdjustment.SlideX | PopupAdjustment.ResizeY
+        anchor.margins.bottom: 6
+    }
+
+    Popups.AudioPopup {
+        id: audioPopup
+
+        anchorItem: audio
+        sink: root.sink
+        anchor.edges: Edges.Bottom | Edges.Right
+        anchor.gravity: Edges.Bottom | Edges.Left
+        anchor.adjustment: PopupAdjustment.SlideX | PopupAdjustment.ResizeY
+        anchor.margins.bottom: 6
+    }
+
+    Popups.BatteryPopup {
+        id: batteryPopup
+
+        anchorItem: battery
+        anchor.edges: Edges.Bottom | Edges.Right
+        anchor.gravity: Edges.Bottom | Edges.Left
+        anchor.adjustment: PopupAdjustment.SlideX | PopupAdjustment.ResizeY
+        anchor.margins.bottom: 6
     }
 
     Popups.CalendarPopup {
         id: calendarPopup
 
         anchorItem: clock
+        anchor.edges: Edges.Bottom | Edges.Right
+        anchor.gravity: Edges.Bottom | Edges.Left
+        anchor.adjustment: PopupAdjustment.SlideX | PopupAdjustment.ResizeY
+        anchor.margins.bottom: 6
     }
-
-    Popups.PowerPopup {
-        id: powerPopup
-
-        anchorItem: power
-    }
-
-    Popups.ClipboardPopup {
-        id: clipboardPopup
-
-        anchorItem: clipboardButton
-    }
-
-    Popups.ScreenshotPopup {
-        id: screenshotPopup
-
-        anchorItem: screenshotButton
-    }
-
 }
