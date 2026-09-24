@@ -1,168 +1,124 @@
 #!/usr/bin/env bash
-
 set -euo pipefail
 
 DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-WALLPAPER_STATE="$HOME/.local/state/wallpaper/current"
-WALLPAPER_DIR="$HOME/Pictures/wallpapers"
 
 PACKAGES=(
-    git
-    stow
-
-    sway
-    swayidle
-    kitty
-    fuzzel
-    mako
-    quickshell
-    matugen
-    awww
-    hyprlock
-
-    zsh
-    starship
-
-    playerctl
-    wl-clipboard
-    cliphist
-
-    networkmanager
-    glib2
-    curl
-    xdg-utils
-    polkit
-
-    xdg-desktop-portal
-    xdg-desktop-portal-wlr
-    xdg-desktop-portal-gtk
-    xorg-xwayland
-
-    ttf-jetbrains-mono-nerd
+  git
+  stow
+  zsh
+  starship
+  sway
+  swaybg
+  swayidle
+  hyprlock
+  quickshell
+  matugen
+  awww
+  bluez
+  bluez-utils
+  brightnessctl
+  cliphist
+  fuzzel
+  greetd
+  greetd-tuigreet
+  grim
+  gtk4-layer-shell
+  jq
+  kitty
+  mako
+  noto-fonts
+  noto-fonts-cjk
+  noto-fonts-emoji
+  noto-fonts-extra
+  pipewire
+  pipewire-alsa
+  pipewire-jack
+  pipewire-pulse
+  playerctl
+  python
+  qt5-wayland
+  qt6-wayland
+  slurp
+  upower
+  wireplumber
+  wl-clipboard
+  xdg-desktop-portal-wlr
+  xdg-user-dirs
+  xdg-utils
+  xorg-xwayland
+  ttf-jetbrains-mono-nerd
 )
 
-info() {
-    printf '\n\033[1;32m==>\033[0m %s\n' "$1"
-}
+echo "==> Comprobando distribución..."
 
-warn() {
-    printf '\n\033[1;33m[!]\033[0m %s\n' "$1"
-}
-
-error() {
-    printf '\n\033[1;31m[ERROR]\033[0m %s\n' "$1" >&2
+if [[ ! -f /etc/arch-release ]]; then
+    echo "ERROR: Este instalador requiere Arch Linux o una distribución basada en Arch."
     exit 1
-}
-
-command -v pacman >/dev/null 2>&1 \
-    || error "Este script está pensado para Arch Linux."
-
-if [[ "$EUID" -eq 0 ]]; then
-    error "Ejecuta el script como usuario normal, no como root."
 fi
 
-info "Actualizando Arch"
-
-sudo pacman -Syu --needed
-
-info "Instalando paquetes"
+echo "==> Instalando paquetes..."
 
 sudo pacman -S --needed "${PACKAGES[@]}"
 
-info "Creando directorios"
+echo
+echo "==> Activando servicios..."
 
-mkdir -p \
-    "$HOME/.local/bin" \
-    "$HOME/.local/state/wallpaper" \
-    "$WALLPAPER_DIR" \
-    "$HOME/.config/hypr"
+sudo systemctl enable bluetooth.service
+sudo systemctl enable NetworkManager.service
+sudo systemctl enable greetd.service
 
-info "Instalando dotfiles con GNU Stow"
+echo
+echo "==> Detectando paquetes de Stow..."
+
+mapfile -t STOW_PACKAGES < <(
+    find "$DOTFILES_DIR" \
+        -mindepth 1 \
+        -maxdepth 1 \
+        -type d \
+        -printf '%f\n' |
+        sort
+)
+
+if [[ ${#STOW_PACKAGES[@]} -eq 0 ]]; then
+    echo "ERROR: No se encontraron paquetes de Stow."
+    exit 1
+fi
+
+printf '    %s\n' "${STOW_PACKAGES[@]}"
+
+echo
+echo "==> Aplicando dotfiles..."
 
 cd "$DOTFILES_DIR"
+stow -t "$HOME" "${STOW_PACKAGES[@]}"
 
-stow \
-    fuzzel \
-    kitty \
-    mako \
-    matugen \
-    quickshell \
-    starship \
-    sway \
-    wallpaper \
-    zsh
+echo
+echo "==> Configurando Zsh..."
 
-info "Configurando Zsh como shell por defecto"
+CURRENT_SHELL="$(getent passwd "$USER" | cut -d: -f7)"
 
-ZSH_PATH="$(command -v zsh)"
-
-if [[ "${SHELL:-}" != "$ZSH_PATH" ]]; then
-    chsh -s "$ZSH_PATH"
-fi
-
-info "Preparando wallpaper"
-
-WALLPAPER=""
-
-if [[ $# -ge 1 ]]; then
-    WALLPAPER="$1"
-fi
-
-if [[ -z "$WALLPAPER" ]]; then
-    if [[ -f "$WALLPAPER_STATE" ]]; then
-        WALLPAPER="$(cat "$WALLPAPER_STATE")"
-    fi
-fi
-
-if [[ -n "$WALLPAPER" && ! -f "$WALLPAPER" ]]; then
-    warn "El wallpaper indicado no existe: $WALLPAPER"
-    WALLPAPER=""
-fi
-
-if [[ -z "$WALLPAPER" ]]; then
-    warn "No hay wallpaper inicial configurado."
-    echo
-    echo "Pon una imagen en:"
-    echo "  $WALLPAPER_DIR"
-    echo
-    echo "y ejecuta después:"
-    echo "  $HOME/.local/bin/wallpaper-picker"
-    echo
+if [[ "$CURRENT_SHELL" != "/bin/zsh" ]]; then
+    chsh -s /bin/zsh
+    echo "Zsh configurado como shell predeterminado."
 else
-    info "Aplicando Matugen al wallpaper"
-
-    printf '%s\n' "$WALLPAPER" > "$WALLPAPER_STATE"
-
-    matugen image "$WALLPAPER"
-
-    if [[ -x "$HOME/.local/bin/update-hyprlock" ]]; then
-        "$HOME/.local/bin/update-hyprlock"
-    fi
-fi
-
-info "Comprobando configuración"
-
-if command -v sway >/dev/null 2>&1; then
-    sway -C -c "$HOME/.config/sway/config" >/dev/null
-    echo "Sway: OK"
-fi
-
-if command -v hyprlock >/dev/null 2>&1; then
-    if [[ -f "$HOME/.config/hypr/hyprlock.conf" ]]; then
-        echo "Hyprlock: OK"
-    else
-        warn "Hyprlock instalado pero todavía no hay hyprlock.conf."
-    fi
+    echo "Zsh ya es el shell predeterminado."
 fi
 
 echo
-printf '\033[1;32m========================================\033[0m\n'
-printf '\033[1;32m      DOTFILES INSTALL COMPLETADO      \033[0m\n'
-printf '\033[1;32m========================================\033[0m\n'
+echo "========================================"
+echo " Instalación completada correctamente"
+echo "========================================"
 echo
-echo "Repo:       $DOTFILES_DIR"
-echo "Shell:      $ZSH_PATH"
-echo "Wallpaper:  ${WALLPAPER:-pendiente}"
+echo "Dotfiles instalados:"
+printf '  ✓ %s\n' "${STOW_PACKAGES[@]}"
 echo
-echo "Reinicia la sesión para entrar en Sway con toda la configuración."
+echo "Servicios habilitados:"
+echo "  ✓ Bluetooth"
+echo "  ✓ NetworkManager"
+echo "  ✓ greetd"
+echo
+echo "Reinicia para aplicar todos los cambios:"
+echo
+echo "    sudo reboot"
 echo
