@@ -131,6 +131,8 @@ bindsym $mod+Shift+s exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y-%m
 
 # Firefox/Chromium y demás permanecen en tiling por defecto.
 # Aquí añadiremos reglas específicas cuando las necesitemos.
+floating_modifier $mod normal
+
 
 ### =========================
 ### Startup
