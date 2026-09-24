@@ -13,7 +13,7 @@ BarWidget {
 
   readonly property var toplevel: ToplevelManager.activeToplevel
   readonly property string title: toplevel ? (toplevel.title || toplevel.appId || "") : ""
-  readonly property int maxLabelWidth: Math.max(180, Number(setting("maxWidth", 360)))
+  readonly property int maxLabelWidth: Math.max(180, Number(setting("maxWidth", 500)))
   readonly property int horizontalPadding: Style.spacing.controlPaddingX * 2
 
   visible: title !== "" && !vertical

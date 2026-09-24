@@ -11,22 +11,49 @@
     "centerAnchor": "omarchy.clock",
     "layout": {
       "left": [
-        { "id": "omarchy.menu" },
-        { "id": "omarchy.workspaces" },
-        { "id": "omarchy.active-window" }
+        {
+          "id": "omarchy.menu"
+        },
+        {
+          "id": "omarchy.workspaces"
+        },
+        {
+          "id": "omarchy.media"
+        }
       ],
       "center": [
-        { "id": "omarchy.clock", "format": "dddd HH:mm", "formatAlt": "d MMMM 'W'ww yyyy", "verticalFormat": "HH\n—\nmm" }
+        {
+          "id": "omarchy.active-window"
+        }
       ],
       "right": [
-        { "id": "omarchy.media" },
-        { "id": "omarchy.tray" },
-        { "id": "omarchy.bluetooth" },
-        { "id": "omarchy.network" },
-        { "id": "omarchy.audio" },
-        { "id": "omarchy.microphone" },
-        { "id": "omarchy.monitor" },
-        { "id": "omarchy.power", "showPercentage": true }
+        {
+          "id": "omarchy.tray"
+        },
+        {
+          "id": "omarchy.bluetooth"
+        },
+        {
+          "id": "omarchy.network"
+        },
+        {
+          "id": "omarchy.audio"
+        },
+        {
+          "id": "omarchy.microphone"
+        },
+        {
+          "id": "omarchy.monitor"
+        },
+        {
+          "id": "omarchy.power"
+        },
+        {
+          "id": "omarchy.clock",
+          "format": "HH:mm",
+          "formatAlt": "d MMMM 'W'ww yyyy",
+          "verticalFormat": "HH\n—\nmm"
+        }
       ]
     }
   },

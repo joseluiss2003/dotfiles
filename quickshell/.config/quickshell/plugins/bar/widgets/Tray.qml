@@ -532,7 +532,6 @@ BarWidget {
     // still resets immediately, from openTrayMenu() itself.
     onVisibleChanged: if (!visible) root.resetTrayMenu()
     padding: Style.space(8)
-    borderColor: Qt.rgba(root.foreground.r, root.foreground.g, root.foreground.b, 0.45)
     contentWidth: trayMenuPopup.fittedContentWidth(Style.space(232))
     contentHeight: trayMenuPopup.fittedContentHeight(menuHeaderHeight + trayMenuColumn.implicitHeight, Style.space(420))
 

@@ -19,7 +19,7 @@ BarWidget {
   property bool popupOpen: false
 
   function close() { popupOpen = false }
-  property real maxLabelWidth: 180
+  property real maxLabelWidth: 320
 
   visible: hasMedia
   implicitWidth: hasMedia ? row.implicitWidth + Style.space(14) : 0
@@ -97,7 +97,6 @@ BarWidget {
     bar: root.bar
     owner: root
     open: root.popupOpen
-    alignToBarEdge: true
     contentWidth: popup.fittedContentWidth(Style.space(320))
     contentHeight: popup.fittedContentHeight(column.implicitHeight)
 

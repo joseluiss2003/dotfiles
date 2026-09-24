@@ -143,6 +143,9 @@ exec qs
 exec mako
 exec playerctld daemon
 
+output DP-2 mode 2560x1440@155Hz
+output DP-1 mode 2560x1440@200Hz
+
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
 
@@ -158,10 +161,10 @@ default_floating_border normal 2
 focus_follows_mouse yes
 
 # Espacio entre ventanas
-gaps inner 1
+gaps inner 2
 
 # Margen entre ventanas y los bordes de la pantalla
-gaps outer 1
+gaps outer 2
 
 
 ### =========================
