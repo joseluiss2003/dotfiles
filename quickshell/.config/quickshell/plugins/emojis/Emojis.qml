@@ -9,7 +9,7 @@ import "EmojiSearch.js" as EmojiSearch
 Item {
   id: root
 
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
+  readonly property string localPluginPath: Qt.resolvedUrl(".")
   property var shell: null
   property var manifest: null
 
@@ -148,13 +148,13 @@ Item {
   function applySelected(emoji) {
     if (!emoji) return
     root.dismiss()
-    Quickshell.execDetached([root.omarchyPath + "/bin/omarchy-menu-emoji-insert", emoji])
+    Quickshell.execDetached(["omarchy-menu-emoji-insert", emoji])
   }
 
   ListModel { id: displayModel }
 
   FileView {
-    path: root.omarchyPath + "/shell/plugins/emojis/emojis.json"
+    path: Qt.resolvedUrl("emojis.json")
     onLoaded: root.loadEmojis(text())
   }
   PanelWindow {

@@ -9,8 +9,15 @@ import "ClipboardHistory.js" as ClipboardHistory
 Item {
   id: root
 
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
+  property string omarchyPath: {
+    var configured = Quickshell.env("OMARCHY_PATH")
+    var home = Quickshell.env("HOME")
+    return configured && configured.trim() !== "" ? configured : home + "/.local/share/omarchy-quattro-sway/source"
+  }
   property bool opened: false
+  // Injected by the bar-widget host so PopupCard can anchor to the actual bar button.
+  property Item anchorItem: null
+  property QtObject bar: null
   property string filterText: ""
   property int selectedIndex: 0
   property bool cursorActive: false
@@ -28,15 +35,15 @@ Item {
   property var borderSpec: Border.surfaceSpec("menu", "border", border, Math.max(1, Style.space(2)))
   property color scrim: Color.menu.scrim
   property color selectedBackground: Color.menu.selectedBackground
-  property color selectedText: Color.menu.selectedText
-  readonly property int cornerRadius: Style.cornerRadius
+  property color selectedText: Color.text
+  readonly property int cornerRadius: 0
   property string fontFamily: Style.font.menuFamily
-  property int contentMargin: Style.spacing.panelPadding
-  property int headerHeight: Math.max(Style.space(34), Style.font.title + Style.spacing.controlPaddingY * 2)
-  property int contentSpacing: Style.spacing.md
-  property int cardWidth: Math.min(Style.space(875), panel.width - Style.gapsOut * 2)
-  property int cardHeight: Math.min(Style.space(600), panel.height - Style.gapsOut * 2)
-  property int rowHeight: Math.max(Style.space(50), Style.font.body + Style.font.caption + Style.spacing.rowPaddingX * 2)
+  property int contentMargin: Style.space(18)
+  property int headerHeight: Style.space(64)
+  property int contentSpacing: 0
+  property int cardWidth: Style.space(520)
+  property int cardHeight: Style.space(560)
+  property int rowHeight: Style.space(68)
   property int historyLimit: 500
 
   function open(payloadJson) {
@@ -197,6 +204,14 @@ Item {
   function activateIndex(index) {
     if (index < 0 || index >= displayModel.count) return
     var row = displayModel.get(index)
+    // Normal selection means: put this history item back into the clipboard.
+    // Pasting into the focused application remains available via Shift+Enter.
+    root.copySelected(row)
+  }
+
+  function pasteIndex(index) {
+    if (index < 0 || index >= displayModel.count) return
+    var row = displayModel.get(index)
     root.applySelected(row)
   }
 
@@ -212,30 +227,35 @@ Item {
     root.openSelected(row)
   }
 
-  function applySelected(row) {
-    if (!row) return
-    root.opened = false
-    if (row.entryType === "image") {
-      Quickshell.execDetached([root.omarchyPath + "/bin/omarchy-clipboard-paste-file", row.mime, row.path])
-    } else if (row.fullText) {
-      Quickshell.execDetached([root.omarchyPath + "/bin/omarchy-clipboard-paste-text", "--shift-insert", "--history-index", String(row.historyIndex)])
-    }
+  function shellQuote(value) {
+    return Util.shellQuote(String(value))
   }
 
   function copySelected(row) {
     if (!row) return
-    root.opened = false
-    if (row.entryType === "image") {
-      Quickshell.execDetached([root.omarchyPath + "/bin/omarchy-clipboard-paste-file", "--copy-only", row.mime, row.path])
-    } else if (row.fullText) {
-      Quickshell.execDetached([root.omarchyPath + "/bin/omarchy-clipboard-paste-text", "--copy-only", "--history-index", String(row.historyIndex)])
+    if (row.entryType === "image" && row.path) {
+      var imageCommand = "wl-copy --type " + shellQuote(row.mime || "image/png") + " < " + shellQuote(row.path)
+      Quickshell.execDetached(["bash", "-c", imageCommand])
+    } else if (row.fullText !== undefined && row.fullText !== null) {
+      var textCommand = "printf %s " + shellQuote(row.fullText) + " | wl-copy"
+      Quickshell.execDetached(["bash", "-c", textCommand])
     }
+  }
+
+  function applySelected(row) {
+    if (!row) return
+    root.copySelected(row)
+    root.opened = false
+    Quickshell.execDetached(["bash", "-c", "sleep 0.05; wtype -M shift -P Insert -p Insert -m shift 2>/dev/null || true"])
   }
 
   function openSelected(row) {
     if (!row) return
     root.opened = false
-    Quickshell.execDetached([root.omarchyPath + "/bin/omarchy-clipboard-open", "--history-index", String(row.historyIndex)])
+    if (row.entryType === "image" && row.path)
+      Quickshell.execDetached(["xdg-open", row.path])
+    else if (row.fullText)
+      Quickshell.execDetached(["xdg-open", "data:text/plain," + encodeURIComponent(row.fullText)])
   }
 
   Component.onCompleted: initProc.running = true
@@ -244,7 +264,7 @@ Item {
 
   PointerMoveGate {
     id: pointerGate
-    referenceItem: card
+    referenceItem: resultList
   }
 
   FileView {
@@ -311,37 +331,31 @@ Item {
     }
   }
 
-  PanelWindow {
+  PopupCard {
     id: panel
-    visible: root.opened
-    anchors { top: true; bottom: true; left: true; right: true }
-    color: "transparent"
-    WlrLayershell.namespace: "omarchy-clipboard"
-    WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-    exclusionMode: ExclusionMode.Ignore
+    anchorItem: root.anchorItem
+    bar: root.bar
+    owner: root
+    open: root.opened
+    contentWidth: panel.fittedContentWidth(root.cardWidth)
+    contentHeight: panel.cappedContentHeight(root.cardHeight)
+    padding: root.contentMargin
+    centerOnBar: false
+    alignToBarEdge: true
+    gap: Style.space(5)
+    borderSpec: root.borderSpec
 
-    Rectangle {
-      anchors.fill: parent
-      color: root.scrim
+    onVisibleChanged: {
+      if (visible && root.opened) Qt.callLater(function() { keyCatcher.forceActiveFocus() })
     }
 
-    MouseArea {
+    Item {
       anchors.fill: parent
-      onClicked: root.close()
-    }
 
-    BorderSurface {
-      id: card
-      width: root.cardWidth
-      height: root.cardHeight
-      radius: root.cornerRadius
-      anchors.centerIn: parent
-      color: root.background
-      borderSpec: root.borderSpec
-      padding: root.contentMargin
-
-      MouseArea { anchors.fill: parent; onClicked: {} }
+      MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.AllButtons
+      }
 
       Item {
         id: keyCatcher
@@ -387,7 +401,7 @@ Item {
             event.accepted = true
           } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
             if (root.cursorActive && (event.modifiers & Qt.AltModifier)) root.openIndex(root.selectedIndex)
-            else if (root.cursorActive && (event.modifiers & Qt.ShiftModifier)) root.copyIndex(root.selectedIndex)
+            else if (root.cursorActive && (event.modifiers & Qt.ShiftModifier)) root.pasteIndex(root.selectedIndex)
             else if (root.cursorActive) root.activateIndex(root.selectedIndex)
             else if (displayModel.count > 0) root.cursorActive = true
             event.accepted = true
@@ -419,163 +433,178 @@ Item {
 
       Column {
         anchors.fill: parent
-        anchors.topMargin: card.contentTopInset
-        anchors.rightMargin: card.contentRightInset
-        anchors.bottomMargin: card.contentBottomInset
-        anchors.leftMargin: card.contentLeftInset
-        spacing: root.contentSpacing
-
-        Rectangle {
-          width: parent.width
-          height: root.headerHeight
-          radius: root.cornerRadius
-          color: "transparent"
-
-          Text {
-            textFormat: Text.PlainText
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            text: root.filterText || "Search clipboard…"
-            color: root.foreground
-            opacity: root.filterText ? 1 : 0.58
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.heading
-            elide: Text.ElideRight
-          }
-        }
+        spacing: 0
 
         Item {
           width: parent.width
-          height: parent.height - root.headerHeight - root.contentSpacing
+          height: Style.space(56)
 
-          Row {
+          Text {
+            id: headerIcon
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            text: "󰅌"
+            color: Color.accent
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.display
+          }
+
+          Column {
+            anchors.left: headerIcon.right
+            anchors.leftMargin: Style.space(10)
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: Style.space(2)
+
+            Text {
+              text: "Clipboard"
+              color: Color.text
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.heading
+              font.bold: true
+            }
+
+            Text {
+              text: "SWAY · HISTORY"
+              color: Color.textMuted
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.caption
+              font.bold: true
+              font.letterSpacing: 1.2
+            }
+          }
+
+          Text {
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            text: root.history.length + " ITEMS"
+            color: Color.textMuted
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            horizontalAlignment: Text.AlignRight
+          }
+        }
+
+        PanelSeparator { foreground: Color.outline }
+
+        Item {
+          width: parent.width
+          height: parent.height - Style.space(56)
+          clip: true
+
+          ListView {
+            id: resultList
             anchors.fill: parent
+            model: displayModel
+            clip: true
             spacing: 0
+            boundsBehavior: Flickable.StopAtBounds
 
-            Item {
-              width: parent.width / 2
-              height: parent.height
-              clip: true
+            delegate: Rectangle {
+              id: row
+              required property int index
+              required property string entryType
+              required property string previewText
+              required property string fullText
+              required property string previewImage
 
-              ListView {
-                id: resultList
+              readonly property bool hasCursor: root.cursorActive && index === root.selectedIndex
+              width: ListView.view.width
+              height: root.rowHeight + Style.space(8)
+              color: "transparent"
+
+              Rectangle {
                 anchors.fill: parent
-                anchors.rightMargin: root.contentMargin
-                model: displayModel
-                clip: true
-                spacing: Style.space(4)
-                boundsBehavior: Flickable.StopAtBounds
+                anchors.topMargin: Style.space(2)
+                anchors.bottomMargin: Style.space(2)
+                color: row.hasCursor
+                  ? Util.alpha(root.selectedBackground, 0.86)
+                  : Util.alpha(root.foreground, 0.025)
+                border.width: Style.normalBorderWidth
+                border.color: row.hasCursor
+                  ? Util.alpha(root.selectedText, 0.88)
+                  : Util.alpha(root.border, 0.30)
+              }
 
-                delegate: Rectangle {
-                  id: row
-                  required property int index
-                  required property string entryType
-                  required property string previewText
-                  required property string fullText
-                  required property string previewImage
+              Row {
+                anchors.fill: parent
+                anchors.leftMargin: Style.space(14)
+                anchors.rightMargin: Style.space(14)
+                anchors.topMargin: Style.space(7)
+                anchors.bottomMargin: Style.space(7)
+                spacing: Style.space(12)
 
-                  readonly property bool hasCursor: root.cursorActive && index === root.selectedIndex
+                Item {
+                  width: Style.space(36)
+                  height: parent.height
+                  anchors.verticalCenter: parent.verticalCenter
 
-                  width: ListView.view.width
-                  height: root.rowHeight
-                  radius: root.cornerRadius
-                  color: hasCursor ? root.selectedBackground : "transparent"
-
-                  Row {
-                    anchors.fill: parent
-                    anchors.leftMargin: Style.space(12)
-                    anchors.rightMargin: Style.space(12)
-                    anchors.topMargin: Style.space(8)
-                    anchors.bottomMargin: Style.space(8)
-                    spacing: Style.space(10)
-
-                    Image {
-                      visible: parent.parent.previewImage.length > 0
-                      width: visible ? parent.height : 0
-                      height: parent.height
-                      source: parent.parent.previewImage
-                      fillMode: Image.PreserveAspectFit
-                      asynchronous: true
-                      smooth: true
-                    }
-
-                    Text {
-                      textFormat: Text.PlainText
-                      width: parent.width - (parent.parent.previewImage.length > 0 ? parent.height + parent.spacing : 0)
-                      height: parent.height
-                      text: parent.parent.previewText
-                      color: parent.parent.hasCursor ? root.selectedText : root.foreground
-                      font.family: root.fontFamily
-                      font.pixelSize: Style.font.title
-                      opacity: parent.parent.entryType === "image" || parent.parent.entryType === "file" ? 0.72 : 1.0
-                      elide: Text.ElideRight
-                      wrapMode: Text.NoWrap
-                      verticalAlignment: Text.AlignVCenter
-                    }
+                  Image {
+                    visible: row.previewImage.length > 0
+                    anchors.centerIn: parent
+                    width: Style.space(28)
+                    height: Style.space(28)
+                    source: row.previewImage
+                    fillMode: Image.PreserveAspectFit
+                    asynchronous: true
+                    smooth: true
                   }
 
-                  MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onPositionChanged: function(mouse) {
-                      root.selectFromPointer(row.index, row, mouse)
-                    }
-                    onClicked: {
-                      root.cursorActive = true
-                      root.selectedIndex = row.index
-                      root.activateIndex(row.index)
-                    }
+                  Text {
+                    visible: !row.previewImage
+                    anchors.centerIn: parent
+                    text: row.entryType === "image" ? "󰋩" : row.entryType === "file" ? "󰈔" : "󰅌"
+                    color: row.hasCursor ? root.selectedText : root.foreground
+                    opacity: row.hasCursor ? 1 : 0.72
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.body
+                  }
+                }
+
+                Column {
+                  width: parent.width - Style.space(48)
+                  height: parent.height
+                  anchors.verticalCenter: parent.verticalCenter
+                  spacing: Style.space(2)
+
+                  Text {
+                    width: parent.width
+                    height: parent.height * 0.62
+                    text: row.previewText
+                    color: row.hasCursor ? root.selectedText : root.foreground
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.body
+                    verticalAlignment: Text.AlignVCenter
+                    elide: Text.ElideRight
+                    wrapMode: Text.NoWrap
+                  }
+
+                  Text {
+                    width: parent.width
+                    height: parent.height * 0.38
+                    text: row.entryType === "image" ? "IMAGE" : row.entryType === "file" ? "FILE" : "TEXT"
+                    color: row.hasCursor ? root.selectedText : root.foreground
+                    opacity: row.hasCursor ? 0.72 : 0.42
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.caption
+                    verticalAlignment: Text.AlignVCenter
                   }
                 }
               }
-            }
 
-            Item {
-              width: parent.width / 2
-              height: parent.height
-              clip: true
 
-              property var activeRow: displayModel.count > 0 && root.selectedIndex >= 0 && root.selectedIndex < displayModel.count ? displayModel.get(root.selectedIndex) : null
-
-              Rectangle {
-                anchors.left: parent.left
-                anchors.top: parent.top
-                anchors.bottom: parent.bottom
-                width: Style.normalBorderWidth
-                color: Util.alpha(root.border, 0.28)
-              }
-
-              Text {
-                textFormat: Text.PlainText
-                visible: parent.activeRow && !parent.activeRow.previewImage
+              MouseArea {
                 anchors.fill: parent
-                anchors.leftMargin: root.contentMargin
-                anchors.rightMargin: 0
-                anchors.topMargin: 0
-                anchors.bottomMargin: 0
-                text: parent.activeRow ? parent.activeRow.fullText : ""
-                color: root.foreground
-                font.family: root.fontFamily
-                font.pixelSize: Style.font.title
-                wrapMode: Text.WrapAnywhere
-                elide: Text.ElideRight
-                verticalAlignment: Text.AlignTop
-              }
-
-              Image {
-                visible: parent.activeRow && parent.activeRow.previewImage
-                anchors.fill: parent
-                anchors.leftMargin: root.contentMargin
-                anchors.rightMargin: 0
-                anchors.topMargin: 0
-                anchors.bottomMargin: 0
-                source: parent.activeRow ? parent.activeRow.previewImage : ""
-                fillMode: Image.PreserveAspectFit
-                verticalAlignment: Image.AlignTop
-                asynchronous: true
-                smooth: true
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onPositionChanged: function(mouse) {
+                  root.selectFromPointer(row.index, row, mouse)
+                }
+                onClicked: {
+                  root.cursorActive = true
+                  root.selectedIndex = row.index
+                  root.activateIndex(row.index)
+                }
               }
             }
           }
@@ -588,7 +617,7 @@ Item {
             Text {
               text: "󰅌"
               color: root.selectedText
-              opacity: 0.8
+              opacity: 0.75
               font.family: root.fontFamily
               font.pixelSize: Style.font.displayLarge
               horizontalAlignment: Text.AlignHCenter
@@ -596,12 +625,11 @@ Item {
             }
 
             Text {
-              textFormat: Text.PlainText
               text: root.history.length === 0 ? "Clipboard is empty" : "No matches for “" + root.filterText + "”"
               color: root.foreground
-              opacity: 0.7
+              opacity: 0.62
               font.family: root.fontFamily
-              font.pixelSize: Style.font.title
+              font.pixelSize: Style.font.body
               horizontalAlignment: Text.AlignHCenter
               width: parent.width
             }

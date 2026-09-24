@@ -46,6 +46,12 @@
           "id": "omarchy.power"
         },
         {
+          "id": "omarchy.clipboard"
+        },
+        {
+          "id": "omarchy.system-monitor"
+        },
+        {
           "id": "omarchy.clock",
           "format": "HH:mm",
           "formatAlt": "d MMMM 'W'ww yyyy",

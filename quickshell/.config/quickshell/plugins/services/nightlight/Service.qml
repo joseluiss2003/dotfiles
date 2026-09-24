@@ -46,27 +46,38 @@ Item {
   }
 
   function runApply(temp) {
+    // wlsunset has no temperature-setting IPC. It is controlled with SIGUSR1:
+    // automatic -> day/high -> night/low -> automatic. Restarting it here
+    // gives the shell deterministic ownership of the forced state.
+    var signals = Number(temp) < NightlightModel.IDENTITY_TEMPERATURE ? 2 : 1
     applyProcess.command = ["bash", "-lc",
-      "pgrep -x hyprsunset >/dev/null || { setsid uwsm-app -- hyprsunset >/dev/null 2>&1 & sleep 1; }; " +
-      "hyprctl hyprsunset temperature " + Number(temp)]
+      "pkill -x wlsunset 2>/dev/null || true; " +
+      "setsid wlsunset -t " + root.nightTemperature + " -T " + root.dayTemperature + " -S 00:00 -s 00:01 -d 1 >/dev/null 2>&1 & " +
+      "pid=$!; sleep 0.25; " +
+      "i=0; while [ $i -lt " + signals + " ]; do kill -USR1 \"$pid\" || exit 1; i=$((i+1)); sleep 0.05; done; " +
+      "echo \"$pid\""]
     applyProcess.running = true
   }
 
   Process {
     id: statusProbe
-    command: ["hyprctl", "hyprsunset", "temperature"]
+    command: ["bash", "-lc", "pgrep -xo wlsunset"]
     stdout: StdioCollector {
       waitForEnd: true
       onStreamFinished: {
-        root.temperature = NightlightModel.temperatureFromOutput(text)
         root.stateLoaded = true
+        if (String(text).trim() === "") {
+          root.temperature = null
+        } else if (root.temperature === null || root.temperature === undefined) {
+          root.temperature = root.dayTemperature
+        }
       }
     }
     onExited: function(exitCode) {
       if (exitCode !== 0) {
         root.temperature = null
-        root.stateLoaded = true
       }
+      root.stateLoaded = true
     }
   }
 
