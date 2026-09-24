@@ -123,7 +123,7 @@ bindsym $mod+Ctrl+Down  resize grow height 10 px
 ### Screenshot
 ### =========================
 
-bindsym $mod+Shift+s exec grim -g "$(slurp)" ~/Pictures/screenshot-$(date +%Y-%m-%d_%H-%M-%S).png
+bindsym $mod+Shift+s exec grim -g "$(slurp)" - | wl-copy
 
 ### =========================
 ### Window rules
