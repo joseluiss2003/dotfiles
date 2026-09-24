@@ -183,3 +183,8 @@ for_window [app_id="pavucontrol"] floating enable, sticky enable, border pixel 1
 bindsym $mod+l exec hyprlock
 
 
+# Idle / lock
+exec swayidle -w \
+    timeout 300 'hyprlock' \
+    timeout 600 'swaymsg "output * power off"' \
+    resume 'swaymsg "output * power on"'

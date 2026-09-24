@@ -1,0 +1,56 @@
+#!/bin/sh
+
+set -eu
+
+outputs="$(swaymsg -t get_outputs -r)"
+
+focused="$(printf '%s\n' "$outputs" | jq -r '
+    .[] | select(.focused == true) | .name
+' | head -n1)"
+
+scale="$(printf '%s\n' "$outputs" | jq -r '
+    .[] | select(.focused == true) | (.scale // 1)
+' | head -n1)"
+
+[ -n "$focused" ] || focused=""
+
+[ -n "$scale" ] || scale="1"
+
+# Desktop Sway: no internal battery/brightness device is assumed.
+printf '%s\n' "unavailable"
+printf '%s\n' ""
+printf '%s\n' "$(
+    printf '%s\n' "$outputs" |
+    jq -r '
+        [.[] | select(.active == true) | .name] |
+        if length > 0 then .[0] else "" end
+    '
+)"
+printf '%s\n' "$(
+    printf '%s\n' "$outputs" |
+    jq -r '
+        .[] | select(.active == true) | .name
+    ' |
+    grep -E '^(eDP|LVDS)' |
+    head -n1
+)"
+printf '%s\n' ""
+printf '%s\n' "$focused"
+printf '%s\n' "$scale"
+printf '%s\n' "$(
+    printf '%s\n' "$outputs" |
+    jq -c '
+        [
+            .[] |
+            select(.active == true) |
+            {
+                name: .name,
+                enabled: true,
+                focused: (.focused // false),
+                scale: (.scale // 1),
+                width: (.current_mode.width // 0),
+                height: (.current_mode.height // 0)
+            }
+        ]
+    '
+)"

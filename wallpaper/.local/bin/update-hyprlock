@@ -17,10 +17,11 @@ get_color() {
 
 WALLPAPER="$(cat "$WALLPAPER_STATE")"
 
+
 BACKGROUND="$(get_color background)"
-TEXT="$(get_color foreground)"
-MUTED="$(get_color onSurfaceVariant)"
-ACCENT="$(get_color primary)"
+TEXT="$(get_color text)"
+MUTED="$(get_color textMuted)"
+ACCENT="$(get_color accent)"
 
 BACKGROUND="${BACKGROUND:-12140e}"
 TEXT="${TEXT:-e2e3d8}"
