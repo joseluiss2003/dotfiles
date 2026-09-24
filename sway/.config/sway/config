@@ -156,10 +156,10 @@ default_floating_border normal 2
 focus_follows_mouse yes
 
 # Espacio entre ventanas
-gaps inner 2
+gaps inner 1
 
 # Margen entre ventanas y los bordes de la pantalla
-gaps outer 2
+gaps outer 1
 
 
 ### =========================
