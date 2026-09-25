@@ -527,13 +527,10 @@ Panel {
           width: scrollArea.availableWidth
           spacing: Style.space(14)
 
-          // ---------- Hero: display icon + status ----------
+          // ---------- Hero: display icon · title/status ----------
           Item {
             width: parent.width
-            implicitHeight: Math.max(
-              heroIcon.implicitHeight,
-              heroLabels.implicitHeight
-            )
+            implicitHeight: Math.max(heroIcon.implicitHeight, heroLabels.implicitHeight)
 
             Text {
               id: heroIcon
@@ -569,13 +566,8 @@ Panel {
                 textFormat: Text.PlainText
                 text: {
                   if (root.brightnessAvailable) {
-                    return root.brightnessName(
-                      brightnessSlider.dragging
-                        ? brightnessSlider.liveValue
-                        : root.brightnessPercent
-                    ).toUpperCase()
+                    return root.brightnessName(brightnessSlider.dragging ? brightnessSlider.liveValue : root.brightnessPercent).toUpperCase()
                   }
-
                   return "FIXED BRIGHTNESS"
                 }
                 color: Qt.darker(root.bar.foreground, 1.4)
@@ -602,10 +594,7 @@ Panel {
 
             Item {
               width: parent.width
-              implicitHeight: Math.max(
-                brightnessHeader.implicitHeight,
-                brightnessPercent.implicitHeight
-              )
+              implicitHeight: Math.max(brightnessHeader.implicitHeight, brightnessPercent.implicitHeight)
 
               PanelSectionHeader {
                 id: brightnessHeader
@@ -619,11 +608,7 @@ Panel {
               Text {
                 id: brightnessPercent
                 textFormat: Text.PlainText
-                text: Math.round(
-                  brightnessSlider.dragging
-                    ? brightnessSlider.liveValue
-                    : root.brightnessPercent
-                ) + "%"
+                text: Math.round(brightnessSlider.dragging ? brightnessSlider.liveValue : root.brightnessPercent) + "%"
                 color: Qt.darker(root.bar.foreground, 1.4)
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
@@ -637,17 +622,9 @@ Panel {
             CursorSurface {
               id: brightnessRow
               width: parent.width
-              height: brightnessSlider.implicitHeight
-                + Style.spacing.controlGap
-              hasCursor:
-                root.cursorActive &&
-                root.focusSection === "brightness" &&
-                root.selectedIndex === -1
-
-              onHasCursorChanged:
-                if (hasCursor)
-                  root.ensureCursorVisible(brightnessRow)
-
+              height: brightnessSlider.implicitHeight + Style.spacing.controlGap
+              hasCursor: root.cursorActive && root.focusSection === "brightness" && root.selectedIndex === -1
+              onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(brightnessRow)
               foreground: root.bar.foreground
               outline: true
 
@@ -662,11 +639,7 @@ Panel {
                 step: 1
                 value: root.brightnessPercent
                 integer: true
-
-                onMoved: function(v) {
-                  root.previewBrightness(v)
-                }
-
+                onMoved: function(v) { root.previewBrightness(v) }
                 onReleased: function(v) {
                   brightnessDebounce.stop()
                   root.setBrightness(v)
@@ -674,9 +647,7 @@ Panel {
               }
 
               HoverHandler {
-                onHoveredChanged: if (
-                  hovered && !root.reflowingText
-                ) {
+                onHoveredChanged: if (hovered && !root.reflowingText) {
                   root.cursorActive = true
                   root.focusSection = "brightness"
                   root.selectedIndex = -1
@@ -696,10 +667,7 @@ Panel {
 
             Item {
               width: parent.width
-              implicitHeight: Math.max(
-                textSizeHeader.implicitHeight,
-                textSizePx.implicitHeight
-              )
+              implicitHeight: Math.max(textSizeHeader.implicitHeight, textSizePx.implicitHeight)
 
               PanelSectionHeader {
                 id: textSizeHeader
@@ -713,19 +681,13 @@ Panel {
               Text {
                 id: textSizePx
                 textFormat: Text.PlainText
-                text: (
-                  textSizeSlider.dragging
-                    ? root.textSizeStops[
-                        Math.round(textSizeSlider.liveValue)
-                      ]
-                    : root.displayedTextPx()
-                ) + "px"
-
+                text: (textSizeSlider.dragging
+                       ? root.textSizeStops[Math.round(textSizeSlider.liveValue)]
+                       : root.displayedTextPx()) + "px"
                 color: Qt.darker(root.bar.foreground, 1.4)
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
-
                 anchors.right: parent.right
                 anchors.rightMargin: Style.space(6)
                 anchors.verticalCenter: parent.verticalCenter
@@ -735,18 +697,9 @@ Panel {
             CursorSurface {
               id: textSizeRow
               width: parent.width
-              height: textSizeSlider.implicitHeight
-                + Style.spacing.controlGap
-
-              hasCursor:
-                root.cursorActive &&
-                root.focusSection === "textsize" &&
-                root.selectedIndex === -1
-
-              onHasCursorChanged:
-                if (hasCursor)
-                  root.ensureCursorVisible(textSizeRow)
-
+              height: textSizeSlider.implicitHeight + Style.spacing.controlGap
+              hasCursor: root.cursorActive && root.focusSection === "textsize" && root.selectedIndex === -1
+              onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(textSizeRow)
               foreground: root.bar.foreground
               outline: true
 
@@ -762,18 +715,11 @@ Panel {
                 integer: true
                 tickCount: root.textSizeStops.length
                 value: root.currentTextIndex()
-
-                onReleased: function(v) {
-                  root.setTextSize(
-                    root.textSizeStops[Math.round(v)]
-                  )
-                }
+                onReleased: function(v) { root.setTextSize(root.textSizeStops[Math.round(v)]) }
               }
 
               HoverHandler {
-                onHoveredChanged: if (
-                  hovered && !root.reflowingText
-                ) {
+                onHoveredChanged: if (hovered && !root.reflowingText) {
                   root.cursorActive = true
                   root.focusSection = "textsize"
                   root.selectedIndex = -1
@@ -793,10 +739,7 @@ Panel {
 
             Item {
               width: parent.width
-              implicitHeight: Math.max(
-                scaleHeader.implicitHeight,
-                scaleMonitor.implicitHeight
-              )
+              implicitHeight: Math.max(scaleHeader.implicitHeight, scaleMonitor.implicitHeight)
 
               PanelSectionHeader {
                 id: scaleHeader
@@ -807,19 +750,18 @@ Panel {
                 anchors.verticalCenter: parent.verticalCenter
               }
 
+              // Name the monitor SCALE targets, since it only applies to the
+              // focused one.
               Text {
                 id: scaleMonitor
                 textFormat: Text.PlainText
                 text: root.focusedMonitor
-                visible:
-                  root.focusedMonitor !== "" &&
-                  root.enabledDisplayCount > 1
-
+                // Only worth naming when more than one display is in play.
+                visible: root.focusedMonitor !== "" && root.enabledDisplayCount > 1
                 color: Qt.darker(root.bar.foreground, 1.4)
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
-
                 anchors.right: parent.right
                 anchors.rightMargin: Style.space(6)
                 anchors.verticalCenter: parent.verticalCenter
@@ -832,13 +774,9 @@ Panel {
               columns: root.scaleValues.length
               spacing: Style.spacing.xs
 
-              readonly property real cellWidth:
-                root.scaleValues.length > 0
-                  ? (
-                      width -
-                      spacing * (columns - 1)
-                    ) / columns
-                  : 0
+              readonly property real cellWidth: root.scaleValues.length > 0
+                ? (width - spacing * (columns - 1)) / columns
+                : 0
 
               Repeater {
                 model: root.scaleValues
@@ -855,7 +793,7 @@ Panel {
             }
           }
 
-          // ---------- Displays ----------
+          // ---------- Monitors ----------
           PanelSeparator {
             visible: root.displays.length > 1
             foreground: root.bar.foreground
@@ -893,6 +831,8 @@ Panel {
         }
       }
     }
+  }
+
   component ScalePill: Button {
     id: pill
     required property string scaleValue
@@ -989,5 +929,4 @@ Panel {
       onClicked: if (monitorRow.canToggle) root.toggleDisplay(monitorRow.display.name, monitorRow.display.enabled)
     }
   }
-}
 }

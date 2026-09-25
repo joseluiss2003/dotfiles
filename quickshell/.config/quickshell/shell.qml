@@ -146,22 +146,38 @@ ShellRoot {
     onFileChanged: reload()
   }
 
-  Component.onCompleted: {
+Component.onCompleted: {
     console.log("omarchy-shell paths",
       "omarchyPath=" + shell.omarchyPath,
       "shellDir=" + Quickshell.shellDir,
       "firstPartyPluginsDir=" + shell.firstPartyPluginsDir,
       "defaultsPath=" + shell.defaultsPath,
       "userConfigPath=" + shell.userConfigPath)
+
     pluginRegistry.firstPartyDir = shell.firstPartyPluginsDir
     pluginRegistry.shellConfigProvider = function() { return shell.shellConfig }
     pluginRegistry.shellConfigMutator = function(mutate) { shell.mutateShellConfig(mutate) }
+
     // PluginRegistry.ensureUserDir() runs in its own Component.onCompleted and
     // chains rescan() once the directory exists. We also kick a scan here in
     // case the user dir already existed at startup.
     pluginRegistry.rescan()
+
     shell._syncServices()
-  }
+}
+
+Connections {
+    target: pluginRegistry
+
+    function onScanFinished() {
+        console.log(
+            "PLUGIN SCAN FINISHED — monitor:",
+            pluginRegistry.installedPlugins["omarchy.monitor"]
+                ? "REGISTERED"
+                : "NOT REGISTERED"
+        )
+    }
+}
 
   function mutateShellConfig(mutator) {
     var copy = JSON.parse(JSON.stringify(shellConfig || builtinShellConfig))
@@ -783,6 +799,15 @@ ShellRoot {
 
   function prunePluginApis() {
     var plugins = shell.pluginRegistry.installedPlugins
+    console.log(
+    "PLUGIN WIDGET SYNC:",
+    "monitor=" + (!!plugins["omarchy.monitor"]),
+    "enabled=" + (
+        plugins["omarchy.monitor"]
+            ? shell.pluginRegistry.isEnabled("omarchy.monitor")
+            : "n/a"
+    )
+  )
     var shellKeys = Object.keys(_pluginShellApis)
     for (var si = 0; si < shellKeys.length; si++) {
       var shellKey = shellKeys[si]
@@ -1419,7 +1444,11 @@ ShellRoot {
         shell.barWidgetRegistry.register(registryKey, existing.component, meta)
         continue
       }
-
+      console.log(
+    "PLUGIN WIDGET LOAD:",
+    registryKey,
+    "url=" + url
+)
       loadPluginWidget(registryKey, url, meta)
     }
 
@@ -1499,9 +1528,20 @@ ShellRoot {
     setPluginWidgetComponent(registryKey, { url: url, component: null })
 
     var comp = Qt.createComponent(url, Component.Asynchronous)
-    function finalize() {
+    function finalize() {    
+console.log(
+    "PLUGIN WIDGET FINALIZE:",
+    registryKey,
+    "status=" + comp.status
+)
       if (comp.status === Component.Ready) {
         shell.barWidgetRegistry.register(registryKey, comp, meta)
+        
+console.log(
+    "PLUGIN WIDGET REGISTERED:",
+    registryKey,
+    "available=" + shell.barWidgetRegistry.has(registryKey)
+)
         shell.setPluginWidgetComponent(registryKey, { url: url, component: comp })
       } else if (comp.status === Component.Error) {
         console.warn("Plugin widget " + registryKey + " failed: " + comp.errorString())

@@ -38,12 +38,12 @@ Item {
   property color selectedText: Color.text
   readonly property int cornerRadius: 0
   property string fontFamily: Style.font.menuFamily
-  property int contentMargin: Style.space(18)
-  property int headerHeight: Style.space(64)
+  property int contentMargin: Style.space(12)
+  property int headerHeight: Style.space(48)
   property int contentSpacing: 0
-  property int cardWidth: Style.space(520)
-  property int cardHeight: Style.space(560)
-  property int rowHeight: Style.space(68)
+  property int cardWidth: Style.space(440)
+  property int cardHeight: Style.space(390)
+  property int rowHeight: Style.space(48)
   property int historyLimit: 500
 
   function open(payloadJson) {
@@ -437,7 +437,7 @@ Item {
 
         Item {
           width: parent.width
-          height: Style.space(56)
+          height: Style.space(48)
 
           Text {
             id: headerIcon
@@ -510,13 +510,13 @@ Item {
 
               readonly property bool hasCursor: root.cursorActive && index === root.selectedIndex
               width: ListView.view.width
-              height: root.rowHeight + Style.space(8)
+              height: root.rowHeight + Style.space(4)
               color: "transparent"
 
               Rectangle {
                 anchors.fill: parent
-                anchors.topMargin: Style.space(2)
-                anchors.bottomMargin: Style.space(2)
+                anchors.topMargin: Style.space(1)
+                anchors.bottomMargin: Style.space(1)
                 color: row.hasCursor
                   ? Util.alpha(root.selectedBackground, 0.86)
                   : Util.alpha(root.foreground, 0.025)
@@ -528,22 +528,22 @@ Item {
 
               Row {
                 anchors.fill: parent
-                anchors.leftMargin: Style.space(14)
-                anchors.rightMargin: Style.space(14)
-                anchors.topMargin: Style.space(7)
-                anchors.bottomMargin: Style.space(7)
-                spacing: Style.space(12)
+                anchors.leftMargin: Style.space(10)
+                anchors.rightMargin: Style.space(10)
+                anchors.topMargin: Style.space(4)
+                anchors.bottomMargin: Style.space(4)
+                spacing: Style.space(8)
 
                 Item {
-                  width: Style.space(36)
+                  width: Style.space(30)
                   height: parent.height
                   anchors.verticalCenter: parent.verticalCenter
 
                   Image {
                     visible: row.previewImage.length > 0
                     anchors.centerIn: parent
-                    width: Style.space(28)
-                    height: Style.space(28)
+                    width: Style.space(24)
+                    height: Style.space(24)
                     source: row.previewImage
                     fillMode: Image.PreserveAspectFit
                     asynchronous: true
@@ -562,7 +562,7 @@ Item {
                 }
 
                 Column {
-                  width: parent.width - Style.space(48)
+                  width: parent.width - Style.space(42)
                   height: parent.height
                   anchors.verticalCenter: parent.verticalCenter
                   spacing: Style.space(2)

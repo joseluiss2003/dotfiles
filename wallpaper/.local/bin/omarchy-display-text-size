@@ -1,0 +1,85 @@
+#!/bin/sh
+set -eu
+
+CONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/shell.toml"
+
+usage() {
+    printf 'Usage: %s <size>\n' "${0##*/}" >&2
+    exit 2
+}
+
+[ "$#" -eq 1 ] || usage
+
+size="$1"
+
+case "$size" in
+    ''|*[!0-9]*)
+        printf 'Invalid font size: %s\n' "$size" >&2
+        exit 2
+        ;;
+esac
+
+# Keep the same practical range exposed by the Display panel.
+if [ "$size" -lt 9 ] || [ "$size" -gt 20 ]; then
+    printf 'Font size must be between 9 and 20 px.\n' >&2
+    exit 2
+fi
+
+mkdir -p "$(dirname "$CONFIG")"
+
+tmp="$(mktemp "${CONFIG}.XXXXXX")"
+trap 'rm -f "$tmp"' EXIT HUP INT TERM
+
+if [ -f "$CONFIG" ]; then
+    awk -v size="$size" '
+        BEGIN {
+            in_font = 0
+            found = 0
+        }
+
+        /^\[font\][[:space:]]*$/ {
+            in_font = 1
+            print
+            next
+        }
+
+        /^\[[^]]+\][[:space:]]*$/ {
+            if (in_font && !found) {
+                print "base-size = " size
+                found = 1
+            }
+            in_font = 0
+            print
+            next
+        }
+
+        {
+            if (in_font && $0 ~ /^[[:space:]]*base-size[[:space:]]*=/) {
+                if (!found) {
+                    print "base-size = " size
+                    found = 1
+                }
+                next
+            }
+
+            print
+        }
+
+        END {
+            if (in_font && !found)
+                print "base-size = " size
+
+            if (!in_font && !found) {
+                print ""
+                print "[font]"
+                print "base-size = " size
+            }
+        }
+    ' "$CONFIG" > "$tmp"
+else
+    printf '[font]\nbase-size = %s\n' "$size" > "$tmp"
+fi
+
+chmod 600 "$tmp"
+mv "$tmp" "$CONFIG"
+trap - EXIT HUP INT TERM
