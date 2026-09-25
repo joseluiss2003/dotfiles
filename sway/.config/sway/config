@@ -144,8 +144,6 @@ exec qs
 exec mako
 exec playerctld daemon
 
-output DP-2 mode 2560x1440@155Hz
-output DP-1 mode 2560x1440@200Hz
 
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
