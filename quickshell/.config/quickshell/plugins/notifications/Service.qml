@@ -462,7 +462,7 @@ Item {
 
     stdout: StdioCollector {
       waitForEnd: true
-      onStreamFinished: root.findAndFocusApp(text)
+      onStreamFinished: service.findAndFocusApp(text)
     }
   }
 
@@ -696,7 +696,7 @@ Item {
     enqueuePopupFileJob(["bash", "-c",
       "rm -f -- \"$1/$2.json\" \"$3/$2\"-*", "--",
       historyDir,
-      name.replace(/\\.json$/, ""),
+       name.replace(/\.json$/, ""),
       imagesDir],
       function() { service.historyChanged() })
   }
