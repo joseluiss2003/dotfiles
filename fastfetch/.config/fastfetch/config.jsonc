@@ -27,12 +27,12 @@
     },
     {
       "type": "host",
-      "key": "│ ",
+      "key": "│ \uf108 PC",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "cpu",
-      "key": "│ ",
+      "key": "│ \uf2db CPU",
       "keyColor": "#ffb2bf"
     },
     {
