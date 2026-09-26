@@ -15,7 +15,6 @@ Panel {
   // permits — needed for the togglePercentage method below.
   manageIpc: false
   property var batteryInfo: ({})
-  property var systemInfo: ({})
   property var profiles: []
   property string activeProfile: ""
   property int profileIndex: 0
@@ -138,7 +137,6 @@ Panel {
 
     if (!batteryProc.running) batteryProc.running = true
     if (!profilesProc.running) profilesProc.running = true
-    if (!systemProc.running) systemProc.running = true
   }
 
   function updateKeyValue(raw, targetName) {
@@ -147,7 +145,7 @@ Panel {
     // around AC plug/unplug events. Avoids the section collapsing mid-transition.
     if (Object.keys(next).length === 0) return
     if (targetName === "battery") batteryInfo = next
-    else systemInfo = next
+    else return
   }
 
   function updateProfiles(raw) {
@@ -166,7 +164,7 @@ Panel {
 
   function setProfile(profile) {
     if (!profile || actionProc.running) return
-    actionProc.command = ["omarchy-powerprofiles-set", root.discharging ? "battery" : "ac", profile]
+    actionProc.command = ["powerprofilesctl", "set", profile]
     actionProc.running = true
   }
 
@@ -210,20 +208,14 @@ Panel {
 
   Process {
     id: batteryProc
-    command: ["omarchy-battery-status", "--shell"]
+    command: ["bash", "-c", "device=$(upower -e | grep '/battery_' | head -n1); [ -n \"$device\" ] || exit 1; upower -i \"$device\" | awk -F': ' '/percentage:/ {gsub(/%/,\\"\\", $2); print \"percentage\\t\" $2 \"%\"} /energy-full:/ {print \"size\\t\" $2} /cycle count:/ {print \"cycles\\t\" $2} /time to empty:/ {print \"time\\t\" $2} /time to full:/ {print \"time\\t\" $2} /energy-rate:/ {print \"rate\\t\" $2}'"]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.updateKeyValue(text, "battery") }
   }
 
   Process {
     id: profilesProc
-    command: ["omarchy-powerprofiles-list", "--active-state"]
+    command: ["bash", "-c", "active=$(powerprofilesctl get 2>/dev/null || true); powerprofilesctl list 2>/dev/null | awk -v active=\"$active\" '/^[[:space:]]*[a-z0-9-]+:/ {name=$1; sub(/:$/, \"\", name); gsub(/[[:space:]]/, \"\", name); print name \"\\t\" (name == active ? 1 : 0)}'"]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.updateProfiles(text) }
-  }
-
-  Process {
-    id: systemProc
-    command: ["omarchy-system-stats"]
-    stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.updateKeyValue(text, "system") }
   }
 
   Process {
