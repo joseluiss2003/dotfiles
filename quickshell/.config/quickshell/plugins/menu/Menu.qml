@@ -14,7 +14,7 @@ Item {
   property var manifest: null
 
   // Plugin lifecycle hooks. The host calls open(payloadJson) after
-  // `swayp-shell shell summon swyp.menu ...` and close() when hidden.
+  // `swayp-shell shell summon swayp.menu ...` and close() when hidden.
   property string pendingInitialMenu: "root"
 
   function open(payloadJson) {
@@ -883,7 +883,7 @@ Item {
   // ----------------------------------------------------------- route surface
   //
   // The menu is opened through the standard plugin lifecycle:
-  // `swayp-shell shell summon swyp.menu '{"menu":"system"}'`.
+  // `swayp-shell shell summon swayp.menu '{"menu":"system"}'`.
   // Callers may pass a real id (`system`, `setup.power`) or an alias declared
   // in JSONC (`power`, `reminder-set`). Unknown strings fall through to the
   // id-as-route behavior so misspellings still attempt to open the literal id.

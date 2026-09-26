@@ -3,7 +3,7 @@
 # swayp:summary=Show or pin the Wi-Fi band for the active connection
 # swayp:group=network
 # swayp:args=[auto|2.4|5|6]
-# swayp:examples=omarchy network band | omarchy network band 5 | omarchy network band auto
+# swayp:examples=swayp network band | swayp network band 5 | swayp network band auto
 
 set -euo pipefail
 

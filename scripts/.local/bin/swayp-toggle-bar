@@ -27,4 +27,4 @@ case "${1:-toggle}" in
     ;;
 esac
 
-qs ipc call swyp.bar syncHidden >/dev/null 2>&1 || true
+qs ipc call swayp.bar syncHidden >/dev/null 2>&1 || true

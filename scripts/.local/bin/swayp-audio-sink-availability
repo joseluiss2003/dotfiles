@@ -7,8 +7,8 @@
 # in the graph, but selecting the physical one would only bypass the tuning, so
 # report it unavailable and keep it out of the output list.
 fronted=""
-if command -v swayp-audio-tuning >/dev/null 2>&1; then
-  fronted="$(swayp-audio-tuning fronted-sink 2>/dev/null || true)"
+if command -v omarchy-audio-tuning >/dev/null 2>&1; then
+  fronted="$(omarchy-audio-tuning fronted-sink 2>/dev/null || true)"
 fi
 
 pactl list sinks 2>/dev/null | awk -v fronted="$fronted" '
