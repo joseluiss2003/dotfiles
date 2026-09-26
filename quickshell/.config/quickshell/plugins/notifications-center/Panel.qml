@@ -5,7 +5,7 @@ import Quickshell.I3
 import Quickshell.Wayland
 import qs.Commons
 import qs.Ui
-import "components" as NotificationComponents
+import "../notifications/components" as NotificationComponents
 
 Panel {
   id: root
