@@ -310,7 +310,7 @@ QtObject {
   // summoned popups than on the bar. Resolved once at startup; an empty env
   // value falls back to the shared fontconfig alias.
   readonly property string menuFontFamily: {
-    var override = Quickshell.env("OMARCHY_MENU_FONT")
+    var override = Quickshell.env("SWAYP_MENU_FONT")
     return (override && override.length > 0) ? override : fontFamily
   }
 
