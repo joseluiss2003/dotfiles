@@ -5,7 +5,7 @@ import Quickshell
 import Quickshell.Io
 import "BorderGeometry.js" as Geometry
 
-// Omarchy Color compatibility layer for Sway + Matugen.
+// SwayP color compatibility layer for Sway + Matugen.
 //
 // Important: this intentionally does NOT import a Generated QML module.
 // Quickshell's import path does not automatically expose
@@ -24,7 +24,7 @@ QtObject {
 
   readonly property string home: Quickshell.env("HOME")
   readonly property string stateHome: home + "/.local/state"
-  readonly property string currentThemePath: stateHome + "/omarchy/current/theme"
+  readonly property string currentThemePath: stateHome + "/swayp/current/theme"
   readonly property string matugenThemePath: home + "/.config/quickshell/generated/Theme.qml"
 
   // Parsed Matugen colors. Values are kept as strings so missing roles can
@@ -151,7 +151,7 @@ QtObject {
     return Util.alpha(flatColor(pick(colorKey, colorFallback), colorFallback), pickAlpha(alphaKey, alphaFallback))
   }
 
-  // Explicit Matugen mapping for all reusable Omarchy surfaces. Applets and
+  // Explicit Matugen mapping for all reusable SwayP surfaces. Applets and
   // popups inherit these through Color.*, so there is no separate theme layer
   // fighting Matugen.
   readonly property QtObject bar: QtObject {
