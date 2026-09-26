@@ -11,8 +11,8 @@ import "Model.js" as Model
 
 Panel {
   id: root
-  moduleName: "omarchy.bluetooth"
-  ipcTarget: "omarchy.bluetooth"
+  moduleName: "swayp.bluetooth"
+  ipcTarget: "swayp.bluetooth"
   // manageIpc: false so this panel can own the single IpcHandler the target
   // permits — needed for the toggleBluetooth method below.
   manageIpc: false
@@ -637,7 +637,7 @@ Panel {
   IpcHandler {
 
     enabled: root.ipcInstanceOwner
-    target: "omarchy.bluetooth"
+    target: "swayp.bluetooth"
 
     function open() { root.open() }
     function close() { root.close() }
