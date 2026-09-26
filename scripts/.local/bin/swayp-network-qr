@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+iface="${1:-}"
+
+if [ -z "$iface" ]; then
+  iface="$(nmcli -t -f DEVICE,TYPE,STATE device status 2>/dev/null | awk -F: '$2 == "wifi" && $3 == "connected" { print $1; exit }')"
+fi
+
+[ -n "$iface" ] || { echo "No active Wi-Fi interface" >&2; exit 1; }
+
+connection="$(nmcli -g GENERAL.CONNECTION device show "$iface" 2>/dev/null || true)"
+[ -n "$connection" ] && [ "$connection" != "--" ] || { echo "No active Wi-Fi connection" >&2; exit 1; }
+
+ssid="$(nmcli -g 802-11-wireless.ssid connection show "$connection" 2>/dev/null || true)"
+security="$(nmcli -g 802-11-wireless-security.key-mgmt connection show "$connection" 2>/dev/null || true)"
+[ -n "$ssid" ] || { echo "Could not determine Wi-Fi SSID" >&2; exit 1; }
+
+if [ -z "$security" ] || [ "$security" = "none" ]; then security="nopass"; fi
+
+escape_wifi_field() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  value="${value//;/\\;}"
+  value="${value//,/\\,}"
+  value="${value//:/\\:}"
+  printf '%s' "$value"
+}
+
+password="$(nmcli -s -g 802-11-wireless-security.psk connection show "$connection" 2>/dev/null || true)"
+payload="WIFI:T:${security};S:$(escape_wifi_field "$ssid");P:$(escape_wifi_field "$password");;"
+
+output="${XDG_RUNTIME_DIR:-/tmp}/swayp-wifiqr.svg"
+
+command -v qrencode >/dev/null 2>&1 || { echo "qrencode is required for Wi-Fi QR generation" >&2; exit 127; }
+qrencode -t SVG -o "$output" "$payload"
+
+printf 'meta\t%s\t%s\t%s\n' "$iface" "$security" "$ssid"
+printf 'svg\t%s\n' "$output"
