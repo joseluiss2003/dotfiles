@@ -53,7 +53,7 @@ BarWidget {
     padding: 0
     borderSpec: Border.surfaceSpec("power-session", "panel-wrapper", "transparent", 0)
     contentWidth: Math.min(Style.space(220), panel.availableCardWidth)
-    contentHeight: Math.min(Style.space(260), panel.availableCardHeight)
+    contentHeight: Math.min(Style.space(240), panel.availableCardHeight)
     gap: Style.space(5)
 
     BorderSurface {
@@ -124,8 +124,8 @@ BarWidget {
         Column {
           width: parent.width
           spacing: Style.space(4)
-          topPadding: Style.space(8)
-          bottomPadding: Style.space(8)
+          topPadding: Style.space(7)
+          bottomPadding: Style.space(7)
 
           component Action: Item {
             id: action
@@ -140,12 +140,12 @@ BarWidget {
             Rectangle {
               anchors.fill: parent
               color: action.hot
-                ? Util.alpha(Color.accentSoft, 0.16)
-                : "transparent"
+                ? Util.alpha(Color.accentSoft, 0.08)
+                : Util.alpha(Color.surfaceAlt, 0.055)
               border.width: Style.normalBorderWidth
               border.color: action.hot
-                ? Util.alpha(Color.accent, 0.45)
-                : "transparent"
+                ? Util.alpha(Color.accent, 0.22)
+                : Util.alpha(Color.outline, 0.18)
             }
 
             Rectangle {
@@ -154,7 +154,7 @@ BarWidget {
               anchors.top: parent.top
               anchors.bottom: parent.bottom
               width: Style.space(1)
-              color: Util.alpha(Color.accent, 0.55)
+              color: Util.alpha(Color.accent, 0.30)
             }
 
             Row {
