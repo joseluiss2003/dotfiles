@@ -26,7 +26,7 @@ output_path = "~/.config/matugen/generated/starship.toml"
 [templates.sway]
 input_path = "~/.config/matugen/templates/sway-colors.conf"
 output_path = "~/.config/matugen/generated/sway-colors.conf"
-post_hook = "~/.local/bin/update-hyprlock && swaymsg reload"
+post_hook = "swaymsg reload"
 
 
 [templates.quickshell]

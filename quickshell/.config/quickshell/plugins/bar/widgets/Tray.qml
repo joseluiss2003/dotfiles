@@ -265,7 +265,7 @@ BarWidget {
           width: implicitWidth
           height: implicitHeight
           x: root.drawerExtent - root.revealExtent
-          text: "\uf053"
+          text: root.expanded ? "\uf054" : "\uf053"
           onPressed: function(button) {
             if (button === Qt.RightButton) {
               root.managePopupOpen = !root.managePopupOpen
@@ -347,7 +347,7 @@ BarWidget {
           width: implicitWidth
           height: implicitHeight
           y: root.drawerExtent - root.revealExtent
-          text: "\uf053"
+          text: root.expanded ? "\uf054" : "\uf053"
           textRotation: 90
           onPressed: function(button) {
             if (button === Qt.RightButton) {

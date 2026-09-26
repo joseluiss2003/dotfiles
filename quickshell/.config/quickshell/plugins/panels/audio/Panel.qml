@@ -713,7 +713,7 @@ Panel {
               id: heroIcon
               textFormat: Text.PlainText
               text: root.outputIcon()
-              color: root.bar.foreground
+              color: root.outputMuted ? Util.alpha(Color.accent, 0.5) : Color.accent
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.display
               opacity: root.outputMuted ? 0.5 : 1.0

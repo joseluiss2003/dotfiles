@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -euo pipefail
+
+THEME="$HOME/.config/quickshell/generated/Theme.qml"
+CONFIG="$HOME/.config/swaylock/config"
+
+get_color() {
+    local key="$1"
+
+    sed -nE \
+        "s/.*property color ${key}: *\"?#([0-9A-Fa-f]{6})\"?.*/\1/p" \
+        "$THEME" |
+        head -n1
+}
+
+BACKGROUND="$(get_color background)"
+TEXT="$(get_color text)"
+MUTED="$(get_color textMuted)"
+ACCENT="$(get_color accent)"
+
+BACKGROUND="${BACKGROUND:-12140e}"
+TEXT="${TEXT:-e2e3d8}"
+MUTED="${MUTED:-c5c8b9}"
+ACCENT="${ACCENT:-b3d088}"
+
+cat > "$CONFIG" <<EOF
+screenshots
+clock
+indicator
+show-failed-attempts
+
+fade-in=0.2
+
+effect-blur=7x5
+effect-vignette=0.5:0.8
+
+timestr=%H:%M
+datestr=%A, %d %B %Y
+
+font=JetBrains Mono Nerd Font
+font-size=32
+
+indicator-radius=90
+indicator-thickness=4
+
+ring-color=${ACCENT}ff
+inside-color=${BACKGROUND}ee
+line-color=${ACCENT}ff
+text-color=${TEXT}ff
+key-hl-color=${ACCENT}ff
+
+ring-clear-color=${ACCENT}ff
+inside-clear-color=${BACKGROUND}ee
+line-clear-color=${ACCENT}ff
+text-clear-color=${TEXT}ff
+
+ring-ver-color=${ACCENT}ff
+inside-ver-color=${BACKGROUND}ee
+line-ver-color=${ACCENT}ff
+text-ver-color=${TEXT}ff
+
+ring-wrong-color=ff6b6bff
+inside-wrong-color=${BACKGROUND}ee
+line-wrong-color=ff6b6bff
+text-wrong-color=ffb4abff
+
+bs-hl-color=${ACCENT}ff
+caps-lock-bs-hl-color=ffb4abff
+caps-lock-key-hl-color=ffb4abff
+EOF

@@ -8,7 +8,7 @@
     "id": "omarchy.bar",
     "position": "top",
     "transparent": false,
-    "centerAnchor": "omarchy.clock",
+    "centerAnchor": "omarchy.media",
     "layout": {
       "left": [
         {
@@ -18,12 +18,12 @@
           "id": "omarchy.workspaces"
         },
         {
-          "id": "omarchy.media"
+          "id": "omarchy.active-window"
         }
       ],
       "center": [
         {
-          "id": "omarchy.active-window"
+          "id": "omarchy.media"
         }
       ],
       "right": [
@@ -43,13 +43,13 @@
           "id": "omarchy.microphone"
         },
         {
+          "id": "omarchy.monitor"
+        },
+        {
           "id": "omarchy.power"
         },
         {
           "id": "omarchy.clipboard"
-        },
-        {
-          "id": "omarchy.monitor"
         },
         {
           "id": "omarchy.clock",

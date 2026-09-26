@@ -148,6 +148,10 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
+    foreground: Color.accent
+    activeColor: Color.accent
+    hoverColor: Color.accent
+    useActiveColor: false
     text: root.vertical ? "" : root.displayText
     labelVisible: !root.vertical
     hasVisualContent: root.vertical ? root.verticalLines.length > 0 : text !== ""
@@ -178,7 +182,7 @@ BarWidget {
           fontSize: modelData.length > 3
             ? button.fontSize * 0.9
             : button.fontSize
-          color: button.foreground
+          color: Color.accent
         }
       }
     }

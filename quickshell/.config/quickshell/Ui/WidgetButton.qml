@@ -9,7 +9,8 @@ Item {
   property string fontFamily: bar ? bar.fontFamily : Style.font.family
   property real fontSize: Style.font.body
   property color foreground: bar ? bar.barForeground : Color.foreground
-  property color activeColor: bar ? bar.urgent : Color.urgent
+  property color activeColor: Color.accent
+  property color hoverColor: Color.accent
   property bool active: false
   property real horizontalMargin: 8.5
   property real verticalPadding: 6
@@ -59,6 +60,7 @@ Item {
   readonly property real scaledHorizontalMargin: Style.spaceReal(horizontalMargin)
   readonly property real scaledVerticalPadding: Style.spaceReal(verticalPadding)
   readonly property bool tooltipHovered: visible && interactive && !concealed && mouseArea.containsMouse
+  readonly property bool hot: visible && interactive && !concealed && mouseArea.containsMouse
   // Width of the painted label, for bar chrome that wants to line up with the
   // text rather than with the slot it sits in. Zero on icon-only buttons.
   readonly property real labelWidth: label.visible ? label.implicitWidth : 0
@@ -78,9 +80,11 @@ Item {
     visible: root.labelVisible
     anchors.centerIn: parent
     text: root.text
-    color: root.active && root.useActiveColor ? root.activeColor : root.foreground
+    color: root.active && root.useActiveColor ? root.activeColor
+        : (root.hot && root.bar ? root.hoverColor : root.foreground)
     font.family: root.fontFamily
     font.pixelSize: root.fontSize
+    font.weight: Font.DemiBold
     renderType: Text.NativeRendering
     rotation: root.textRotation
     horizontalAlignment: Text.AlignHCenter

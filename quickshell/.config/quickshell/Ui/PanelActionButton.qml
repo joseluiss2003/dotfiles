@@ -73,7 +73,7 @@ BorderSurface {
     anchors.centerIn: parent
     text: root.iconText
     color: root.enabled
-      ? (root._hot ? root.hoverColor : root.foreground)
+      ? (root.hoverColor === Color.urgent ? Color.urgent : Color.accent)
       : Qt.darker(root.foreground, 2.0)
     font.family: root.fontFamily
     font.pixelSize: root.fontSize

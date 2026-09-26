@@ -34,7 +34,7 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "󰐥"
+    text: "󰯙"
     opticalSize: Style.bar.iconCanvas
     fontSize: Style.bar.iconFont
     onPressed: function(b) {
@@ -62,7 +62,7 @@ BarWidget {
         spacing: Style.space(10)
 
         Text {
-          text: "󰐥"
+          text: "󰯙"
           color: Color.accent
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.display

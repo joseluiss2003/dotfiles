@@ -162,7 +162,7 @@ BorderSurface {
       textFormat: Text.PlainText
       visible: root.iconText !== ""
       text: root.iconText
-      color: root.selected ? root._selectedColor : root.foreground
+      color: root.accent
       font.family: root.fontFamily
       font.pixelSize: root.iconSize
       rotation: root.iconSpinning ? 0 : root.iconRotation

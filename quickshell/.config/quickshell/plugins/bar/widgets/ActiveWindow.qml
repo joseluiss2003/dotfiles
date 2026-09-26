@@ -4,42 +4,50 @@ import Quickshell.Wayland
 import qs.Commons
 import qs.Ui
 
-// Dynamic focused-application slot for the Sway bar.
-// The slot tracks the visible title up to a sane cap, like the original
-// Omarchy behavior, so the focus affordance follows the actual title.
 BarWidget {
   id: root
   moduleName: "omarchy.active-window"
 
   readonly property var toplevel: ToplevelManager.activeToplevel
   readonly property string title: toplevel ? (toplevel.title || toplevel.appId || "") : ""
-  readonly property int maxLabelWidth: Math.max(180, Number(setting("maxWidth", 500)))
-  readonly property int horizontalPadding: Style.spacing.controlPaddingX * 2
+  readonly property int maxLabelWidth: Number(setting("maxWidth", 280))
 
   visible: title !== "" && !vertical
-  implicitWidth: visible
-    ? Math.min(maxLabelWidth + horizontalPadding, labelText.implicitWidth + horizontalPadding)
-    : 0
+  implicitWidth: visible ? Math.min(maxLabelWidth, titleText.implicitWidth + Style.space(16)) : 0
   implicitHeight: barSize
 
-  Item {
+  Behavior on implicitWidth {
+    NumberAnimation { duration: 180; easing.type: Easing.OutCubic }
+  }
+
+  Row {
     anchors.fill: parent
     anchors.leftMargin: Style.space(8)
     anchors.rightMargin: Style.space(8)
-    clip: true
+    spacing: Style.space(7)
 
     Text {
-      id: labelText
-      textFormat: Text.PlainText
+      id: focusMark
       anchors.verticalCenter: parent.verticalCenter
-      anchors.left: parent.left
-      width: parent.width
-      text: root.title
-      color: root.bar ? root.bar.barForeground : Color.foreground
+      text: "•"
+      color: Color.accent
       font.family: root.bar ? root.bar.fontFamily : Style.font.family
       font.pixelSize: Style.font.body
+      font.bold: true
+    }
+
+    Text {
+      id: titleText
+      textFormat: Text.PlainText
+      anchors.verticalCenter: parent.verticalCenter
+      width: Math.max(0, parent.width - focusMark.width - parent.spacing)
+      text: root.title
+      color: Color.accent
+      font.family: root.bar ? root.bar.fontFamily : Style.font.family
+      font.pixelSize: Style.font.body
+      font.weight: Font.Bold
       elide: Text.ElideRight
-      opacity: 0.88
+      opacity: 1
     }
   }
 

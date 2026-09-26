@@ -33,15 +33,11 @@ Item {
   property string lastEvent: "init"
   property string lastEventAt: ""
   property bool displaysBlank: false
-  // displaysBlank tracks what the lock asked for; Hyprland reports what each
-  // panel actually did. While a video is on show the two are reconciled, so a
-  // blank that failed keeps playing and a panel woken behind the lock's back
-  // (a resume that kept the same outputs) resumes instead of freezing.
+  // displaysBlank tracks the display power state requested by the lock.
+  // Sway's IPC is used to reconcile this state while video wallpapers are active.
   property var monitorDpms: ({})
   property bool monitorDpmsKnown: false
   readonly property bool videoBackground: Util.isVideoPath(backgroundPath)
-  property bool strandedLock: false
-  property bool strandedLockResolved: false
 
   readonly property bool locked: lockRequested || sessionLock.locked || sessionLock.secure
   readonly property bool authenticating: authenticatingPassword || fingerprintAuthenticating
@@ -85,29 +81,6 @@ Item {
     pendingSessionLock = false
     pendingSessionLockTimer.stop()
     sessionLock.locked = true
-  }
-
-  // ext-session-lock outlives its client, and a restart carries no lock over, so
-  // a session locked this early is an orphan behind Hyprland's failsafe. Outputs
-  // are often still absent here, so ask until the answer means something.
-  function checkStrandedLock() {
-    if (strandedLockResolved || strandedLockCheckProc.running) return
-
-    // A lock this shell took is nobody's orphan.
-    if (locked || lockRequested) {
-      strandedLockResolved = true
-      return
-    }
-
-    strandedLockCheckProc.running = true
-  }
-
-  function recoverStrandedLock() {
-    if (!strandedLock || locked || !passwordPamConfigured) return
-
-    strandedLock = false
-    logEvent("lock-stranded: recovering")
-    beginLock()
   }
 
   function refreshBackground() {
@@ -188,14 +161,12 @@ Item {
   function runWake() {
     root.displaysBlank = false
     root.monitorDpmsKnown = false
-    if (!wakeProcess.running) wakeProcess.running = true
     if (lockRequested) armBlankTimer()
   }
 
   function runBlank() {
     root.displaysBlank = true
     root.monitorDpmsKnown = false
-    if (!blankProcess.running) blankProcess.running = true
   }
 
   function screenBlank(screenName) {
@@ -216,7 +187,7 @@ Item {
     var dpms = {}
     for (var i = 0; i < monitors.length; i++) {
       var monitor = monitors[i]
-      if (monitor && monitor.name && !monitor.disabled) dpms[String(monitor.name)] = !!monitor.dpmsStatus
+      if (monitor && monitor.name && !monitor.disabled) dpms[String(monitor.name)] = monitor.power !== false
     }
     monitorDpms = dpms
     monitorDpmsKnown = true
@@ -325,6 +296,7 @@ Item {
         failureMessage: root.failureMessage
         failedAttempts: root.failedAttempts
         inputEnabled: root.lockRequested
+        userName: root.userName
         loadBackground: root.locked
         displaysBlank: root.screenBlank(lockSurface.screen ? lockSurface.screen.name : "")
         powerSaverActive: root.powerSaverActive
@@ -358,6 +330,7 @@ Item {
       failureMessage: ""
       failedAttempts: 0
       inputEnabled: false
+      userName: root.userName
       loadBackground: root.previewVisible
       powerSaverActive: root.powerSaverActive
       passwordText: ""
@@ -372,7 +345,7 @@ Item {
 
   PamContext {
     id: passwordPam
-    config: "omarchy-lock-password"
+    config: "swaylock"
     user: root.userName
 
     onResponseRequiredChanged: root.respondToPasswordPrompt()
@@ -456,37 +429,12 @@ Item {
     }
   }
 
-  Process {
-    id: strandedLockCheckProc
-    command: ["bash", "-c", "omarchy-hyprland-session-locked"]
-    onExited: function(exitCode) {
-      // No output to read the lock off yet.
-      if (exitCode === 2) return
-
-      root.strandedLockResolved = true
-
-      // A lock taken while this was in flight is this shell's own.
-      root.strandedLock = exitCode === 0 && !root.locked && !root.lockRequested
-      root.recoverStrandedLock()
-    }
-  }
-
-  Process {
-    id: wakeProcess
-    command: ["bash", "-c", "omarchy-system-wake"]
-  }
-
-  Process {
-    id: blankProcess
-    command: ["bash", "-c", "omarchy-brightness-keyboard off; omarchy-brightness-display off"]
-  }
-
   // Quickshell exposes no DPMS signal, so the panel state is polled while a
   // video is the locked wallpaper. A wake or blank request drops the last
   // answer, so its optimistic state applies until the next poll confirms it.
   Process {
     id: monitorDpmsProcess
-    command: ["hyprctl", "monitors", "-j"]
+    command: ["swaymsg", "-t", "get_outputs", "-r"]
     stdout: StdioCollector {
       onStreamFinished: root.applyMonitorDpms(text)
     }
@@ -540,25 +488,6 @@ Item {
     onTriggered: root.requestSessionLock()
   }
 
-  Timer {
-    id: strandedLockRetryTimer
-    interval: 500
-    repeat: true
-    // Covers the compositor settling; screens coming back re-arm it.
-    readonly property int budget: 20
-    property int remaining: 20
-    running: !root.strandedLockResolved && remaining > 0
-
-    function rearm() {
-      if (!root.strandedLockResolved) remaining = budget
-    }
-
-    onTriggered: {
-      remaining -= 1
-      root.checkStrandedLock()
-    }
-  }
-
   Connections {
     target: Quickshell
     function onScreensChanged() {
@@ -568,9 +497,6 @@ Item {
       root.displaysBlank = false
       root.requestSessionLock()
 
-      // A monitor still coming up has no workspace, so cannot answer yet.
-      strandedLockRetryTimer.rearm()
-      root.checkStrandedLock()
     }
   }
 
@@ -581,7 +507,7 @@ Item {
   }
 
   FileView {
-    path: "/etc/pam.d/omarchy-lock-password"
+    path: "/etc/pam.d/swaylock"
     watchChanges: true
     printErrors: false
     onLoaded: root.passwordPamConfigured = true
@@ -594,16 +520,11 @@ Item {
   onPasswordPamConfiguredChanged: {
     if (!passwordPamConfigured) return
 
-    strandedLock = false
-    strandedLockResolved = false
-    strandedLockRetryTimer.rearm()
-    checkStrandedLock()
   }
 
   Component.onCompleted: {
     refreshBackground()
     refreshFingerprintStatus()
-    checkStrandedLock()
   }
 
   IpcHandler {

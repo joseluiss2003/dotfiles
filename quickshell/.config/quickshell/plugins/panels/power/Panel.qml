@@ -330,7 +330,7 @@ Panel {
             id: heroIcon
             textFormat: Text.PlainText
             text: root.batteryIcon()
-            color: root.bar.foreground
+            color: root.discharging ? Util.alpha(Color.accent, 0.75) : Color.accent
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.display
             anchors.left: parent.left

@@ -140,7 +140,7 @@ floating_modifier $mod normal
 ### =========================
 
 exec awww-daemon
-exec env PATH=/home/joseluis/.local/bin:/usr/local/bin:/usr/bin:/bin qs
+exec qs
 exec mako
 exec playerctld daemon
 
@@ -178,11 +178,12 @@ include /etc/sway/config.d/*
 for_window [app_id="pavucontrol"] floating enable, sticky enable, border pixel 1
 
 # Bloqueo manual
-bindsym $mod+l exec hyprlock
+bindsym $mod+l exec qs ipc call lock lock
 
 
 # Idle / lock
 exec swayidle -w \
-    timeout 300 'hyprlock' \
+    timeout 300 'qs ipc call lock lock' \
     timeout 600 'swaymsg "output * power off"' \
+    before-sleep 'qs ipc call lock lock' \
     resume 'swaymsg "output * power on"'
