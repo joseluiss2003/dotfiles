@@ -1,23 +1,27 @@
-# Omarchy Quattro → Sway migration
+# SwayP architecture
 
-This tree keeps the Omarchy Quattro shell architecture while routing
-compositor-specific state through `qs.core.Sway`.
+SwayP is the Sway-native evolution of the original Quickshell configuration.
 
-## Phase 1
+## Current architecture
 
-- Added `Commons/Sway.qml` as the compositor facade.
-- Routed the bar's focused output through `Sway.focusedMonitor`.
-- Routed workspace state and dispatch through `Sway`.
-- Removed obsolete Hyprland polling code from `Commons/Style.qml`.
-- Kept visual defaults unchanged (`cornerRadius=0`, `gapsOut=5`) unless
-  overridden by shell style configuration.
+- `core/Sway.qml` contains compositor-specific access.
+- `core/Style.qml` owns shared typography, spacing and sizing tokens.
+- `core/Color.qml` consumes the Matugen-generated theme.
+- `ui/` contains reusable shell surfaces and controls.
+- `services/PluginRegistry.qml` discovers first-party plugins.
+- `plugins/` contains the bar, panels, services and overlays.
+- `shell.qml` owns lifecycle, IPC, configuration and plugin orchestration.
 
-## Remaining runtime ports
+## Sway integration
 
-1. notification app focusing
-2. lock stranded-session / DPMS handling
-3. nightlight backend
-4. idle compositor event integration
+Workspace, focused-output and compositor actions are routed through Sway IPC rather than Hyprland-specific polling.
 
-The original uploaded dotfiles archive remains untouched; this is a derived
-working tree for the migration.
+Idle locking is coordinated with Sway/SwayIdle. The lock surface itself uses Quickshell's native Wayland session-lock support.
+
+## Theme integration
+
+Matugen generates the shared theme consumed by Sway, Kitty, Fuzzel, Mako, Starship and Quickshell.
+
+## Migration status
+
+The runtime namespace, configuration paths and first-party plugin identifiers are SwayP-owned. Remaining external commands are treated as explicit compatibility dependencies and are not part of the SwayP core contract.
