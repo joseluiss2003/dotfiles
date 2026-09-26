@@ -56,6 +56,9 @@
           "format": "HH:mm",
           "formatAlt": "d MMMM 'W'ww yyyy",
           "verticalFormat": "HH\n—\nmm"
+        },
+        {
+          "id": "omarchy.notification-center"
         }
       ]
     }
