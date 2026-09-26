@@ -41,11 +41,11 @@ ShellRoot {
     bar: {
       position: "top",
       transparent: false,
-      centerAnchor: "omarchy.clock",
+      centerAnchor: "swayp.clock",
       layout: {
-        left: [{ id: "omarchy.menu" }, { id: "omarchy.workspaces" }],
-        center: [{ id: "omarchy.clock", format: "dddd HH:mm" }],
-        right: [{ id: "omarchy.audio" }]
+        left: [{ id: "swayp.menu" }, { id: "swayp.workspaces" }],
+        center: [{ id: "swayp.clock", format: "dddd HH:mm" }],
+        right: [{ id: "swayp.audio" }]
       }
     },
     plugins: []
@@ -141,7 +141,7 @@ ShellRoot {
   }
 
 Component.onCompleted: {
-    console.log("omarchy-shell paths",
+    console.log("swayp-shell paths",
       "shellDir=" + Quickshell.shellDir,
       "firstPartyPluginsDir=" + shell.firstPartyPluginsDir,
       "defaultsPath=" + shell.defaultsPath,
@@ -168,7 +168,7 @@ Component.onCompleted: {
 
   // Exposed as a property so child plugins (notifications, future panels)
   // can read barSize/barHidden/position to anchor relative to the active bar.
-  readonly property string defaultBarId: "omarchy.bar"
+  readonly property string defaultBarId: "swayp.bar"
   readonly property string selectedBarId: {
     var config = shell.barConfig
     if (Util.isPlainObject(config)) {
@@ -355,21 +355,21 @@ Component.onCompleted: {
   }
 
   function publicIdleConfigFor(manifest) {
-    var metadata = manifest && Util.isPlainObject(manifest.omarchy) ? manifest.omarchy : null
-    if (!metadata || String(metadata.clonedFrom || "") !== "omarchy.idle") return ({})
+    var metadata = manifest && Util.isPlainObject(manifest.swayp) ? manifest.swayp : null
+    if (!metadata || String(metadata.clonedFrom || "") !== "swayp.idle") return ({})
     var idle = shell.shellConfig && Util.isPlainObject(shell.shellConfig.idle)
       ? shell.shellConfig.idle : ({})
     return JSON.parse(JSON.stringify(idle))
   }
 
   function pluginCloneMaySummon(manifest, requestedId) {
-    var metadata = manifest && Util.isPlainObject(manifest.omarchy) ? manifest.omarchy : null
+    var metadata = manifest && Util.isPlainObject(manifest.swayp) ? manifest.swayp : null
     var sourceId = metadata ? String(metadata.clonedFrom || "") : ""
     var allowed = {
-      "omarchy.audio": ["omarchy.osd"],
-      "omarchy.media": ["omarchy.osd"],
-      "omarchy.monitor": ["omarchy.osd"],
-      "omarchy.network": ["omarchy.speedtest", "omarchy.wifiqr"]
+      "swayp.audio": ["swayp.osd"],
+      "swayp.media": ["swayp.osd"],
+      "swayp.monitor": ["swayp.osd"],
+      "swayp.network": ["swayp.speedtest", "swayp.wifiqr"]
     }
     var targets = allowed[sourceId] || []
     return targets.indexOf(String(requestedId || "")) !== -1
@@ -450,7 +450,7 @@ Component.onCompleted: {
 
   function pluginFirstPartyServiceFor(cacheKey, pluginId, requestedId) {
     var id = String(requestedId || "")
-    var allowed = ["omarchy.idle", "omarchy.media", "omarchy.nightlight", "omarchy.notifications"]
+    var allowed = ["swayp.idle", "swayp.media", "swayp.nightlight", "swayp.notifications"]
     if (allowed.indexOf(id) === -1) return null
     var proxyKey = cacheKey + "::" + id
     if (_pluginFirstPartyServiceApis[proxyKey]) return _pluginFirstPartyServiceApis[proxyKey]
@@ -582,7 +582,7 @@ Component.onCompleted: {
     // property, even though the resulting proxy is otherwise acyclic.
     var firstPartyServices = ({})
     if (barCapabilities) {
-      var serviceIds = ["omarchy.idle", "omarchy.media", "omarchy.nightlight", "omarchy.notifications"]
+      var serviceIds = ["swayp.idle", "swayp.media", "swayp.nightlight", "swayp.notifications"]
       for (var i = 0; i < serviceIds.length; i++) {
         var serviceId = serviceIds[i]
         firstPartyServices[serviceId] = shell.pluginFirstPartyServiceFor(cacheKey, key, serviceId)
@@ -1015,7 +1015,7 @@ Component.onCompleted: {
   }
 
   // keepLoaded services (lock, idle, polkit) must survive plugin hot-reload.
-  // Destroying omarchy.lock while the session lock is active can surface the
+  // Destroying swayp.lock while the session lock is active can surface the
   // crashed-lockscreen fallback.
   function unloadPluginServices() {
     var next = ({})
@@ -1128,7 +1128,7 @@ Component.onCompleted: {
     if (!m || !Array.isArray(m.kinds)) return false
     if (m.kinds.indexOf("bar-widget") === -1) return false
     // Plugins that are also panel/overlay/menu kinds are owned by the
-    // panel loader (e.g. omarchy.menu); let that path handle them.
+    // panel loader (e.g. swayp.menu); let that path handle them.
     var loaderKinds = ["panel", "overlay", "menu"]
     for (var i = 0; i < loaderKinds.length; i++) {
       if (m.kinds.indexOf(loaderKinds[i]) !== -1) return false
@@ -1514,7 +1514,7 @@ Component.onCompleted: {
   // --------------------------------------------------- image selector IPC
 
   function imagePickerItem() {
-    var loader = panelLoaders["omarchy.image-picker"]
+    var loader = panelLoaders["swayp.image-picker"]
     return loader && loader.item ? loader.item : null
   }
 
@@ -1537,7 +1537,7 @@ Component.onCompleted: {
         showLabels: showLabels,
         filterable: filterable
       })
-      return shell.summon("omarchy.image-picker", payload) ? "ok" : "unknown"
+      return shell.summon("swayp.image-picker", payload) ? "ok" : "unknown"
     }
 
     function preload(imageRowsB64: string,
@@ -1557,7 +1557,7 @@ Component.onCompleted: {
       if (picker && typeof picker.closeSelector === "function") {
         picker.closeSelector(doneFile || "")
       } else {
-        shell.hide("omarchy.image-picker")
+        shell.hide("swayp.image-picker")
       }
       return "ok"
     }
@@ -1657,13 +1657,13 @@ Component.onCompleted: {
         var isBarOption = Array.isArray(kinds) && kinds.indexOf("bar") !== -1
         var isBarWidget = Array.isArray(kinds) && kinds.indexOf("bar-widget") !== -1
         var active = isBarOption && shell.isActiveBarOption(id)
-        var metadata = plugins[id].omarchy
+        var metadata = plugins[id].swayp
         var clonedFrom = Util.isPlainObject(metadata) ? String(metadata.clonedFrom || "") : ""
         out.push({
           id: id,
           name: plugins[id].name,
           kinds: kinds,
-          // What `omarchy plugin enable/disable` toggles: for a widget that is
+          // What `swayp plugin enable/disable` toggles: for a widget that is
           // its place in the bar, not whether its component is loadable.
           enabled: isBarOption ? active
             : (isBarWidget ? shell.pluginRegistry.inBar(id) : shell.pluginRegistry.isEnabled(id)),
