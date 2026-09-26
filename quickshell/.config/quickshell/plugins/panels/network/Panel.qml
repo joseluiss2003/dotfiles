@@ -463,7 +463,7 @@ Panel {
       focusSection = "portal"
       cursorActive = true
     } else if (!hasCaptivePortal && focusSection === "portal") {
-      focusSection = headerActionCount > 0 ? "header" : "dns"
+      focusSection = headerActionCount > 0 ? "header" : (canSelectBand ? "band" : "wifi")
       headerIndex = 0
     }
   }
@@ -1020,7 +1020,7 @@ Panel {
               root.focusSection = "header"
               root.headerIndex = 0
             } else if (dy > 0) {
-              root.focusSection = root.canSelectBand ? "band" : "dns"
+              root.focusSection = root.canSelectBand ? "band" : "wifi"
               root.bandAutoFocused = true
             }
           } else if (root.focusSection === "band") {
