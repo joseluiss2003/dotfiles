@@ -5,24 +5,37 @@
     "type": "small",
     "source": "arch",
     "padding": {
-      "right": 3
+      "top": 1,
+      "right": 4
     }
   },
 
   "display": {
     "separator": "  ",
+    "color": {
+      "keys": "dim_white",
+      "title": "white",
+      "output": "white",
+      "separator": "dim_white"
+    },
     "key": {
-      "width": 10
+      "width": 10,
+      "type": "both"
     }
   },
 
   "modules": [
-    "title",
+    {
+      "type": "title",
+      "format": "{user-name}@{host-name}"
+    },
+
+    "break",
 
     {
       "type": "custom",
-      "key": "SYSTEM",
-      "format": ""
+      "key": "",
+      "format": "{#bold}{#keys}SYSTEM{#}"
     },
     {
       "type": "os",
@@ -41,29 +54,12 @@
       "key": "Packages"
     },
 
-    {
-      "type": "custom",
-      "key": "ENVIRONMENT",
-      "format": ""
-    },
-    {
-      "type": "shell",
-      "key": "Shell"
-    },
-    {
-      "type": "wm",
-      "key": "WM",
-      "format": "{pretty-name} ({version})"
-    },
-    {
-      "type": "terminal",
-      "key": "Terminal"
-    },
+    "break",
 
     {
       "type": "custom",
-      "key": "HARDWARE",
-      "format": ""
+      "key": "",
+      "format": "{#bold}{#keys}HARDWARE{#}"
     },
     {
       "type": "cpu",
@@ -83,6 +79,27 @@
       "type": "disk",
       "key": "Disk",
       "folders": ["/"]
+    },
+
+    "break",
+
+    {
+      "type": "custom",
+      "key": "",
+      "format": "{#bold}{#keys}SESSION{#}"
+    },
+    {
+      "type": "shell",
+      "key": "Shell"
+    },
+    {
+      "type": "wm",
+      "key": "WM",
+      "format": "{pretty-name} ({version})"
+    },
+    {
+      "type": "terminal",
+      "key": "Terminal"
     }
   ]
 }
