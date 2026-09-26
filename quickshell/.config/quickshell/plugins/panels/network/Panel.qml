@@ -719,8 +719,8 @@ Panel {
   function dnsCommand(provider) {
     var nmcliCommand = "nmcli"
     if (!provider || provider === "DHCP") return "true"
-    if (provider === "Cloudflare") return nmcliCommand + " connection modify "$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)" ipv4.dns "1.1.1.1 1.0.0.1" ipv4.ignore-auto-dns yes && nmcli connection up "$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)""
-    if (provider === "Google") return nmcliCommand + " connection modify "$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)" ipv4.dns "8.8.8.8 8.8.4.4" ipv4.ignore-auto-dns yes && nmcli connection up "$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)""
+    if (provider === "Cloudflare") return nmcliCommand + " connection modify \"$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)\" ipv4.dns \"1.1.1.1 1.0.0.1\" ipv4.ignore-auto-dns yes && nmcli connection up \"$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)\""
+    if (provider === "Google") return nmcliCommand + " connection modify \"$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)\" ipv4.dns \"8.8.8.8 8.8.4.4\" ipv4.ignore-auto-dns yes && nmcli connection up \"$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)\""
     return ""
   }
 
