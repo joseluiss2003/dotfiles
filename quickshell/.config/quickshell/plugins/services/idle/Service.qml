@@ -11,7 +11,7 @@ Item {
   property var shell: null
 
   readonly property string home: Quickshell.env("HOME")
-  readonly property string stayAwakeStateDir: home + "/.local/state/omarchy/indicators"
+  readonly property string stayAwakeStateDir: home + "/.local/state/swayp/indicators"
   readonly property string stayAwakeStatePath: stayAwakeStateDir + "/stay-awake"
   readonly property int defaultScreensaverSeconds: 150
   readonly property int defaultLockSeconds: 300
@@ -48,7 +48,7 @@ Item {
     var suffix = details === undefined || details === null || details === "" ? "" : ": " + String(details)
     root.lastEventAt = nowIso()
     root.lastEvent = event + suffix
-    console.log("omarchy idle " + root.lastEventAt + " " + root.lastEvent)
+    console.log("swayp idle " + root.lastEventAt + " " + root.lastEvent)
   }
 
   function runProcess(process, label, command) {
@@ -191,8 +191,8 @@ Item {
 
   function persistStayAwake(value) {
     var command = value
-      ? "mkdir -p \"$HOME/.local/state/omarchy/indicators\" && touch \"$HOME/.local/state/omarchy/indicators/stay-awake\""
-      : "rm -f \"$HOME/.local/state/omarchy/indicators/stay-awake\""
+      ? "mkdir -p \"$HOME/.local/state/swayp/indicators\" && touch \"$HOME/.local/state/swayp/indicators/stay-awake\""
+      : "rm -f \"$HOME/.local/state/swayp/indicators/stay-awake\""
 
     if (stayAwakeStateWriter.running) {
       root.pendingStayAwakePersist = !!value
@@ -278,7 +278,7 @@ Item {
 
   Process {
     id: stayAwakeStateProbe
-    command: ["bash", "-c", "mkdir -p \"$HOME/.local/state/omarchy/indicators\"; if [[ -f $HOME/.local/state/omarchy/indicators/stay-awake ]]; then echo yes; else echo no; fi"]
+    command: ["bash", "-c", "mkdir -p \"$HOME/.local/state/swayp/indicators\"; if [[ -f $HOME/.local/state/swayp/indicators/stay-awake ]]; then echo yes; else echo no; fi"]
     stdout: SplitParser {
       onRead: function(line) { root.applyStayAwake(String(line).trim() === "yes", false, "state-file") }
     }
