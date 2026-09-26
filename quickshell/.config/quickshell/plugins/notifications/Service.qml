@@ -1,4 +1,4 @@
-// Notification service for the omarchy shell.
+// Notification service for the SwayP shell.
 
 import QtQuick
 import QtQuick.Layouts
@@ -14,15 +14,14 @@ import "NotificationLogic.js" as NotificationLogic
 Item {
   id: service
 
-  // Injected by omarchy-shell (the first-party service loader).
+  // Injected by the SwayP shell (the first-party service loader).
   property var shell: null
 
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
   readonly property string home: Quickshell.env("HOME")
   // History + DND live under XDG_STATE_HOME: they're persistent user state
   // (the notifications received, the last-set DND preference), not
   // regeneratable cache that a `rm -rf ~/.cache` should wipe.
-  readonly property string stateDir: home + "/.local/state/omarchy/"
+  readonly property string stateDir: home + "/.local/state/swayp/"
   readonly property string settingsPath: stateDir + "notifications.json"
   // One file per on-screen popup, so live toasts survive shell restarts.
   // A file exists exactly as long as its popup is showing: written when the
@@ -68,7 +67,7 @@ Item {
   // a debounced save timer.
   PersistentProperties {
     id: persisted
-    reloadableId: "omarchy-notifications"
+    reloadableId: "swayp-notifications"
     property bool doNotDisturb: false
     onDoNotDisturbChanged: {
       // Suppress the write that load-time hydration would otherwise trigger.
@@ -144,7 +143,7 @@ Item {
   //   - app_name is "notify-send" (the CLI default — means the sender
   //     didn't bother declaring an identity, so it's almost certainly
   //     ephemeral test/feedback noise)
-  //   - app_name is "omarchy-action" (Omarchy's own user-action toasts —
+  //   - app_name is "swayp-action" (Omarchy's own user-action toasts —
   //     the user just triggered them)
   // Their toasts still land in history like any other once they've been on
   // screen; the distinction only decides whether a DND-silenced one is worth
@@ -801,7 +800,7 @@ Item {
       popupModel.insert(0, {
         id: -1,
         originalId: -1,
-        app: "omarchy-action",
+        app: "swayp-action",
         appIcon: "",
         summary: "No recent notifications",
         body: "",
@@ -1075,7 +1074,7 @@ Item {
       screen: modelData
       visible: popupModel.count > 0
 
-      WlrLayershell.namespace: "omarchy-notifications"
+      WlrLayershell.namespace: "swayp-notifications"
       WlrLayershell.layer: WlrLayer.Overlay
       WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
       exclusionMode: ExclusionMode.Ignore

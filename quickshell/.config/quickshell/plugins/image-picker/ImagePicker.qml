@@ -299,7 +299,7 @@ Item {
     }
   }
 
-  // Lifecycle hooks invoked by omarchy-shell summon/hide. shell.summon(id,
+  // Lifecycle hooks invoked by swayp-shell summon/hide. shell.summon(id,
   // payloadJson) hands the JSON to open() here; shell.hide(id) calls close().
   // The shell host owns the stable `image-selector` IPC target and forwards
   // those lower-level positional calls here.
