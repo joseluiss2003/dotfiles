@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.dev-gallery",
+  "id": "swayp.dev-gallery",
   "name": "Dev gallery",
   "version": "1.0.0",
-  "author": "Omarchy",
-  "description": "Visual reference for omarchy-shell common UI components. Summon with: omarchy-shell shell summon omarchy.dev-gallery '{}' (or run: omarchy dev ui-preview).",
+  "author": "SwayP",
+  "description": "Visual reference for swayp-shell common UI components. Summon with: swayp-shell shell summon swayp.dev-gallery '{}' (or run: swayp dev ui-preview).",
   "kinds": [
     "panel"
   ],
