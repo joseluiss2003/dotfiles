@@ -1,11 +1,13 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import Quickshell.I3
 import Quickshell.Wayland
 import qs.Commons
 import qs.Ui
 import "../notifications/components" as NotificationComponents
+import "../notifications/NotificationLogic.js" as NotificationLogic
 
 Panel {
   id: root
@@ -26,8 +28,76 @@ Panel {
       ? notificationService.popupModel
       : null
 
-  readonly property int notificationCount:
-    notifications ? notifications.count : 0
+  ListModel {
+    id: centerModel
+  }
+
+  readonly property int notificationCount: centerModel.count
+
+  function activeRows() {
+    var rows = []
+    if (!notifications) return rows
+    for (var i = 0; i < notifications.count; i++) {
+      var row = notifications.get(i)
+      if (row) rows.push({
+        id: row.id,
+        originalId: row.originalId,
+        app: row.app,
+        appIcon: row.appIcon,
+        summary: row.summary,
+        body: row.body,
+        image: row.image,
+        glyph: row.glyph || "",
+        execArgv: row.execArgv || "",
+        urgency: row.urgency,
+        expireTimeout: row.expireTimeout || 0,
+        timestamp: row.timestamp
+      })
+    }
+    return rows
+  }
+
+  function isActiveEntry(originalId, timestamp) {
+    if (!notifications) return false
+    for (var i = 0; i < notifications.count; i++) {
+      var row = notifications.get(i)
+      if (row && row.originalId === originalId && row.timestamp === timestamp) return true
+    }
+    return false
+  }
+
+  function rebuildCenter(raw) {
+    var live = activeRows()
+    var rows = NotificationLogic.historyRows(
+      raw,
+      live,
+      1,
+      notificationService && notificationService.historyLimit
+        ? notificationService.historyLimit
+        : 10
+    )
+
+    centerModel.clear()
+    for (var i = 0; i < rows.length; i++) centerModel.append(rows[i])
+  }
+
+  function reloadHistory() {
+    if (!notificationService || historyReader.running) return
+    historyReader.command = [
+      "bash", "-c",
+      "awk 1 "$1"/*.json 2>/dev/null || true",
+      "--",
+      notificationService.historyDir
+    ]
+    historyReader.running = true
+  }
+
+  function clearAll() {
+    if (notificationService) {
+      notificationService.clearPopups()
+      notificationService.clearHistory()
+    }
+  }
 
   readonly property bool dnd:
     notificationService ? !!notificationService.doNotDisturb : false
@@ -39,15 +109,42 @@ Panel {
       notificationService.setDoNotDisturb(!notificationService.doNotDisturb)
   }
 
-  function clearAll() {
-    if (notificationService)
-      notificationService.clearPopups()
-  }
-
 
   function closePanel() {
     root.close()
   }
+
+  Process {
+    id: historyReader
+    running: false
+
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: root.rebuildCenter(text)
+    }
+  }
+
+  Connections {
+    target: root.notificationService
+
+    function onHistoryChanged() {
+      root.reloadHistory()
+    }
+  }
+
+  Connections {
+    target: root.notifications
+
+    function onCountChanged() {
+      root.reloadHistory()
+    }
+
+    function onDataChanged() {
+      root.reloadHistory()
+    }
+  }
+
+  Component.onCompleted: root.reloadHistory()
 
   Variants {
     model: Quickshell.screens
@@ -206,6 +303,7 @@ Panel {
           }
 
           PanelSeparator {
+            Layout.fillWidth: true
             foreground: Color.notifications.border
           }
 
@@ -225,7 +323,7 @@ Panel {
               anchors.topMargin: Style.space(8)
               anchors.bottomMargin: Style.space(8)
 
-              model: root.notifications
+              model: centerModel
               spacing: Style.space(8)
               clip: true
               boundsBehavior: Flickable.StopAtBounds
@@ -264,13 +362,19 @@ Panel {
                   // The service already owns action dispatch and lifecycle.
                   // Reuse it rather than duplicating notification handling.
                   onCloseRequested: {
-                    if (root.notificationService)
+                    if (!root.notificationService) return
+                    if (root.isActiveEntry(row.originalId, row.timestamp))
                       root.notificationService.dismissPopup(row.index)
                   }
 
                   onCardClicked: {
-                    if (root.notificationService)
+                    if (!root.notificationService) return
+                    if (root.isActiveEntry(row.originalId, row.timestamp))
                       root.notificationService.invokePopupDefault(row.index)
+                    else
+                      root.notificationService.focusApp({
+                        app: row.app
+                      })
                   }
                 }
               }
@@ -295,7 +399,7 @@ Panel {
                 width: Style.space(300)
                 text: root.dnd
                   ? "Notifications are silenced"
-                  : "No pending notifications"
+                  : "No notifications"
                 color: Color.notifications.text
                 opacity: 0.62
                 font.family: root.fontFamily
