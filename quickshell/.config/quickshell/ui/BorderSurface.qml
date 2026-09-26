@@ -1,7 +1,7 @@
 import QtQuick
 import qs.core
 
-// Rectangle-compatible surface with Omarchy border specs. Uses native
+// Rectangle-compatible surface with SwayP border specs. Uses native
 // Rectangle.border for cheap flat/uniform borders and BorderOverlay for
 // gradients or per-side widths.
 Rectangle {
