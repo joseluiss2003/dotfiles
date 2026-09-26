@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.network",
+  "id": "swayp.network",
   "name": "Network",
   "version": "1.0.0",
-  "author": "Omarchy",
+  "author": "SwayP",
   "description": "Wi-Fi list and connection state",
   "kinds": [
     "bar-widget"
