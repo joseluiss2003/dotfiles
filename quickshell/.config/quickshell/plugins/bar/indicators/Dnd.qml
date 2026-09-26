@@ -5,7 +5,7 @@ import qs.ui
 BarIndicator {
   id: root
 
-  readonly property var notificationService: bar?.shell?.firstPartyServiceFor("omarchy.notifications")
+  readonly property var notificationService: bar?.shell?.firstPartyServiceFor("swayp.notifications")
   readonly property bool dnd: notificationService ? notificationService.doNotDisturb : false
 
   active: dnd
