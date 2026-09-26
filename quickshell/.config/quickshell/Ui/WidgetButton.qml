@@ -8,6 +8,7 @@ Item {
   property string text: ""
   property string fontFamily: bar ? bar.fontFamily : Style.font.family
   property real fontSize: Style.font.body
+  property int fontWeight: Font.DemiBold
   property color foreground: bar ? bar.barForeground : Color.foreground
   property color activeColor: Color.accent
   property color hoverColor: Color.accent
@@ -84,7 +85,7 @@ Item {
         : (root.hot && root.bar ? root.hoverColor : root.foreground)
     font.family: root.fontFamily
     font.pixelSize: root.fontSize
-    font.weight: Font.DemiBold
+    font.weight: root.fontWeight
     renderType: Text.NativeRendering
     rotation: root.textRotation
     horizontalAlignment: Text.AlignHCenter
