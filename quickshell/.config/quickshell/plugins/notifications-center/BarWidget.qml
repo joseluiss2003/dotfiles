@@ -37,19 +37,15 @@ BarWidget {
       bar.shell.summon("omarchy.notification-center", "{}")
   }
 
-  WidgetButton {
+  BarIconButton {
     id: button
     anchors.fill: parent
     bar: root.bar
     text: root.bellGlyph
     fontFamily: root.bar.fontFamily
-    fontSize: Style.font.icon
-    foreground: root.bar.foreground
+    foreground: root.bar.barForeground
     activeColor: Color.accent
     hoverColor: Color.accent
-    useActiveColor: false
-    horizontalMargin: 7
-    verticalPadding: 8
     tooltipText: root.notificationCount > 0
       ? root.notificationCount + (root.notificationCount === 1 ? " notification" : " notifications")
       : "Notifications"
