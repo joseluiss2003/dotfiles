@@ -26,6 +26,7 @@ BorderSurface {
   property int urgency: 1
   property double timestamp: 0
   property int cornerRadius: 0
+  property bool selected: false
 
   // System monospace font injected by the container.
   property string fontFamily: ""
@@ -49,7 +50,9 @@ BorderSurface {
   readonly property color dimColor: Qt.darker(Color.notifications.text, 1.4)
   readonly property color bodyColor: Qt.darker(Color.notifications.text, 1.15)
   readonly property color accentColor: urgency === 2 ? Color.urgent : (urgency === 0 ? dimColor : Color.notifications.countdown)
-  readonly property var cardBorderSpec: Border.surfaceSpec("notifications", "border", Color.notifications.border, Math.max(1, Style.space(2)))
+  readonly property var cardBorderSpec: selected
+    ? Border.flat(Util.alpha(Color.text, 0.16), Math.max(1, Style.space(1)))
+    : Border.surfaceSpec("notifications", "border", Color.notifications.border, Math.max(1, Style.space(2)))
 
   function sanitizeBody(s) {
     return NotificationLogic.sanitizeBody(s, app, appIcon)
@@ -68,7 +71,9 @@ BorderSurface {
   // doesn't push content under the bottom edge.
   implicitHeight: mainColumn.implicitHeight + borderTop + borderBottom
   radius: cornerRadius
-  color: Color.notifications.background
+  color: selected
+    ? Util.alpha(Color.text, 0.075)
+    : Color.notifications.background
   borderSpec: cardBorderSpec
   clip: true
 
