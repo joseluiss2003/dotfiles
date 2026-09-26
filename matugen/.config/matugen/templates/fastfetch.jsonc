@@ -1,0 +1,109 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+
+  "logo": {
+    "type": "small",
+    "color": {
+      "1": "{{ colors.primary.default.hex }}",
+      "2": "{{ colors.secondary.default.hex }}",
+      "3": "{{ colors.tertiary.default.hex }}",
+      "4": "{{ colors.primary_container.default.hex }}",
+      "5": "{{ colors.secondary_container.default.hex }}",
+      "6": "{{ colors.tertiary_container.default.hex }}"
+    },
+    "padding": {
+      "top": 1,
+      "right": 5,
+      "left": 1
+    }
+  },
+
+  "display": {
+    "disableLinewrap": true,
+    "color": {
+      "keys": "{{ colors.primary.default.hex }}",
+      "output": "{{ colors.on_surface.default.hex }}",
+      "separator": "{{ colors.outline_variant.default.hex }}"
+    },
+    "key": {
+      "width": 11,
+      "type": "both"
+    }
+  },
+
+  "modules": [
+    "break",
+
+    {
+      "type": "custom",
+      "outputColor": "{{ colors.outline_variant.default.hex }}",
+      "format": "┌──────────────────────Hardware────────────────────┐"
+    },
+    {
+      "type": "host",
+      "key": " PC"
+    },
+    {
+      "type": "cpu",
+      "key": " CPU"
+    },
+    {
+      "type": "gpu",
+      "key": " GPU"
+    },
+    {
+      "type": "memory",
+      "key": " Memoria"
+    },
+    {
+      "type": "disk",
+      "key": " Disco",
+      "folders": ["/"]
+    },
+    {
+      "type": "custom",
+      "outputColor": "{{ colors.outline_variant.default.hex }}",
+      "format": "└──────────────────────────────────────────────────┘"
+    },
+
+    "break",
+
+    {
+      "type": "custom",
+      "outputColor": "{{ colors.outline_variant.default.hex }}",
+      "format": "┌──────────────────────Software────────────────────┐"
+    },
+    {
+      "type": "os",
+      "key": " OS"
+    },
+    {
+      "type": "kernel",
+      "key": " Kernel"
+    },
+    {
+      "type": "de",
+      "key": " Entorno"
+    },
+    {
+      "type": "shell",
+      "key": " Shell"
+    },
+    {
+      "type": "terminal",
+      "key": " Terminal"
+    },
+    {
+      "type": "packages",
+      "key": " Paquetes"
+    },
+    {
+      "type": "custom",
+      "outputColor": "{{ colors.outline_variant.default.hex }}",
+      "format": "└──────────────────────────────────────────────────┘"
+    },
+
+    "break",
+    "colors"
+  ]
+}
