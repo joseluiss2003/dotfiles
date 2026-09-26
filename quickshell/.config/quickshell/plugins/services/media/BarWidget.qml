@@ -109,7 +109,9 @@ BarWidget {
     borderSpec: Border.surfaceSpec("media", "panel-wrapper", "transparent", 0)
     contentWidth: Math.min(Style.space(332), panel.availableCardWidth)
     contentHeight: Math.min(
-      Style.space(340) + (root.sourcePlayers.length > 1 ? Style.space(48 + 4 + root.sourcePlayers.length * 42) : 0),
+      Style.space(234) + (root.sourcePlayers.length > 1
+        ? Style.space(127 + Math.max(0, root.sourcePlayers.length - 2) * 42)
+        : 0),
       panel.availableCardHeight
     )
     gap: Style.space(5)
@@ -475,6 +477,7 @@ BarWidget {
 
   component MediaControl: BorderSurface {
     id: control
+    signal clicked()
     required property string iconText
     property bool emphasized: false
 
