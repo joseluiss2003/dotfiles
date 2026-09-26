@@ -43,119 +43,160 @@ BarWidget {
     }
   }
 
-  PopupCard {
-    id: popup
+  KeyboardPanel {
+    id: panel
     anchorItem: root
     bar: root.bar
     owner: root
     open: root.popupOpen
-    contentWidth: popup.fittedContentWidth(Style.space(360))
-    contentHeight: popup.fittedContentHeight(column.implicitHeight)
+    padding: 0
+    borderSpec: Border.surfaceSpec("power-session", "panel-wrapper", "transparent", 0)
+    contentWidth: Math.min(Style.space(290), panel.availableCardWidth)
+    contentHeight: Math.min(Style.space(330), panel.availableCardHeight)
+    gap: Style.space(5)
 
-    Column {
-      id: column
+    BorderSurface {
+      id: card
       anchors.fill: parent
-      spacing: Style.space(12)
+      color: Color.background
+      borderSpec: Border.surfaceSpec("power-session", "card", Color.outline, Style.normalBorderWidth)
+      radius: 0
+      clip: true
 
-      Row {
-        width: parent.width
-        spacing: Style.space(10)
+      Column {
+        anchors.fill: parent
+        spacing: 0
 
-        Text {
-          text: "󰯙"
-          color: Color.accent
-          font.family: root.bar.fontFamily
-          font.pixelSize: Style.font.display
-          anchors.verticalCenter: parent.verticalCenter
-        }
-
-        Column {
-          width: parent.width - Style.space(42)
-          spacing: Style.space(2)
-          anchors.verticalCenter: parent.verticalCenter
-
-          Text {
-            text: "Power"
-            color: Color.text
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.heading
-            font.bold: true
-          }
-
-          Text {
-            text: "SESSION"
-            color: Color.textMuted
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-            font.letterSpacing: 1.2
-          }
-        }
-      }
-
-      PanelSeparator { foreground: Color.outline }
-
-      GridLayout {
-        width: parent.width
-        columns: 2
-        columnSpacing: Style.space(8)
-        rowSpacing: Style.space(8)
-
-        component Action: BorderSurface {
-          id: action
-          required property string iconText
-          required property string labelText
-          required property var callback
-          property bool hot: false
-
-          implicitHeight: Style.space(52)
-          Layout.fillWidth: true
-          color: hot ? Util.alpha(Color.accentSoft, 0.55) : Util.alpha(Color.surfaceAlt, 0.35)
-          borderSpec: Border.flat(hot ? Color.accent : Util.alpha(Color.outline, 0.45), 1)
+        Item {
+          width: parent.width
+          height: Style.space(58)
 
           Row {
-            anchors.fill: parent
-            anchors.leftMargin: Style.space(10)
-            anchors.rightMargin: Style.space(10)
+            anchors.left: parent.left
+            anchors.leftMargin: Style.space(16)
+            anchors.verticalCenter: parent.verticalCenter
             spacing: Style.space(10)
 
             Text {
-              width: Style.space(24)
-              text: action.iconText
-              color: action.labelText === "Power off" ? Color.error : (action.hot ? Color.accent : Color.text)
+              text: "󰯙"
+              color: Color.accent
               font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.icon
-              horizontalAlignment: Text.AlignHCenter
+              font.pixelSize: Style.font.display
               anchors.verticalCenter: parent.verticalCenter
             }
 
-            Text {
-              width: parent.width - Style.space(34)
-              text: action.labelText
-              color: action.labelText === "Power off" ? Color.error : Color.text
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.body
-              font.bold: action.hot
-              elide: Text.ElideRight
+            Column {
+              spacing: Style.space(2)
               anchors.verticalCenter: parent.verticalCenter
-            }
-          }
 
-          MouseArea {
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onEntered: action.hot = true
-            onExited: action.hot = false
-            onClicked: action.callback()
+              Text {
+                text: "Power"
+                color: Color.text
+                font.family: root.bar.fontFamily
+                font.pixelSize: Style.font.title
+                font.bold: true
+              }
+
+              Text {
+                text: "SESSION"
+                color: Color.muted
+                font.family: root.bar.fontFamily
+                font.pixelSize: Style.font.caption
+                font.bold: true
+                font.letterSpacing: 1.1
+              }
+            }
           }
         }
 
-        Action { iconText: "󰌾"; labelText: "Lock"; callback: root.lock }
-        Action { iconText: "󰒲"; labelText: "Suspend"; callback: root.suspend }
-        Action { iconText: "󰍃"; labelText: "Log out"; callback: root.logout }
-        Action { iconText: "󰜉"; labelText: "Reboot"; callback: root.reboot }
-        Action { iconText: "⏻"; labelText: "Power off"; callback: root.poweroff }
+        PanelSeparator {
+          foreground: Color.outline
+        }
+
+        Column {
+          width: parent.width
+          spacing: Style.space(6)
+          topPadding: Style.space(12)
+          bottomPadding: Style.space(12)
+
+          component Action: Item {
+            id: action
+            required property string iconText
+            required property string labelText
+            required property var callback
+            property bool hot: false
+
+            width: parent.width
+            height: Style.space(38)
+
+            Rectangle {
+              anchors.fill: parent
+              color: action.hot
+                ? Util.alpha(Color.accentSoft, 0.22)
+                : Util.alpha(Color.surfaceAlt, 0.18)
+              border.width: Style.normalBorderWidth
+              border.color: action.hot
+                ? Util.alpha(Color.accent, 0.55)
+                : Util.alpha(Color.outline, 0.30)
+            }
+
+            Rectangle {
+              visible: action.hot
+              anchors.left: parent.left
+              anchors.top: parent.top
+              anchors.bottom: parent.bottom
+              width: Style.space(1)
+              color: Util.alpha(Color.accent, 0.65)
+            }
+
+            Row {
+              anchors.fill: parent
+              anchors.leftMargin: Style.space(12)
+              anchors.rightMargin: Style.space(12)
+              spacing: Style.space(10)
+
+              Text {
+                width: Style.space(24)
+                text: action.iconText
+                color: action.labelText === "Power off"
+                  ? Color.error
+                  : (action.hot ? Color.accent : Color.text)
+                font.family: root.bar.fontFamily
+                font.pixelSize: Style.font.icon
+                horizontalAlignment: Text.AlignHCenter
+                anchors.verticalCenter: parent.verticalCenter
+              }
+
+              Text {
+                width: parent.width - Style.space(34)
+                text: action.labelText
+                color: action.labelText === "Power off"
+                  ? Color.error
+                  : (action.hot ? Color.text : Color.text)
+                font.family: root.bar.fontFamily
+                font.pixelSize: Style.font.bodySmall
+                font.bold: action.hot
+                anchors.verticalCenter: parent.verticalCenter
+                elide: Text.ElideRight
+              }
+            }
+
+            MouseArea {
+              anchors.fill: parent
+              hoverEnabled: true
+              cursorShape: Qt.PointingHandCursor
+              onEntered: action.hot = true
+              onExited: action.hot = false
+              onClicked: action.callback()
+            }
+          }
+
+          Action { iconText: "󰌾"; labelText: "Lock"; callback: root.lock }
+          Action { iconText: "󰒲"; labelText: "Suspend"; callback: root.suspend }
+          Action { iconText: "󰍃"; labelText: "Log out"; callback: root.logout }
+          Action { iconText: "󰜉"; labelText: "Reboot"; callback: root.reboot }
+          Action { iconText: "⏻"; labelText: "Power off"; callback: root.poweroff }
+        }
       }
     }
   }
