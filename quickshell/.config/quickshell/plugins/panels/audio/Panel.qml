@@ -49,7 +49,6 @@ Panel {
       if (!n || !n.isStream || !isPlaybackStream(n)) continue
       // A tuning's output is a playback stream too, but it is the processing
       // itself rather than an application, so it does not belong in the list.
-      if (String(n.name || "").indexOf("omarchy_speaker_tuning") === 0) continue
       list.push(n)
     }
     return list
@@ -463,25 +462,11 @@ Panel {
   function setDefaultSink(node) {
     if (!node) return
     Pipewire.preferredDefaultAudioSink = node
-    if (node.id !== undefined && node.name) {
-      Quickshell.execDetached([
-        "omarchy-audio-output-set-default",
-        String(node.id),
-        String(node.name)
-      ])
-    }
   }
 
   function setDefaultSource(node) {
     if (!node) return
     Pipewire.preferredDefaultAudioSource = node
-    if (node.id !== undefined && node.name) {
-      Quickshell.execDetached([
-        "omarchy-audio-input-set-default",
-        String(node.id),
-        String(node.name)
-      ])
-    }
   }
 
   function sinkAvailable(node) {
