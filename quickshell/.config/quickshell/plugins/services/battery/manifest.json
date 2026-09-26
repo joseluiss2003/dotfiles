@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.battery",
+  "id": "swayp.battery",
   "name": "Battery",
   "version": "1.0.0",
-  "author": "Omarchy",
+  "author": "SwayP",
   "description": "Low battery warning service",
   "kinds": [
     "service"
