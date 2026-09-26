@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.nightlight",
+  "id": "swayp.nightlight",
   "name": "Night Light",
   "version": "1.0.0",
-  "author": "Omarchy",
+  "author": "SwayP",
   "description": "Owns the wlsunset night light state for the bar indicator and CLI.",
   "kinds": [
     "service"
