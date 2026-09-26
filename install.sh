@@ -15,6 +15,7 @@ PACKAGES=(
   sway
   swaybg
   swayidle
+  swaylock
   quickshell
   matugen
   awww
@@ -22,14 +23,18 @@ PACKAGES=(
   bluez-utils
   brightnessctl
   cliphist
+  curl
+  fprintd
   fuzzel
   greetd
   greetd-tuigreet
   grim
   gtk4-layer-shell
+  iw
   jq
   kitty
   mako
+  networkmanager
   noto-fonts
   noto-fonts-cjk
   noto-fonts-emoji
@@ -42,8 +47,10 @@ PACKAGES=(
   python
   qt5-wayland
   qt6-wayland
+  qrencode
   slurp
   upower
+  wlsunset
   wireplumber
   wl-clipboard
   xdg-desktop-portal-wlr
