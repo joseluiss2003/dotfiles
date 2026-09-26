@@ -5,7 +5,7 @@
     "type": "builtin",
     "source": "arch",
     "color": {
-      "1": "green"
+      "1": "magenta"
     },
     "padding": {
       "top": 1,
@@ -24,31 +24,32 @@
 
   "modules": [
     "break",
+
     {
       "type": "custom",
       "format": "\u001b[90m┌────────────────────── Hardware ──────────────────────┐"
     },
     {
       "type": "cpu",
-      "key": "│ ├",
+      "key": "│ ",
       "format": "{name}",
-      "keyColor": "green"
+      "keyColor": "magenta"
     },
     {
       "type": "gpu",
-      "key": "│ ├",
+      "key": "│ 󰍛",
       "format": "{name}",
-      "keyColor": "green"
+      "keyColor": "magenta"
     },
     {
       "type": "memory",
-      "key": "│ ├",
-      "keyColor": "green"
+      "key": "│ ",
+      "keyColor": "magenta"
     },
     {
       "type": "disk",
-      "key": "└ └󰋊",
-      "keyColor": "green",
+      "key": "│ 󰋊",
+      "keyColor": "magenta",
       "folders": ["/"]
     },
     {
@@ -64,33 +65,33 @@
     },
     {
       "type": "os",
-      "key": " OS",
-      "keyColor": "blue"
+      "key": "│ ",
+      "keyColor": "magenta"
     },
     {
       "type": "kernel",
-      "key": "│ ├",
-      "keyColor": "blue"
+      "key": "│ ",
+      "keyColor": "magenta"
     },
     {
       "type": "wm",
-      "key": "│ ├",
-      "keyColor": "blue"
+      "key": "│ ",
+      "keyColor": "magenta"
     },
     {
       "type": "shell",
-      "key": "│ ├",
-      "keyColor": "blue"
+      "key": "│ ",
+      "keyColor": "magenta"
     },
     {
       "type": "terminal",
-      "key": "│ ├",
-      "keyColor": "blue"
+      "key": "│ ",
+      "keyColor": "magenta"
     },
     {
       "type": "packages",
-      "key": "└ └󰏖",
-      "keyColor": "blue"
+      "key": "│ 󰏖",
+      "keyColor": "magenta"
     },
     {
       "type": "custom",
@@ -98,9 +99,10 @@
     },
 
     "break",
+
     {
       "type": "uptime",
-      "key": "󱫐 Uptime",
+      "key": "◷",
       "keyColor": "magenta"
     }
   ]
