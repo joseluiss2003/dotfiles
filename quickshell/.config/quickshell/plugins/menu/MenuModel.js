@@ -386,20 +386,13 @@ function displayRow(items, itemOrder, checkedResults, disabledResults, entry, de
 
 // Commands a `checked:` expression reads a value out of. Every sibling row
 // asks the same one -- Defaults > Browser has seven rows all comparing
-// against `omarchy-default-browser` -- so the batch runs it once and the rows
+// against the same default-reader command -- so the batch runs it once and the rows
 // read the captured answer.
 //
 // The capture has to be eager. These are read inside `$(...)`, and a value
 // cached while one expression runs lives in that subshell only, so a lazy
 // memo never survives to the expression after it.
-var GUARD_READERS = [
-  "omarchy-channel-current",
-  "omarchy-default-agent",
-  "omarchy-default-browser",
-  "omarchy-default-editor",
-  "omarchy-default-terminal",
-  "omarchy-dns"
-]
+var GUARD_READERS = []
 
 // Package and command presence account for most of what the guards ask, and
 // asked one at a time they are almost all fork: the shipped menu spends over
@@ -420,18 +413,18 @@ var GUARD_READERS = [
 // parser follows the indented lines rather than reading the first one and
 // dropping half of what is installed.
 function guardHelpers() {
-  return 'declare -A __omarchy_pkgs=()\n'
-    + 'mapfile -t __omarchy_pkg_names < <({ pacman -Qq; LC_ALL=C pacman -Qi'
+  return 'declare -A __swayp_pkgs=()\n'
+    + 'mapfile -t __swayp_pkg_names < <({ pacman -Qq; LC_ALL=C pacman -Qi'
     + " | awk '/^[A-Za-z]/ { provides = ($0 ~ /^Provides/); sub(/^[^:]*: /, \"\") }"
     + ' provides && $0 != "None" { n = split($0, p, " ");'
     + ' for (i = 1; i <= n; i++) { sub(/[<>=].*/, "", p[i]); print p[i] } }\'; } 2>/dev/null)\n'
-    + 'for __omarchy_pkg in "${__omarchy_pkg_names[@]}"; do __omarchy_pkgs[$__omarchy_pkg]=1; done\n'
-    + '__omarchy_pkg_has() { [[ -n ${__omarchy_pkgs[$1]-} ]] && return 0; '
+    + 'for __swayp_pkg in "${__swayp_pkg_names[@]}"; do __swayp_pkgs[$__swayp_pkg]=1; done\n'
+    + '__swayp_pkg_has() { [[ -n ${__swayp_pkgs[$1]-} ]] && return 0; '
     + '[[ $1 == *[\\<\\>=]* ]] && { pacman -Q "$1" &>/dev/null; return; }; return 1; }\n'
-    + 'omarchy-pkg-present() { local p; for p in "$@"; do __omarchy_pkg_has "$p" || return 1; done; return 0; }\n'
-    + 'omarchy-pkg-missing() { local p; for p in "$@"; do __omarchy_pkg_has "$p" || return 0; done; return 1; }\n'
-    + 'omarchy-cmd-present() { local c; for c in "$@"; do command -v "$c" &>/dev/null || return 1; done; return 0; }\n'
-    + 'omarchy-cmd-missing() { local c; for c in "$@"; do command -v "$c" &>/dev/null || return 0; done; return 1; }\n'
+    + 'swayp-pkg-present() { local p; for p in "$@"; do __swayp_pkg_has "$p" || return 1; done; return 0; }\n'
+    + 'swayp-pkg-missing() { local p; for p in "$@"; do __swayp_pkg_has "$p" || return 0; done; return 1; }\n'
+    + 'swayp-cmd-present() { local c; for c in "$@"; do command -v "$c" &>/dev/null || return 1; done; return 0; }\n'
+    + 'swayp-cmd-missing() { local c; for c in "$@"; do command -v "$c" &>/dev/null || return 0; done; return 1; }\n'
 }
 
 // Substitute the captured answer into the expression rather than shadowing
@@ -449,14 +442,14 @@ function guardPrelude(guards) {
     if (guards.indexOf(guardReaderSlot(i)) < 0) continue
     // `|| :` so a reader that exits nonzero cannot take the batch down with
     // it under a login shell that turned on errexit.
-    prelude += "__omarchy_read_" + i + "=$(" + GUARD_READERS[i] + " 2>/dev/null) || :\n"
+    prelude += "__swayp_read_" + i + "=$(" + GUARD_READERS[i] + " 2>/dev/null) || :\n"
   }
 
   return prelude
 }
 
 function guardReaderSlot(index) {
-  return "${__omarchy_read_" + index + "}"
+  return "${__swayp_read_" + index + "}"
 }
 
 function substituteGuardReaders(expression) {
