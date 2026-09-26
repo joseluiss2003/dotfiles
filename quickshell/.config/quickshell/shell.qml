@@ -23,7 +23,8 @@ ShellRoot {
 
   property string home: Quickshell.env("HOME")
 
-  // The omarchy-shell host is the long-running entry point. Plugins live in
+  // SwayP shell entry point. First-party plugins live beside the shell.
+  readonly property string shellPath: Quickshell.shellDir
   readonly property string firstPartyPluginsDir: shellPath + "/plugins"
   readonly property string defaultsPath: home + "/.config/swayp/shell.json"
   readonly property string userConfigPath: home + "/.config/swayp/shell.json"
