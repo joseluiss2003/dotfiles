@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.lock",
+  "id": "swayp.lock",
   "name": "Lock Screen",
   "version": "1.0.0",
-  "author": "Omarchy",
+  "author": "SwayP",
   "description": "Quickshell session lock with separate password and fingerprint PAM flows.",
-  "omarchy": {
+  "swayp": {
     "capabilities": [
       "authentication"
     ]
