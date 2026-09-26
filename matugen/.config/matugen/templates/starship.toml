@@ -12,10 +12,8 @@ $character
 """
 
 [palettes.matugen]
-background = "{{ colors.surface.default.hex }}"
 foreground = "{{ colors.on_surface.default.hex }}"
 primary = "{{ colors.primary.default.hex }}"
-primary_container = "{{ colors.primary_container.default.hex }}"
 secondary = "{{ colors.secondary.default.hex }}"
 tertiary = "{{ colors.tertiary.default.hex }}"
 error = "{{ colors.error.default.hex }}"
@@ -34,11 +32,13 @@ format = "[@$hostname](fg:primary) "
 [directory]
 style = "bold fg:secondary"
 truncation_length = 3
+truncate_to_repo = false
 format = "[$path](fg:secondary) "
 
 [git_branch]
+symbol = "󰘬 "
 style = "bold fg:tertiary"
-format = "[$branch](fg:tertiary) "
+format = "[$symbol$branch](fg:tertiary) "
 
 [git_status]
 style = "fg:primary"
@@ -47,3 +47,8 @@ format = "[$all_status$ahead_behind](fg:primary) "
 [character]
 success_symbol = "[❯](bold fg:primary)"
 error_symbol = "[❯](bold fg:error)"
+vimcmd_symbol = "[❮](bold fg:primary)"
+
+[cmd_duration]
+min_time = 2000
+format = " took [$duration](fg:muted)"
