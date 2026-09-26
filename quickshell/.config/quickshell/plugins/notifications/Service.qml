@@ -657,7 +657,8 @@ Item {
       "  [[ -e $f ]] || continue\n" +
       "  stale=\"${f##*/}\"\n" +
       "  rm -f \"$f\" \"$2/${stale%.json}\"-*\n" +
-      "done", "--", historyDir, imagesDir])
+      "done", "--", historyDir, imagesDir],
+      function() { service.historyChanged() })
   }
 
   // A restart can kill a queued job between its cp and its JSON write,
