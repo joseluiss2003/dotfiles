@@ -677,10 +677,10 @@ Item {
     }
 
     enqueuePopupFileJob(["bash", "-c",
-      "for dir in \\\"$1\\\" \\\"$2\\\"; do\\n" +
-      "  for f in \\\"$dir\\\"/*.json; do [[ -e $f ]] && rm -f -- \\\"$f\\\"; done\\n" +
+      "for dir in \"$1\" \"$2\"; do\\n" +
+      "  for f in \"$dir\"/*.json; do [[ -e $f ]] && rm -f -- \"$f\"; done\\n" +
       "done\\n" +
-      "rm -f -- \\\"$3\\\"/*", "--",
+      "rm -f -- \"$3\"/*", "--",
       popupStateDir,
       historyDir,
       imagesDir],
