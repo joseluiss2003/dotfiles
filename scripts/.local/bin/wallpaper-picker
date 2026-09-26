@@ -1,0 +1,200 @@
+#!/bin/sh
+set -eu
+
+# ============================================================
+# Wallpaper picker
+# - Fuzzel selection with real image thumbnails
+# - Matugen applies the selected wallpaper/theme
+# - Never starts or restarts Quickshell
+# - Lock prevents double-launching the picker
+# ============================================================
+
+WALLPAPER_DIR="${HOME}/Pictures/wallpapers"
+STATE_DIR="${HOME}/.local/state/wallpaper"
+CURRENT="${STATE_DIR}/current"
+THUMB_DIR="${STATE_DIR}/thumbnails"
+MENU_FILE="${STATE_DIR}/picker-menu"
+
+mkdir -p "$STATE_DIR" "$THUMB_DIR"
+
+# Prevent two picker windows from existing at the same time.
+LOCK_FILE="${STATE_DIR}/picker.lock"
+exec 9>"$LOCK_FILE"
+if command -v flock >/dev/null 2>&1; then
+    flock -n 9 || exit 0
+fi
+
+cleanup() {
+    rm -f "$MENU_FILE"
+}
+trap cleanup EXIT INT TERM
+
+[ -d "$WALLPAPER_DIR" ] || {
+    notify-send "Wallpapers" "No existe $WALLPAPER_DIR"
+    exit 1
+}
+
+# Keep the list simple/portable. Wallpaper filenames with newlines are
+# intentionally not supported by this picker.
+FILES=$(
+    find "$WALLPAPER_DIR" -maxdepth 1 -type f \
+        \( \
+            -iname '*.jpg' \
+            -o -iname '*.jpeg' \
+            -o -iname '*.png' \
+            -o -iname '*.webp' \
+            -o -iname '*.svg' \
+        \) \
+        -print |
+    sort
+)
+
+[ -n "$FILES" ] || {
+    notify-send "Wallpapers" "No hay wallpapers en $WALLPAPER_DIR"
+    exit 1
+}
+
+# ------------------------------------------------------------
+# Thumbnail backend
+# ------------------------------------------------------------
+
+THUMB_TOOL=""
+
+if command -v magick >/dev/null 2>&1; then
+    THUMB_TOOL="magick"
+elif command -v convert >/dev/null 2>&1; then
+    THUMB_TOOL="convert"
+fi
+
+make_thumbnail() {
+    file="$1"
+
+    # Fuzzel can use PNG/SVG image files directly as row icons.
+    case "${file##*.}" in
+        png|PNG|svg|SVG)
+            printf '%s\n' "$file"
+            return 0
+            ;;
+    esac
+
+    # JPEG/WebP thumbnails need to be converted to PNG for the picker.
+    [ -n "$THUMB_TOOL" ] || return 1
+
+    stamp=$(stat -c '%Y:%s' "$file" 2>/dev/null || printf '0:0')
+    key=$(
+        printf '%s:%s' "$file" "$stamp" |
+        sha256sum |
+        cut -d' ' -f1
+    )
+
+    thumb="${THUMB_DIR}/${key}.png"
+
+    if [ ! -s "$thumb" ]; then
+        if [ "$THUMB_TOOL" = "magick" ]; then
+            magick "$file" \
+                -auto-orient \
+                -thumbnail '420x240^' \
+                -gravity center \
+                -extent 420x240 \
+                "$thumb" 2>/dev/null || {
+                    rm -f "$thumb"
+                    return 1
+                }
+        else
+            convert "$file" \
+                -auto-orient \
+                -thumbnail '420x240^' \
+                -gravity center \
+                -extent 420x240 \
+                "$thumb" 2>/dev/null || {
+                    rm -f "$thumb"
+                    return 1
+                }
+        fi
+    fi
+
+    printf '%s\n' "$thumb"
+}
+
+# ------------------------------------------------------------
+# Build the Fuzzel dmenu stream.
+#
+# Fields:
+#   1 = numeric index
+#   2 = visible wallpaper name
+#   3 = absolute wallpaper path returned on selection
+#
+# The NUL metadata after each row gives Fuzzel a real image icon.
+# Fuzzel supports this extended dmenu icon protocol. 
+# ------------------------------------------------------------
+
+: > "$MENU_FILE"
+
+index=0
+printf '%s\n' "$FILES" |
+while IFS= read -r file; do
+    [ -n "$file" ] || continue
+
+    name=$(basename "$file")
+    thumb=""
+
+    if thumb=$(make_thumbnail "$file"); then
+        :
+    else
+        # No thumbnail backend: keep the row usable without a preview.
+        thumb=""
+    fi
+
+    printf '%s\t%s\t%s' "$index" "$name" "$file" >> "$MENU_FILE"
+
+    if [ -n "$thumb" ] && [ -f "$thumb" ]; then
+        # NUL + "icon" metadata + ASCII Unit Separator.
+        printf '\0icon\037%s\n' "$thumb" >> "$MENU_FILE"
+    else
+        printf '\n' >> "$MENU_FILE"
+    fi
+
+    index=$((index + 1))
+done
+
+if ! command -v fuzzel >/dev/null 2>&1; then
+    notify-send "Wallpapers" "Fuzzel no está instalado"
+    exit 1
+fi
+
+selected_file=$(
+    fuzzel \
+        --dmenu \
+        --prompt "󰸉  Wallpaper  " \
+        --lines 7 \
+        --minimal-lines \
+        --width 58 \
+        --line-height=52px \
+        --horizontal-pad 18 \
+        --vertical-pad 8 \
+        --with-nth 2 \
+        --accept-nth 3 \
+        --cache /dev/null \
+        --override border.width=1 \
+        --override border.radius=0 \
+        < "$MENU_FILE"
+)
+
+[ -n "$selected_file" ] || exit 0
+[ -f "$selected_file" ] || exit 1
+
+# ------------------------------------------------------------
+# Apply wallpaper/theme.
+#
+# IMPORTANT: this script deliberately contains NO "qs" command.
+# Matugen is only run once; Quickshell is left alone.
+# ------------------------------------------------------------
+
+if ! matugen image "$selected_file" -m dark; then
+    notify-send "Wallpaper" "Matugen no pudo aplicar $(basename "$selected_file")"
+    exit 1
+fi
+
+printf '%s\n' "$selected_file" > "$CURRENT"
+
+notify-send "Wallpaper" "$(basename "$selected_file")"

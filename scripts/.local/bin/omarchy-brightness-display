@@ -1,0 +1,87 @@
+#!/bin/sh
+
+set -eu
+
+DEVICE="intel_backlight"
+
+usage() {
+    printf '%s\n' \
+        "Usage:" \
+        "  $0 --get" \
+        "  $0 [--no-osd] [--monitor NAME] VALUE%"
+}
+
+get_brightness() {
+    brightnessctl --device="$DEVICE" get
+}
+
+get_max() {
+    brightnessctl --device="$DEVICE" max
+}
+
+if [ "${1:-}" = "--get" ]; then
+    current="$(get_brightness)"
+    maximum="$(get_max)"
+
+    if [ "$maximum" -le 0 ]; then
+        printf '%s\n' "unavailable"
+        exit 1
+    fi
+
+    awk -v current="$current" -v maximum="$maximum" \
+        'BEGIN { printf "%d\n", (current * 100 / maximum) + 0.5 }'
+
+    exit 0
+fi
+
+value=""
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        --no-osd)
+            shift
+            ;;
+        --monitor)
+            shift
+            [ "$#" -gt 0 ] || {
+                usage >&2
+                exit 2
+            }
+            shift
+            ;;
+        -*)
+            usage >&2
+            exit 2
+            ;;
+        *%)
+            value="${1%\%}"
+            shift
+            ;;
+        *)
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
+
+[ -n "$value" ] || {
+    usage >&2
+    exit 2
+}
+
+case "$value" in
+    *[!0-9]*)
+        usage >&2
+        exit 2
+        ;;
+esac
+
+if [ "$value" -lt 1 ]; then
+    value=1
+elif [ "$value" -gt 100 ]; then
+    value=100
+fi
+
+brightnessctl \
+    --device="$DEVICE" \
+    set "${value}%"

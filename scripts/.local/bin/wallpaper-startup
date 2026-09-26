@@ -1,0 +1,16 @@
+#!/bin/sh
+
+STATE_DIR="$HOME/.local/state/wallpaper"
+CURRENT="$STATE_DIR/current"
+
+mkdir -p "$STATE_DIR"
+
+if ! pgrep -u "$USER" -x awww-daemon >/dev/null 2>&1; then
+    /usr/bin/awww-daemon >/tmp/awww-daemon.log 2>&1 &
+fi
+
+sleep 1
+
+if [ -f "$CURRENT" ] && [ -f "$(cat "$CURRENT")" ]; then
+    matugen image "$(cat "$CURRENT")" -m dark
+fi
