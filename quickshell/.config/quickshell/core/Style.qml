@@ -259,14 +259,14 @@ QtObject {
   // ---------------------------------------------------------- typography
   //
   // `fontFamily` defaults to "monospace" so the bar and every qs.ui
-  // component follows the fontconfig alias `omarchy-font-set` writes.
+  // component follows the fontconfig alias configured by SwayP writes.
   // Themes can override per-token via [font] in shell.toml, but the
   // family stays system-wide.
   property string fontFamily: "monospace"
 
   // The concrete family `monospace` resolves to right now, e.g.
   // "JetBrainsMono Nerd Font". Bind `font.family` to `fontFamily` (so the
-  // alias path keeps working when the user runs `omarchy font set`), but
+  // alias path keeps working when the user updates the SwayP font configuration), but
   // read `resolvedFontFamily` when you want to *display* what's drawing.
   property string resolvedFontFamily: "monospace"
 
@@ -306,7 +306,7 @@ QtObject {
   }
 
   // The menu, polkit, emojis, and clipboard surfaces honor an
-  // OMARCHY_MENU_FONT override for users who want a different family on the
+  // SWAYP_MENU_FONT override for users who want a different family on the
   // summoned popups than on the bar. Resolved once at startup; an empty env
   // value falls back to the shared fontconfig alias.
   readonly property string menuFontFamily: {
@@ -413,9 +413,8 @@ QtObject {
     styleOverrides = styleOut
   }
 
-  // Resolve the fontconfig alias to a concrete family name. `omarchy font
-  // set <name>` rewrites ~/.config/fontconfig/fonts.conf and restarts the
-  // shell, but rerun on file change anyway so manual edits propagate too.
+  // Resolve the fontconfig monospace family. Re-run on file changes so manual
+  // fontconfig edits propagate without requiring a shell restart.
   function resolveFontFamily() {
     fcMatchProc.running = true
   }
