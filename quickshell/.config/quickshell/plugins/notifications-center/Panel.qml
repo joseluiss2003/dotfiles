@@ -337,7 +337,7 @@ Panel {
               }
 
               Text {
-                text: root.notificationPhrase.toUpperCase()
+                text: root.dnd ? "DO NOT DISTURB" : root.notificationPhrase.toUpperCase()
                 color: Color.muted
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.caption
