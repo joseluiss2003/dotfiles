@@ -33,6 +33,7 @@ Panel {
   }
 
   readonly property int notificationCount: centerModel.count
+  property bool historyReloadPending: false
 
   function activeRows() {
     var rows = []
@@ -86,7 +87,13 @@ Panel {
   }
 
   function reloadHistory() {
-    if (!notificationService || historyReader.running) return
+    if (!notificationService) return
+    if (historyReader.running) {
+      historyReloadPending = true
+      return
+    }
+
+    historyReloadPending = false
     historyReader.command = [
       "bash", "-c",
       "awk 1 \"$1\"/*.json 2>/dev/null || true",
@@ -97,10 +104,8 @@ Panel {
   }
 
   function clearAll() {
-    if (notificationService) {
-      notificationService.clearPopups()
-      notificationService.clearHistory()
-    }
+    if (notificationService)
+      notificationService.clearAllNotifications()
   }
 
   readonly property bool dnd:
@@ -124,7 +129,13 @@ Panel {
 
     stdout: StdioCollector {
       waitForEnd: true
-      onStreamFinished: root.rebuildCenter(text)
+      onStreamFinished: {
+        root.rebuildCenter(text)
+        if (root.historyReloadPending) {
+          root.historyReloadPending = false
+          Qt.callLater(root.reloadHistory)
+        }
+      }
     }
   }
 
@@ -132,6 +143,14 @@ Panel {
     target: root.notificationService
 
     function onHistoryChanged() {
+      root.reloadHistory()
+    }
+  }
+
+  Connections {
+    target: root
+
+    function onNotificationServiceChanged() {
       root.reloadHistory()
     }
   }
@@ -322,7 +341,7 @@ Panel {
             Layout.fillWidth: true
             Layout.preferredHeight: Math.min(
               card.maxListHeight,
-              Math.max(notificationList.implicitHeight, Style.space(84))
+              Math.max(notificationList.contentHeight + Style.space(16), Style.space(84))
             )
 
             ListView {
