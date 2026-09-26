@@ -694,9 +694,9 @@ Item {
     if (!entry) return
     var name = NotificationLogic.popupFileName(entry)
     enqueuePopupFileJob(["bash", "-c",
-      "rm -f -- \"$1/$2.json\" \"$3/$2\"-*", "--",
+      "rm -f -- \"$1/$2\" \"$3/${2%.json}\"-*", "--",
       historyDir,
-       name.replace(/\.json$/, ""),
+      name,
       imagesDir],
       function() { service.historyChanged() })
   }
