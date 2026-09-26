@@ -438,40 +438,39 @@ Item {
           width: parent.width
           height: Style.space(48)
 
-          Text {
-            id: headerIcon
-            anchors.left: parent.left
-            anchors.leftMargin: Style.space(14)
-            anchors.verticalCenter: parent.verticalCenter
-            text: "󰅌"
-            color: Color.accent
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.display
-          }
-
-          Column {
-            anchors.left: headerIcon.right
-            anchors.leftMargin: Style.space(12)
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(2)
+          Row {
+            anchors.centerIn: parent
+            spacing: Style.space(10)
 
             Text {
-              text: "Clipboard"
-              color: Color.text
+              text: "󰅌"
+              color: Color.accent
               font.family: root.fontFamily
-              font.pixelSize: Style.font.title
-              font.bold: true
+              font.pixelSize: Style.font.display
+              anchors.verticalCenter: parent.verticalCenter
             }
 
-            Text {
-              text: root.filterText
-                ? "FILTERING HISTORY"
-                : "RECENT FRAGMENTS"
-              color: Color.muted
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-              font.letterSpacing: 1.1
+            Column {
+              spacing: Style.space(2)
+
+              Text {
+                text: "Clipboard"
+                color: Color.text
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.title
+                font.bold: true
+              }
+
+              Text {
+                text: root.filterText
+                  ? "FILTERING HISTORY"
+                  : "RECENT FRAGMENTS"
+                color: Color.muted
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.caption
+                font.bold: true
+                font.letterSpacing: 1.1
+              }
             }
           }
 
@@ -502,10 +501,10 @@ Item {
           ListView {
             id: resultList
             anchors.fill: parent
-            anchors.leftMargin: Style.space(10)
-            anchors.rightMargin: Style.space(10)
-            anchors.topMargin: Style.space(8)
-            anchors.bottomMargin: Style.space(8)
+            anchors.leftMargin: Style.space(14)
+            anchors.rightMargin: Style.space(14)
+            anchors.topMargin: Style.space(10)
+            anchors.bottomMargin: Style.space(10)
             model: displayModel
             clip: true
             spacing: Style.space(4)
@@ -548,7 +547,7 @@ Item {
               Row {
                 anchors.fill: parent
                 anchors.leftMargin: Style.space(12)
-                anchors.rightMargin: Style.space(10)
+                anchors.rightMargin: Style.space(12)
                 spacing: Style.space(8)
 
                 Item {
@@ -674,7 +673,7 @@ Item {
           Button {
             id: clearButton
             anchors.right: parent.right
-            anchors.rightMargin: Style.space(10)
+            anchors.rightMargin: Style.space(14)
             anchors.verticalCenter: parent.verticalCenter
             width: Style.space(86)
             text: "Clear"
