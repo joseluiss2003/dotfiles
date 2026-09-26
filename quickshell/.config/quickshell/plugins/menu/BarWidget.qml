@@ -5,12 +5,12 @@ import qs.ui
 import qs.core
 
 // Small square power/session launcher for the left side of the Sway bar.
-// Kept under the built-in omarchy.menu id so no extra plugin registration is
-// needed. It deliberately uses direct system commands instead of the Omarchy
+// Uses the built-in swayp.menu id so it participates in the normal plugin registry without
+// special menu dependencies. It deliberately uses direct system commands instead of external Omarchy
 // menu helper, which is Hyprland-oriented and was the broken leftmost applet.
 BarWidget {
   id: root
-  moduleName: "omarchy.menu"
+  moduleName: "swayp.menu"
 
   property bool popupOpen: false
 
