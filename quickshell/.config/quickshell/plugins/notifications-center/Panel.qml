@@ -89,7 +89,7 @@ Panel {
     if (!notificationService || historyReader.running) return
     historyReader.command = [
       "bash", "-c",
-      "awk 1 "$1"/*.json 2>/dev/null || true",
+      "awk 1 \"$1\"/*.json 2>/dev/null || true",
       "--",
       notificationService.historyDir
     ]
