@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+STATE_DIR="$HOME/.local/state/swayp/toggles"
+STATE_FILE="$STATE_DIR/bar-off"
+
+mkdir -p "$STATE_DIR"
+
+case "${1:-toggle}" in
+  on)
+    rm -f "$STATE_FILE"
+    ;;
+  off)
+    touch "$STATE_FILE"
+    ;;
+  toggle)
+    if [[ -e "$STATE_FILE" ]]; then
+      rm -f "$STATE_FILE"
+    else
+      touch "$STATE_FILE"
+    fi
+    ;;
+  *)
+    echo "Usage: swyp-toggle-bar [on|off|toggle]" >&2
+    exit 2
+    ;;
+esac
+
+qs ipc call swyp.bar syncHidden >/dev/null 2>&1 || true
