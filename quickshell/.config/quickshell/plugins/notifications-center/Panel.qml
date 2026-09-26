@@ -32,10 +32,7 @@ Panel {
   readonly property bool dnd:
     notificationService ? !!notificationService.doNotDisturb : false
 
-  readonly property string fontFamily:
-    shell && shell.bar && shell.bar.fontFamily
-      ? shell.bar.fontFamily
-      : Style.font.family
+  readonly property string fontFamily: Style.font.resolvedFamily
 
   function toggleDnd() {
     if (notificationService)
