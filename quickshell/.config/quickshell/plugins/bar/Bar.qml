@@ -935,6 +935,18 @@ Item {
     return BarModel.nearestDropTarget(candidates, scenePoint, root.vertical)
   }
 
+  function visibleModuleSlotOnScreen(region, name, screenName) {
+    var wanted = String(screenName || "")
+    for (var i = 0; i < moduleSlots.length; i++) {
+      var slot = moduleSlots[i]
+      if (!slot || slot.region !== region || slot.moduleName !== name ||
+          !slot.visible || slot.width <= 0 || slot.height <= 0) continue
+      if (wanted !== "" && root.slotScreenName(slot) !== wanted) continue
+      return slot
+    }
+    return null
+  }
+
   function visibleModuleSlot(region, name, sourceSlot) {
     var sourceWindow = root.slotWindow(sourceSlot) || root.barDragWindow
     for (var i = 0; i < moduleSlots.length; i++) {
