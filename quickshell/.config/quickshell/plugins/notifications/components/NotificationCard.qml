@@ -169,7 +169,7 @@ BorderSurface {
           Layout.fillWidth: true
           visible: root.summary.length > 0
           text: root.summary
-          font.family: "Liberation Sans"
+          font.family: root.fontFamily.length > 0 ? root.fontFamily : Style.font.family
           color: Color.notifications.text
           font.pixelSize: Style.font.title
           font.bold: true
