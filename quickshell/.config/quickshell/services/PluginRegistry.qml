@@ -91,7 +91,7 @@ QtObject {
 
   function trustedCapabilities(manifest) {
     if (!manifest || !manifest.__isFirstParty) return []
-    var metadata = Util.isPlainObject(manifest.omarchy) ? manifest.omarchy : null
+    var metadata = Util.isPlainObject(manifest.swayp) ? manifest.swayp : null
     var declared = metadata && Array.isArray(metadata.capabilities) ? metadata.capabilities : []
     var out = []
     for (var i = 0; i < declared.length; i++) {
@@ -107,7 +107,7 @@ QtObject {
 
     for (var thirdPartyId in thirdParty) {
       var manifest = thirdParty[thirdPartyId]
-      var metadata = manifest && Util.isPlainObject(manifest.omarchy) ? manifest.omarchy : null
+      var metadata = manifest && Util.isPlainObject(manifest.swayp) ? manifest.swayp : null
       var clonedFrom = metadata ? String(metadata.clonedFrom || "") : ""
       var source = clonedFrom ? firstParty[clonedFrom] : null
       manifest.__hostCapabilities = source && Array.isArray(source.__hostCapabilities)
@@ -138,12 +138,12 @@ QtObject {
   // overlays, services).
   //
   // Special cases (implicitly always enabled, no shell.json entry needed):
-  //   - the built-in bar option (`omarchy.bar`) is active when `bar.id` is
-  //     missing or set to `omarchy.bar`.
+  //   - the built-in bar option (`swayp.bar`) is active when `bar.id` is
+  //     missing or set to `swayp.bar`.
   //   - first-party non-bar plugins are shell infrastructure (settings,
   //     image-picker, ...). Requiring users to add them to plugins[] just to
   //     summon them was a footgun: a stock shell.json with `plugins: []` would
-  //     silently make `omarchy launch bar-settings` a no-op. Turning one off
+  //     silently make `swayp launch bar-settings` a no-op. Turning one off
   //     is therefore recorded the other way round, in `disabledPlugins[]`.
   function isEnabled(id) {
     var key = String(id)
@@ -154,7 +154,7 @@ QtObject {
         var selectedBar = ""
         if (Util.isPlainObject(config) && Util.isPlainObject(config.bar))
           selectedBar = Util.canonicalWidgetId(String(config.bar.id || ""))
-        if (!selectedBar) selectedBar = "omarchy.bar"
+        if (!selectedBar) selectedBar = "swayp.bar"
         return selectedBar === key
       }
       if (isDisabled(config, key)) return false
@@ -174,7 +174,7 @@ QtObject {
     // manifest is the implementation that should receive the call.
     for (var candidate in installedPlugins) {
       var manifest = installedPlugins[candidate]
-      var metadata = manifest && Util.isPlainObject(manifest.omarchy) ? manifest.omarchy : null
+      var metadata = manifest && Util.isPlainObject(manifest.swayp) ? manifest.swayp : null
       if (metadata && String(metadata.clonedFrom || "") === key && isEnabled(candidate))
         return candidate
     }
@@ -184,7 +184,7 @@ QtObject {
   // A bar widget is on when it sits in the bar, whoever shipped it. That is a
   // different question from isEnabled(), which decides whether the widget's
   // component is loaded at all — a built-in stays loadable so it can be put
-  // back, and so a plugin that is both a widget and a menu (omarchy.menu)
+  // back, and so a plugin that is both a widget and a menu (swayp.menu)
   // cannot be locked out of the shell by taking its button off the bar.
   function inBar(id) {
     var config = shellConfigProvider ? shellConfigProvider() : null
@@ -424,8 +424,8 @@ QtObject {
   function activeCloneFor(config, sourceId) {
     for (var candidate in installedPlugins) {
       var candidateManifest = installedPlugins[candidate]
-      var candidateMetadata = candidateManifest && Util.isPlainObject(candidateManifest.omarchy)
-        ? candidateManifest.omarchy : null
+      var candidateMetadata = candidateManifest && Util.isPlainObject(candidateManifest.swayp)
+        ? candidateManifest.swayp : null
       if (!candidateMetadata || String(candidateMetadata.clonedFrom || "") !== sourceId) continue
       if (Array.isArray(candidateManifest.kinds) && candidateManifest.kinds.indexOf("bar") !== -1) {
         if (Util.canonicalWidgetId(String(config.bar.id || "")) === candidate) return candidate
@@ -441,7 +441,7 @@ QtObject {
     var isBarOption = cloneManifest && Array.isArray(cloneManifest.kinds)
       && cloneManifest.kinds.indexOf("bar") !== -1
     if (isBarOption) {
-      if (sourceId === "omarchy.bar") delete config.bar.id
+      if (sourceId === "swayp.bar") delete config.bar.id
       else config.bar.id = sourceId
     } else {
       var cloneLocation = findEntryLocation(config, cloneId)
@@ -485,7 +485,7 @@ QtObject {
     var isBarWidget = manifest && Array.isArray(manifest.kinds) && manifest.kinds.indexOf("bar-widget") !== -1
     var hasNonWidgetKind = manifest && Array.isArray(manifest.kinds)
       && manifest.kinds.some(function(kind) { return kind !== "bar-widget" })
-    var metadata = manifest && Util.isPlainObject(manifest.omarchy) ? manifest.omarchy : null
+    var metadata = manifest && Util.isPlainObject(manifest.swayp) ? manifest.swayp : null
     var clonedFrom = metadata ? Util.canonicalWidgetId(String(metadata.clonedFrom || "")) : ""
     shellConfigMutator(function(config) {
       ensureConfigShape(config)
@@ -510,7 +510,7 @@ QtObject {
         if (value) {
           config.bar.id = key
         } else if (Util.canonicalWidgetId(String(config.bar.id || "")) === key) {
-          if (clonedFrom && clonedFrom !== "omarchy.bar") config.bar.id = clonedFrom
+          if (clonedFrom && clonedFrom !== "swayp.bar") config.bar.id = clonedFrom
           else delete config.bar.id
         }
         return
@@ -622,12 +622,12 @@ QtObject {
     var merged = {}
     for (var fk in firstParty) merged[fk] = firstParty[fk]
     // Third-party plugins never shadow first-party ids. The whole
-    // `omarchy.*` namespace is reserved for built-ins, including bar widgets
+    // `swayp.*` namespace is reserved for built-ins, including bar widgets
     // registered outside the manifest-based plugin registry.
     for (var tk in thirdParty) {
-      if (firstParty[tk] || String(tk).indexOf("omarchy.") === 0) {
+      if (firstParty[tk] || String(tk).indexOf("swayp.") === 0) {
         console.warn("PluginRegistry: plugin " + tk
-          + " rejected: id is reserved for first-party Omarchy plugins")
+          + " rejected: id is reserved for first-party SwayP plugins")
         continue
       }
       merged[tk] = thirdParty[tk]
