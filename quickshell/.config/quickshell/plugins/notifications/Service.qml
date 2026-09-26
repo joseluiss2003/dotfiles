@@ -6,7 +6,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Services.Notifications
-import qs.Commons
+import qs.core
 
 import "components"
 import "NotificationLogic.js" as NotificationLogic

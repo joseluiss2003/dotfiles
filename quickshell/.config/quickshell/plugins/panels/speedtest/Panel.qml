@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell.Io
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 
 // The shared gauge-cluster overlay (SpeedTestOverlay) dressed for the
 // internet speed test: download and upload dials in Mbps, titled with the

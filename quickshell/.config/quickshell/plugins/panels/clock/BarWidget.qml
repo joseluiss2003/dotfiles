@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 import "Model.js" as Model
 
 // Date/time label for the bar, and the host for the calendar popup.

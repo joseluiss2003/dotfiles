@@ -4,8 +4,8 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Mpris
 import Quickshell.Services.Pipewire
-import qs.Ui
-import qs.Commons
+import qs.ui
+import qs.core
 import "Model.js" as Model
 
 Panel {

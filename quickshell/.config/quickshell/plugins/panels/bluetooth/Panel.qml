@@ -5,8 +5,8 @@ import Quickshell.Io
 import Quickshell.I3
 import Quickshell.Bluetooth
 import Quickshell.Services.Pipewire
-import qs.Ui
-import qs.Commons
+import qs.ui
+import qs.core
 import "Model.js" as Model
 
 Panel {

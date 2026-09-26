@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 
 // Compact notification entry for the bar. The panel remains the full
 // notification-center surface; this widget only exposes its live count and

@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.Pipewire
-import qs.Ui
+import qs.ui
 
 BarWidget {
   id: root

@@ -5,8 +5,8 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 import "../NotificationLogic.js" as NotificationLogic
 
 BorderSurface {

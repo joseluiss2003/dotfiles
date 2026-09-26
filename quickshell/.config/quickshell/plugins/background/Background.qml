@@ -4,8 +4,8 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Shapes
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 
 Item {
   id: root

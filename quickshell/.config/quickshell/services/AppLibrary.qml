@@ -2,7 +2,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
-import qs.Commons
+import qs.core
 import "AppSearch.js" as AppSearch
 
 // Shared desktop-application library: the sorted entry list with hidden-entry

@@ -4,8 +4,8 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.I3
 import Quickshell.Wayland
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 import "../notifications/components" as NotificationComponents
 import "../notifications/NotificationLogic.js" as NotificationLogic
 

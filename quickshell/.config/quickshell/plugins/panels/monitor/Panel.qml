@@ -3,8 +3,8 @@ import QtQuick.Controls
 import Quickshell
 import Quickshell.Io
 import Quickshell.I3
-import qs.Ui
-import qs.Commons
+import qs.ui
+import qs.core
 import "Model.js" as Model
 
 Panel {

@@ -4,7 +4,7 @@ import QtQml.Models
 import Quickshell
 import Quickshell.Io
 
-import qs.Commons
+import qs.core
 
 import "plugins/bar"
 import "services"

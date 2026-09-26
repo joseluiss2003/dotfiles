@@ -4,8 +4,8 @@ import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 import "BarModel.js" as BarModel
 
 Item {

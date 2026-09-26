@@ -2,8 +2,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 import "OsdModel.js" as OsdModel
 
 Item {

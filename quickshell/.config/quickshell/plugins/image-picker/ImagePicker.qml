@@ -4,7 +4,7 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Shapes
-import qs.Commons
+import qs.core
 import "ImagePickerModel.js" as ImagePickerModel
 
 Item {

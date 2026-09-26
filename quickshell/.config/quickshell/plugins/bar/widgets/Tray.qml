@@ -3,8 +3,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
 import Quickshell.Services.SystemTray
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 import "TrayModel.js" as TrayModel
 
 BarWidget {

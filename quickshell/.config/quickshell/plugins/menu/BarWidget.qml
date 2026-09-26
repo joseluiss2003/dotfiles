@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import qs.Ui
-import qs.Commons
+import qs.ui
+import qs.core
 
 // Small square power/session launcher for the left side of the Sway bar.
 // Kept under the built-in omarchy.menu id so no extra plugin registration is

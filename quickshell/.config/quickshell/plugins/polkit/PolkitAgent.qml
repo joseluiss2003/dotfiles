@@ -3,8 +3,8 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Polkit
 import Quickshell.Wayland
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 import "PolkitModel.js" as PolkitModel
 
 Item {

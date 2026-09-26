@@ -1,7 +1,7 @@
 # Omarchy Quattro → Sway migration
 
 This tree keeps the Omarchy Quattro shell architecture while routing
-compositor-specific state through `qs.Commons.Sway`.
+compositor-specific state through `qs.core.Sway`.
 
 ## Phase 1
 

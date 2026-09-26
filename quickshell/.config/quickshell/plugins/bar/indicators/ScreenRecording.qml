@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell.Io
-import qs.Ui
+import qs.ui
 
 BarIndicator {
   id: root

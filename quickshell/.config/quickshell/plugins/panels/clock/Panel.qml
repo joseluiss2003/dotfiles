@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 import "Model.js" as Model
 
 // The clock's calendar popup: a month grid with ISO week numbers, built to

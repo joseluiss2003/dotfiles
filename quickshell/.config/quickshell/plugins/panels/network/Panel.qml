@@ -5,8 +5,8 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.I3
 import Quickshell.Networking
-import qs.Ui
-import qs.Commons
+import qs.ui
+import qs.core
 import "Model.js" as Model
 
 Panel {

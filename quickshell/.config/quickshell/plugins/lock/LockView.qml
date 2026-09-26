@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Effects
-import qs.Commons
-import qs.Ui
+import qs.core
+import qs.ui
 
 Item {
   id: root
