@@ -3,7 +3,7 @@
 # swayp:summary=Print the sink whose volume and mute a given output really uses
 # swayp:args=[sink-name]
 # swayp:group=audio
-# swayp:examples=omarchy audio output sink | omarchy audio output sink omarchy_speaker_tuning
+# swayp:examples=swayp-audio-output-sink | swayp-audio-output-sink easyeffects_sink
 
 set -uo pipefail
 
