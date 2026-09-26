@@ -387,6 +387,7 @@ Item {
             else if (root.cursorActive) root.activateIndex(root.selectedIndex)
             else if (displayModel.count > 0) root.cursorActive = true
             event.accepted = true
+          }
         }
 
         Component.onCompleted: {
@@ -670,7 +671,6 @@ Item {
           }
         }
       }
-}
     }
   }
 }
