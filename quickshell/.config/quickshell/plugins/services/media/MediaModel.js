@@ -8,6 +8,29 @@ function hasMetadata(player) {
   return !!(player && (player.trackTitle || player.trackArtist || player.identity || player.desktopEntry))
 }
 
+function sameTrack(a, b) {
+  if (!a || !b) return false
+  var title = String(a.trackTitle || "")
+  var artist = String(a.trackArtist || "")
+  var album = String(a.trackAlbum || "")
+  return title !== "" && title === String(b.trackTitle || "")
+    && artist === String(b.trackArtist || "")
+    && album === String(b.trackAlbum || "")
+}
+
+function isRedundantProxy(player, players) {
+  if (!isProxyPlayer(player)) return false
+
+  var list = Array.isArray(players) ? players : []
+  for (var i = 0; i < list.length; i++) {
+    var candidate = list[i]
+    if (!candidate || isProxyPlayer(candidate)) continue
+    if (sameTrack(player, candidate)) return true
+  }
+
+  return false
+}
+
 function hasTrackMetadata(player) {
   return !!(player && (player.trackTitle || player.trackArtist || player.trackAlbum || player.trackArtUrl))
 }
@@ -137,6 +160,8 @@ if (typeof module !== "undefined") {
     trackSignature: trackSignature,
     trackChanged: trackChanged,
     labelFor: labelFor,
-    osdMessage: osdMessage
+    osdMessage: osdMessage,
+    sameTrack: sameTrack,
+    isRedundantProxy: isRedundantProxy
   }
 }
