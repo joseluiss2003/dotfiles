@@ -4,7 +4,7 @@ import qs.ui
 BarIndicator {
   id: root
 
-  readonly property var idleService: bar?.shell?.firstPartyServiceFor("omarchy.idle")
+  readonly property var idleService: bar?.shell?.firstPartyServiceFor("swayp.idle")
 
   active: idleService ? idleService.stayAwake : false
   activeText: "󰅶"
