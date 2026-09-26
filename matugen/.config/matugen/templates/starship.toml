@@ -3,11 +3,9 @@
 palette = "matugen"
 
 format = """
-$username\
-$hostname\
 $directory\
 $git_branch\
-$git_status\
+$git_status
 $character
 """
 
@@ -18,16 +16,6 @@ secondary = "{{ colors.secondary.default.hex }}"
 tertiary = "{{ colors.tertiary.default.hex }}"
 error = "{{ colors.error.default.hex }}"
 muted = "{{ colors.on_surface_variant.default.hex }}"
-
-[username]
-show_always = true
-style_user = "bold fg:foreground"
-format = "[$user](fg:foreground)"
-
-[hostname]
-ssh_only = false
-style = "bold fg:primary"
-format = "[@$hostname](fg:primary) "
 
 [directory]
 style = "bold fg:secondary"
