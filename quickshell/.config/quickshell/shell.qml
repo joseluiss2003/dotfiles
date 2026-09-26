@@ -45,7 +45,7 @@ ShellRoot {
       layout: {
         left: [{ id: "swayp.menu" }, { id: "swayp.workspaces" }],
         center: [{ id: "swayp.clock", format: "dddd HH:mm" }],
-        right: [{ id: "swayp.audio" }]
+        right: [{ id: "swayp.media" }, { id: "swayp.audio" }]
       }
     },
     plugins: []
