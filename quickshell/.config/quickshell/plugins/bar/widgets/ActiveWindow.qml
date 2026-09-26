@@ -6,7 +6,7 @@ import qs.ui
 
 BarWidget {
   id: root
-  moduleName: "omarchy.active-window"
+  moduleName: "swayp.active-window"
 
   readonly property var toplevel: ToplevelManager.activeToplevel
   readonly property string title: toplevel ? (toplevel.title || toplevel.appId || "") : ""
