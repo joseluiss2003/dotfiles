@@ -141,7 +141,6 @@ floating_modifier $mod normal
 
 exec awww-daemon
 exec env PATH="$HOME/.local/bin:$PATH" qs
-exec mako
 exec playerctld daemon
 
 
