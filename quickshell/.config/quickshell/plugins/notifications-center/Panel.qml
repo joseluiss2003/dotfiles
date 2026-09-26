@@ -393,8 +393,20 @@ Panel {
                   // Reuse it rather than duplicating notification handling.
                   onCloseRequested: {
                     if (!root.notificationService) return
-                    if (root.isActiveEntry(row.originalId, row.timestamp))
-                      root.notificationService.dismissPopup(root.activeIndex(row.originalId, row.timestamp))
+
+                    var active = root.activeIndex(row.originalId, row.timestamp)
+                    if (active >= 0)
+                      root.notificationService.dismissPopup(active)
+
+                    // Whether the notification is still live or already in
+                    // history, the X means "remove this entry from the
+                    // center". For a live popup the dismiss above queues its
+                    // archive first; the history delete therefore runs after
+                    // that archive and wins deterministically.
+                    root.notificationService.removeHistoryEntry({
+                      originalId: row.originalId,
+                      timestamp: row.timestamp
+                    })
                   }
 
                   onCardClicked: {
