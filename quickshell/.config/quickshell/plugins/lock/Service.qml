@@ -9,12 +9,11 @@ Item {
   id: root
 
   property var shell: null
-  property string omarchyPath: ""
 
   readonly property string home: Quickshell.env("HOME")
   readonly property string stateHome: home + "/.local/state"
   readonly property string userName: Quickshell.env("USER") || Quickshell.env("LOGNAME")
-  readonly property string currentBackgroundLink: stateHome + "/omarchy/current/background"
+  readonly property string currentBackgroundLink: stateHome + "/swayp/current/background"
 
   property bool lockRequested: false
   property bool pendingSessionLock: false
@@ -41,7 +40,7 @@ Item {
 
   readonly property bool locked: lockRequested || sessionLock.locked || sessionLock.secure
   readonly property bool authenticating: authenticatingPassword || fingerprintAuthenticating
-  readonly property var batteryService: shell && shell.services ? shell.firstPartyServiceFor("omarchy.battery") : null
+  readonly property var batteryService: shell && shell.services ? shell.firstPartyServiceFor("swayp.battery") : null
   readonly property bool powerSaverActive: batteryService ? batteryService.powerSaverOnBattery : false
 
   function realScreenCount() {
@@ -104,7 +103,7 @@ Item {
   function logEvent(event) {
     lastEvent = event
     lastEventAt = new Date().toISOString()
-    console.log("omarchy lock " + lastEventAt + " " + event)
+    console.log("swayp lock " + lastEventAt + " " + event)
   }
 
   function resetAuthenticationState() {
@@ -315,7 +314,7 @@ Item {
     visible: root.previewVisible
     anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
-    WlrLayershell.namespace: "omarchy-lock-preview"
+    WlrLayershell.namespace: "swayp-lock-preview"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     exclusionMode: ExclusionMode.Ignore
@@ -407,7 +406,7 @@ Item {
   Process {
     id: posterProc
     property string sourcePath: ""
-    command: ["bash", Quickshell.env("OMARCHY_PATH") + "/shell/plugins/lock/poster.sh", sourcePath]
+    command: ["bash", Quickshell.shellDir + "/plugins/lock/poster.sh", sourcePath]
     stdout: StdioCollector { id: posterOutput; waitForEnd: true }
     onExited: function(exitCode) {
       if (sourcePath !== root.backgroundPath) {
