@@ -11,7 +11,9 @@ import "AppSearch.js" as AppSearch
 Item {
   id: root
 
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
+  readonly property string swaypConfigDir: Quickshell.env("HOME") + "/.config/swayp"
+  readonly property string configuredHidesPath: root.swaypConfigDir + "/launcher.hides"
+  readonly property string hiddenEntriesScript: Quickshell.shellDir + "/services/hidden-entries.sh"
 
   property var configuredHiddenEntryIds: ({})
   property var desktopHiddenEntryIds: ({})
@@ -88,7 +90,9 @@ Item {
   function remove(desktopId, name) {
     var id = String(desktopId || "")
     if (!id) return
-    Util.execDetached(Util.shellQuote(root.omarchyPath + "/bin/omarchy-remove-launcher-entry") + " " + Util.shellQuote(id) + " " + Util.shellQuote(String(name || id)))
+    var path = root.configuredHidesPath
+    var command = "mkdir -p " + Util.shellQuote(root.swaypConfigDir) + " && touch " + Util.shellQuote(path) + " && grep -Fxq " + Util.shellQuote(id) + " " + Util.shellQuote(path) + " || printf '%s\\n' " + Util.shellQuote(id) + " >> " + Util.shellQuote(path)
+    Util.execDetached("bash -c " + Util.shellQuote(command))
   }
 
   function normalizeDesktopId(id) {
@@ -149,8 +153,7 @@ Item {
 
   function hiddenEntryScanCommand() {
     var desktop = [Quickshell.env("XDG_CURRENT_DESKTOP"), Quickshell.env("XDG_SESSION_DESKTOP"), Quickshell.env("DESKTOP_SESSION")].filter(function(v) { return String(v || "").length > 0 }).join(":")
-    var script = root.omarchyPath + "/shell/services/hidden-entries.sh"
-    return Util.shellQuote(script) + " " + Util.shellQuote(desktop)
+    return Util.shellQuote(root.hiddenEntriesScript) + " " + Util.shellQuote(desktop)
   }
 
   function toplevelCount() {
@@ -171,7 +174,7 @@ Item {
     launchDelay.stop()
     launchTimeout.stop()
     if (root.launchOsdOpen) {
-      Quickshell.execDetached(["omarchy-shell", "osd", "close"])
+      Util.execDetached("qs ipc call osd close")
       root.launchOsdOpen = false
     }
   }
@@ -218,7 +221,7 @@ Item {
   }
 
   FileView {
-    path: root.omarchyPath + "/default/omarchy/launcher.hides"
+    path: root.configuredHidesPath
     watchChanges: true
     printErrors: false
     onLoaded: root.loadConfiguredHides(text())
@@ -242,7 +245,7 @@ Item {
     onTriggered: {
       if (root.toplevelCount() > root.launchToplevelCount || ToplevelManager.activeToplevel !== root.launchActiveToplevel) return
       root.launchOsdOpen = true
-      Quickshell.execDetached(["omarchy-shell", "osd", "show", JSON.stringify({ icon: "󱓞", message: root.launchOsdMessage, duration: 0 })])
+      Util.execDetached("qs ipc call osd show " + Util.shellQuote(JSON.stringify({ icon: "󱓞", message: root.launchOsdMessage, duration: 0 })))
     }
   }
 
