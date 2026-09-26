@@ -28,8 +28,10 @@ input_path = "~/.config/matugen/templates/sway-colors.conf"
 output_path = "~/.config/matugen/generated/sway-colors.conf"
 post_hook = "swaymsg reload"
 
-
 [templates.quickshell]
 input_path = "~/.config/matugen/templates/quickshell-theme.qml"
 output_path = "~/.config/quickshell/generated/Theme.qml"
-\n[templates.fastfetch]\ninput_path = "~/.config/matugen/templates/fastfetch.jsonc"\noutput_path = "~/.config/fastfetch/config.jsonc"\n
+
+[templates.fastfetch]
+input_path = "~/.config/matugen/templates/fastfetch.jsonc"
+output_path = "~/.config/fastfetch/config.jsonc"
