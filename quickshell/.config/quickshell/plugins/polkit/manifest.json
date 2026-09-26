@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.polkit",
+  "id": "swayp.polkit",
   "name": "Polkit Agent",
   "version": "1.0.0",
-  "author": "Omarchy",
+  "author": "SwayP",
   "description": "Theme-aware authentication dialog for privileged actions.",
-  "omarchy": {
+  "swayp": {
     "capabilities": [
       "authentication"
     ]
