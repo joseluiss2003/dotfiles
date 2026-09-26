@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "omarchy.notification-center",
+  "name": "Notification Center",
+  "version": "1.0.0",
+  "author": "José Luis",
+  "description": "Sway-native notification center backed by the first-party notification service",
+  "kinds": [
+    "panel"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}
