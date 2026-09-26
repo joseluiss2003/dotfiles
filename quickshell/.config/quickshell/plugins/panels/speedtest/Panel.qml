@@ -63,7 +63,7 @@ Item {
 
   function dismiss() {
     if (root.shell && typeof root.shell.hide === "function")
-      root.shell.hide((root.manifest && root.manifest.id) || "omarchy.speedtest")
+      root.shell.hide((root.manifest && root.manifest.id) || "swayp.speedtest")
     else close()
   }
 
