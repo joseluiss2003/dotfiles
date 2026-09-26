@@ -168,7 +168,7 @@ Item {
 
   Process {
     id: laptopClosedProc
-    command: ["bash", "-c", "omarchy-hw-laptop-closed && echo closed || echo open"]
+    command: ["bash", "-c", "if grep -q closed /proc/acpi/button/lid/*/state 2>/dev/null; then echo closed; else echo open; fi"]
     stdout: StdioCollector { id: laptopClosedOut; waitForEnd: true }
     onExited: root.laptopClosed = String(laptopClosedOut.text || "").trim() === "closed"
   }
