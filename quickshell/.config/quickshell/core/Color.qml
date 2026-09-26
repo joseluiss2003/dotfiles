@@ -288,7 +288,7 @@ QtObject {
 
   property FileView userShellFile: FileView {
     id: userShellFile
-    path: root.home + "/.config/omarchy/shell.toml"
+    path: root.home + "/.config/swayp/shell.toml"
     watchChanges: true
     printErrors: false
     onLoaded: root.loadUserShell(text())
