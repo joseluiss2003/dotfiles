@@ -53,7 +53,7 @@ BarWidget {
       Text {
         id: labelText
         textFormat: Text.PlainText
-        text: root.artist ? root.title + " - " + root.artist : root.title
+        text: root.artist ? root.title + "-" + root.artist : root.title
         color: Color.accent
         font.family: root.bar.fontFamily
         font.pixelSize: Style.font.body
