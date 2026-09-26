@@ -208,7 +208,7 @@ Panel {
 
   Process {
     id: batteryProc
-    command: ["bash", "-c", "device=$(upower -e | grep '/battery_' | head -n1); [ -n \"$device\" ] || exit 1; upower -i \"$device\" | awk -F': ' '/percentage:/ {gsub(/%/,\\"\\", $2); print \"percentage\\t\" $2 \"%\"} /energy-full:/ {print \"size\\t\" $2} /cycle count:/ {print \"cycles\\t\" $2} /time to empty:/ {print \"time\\t\" $2} /time to full:/ {print \"time\\t\" $2} /energy-rate:/ {print \"rate\\t\" $2}'"]
+    command: ["bash", "-c", "device=$(upower -e | grep '/battery_' | head -n1); [ -n \"$device\" ] || exit 1; upower -i \"$device\" | awk -F': ' '/percentage:/ {gsub(/%/, \"\", $2); printf \"percentage\\t%s%%\\n\", $2} /energy-full:/ {print \"size\\t\" $2} /cycle count:/ {print \"cycles\\t\" $2} /time to empty:/ {print \"time\\t\" $2} /time to full:/ {print \"time\\t\" $2} /energy-rate:/ {print \"rate\\t\" $2}'"]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.updateKeyValue(text, "battery") }
   }
 
