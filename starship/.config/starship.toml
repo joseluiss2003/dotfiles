@@ -1,5 +1,7 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
+palette = "matugen"
+
 format = """
 $username\
 $hostname\
@@ -9,29 +11,44 @@ $git_status\
 $character
 """
 
+[palettes.matugen]
+foreground = "#f0dee0"
+primary = "#ffb2bf"
+secondary = "#d9a8b0"
+tertiary = "#e6a8b8"
+error = "#ffb4ab"
+muted = "#cbbfc1"
+
 [username]
 show_always = true
-style_user = "bold #f5eaff"
-format = "[$user]($style)"
+style_user = "bold fg:foreground"
+format = "[$user](fg:foreground)"
 
 [hostname]
 ssh_only = false
-style = "bold #d8a8ff"
-format = "[@$hostname]($style) "
+style = "bold fg:primary"
+format = "[@$hostname](fg:primary) "
 
 [directory]
-style = "bold #ff8de7"
+style = "bold fg:secondary"
 truncation_length = 3
-format = "[$path]($style) "
+truncate_to_repo = false
+format = "[$path](fg:secondary) "
 
 [git_branch]
-style = "bold #c9b4ff"
-format = "[$branch]($style) "
+symbol = "󰘬 "
+style = "bold fg:tertiary"
+format = "[$symbol$branch](fg:tertiary) "
 
 [git_status]
-style = "#ffb5ef"
-format = "[$all_status$ahead_behind]($style) "
+style = "fg:primary"
+format = "[$all_status$ahead_behind](fg:primary) "
 
 [character]
-success_symbol = "[❯](bold #ff8de7)"
-error_symbol = "[❯](bold #ff6b91)"
+success_symbol = "[❯](bold fg:primary)"
+error_symbol = "[❯](bold fg:error)"
+vimcmd_symbol = "[❮](bold fg:primary)"
+
+[cmd_duration]
+min_time = 2000
+format = " took [$duration](fg:muted)"
