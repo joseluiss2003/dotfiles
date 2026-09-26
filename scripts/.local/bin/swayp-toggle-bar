@@ -22,7 +22,7 @@ case "${1:-toggle}" in
     fi
     ;;
   *)
-    echo "Usage: swyp-toggle-bar [on|off|toggle]" >&2
+    echo "Usage: swayp-toggle-bar [on|off|toggle]" >&2
     exit 2
     ;;
 esac
