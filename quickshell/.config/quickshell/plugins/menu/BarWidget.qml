@@ -21,7 +21,7 @@ BarWidget {
     Quickshell.execDetached(command)
   }
 
-  function lock() { root.runAction(["loginctl", "lock-session"]) }
+  function lock() { root.runAction(["qs", "ipc", "call", "lock", "lock"]) }
   function suspend() { root.runAction(["systemctl", "suspend"]) }
   function logout() { root.runAction(["swaymsg", "exit"]) }
   function reboot() { root.runAction(["systemctl", "reboot"]) }
@@ -49,10 +49,11 @@ BarWidget {
     bar: root.bar
     owner: root
     open: root.popupOpen
+    focusTarget: keyCatcher
     padding: 0
     borderSpec: Border.surfaceSpec("power-session", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.space(290), panel.availableCardWidth)
-    contentHeight: Math.min(Style.space(330), panel.availableCardHeight)
+    contentWidth: Math.min(Style.space(280), panel.availableCardWidth)
+    contentHeight: Math.min(Style.space(318), panel.availableCardHeight)
     gap: Style.space(5)
 
     BorderSurface {
@@ -63,13 +64,20 @@ BarWidget {
       radius: 0
       clip: true
 
+      Item {
+        id: keyCatcher
+        anchors.fill: parent
+        focus: true
+        Keys.onEscapePressed: root.close()
+      }
+
       Column {
         anchors.fill: parent
         spacing: 0
 
         Item {
           width: parent.width
-          height: Style.space(58)
+          height: Style.space(56)
 
           Row {
             anchors.left: parent.left
@@ -115,9 +123,9 @@ BarWidget {
 
         Column {
           width: parent.width
-          spacing: Style.space(6)
-          topPadding: Style.space(12)
-          bottomPadding: Style.space(12)
+          spacing: Style.space(5)
+          topPadding: Style.space(10)
+          bottomPadding: Style.space(10)
 
           component Action: Item {
             id: action
@@ -127,17 +135,17 @@ BarWidget {
             property bool hot: false
 
             width: parent.width
-            height: Style.space(38)
+            height: Style.space(36)
 
             Rectangle {
               anchors.fill: parent
               color: action.hot
-                ? Util.alpha(Color.accentSoft, 0.22)
-                : Util.alpha(Color.surfaceAlt, 0.18)
+                ? Util.alpha(Color.accentSoft, 0.18)
+                : Util.alpha(Color.surfaceAlt, 0.10)
               border.width: Style.normalBorderWidth
               border.color: action.hot
-                ? Util.alpha(Color.accent, 0.55)
-                : Util.alpha(Color.outline, 0.30)
+                ? Util.alpha(Color.accent, 0.48)
+                : Util.alpha(Color.outline, 0.24)
             }
 
             Rectangle {
@@ -146,7 +154,7 @@ BarWidget {
               anchors.top: parent.top
               anchors.bottom: parent.bottom
               width: Style.space(1)
-              color: Util.alpha(Color.accent, 0.65)
+              color: Util.alpha(Color.accent, 0.58)
             }
 
             Row {
@@ -156,7 +164,7 @@ BarWidget {
               spacing: Style.space(10)
 
               Text {
-                width: Style.space(24)
+                width: Style.space(22)
                 text: action.iconText
                 color: action.labelText === "Power off"
                   ? Color.error
@@ -168,11 +176,11 @@ BarWidget {
               }
 
               Text {
-                width: parent.width - Style.space(34)
+                width: parent.width - Style.space(32)
                 text: action.labelText
                 color: action.labelText === "Power off"
                   ? Color.error
-                  : (action.hot ? Color.text : Color.text)
+                  : Color.text
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.bodySmall
                 font.bold: action.hot
