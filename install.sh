@@ -7,6 +7,9 @@ PACKAGES=(
   git
   stow
   zsh
+  zsh-completions
+  zsh-autosuggestions
+  zsh-syntax-highlighting
   starship
   fastfetch
   sway
