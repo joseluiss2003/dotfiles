@@ -149,6 +149,7 @@ BarWidget {
     anchors.fill: parent
     bar: root.bar
     foreground: Color.accent
+    fontWeight: Font.Bold
     activeColor: Color.accent
     hoverColor: Color.accent
     useActiveColor: false
