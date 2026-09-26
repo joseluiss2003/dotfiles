@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.system-update",
-  "name": "Omarchy update",
+  "id": "swayp.system-update",
+  "name": "SwayP update",
   "version": "1.0.0",
-  "author": "Omarchy",
-  "description": "Indicates available Omarchy updates",
+  "author": "SwayP",
+  "description": "Indicates available SwayP updates",
   "kinds": [
     "bar-widget"
   ],
@@ -12,8 +12,8 @@
     "barWidget": "SystemUpdate.qml"
   },
   "barWidget": {
-    "displayName": "Omarchy update",
-    "description": "Indicates available Omarchy updates",
+    "displayName": "SwayP update",
+    "description": "Indicates available SwayP updates",
     "category": "System",
     "allowMultiple": false
   }
