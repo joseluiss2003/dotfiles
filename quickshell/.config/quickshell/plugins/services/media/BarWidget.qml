@@ -22,6 +22,7 @@ BarWidget {
 
   property bool popupOpen: false
   property real maxLabelWidth: 190
+  readonly property real openPanelIndicatorWidth: Math.max(Style.space(10), row.implicitWidth)
 
   function close() { popupOpen = false }
 
