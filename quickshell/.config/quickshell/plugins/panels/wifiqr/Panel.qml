@@ -18,7 +18,6 @@ import "Model.js" as Model
 Item {
   id: root
 
-  property string omarchyPath: Quickshell.env("OMARCHY_PATH")
   property var shell: null
   property var manifest: null
 
@@ -89,7 +88,7 @@ Item {
 
   function dismiss() {
     if (root.shell && typeof root.shell.hide === "function")
-      root.shell.hide((root.manifest && root.manifest.id) || "omarchy.wifiqr")
+      root.shell.hide((root.manifest && root.manifest.id) || "swayp.wifiqr")
     else close()
   }
 
