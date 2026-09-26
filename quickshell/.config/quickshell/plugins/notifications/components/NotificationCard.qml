@@ -171,7 +171,7 @@ BorderSurface {
           text: root.summary
           font.family: root.fontFamily.length > 0 ? root.fontFamily : Style.font.family
           color: Color.notifications.text
-          font.pixelSize: Style.font.title
+          font.pixelSize: Style.font.heading
           font.bold: true
           wrapMode: Text.WordWrap
           elide: Text.ElideRight
@@ -184,9 +184,9 @@ BorderSurface {
           visible: root.sanitizedBody.length > 0
           text: root.styledBody
           textFormat: Text.StyledText
-          font.family: "Liberation Sans"
+          font.family: "JetBrains Mono"
           color: root.bodyColor
-          font.pixelSize: Style.font.title
+          font.pixelSize: Style.font.body
           wrapMode: Text.WordWrap
           elide: Text.ElideRight
           maximumLineCount: 3
