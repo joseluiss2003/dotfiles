@@ -35,6 +35,18 @@ Panel {
   readonly property int notificationCount: centerModel.count
   property bool historyReloadPending: false
 
+  readonly property var notificationPhrases: [
+    "Catching signals",
+    "Watching events",
+    "Listening quietly",
+    "Sorting alerts",
+    "Keeping watch",
+    "Reading the room"
+  ]
+  property int notificationPhraseIndex: Math.floor(Math.random() * notificationPhrases.length)
+  readonly property string notificationPhrase:
+    notificationPhrases[notificationPhraseIndex % notificationPhrases.length]
+
   function activeRows() {
     var rows = []
     if (!notifications) return rows
@@ -170,7 +182,10 @@ Panel {
   Connections {
     target: root
     function onOpenedChanged() {
-      if (root.opened) root.reloadHistory()
+      if (root.opened) {
+        root.notificationPhraseIndex = Math.floor(Math.random() * root.notificationPhrases.length)
+        root.reloadHistory()
+      }
     }
   }
 
@@ -289,7 +304,7 @@ Panel {
               textFormat: Text.PlainText
               text: root.dnd ? "󰂛" : "󰂚"
               color: root.dnd ? Color.urgent : Color.accent
-              font.family: root.fontFamily
+              font.family: root.bar.fontFamily
               font.pixelSize: Style.font.display
               anchors.left: parent.left
               anchors.leftMargin: Style.space(14)
@@ -304,15 +319,15 @@ Panel {
 
               Text {
                 text: "Notifications"
-                color: Color.notifications.text
+                color: root.bar.foreground
                 font.family: root.fontFamily
-                font.pixelSize: Style.font.heading
+                font.pixelSize: Style.font.title
                 font.bold: true
               }
 
               Text {
-                text: root.dnd ? "DO NOT DISTURB" : "LIVE · SWAY"
-                color: Color.notifications.countdown
+                text: root.dnd ? "DO NOT DISTURB" : root.notificationPhrase.toUpperCase()
+                color: Color.muted
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
