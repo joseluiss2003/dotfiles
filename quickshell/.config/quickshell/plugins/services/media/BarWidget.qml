@@ -401,12 +401,9 @@ BarWidget {
                 color: selected
                   ? Util.alpha(Color.text, 0.075)
                   : Util.alpha(Color.text, 0.025)
-                borderSpec: Border.surfaceSpec(
-                  "media",
-                  selected ? "player-selected" : "player",
-                  selected ? Util.alpha(Color.text, 0.16) : Util.alpha(Color.popups.border, 0.18),
-                  Math.max(1, Style.space(1))
-                )
+                borderSpec: selected
+                  ? Border.flat(Util.alpha(Color.text, 0.16), Math.max(1, Style.space(1)))
+                  : Border.flat(Util.alpha(Color.popups.border, 0.18), Math.max(1, Style.space(1)))
 
                 Row {
                   anchors.fill: parent
@@ -487,14 +484,9 @@ BarWidget {
     color: controlMouse.containsMouse
       ? Util.alpha(Color.text, 0.075)
       : Util.alpha(Color.text, 0.025)
-    borderSpec: Border.surfaceSpec(
-      "media-control",
-      emphasized ? "primary" : "secondary",
-      controlMouse.containsMouse
-        ? Util.alpha(Color.text, 0.16)
-        : Util.alpha(Color.popups.border, 0.18),
-      Math.max(1, Style.space(1))
-    )
+    borderSpec: controlMouse.containsMouse
+      ? Border.flat(Util.alpha(Color.text, 0.16), Math.max(1, Style.space(1)))
+      : Border.flat(Util.alpha(Color.popups.border, 0.18), Math.max(1, Style.space(1)))
     opacity: enabled ? 1.0 : 0.35
 
     Text {
