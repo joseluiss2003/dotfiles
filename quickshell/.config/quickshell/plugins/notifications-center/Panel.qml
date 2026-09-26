@@ -12,8 +12,8 @@ import "../notifications/NotificationLogic.js" as NotificationLogic
 Panel {
   id: root
 
-  moduleName: "omarchy.notification-center"
-  ipcTarget: "omarchy.notification-center"
+  moduleName: "swayp.notification-center"
+  ipcTarget: "swayp.notification-center"
 
   bar: shell && shell.bar ? shell.bar : null
 
@@ -21,9 +21,9 @@ Panel {
 
   readonly property var notificationBarSlot:
     bar && preferredScreenName !== "" && typeof bar.visibleModuleSlotOnScreen === "function"
-      ? bar.visibleModuleSlotOnScreen("right", "omarchy.notification-center", preferredScreenName)
+      ? bar.visibleModuleSlotOnScreen("right", "swayp.notification-center", preferredScreenName)
       : (bar && typeof bar.visibleModuleSlot === "function"
-        ? bar.visibleModuleSlot("right", "omarchy.notification-center", null)
+        ? bar.visibleModuleSlot("right", "swayp.notification-center", null)
         : null)
 
   function open(payload) {
@@ -49,7 +49,7 @@ Panel {
   // persistence, DND and notification actions; this plugin is presentation.
   readonly property var notificationService:
     shell && typeof shell.firstPartyServiceFor === "function"
-      ? shell.firstPartyServiceFor("omarchy.notifications")
+      ? shell.firstPartyServiceFor("swayp.notifications")
       : null
 
   readonly property var notifications:

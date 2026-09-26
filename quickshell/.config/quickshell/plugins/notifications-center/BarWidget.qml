@@ -9,11 +9,11 @@ import qs.ui
 BarWidget {
   id: root
 
-  moduleName: "omarchy.notification-center"
+  moduleName: "swayp.notification-center"
 
   readonly property var notificationService:
     bar && bar.shell && typeof bar.shell.firstPartyServiceFor === "function"
-      ? bar.shell.firstPartyServiceFor("omarchy.notifications")
+      ? bar.shell.firstPartyServiceFor("swayp.notifications")
       : null
 
   readonly property int notificationCount:
@@ -36,9 +36,9 @@ BarWidget {
       : ""
     var payload = JSON.stringify({ screenName: screenName })
     if (typeof bar.shell.toggle === "function")
-      bar.shell.toggle("omarchy.notification-center", payload)
+      bar.shell.toggle("swayp.notification-center", payload)
     else if (typeof bar.shell.summon === "function")
-      bar.shell.summon("omarchy.notification-center", payload)
+      bar.shell.summon("swayp.notification-center", payload)
   }
 
   BarIconButton {
