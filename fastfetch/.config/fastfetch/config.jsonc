@@ -3,8 +3,16 @@
 
   "logo": {
     "type": "builtin",
+    "color": {
+      "1": "#ffb2bf",
+      "2": "#d9a8b0",
+      "3": "#e6a8b8",
+      "4": "#ffb4ab",
+      "5": "#cbbfc1",
+      "6": "#ffb2bf"
+    },
     "padding": {
-      "top": 1,
+      "top": 2,
       "right": 5,
       "left": 1
     }
@@ -13,7 +21,7 @@
   "display": {
     "disableLinewrap": true,
     "key": {
-      "width": 5,
+      "width": 11,
       "type": "both"
     }
   },
@@ -23,86 +31,81 @@
 
     {
       "type": "custom",
-      "format": "\u001b[90m┌────────────────────── Hardware ──────────────────────┐"
+      "format": "\u001b[90m┌──────────────────────Hardware────────────────────┐"
     },
     {
       "type": "host",
-      "key": "│ \uf108 PC",
+      "key": " PC",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "cpu",
-      "key": "│ \uf2db CPU",
+      "key": " CPU",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "gpu",
-      "key": "│ 󰍛",
+      "key": " GPU",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "memory",
-      "key": "│ ",
+      "key": " Memoria",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "disk",
-      "key": "│ 󰋊",
+      "key": " Disco",
       "keyColor": "#ffb2bf",
       "folders": ["/"]
     },
     {
       "type": "custom",
-      "format": "\u001b[90m└──────────────────────────────────────────────────────┘"
+      "format": "\u001b[90m└──────────────────────────────────────────────────┘"
     },
 
     "break",
 
     {
       "type": "custom",
-      "format": "\u001b[90m┌────────────────────── Software ──────────────────────┐"
+      "format": "\u001b[90m┌──────────────────────Software────────────────────┐"
     },
     {
       "type": "os",
-      "key": "│ ",
+      "key": " OS",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "kernel",
-      "key": "│ ",
+      "key": " Kernel",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "de",
-      "key": "│ ",
+      "key": " Entorno",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "shell",
-      "key": "│ ",
+      "key": " Shell",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "terminal",
-      "key": "│ ",
+      "key": " Terminal",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "packages",
-      "key": "│ 󰏖",
+      "key": " Paquetes",
       "keyColor": "#ffb2bf"
     },
     {
       "type": "custom",
-      "format": "\u001b[90m└──────────────────────────────────────────────────────┘"
+      "format": "\u001b[90m└──────────────────────────────────────────────────┘"
     },
 
     "break",
-
-    {
-      "type": "uptime",
-      "key": "◷",
-      "keyColor": "#ffb2bf"
-    }
+    "colors"
   ]
 }
