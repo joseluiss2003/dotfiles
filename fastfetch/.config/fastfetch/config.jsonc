@@ -13,14 +13,13 @@
   "display": {
     "separator": "  ",
     "color": {
-      "keys": "dim_white",
+      "keys": "white",
       "title": "white",
       "output": "white",
-      "separator": "dim_white"
+      "separator": "white"
     },
     "key": {
-      "width": 10,
-      "type": "both"
+      "width": 10
     }
   },
 
@@ -34,8 +33,7 @@
 
     {
       "type": "custom",
-      "key": "",
-      "format": "{#bold}{#keys}SYSTEM{#}"
+      "format": "SYSTEM"
     },
     {
       "type": "os",
@@ -58,8 +56,7 @@
 
     {
       "type": "custom",
-      "key": "",
-      "format": "{#bold}{#keys}HARDWARE{#}"
+      "format": "HARDWARE"
     },
     {
       "type": "cpu",
@@ -85,8 +82,7 @@
 
     {
       "type": "custom",
-      "key": "",
-      "format": "{#bold}{#keys}SESSION{#}"
+      "format": "SESSION"
     },
     {
       "type": "shell",
