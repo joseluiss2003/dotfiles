@@ -8,7 +8,7 @@ import qs.ui
 
 BarWidget {
   id: root
-  moduleName: "omarchy.workspaces"
+  moduleName: "swayp.workspaces"
 
   // Omarchy-style geometry: 1..5 are always visible. Sway workspaces
   // 6..10 appear when occupied, without changing the Sway backend.
