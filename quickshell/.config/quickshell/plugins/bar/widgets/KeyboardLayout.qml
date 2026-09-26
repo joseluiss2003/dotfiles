@@ -6,7 +6,7 @@ import qs.core
 
 BarWidget {
   id: root
-  moduleName: "omarchy.keyboard-layout"
+  moduleName: "swayp.keyboard-layout"
 
   property var layoutNames: []
   property int layoutIndex: 0
