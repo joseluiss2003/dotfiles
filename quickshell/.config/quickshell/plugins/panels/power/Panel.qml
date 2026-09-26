@@ -299,8 +299,8 @@ Panel {
     bar: root.bar
     open: root.opened && root.batteryPresent
     focusTarget: keyCatcher
-    contentWidth: panel.fittedContentWidth(Style.space(330))
-    contentHeight: panel.fittedContentHeight(column.implicitHeight + Style.space(4))
+    contentWidth: panel.fittedContentWidth(Style.space(380))
+    contentHeight: panel.fittedContentHeight(column.implicitHeight)
 
     PanelKeyCatcher {
       id: keyCatcher
@@ -319,52 +319,56 @@ Panel {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        spacing: Style.space(10)
+        spacing: Style.space(14)
 
+        // ---------- Hero: battery icon · title/status · percentage ----------
         Item {
           width: parent.width
           implicitHeight: Math.max(heroIcon.implicitHeight, heroLabels.implicitHeight, heroPercent.implicitHeight)
 
-          Row {
+          Text {
+            id: heroIcon
+            textFormat: Text.PlainText
+            text: root.batteryIcon()
+            color: root.discharging ? Util.alpha(Color.accent, 0.75) : Color.accent
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.display
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(10)
+
+            Behavior on color { ColorAnimation { duration: 200 } }
+          }
+
+          Column {
+            id: heroLabels
+            anchors.left: heroIcon.right
+            anchors.leftMargin: Style.space(14)
+            anchors.right: heroPercent.left
+            anchors.rightMargin: Style.space(10)
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: Style.space(2)
 
             Text {
-              id: heroIcon
-              textFormat: Text.PlainText
-              text: root.batteryIcon()
-              color: root.discharging ? Util.alpha(Color.accent, 0.75) : Color.accent
+              text: "Battery"
+              color: root.bar.foreground
               font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.display
-              anchors.verticalCenter: parent.verticalCenter
-              Behavior on color { ColorAnimation { duration: 200 } }
+              font.pixelSize: Style.font.title
+              font.bold: true
+              elide: Text.ElideRight
+              width: parent.width
             }
 
-            Column {
-              id: heroLabels
-              spacing: Style.space(2)
-              anchors.verticalCenter: parent.verticalCenter
-
-              Text {
-                text: "Power"
-                color: root.bar.foreground
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.title
-                font.bold: true
-              }
-
-              Text {
-                id: heroStatus
-                textFormat: Text.PlainText
-                text: root.heroStatusText.toUpperCase()
-                color: Color.muted
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.caption
-                font.bold: true
-                font.letterSpacing: 1.1
-                elide: Text.ElideRight
-              }
+            Text {
+              id: heroStatus
+              textFormat: Text.PlainText
+              text: root.heroStatusText.toUpperCase()
+              color: Color.muted
+              font.family: root.bar.fontFamily
+              font.pixelSize: Style.font.caption
+              font.bold: true
+              font.letterSpacing: 1.2
+              elide: Text.ElideRight
+              width: parent.width
             }
           }
 
@@ -378,17 +382,20 @@ Panel {
             font.bold: true
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
+
             Behavior on color { ColorAnimation { duration: 200 } }
           }
         }
 
+        // ---------- Battery progress bar ----------
         Item {
           width: parent.width
-          height: Style.space(6)
+          implicitHeight: Style.space(8)
 
           Rectangle {
             id: barTrack
             anchors.fill: parent
+            radius: height / 2
             color: Qt.rgba(root.bar.foreground.r, root.bar.foreground.g, root.bar.foreground.b, 0.12)
           }
 
@@ -397,12 +404,14 @@ Panel {
             anchors.left: barTrack.left
             anchors.verticalCenter: barTrack.verticalCenter
             height: barTrack.height
+            radius: barTrack.radius
             color: root.batteryFillColor
             width: Math.max(barTrack.height, barTrack.width * root.batteryFraction)
 
             Behavior on width { NumberAnimation { duration: 320; easing.type: Easing.OutCubic } }
             Behavior on color { ColorAnimation { duration: 220 } }
 
+            // Subtle pulse while charging — visible signal that energy is flowing in.
             SequentialAnimation on opacity {
               running: root.charging && !root.fullyCharged && root.opened
               loops: Animation.Infinite
@@ -413,42 +422,46 @@ Panel {
           }
         }
 
-        Item {
+        // ---------- Stats ----------
+        // Visibility is intentionally only gated by "we've ever loaded data" so
+        // the section never collapses mid-transition. fullyCharged is *not* part
+        // of the condition: UPower briefly reports FullyCharged on plug-in when
+        // the battery sits above the charge-control start threshold, and we
+        // refuse to flicker the whole panel for that ~1s window.
+        Row {
+          visible: root.batteryInfo.percentage !== undefined
           width: parent.width
-          height: Style.space(44)
+          spacing: Style.space(20)
 
           Column {
-            anchors.left: parent.left
-            anchors.top: parent.top
-            spacing: Style.space(2)
-
-            InfoPair { label: "Battery"; value: root.batteryInfo.size || "—" }
-            InfoPair { label: "Cycles"; value: root.batteryInfo.cycles || "—" }
+            width: (parent.width - parent.spacing) / 2
+            spacing: Style.spacing.labelGap
+            InfoPair { label: "Battery size"; value: root.batteryInfo.size || "" }
+            InfoPair { label: "Charge cycles"; value: root.batteryInfo.cycles || "—" }
           }
 
           Column {
-            anchors.right: parent.right
-            anchors.top: parent.top
-            spacing: Style.space(2)
-
+            width: (parent.width - parent.spacing) / 2
+            spacing: Style.spacing.labelGap
             InfoPair {
-              label: root.chargeThresholdActive ? "Limit" : (root.discharging ? "Time left" : "Time to full")
-              value: root.chargeThresholdActive ? (root.batteryInfo.threshold || "—") : (root.batteryFlowIdle ? "—" : (root.batteryInfo.time || "—"))
+              label: root.chargeThresholdActive ? "Charge limit" : (root.discharging ? "Time left" : "Time to full")
+              value: root.chargeThresholdActive ? (root.batteryInfo.threshold || "-") : (root.batteryFlowIdle ? "-" : (root.batteryInfo.time || "—"))
             }
             InfoPair {
-              label: root.chargeThresholdActive ? "State" : "Rate"
-              value: root.chargeThresholdActive ? "Holding" : (root.batteryFull ? "—" : (root.batteryInfo.rate || "—"))
+              label: root.chargeThresholdActive ? "Battery state" : (root.discharging ? "Discharging" : "Charging")
+              value: root.chargeThresholdActive ? "Holding" : (root.batteryFull ? "-" : (root.batteryInfo.rate || ""))
             }
           }
         }
 
+        // ---------- Power profile picker ----------
         PanelSeparator {
-          foreground: Color.outline
+          foreground: root.bar.foreground
         }
 
         Column {
           width: parent.width
-          spacing: Style.space(6)
+          spacing: Style.space(10)
 
           PanelSectionHeader {
             text: "POWER PROFILE"
@@ -456,31 +469,38 @@ Panel {
             fontFamily: root.bar.fontFamily
           }
 
-          Repeater {
-            model: root.profiles
+          Row {
+            id: profileRow
+            width: parent.width
+            spacing: Style.space(6)
 
-            Button {
-              required property var modelData
-              required property int index
-              width: parent.width
-              height: Style.space(36)
-              iconText: root.profileIcon(String(modelData))
-              iconSize: Style.font.body
-              text: String(modelData).charAt(0).toUpperCase() + String(modelData).slice(1)
-              fontSize: Style.font.bodySmall
-              foreground: root.bar.foreground
-              fontFamily: root.bar.fontFamily
-              horizontalPadding: Style.space(12)
-              verticalPadding: Style.space(4)
-              bordered: true
-              active: root.activeProfile === modelData
-              hasCursor: root.cursorActive && root.profileIndex === index
+            readonly property real cellWidth: root.profiles.length > 0
+              ? (width - spacing * (root.profiles.length - 1)) / root.profiles.length
+              : 0
 
-              onClicked: root.setProfile(modelData)
-              onHovered: function(h) {
-                if (h) {
-                  root.cursorActive = true
-                  root.profileIndex = index
+            Repeater {
+              model: root.profiles
+              Button {
+                required property var modelData
+                required property int index
+                width: profileRow.cellWidth
+                iconText: root.profileIcon(String(modelData))
+                iconSize: Style.font.title
+                text: String(modelData).charAt(0).toUpperCase() + String(modelData).slice(1)
+                fontSize: Style.font.bodySmall
+                foreground: root.bar.foreground
+                fontFamily: root.bar.fontFamily
+                horizontalPadding: Style.spacing.controlPaddingX
+                verticalPadding: Style.spacing.controlPaddingY + Style.space(2)
+                bordered: true
+                active: root.activeProfile === modelData
+                hasCursor: root.cursorActive && root.profileIndex === index
+                onClicked: root.setProfile(modelData)
+                onHovered: function(h) {
+                  if (h) {
+                    root.cursorActive = true
+                    root.profileIndex = index
+                  }
                 }
               }
             }
