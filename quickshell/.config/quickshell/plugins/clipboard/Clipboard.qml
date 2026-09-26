@@ -42,7 +42,7 @@ Item {
   property int headerHeight: Style.space(48)
   property int contentSpacing: 0
   property int cardWidth: Style.space(440)
-  property int cardHeight: Style.space(390)
+  property int cardHeight: Style.space(430)
   property int rowHeight: Style.space(48)
   property int historyLimit: 500
 
@@ -331,37 +331,33 @@ Item {
     }
   }
 
-  PopupCard {
+  KeyboardPanel {
     id: panel
     anchorItem: root.anchorItem
     bar: root.bar
     owner: root
-    open: root.opened
-    contentWidth: panel.fittedContentWidth(root.cardWidth)
-    contentHeight: panel.cappedContentHeight(root.cardHeight)
-    padding: root.contentMargin
-    centerOnBar: false
-    alignToBarEdge: true
+    open: root.opened && !!root.anchorItem
+    focusTarget: keyCatcher
+
+    padding: 0
+    borderSpec: Border.surfaceSpec("clipboard", "panel-wrapper", "transparent", 0)
+    contentWidth: Math.min(root.cardWidth, panel.availableCardWidth)
+    contentHeight: Math.min(root.cardHeight, panel.availableCardHeight)
     gap: Style.space(5)
-    borderSpec: root.borderSpec
 
-    onVisibleChanged: {
-      if (visible && root.opened) Qt.callLater(function() { keyCatcher.forceActiveFocus() })
-    }
-
-    Item {
+    BorderSurface {
+      id: card
       anchors.fill: parent
-
-      MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.AllButtons
-      }
+      color: root.background
+      borderSpec: root.borderSpec
+      radius: 0
+      clip: true
 
       Item {
         id: keyCatcher
         anchors.fill: parent
+        focus: root.opened
         z: root.clearConfirmOpen ? 20 : 0
-        focus: true
 
         Keys.priority: Keys.BeforeItem
         Keys.onPressed: function(event) {
@@ -411,9 +407,12 @@ Item {
           }
         }
 
+        Component.onCompleted: {
+          if (root.opened) Qt.callLater(function() { forceActiveFocus() })
+        }
+
         ConfirmDialog {
           id: clearConfirm
-
           anchors.fill: parent
           opened: root.clearConfirmOpen
           z: 10
@@ -437,11 +436,12 @@ Item {
 
         Item {
           width: parent.width
-          height: Style.space(48)
+          height: Style.space(58)
 
           Text {
             id: headerIcon
             anchors.left: parent.left
+            anchors.leftMargin: Style.space(14)
             anchors.verticalCenter: parent.verticalCenter
             text: "󰅌"
             color: Color.accent
@@ -451,7 +451,7 @@ Item {
 
           Column {
             anchors.left: headerIcon.right
-            anchors.leftMargin: Style.space(10)
+            anchors.leftMargin: Style.space(12)
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.space(2)
 
@@ -459,46 +459,80 @@ Item {
               text: "Clipboard"
               color: Color.text
               font.family: root.fontFamily
-              font.pixelSize: Style.font.heading
+              font.pixelSize: Style.font.title
               font.bold: true
             }
 
             Text {
-              text: "SWAY · HISTORY"
-              color: Color.textMuted
+              text: root.filterText
+                ? "FILTERING HISTORY"
+                : "RECENT FRAGMENTS"
+              color: Color.muted
               font.family: root.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
-              font.letterSpacing: 1.2
+              font.letterSpacing: 1.1
             }
           }
 
           Text {
             anchors.right: parent.right
+            anchors.rightMargin: Style.space(14)
             anchors.verticalCenter: parent.verticalCenter
-            text: root.history.length + " ITEMS"
-            color: Color.textMuted
+            text: root.history.length + (root.history.length === 1 ? " ITEM" : " ITEMS")
+            color: Color.muted
             font.family: root.fontFamily
             font.pixelSize: Style.font.caption
             font.bold: true
-            horizontalAlignment: Text.AlignRight
           }
         }
 
-        PanelSeparator { foreground: Color.outline }
+        PanelSeparator {
+          foreground: Color.outline
+        }
 
         Item {
           width: parent.width
-          height: parent.height - Style.space(56)
+          height: Style.space(40)
+
+          Text {
+            anchors.left: parent.left
+            anchors.leftMargin: Style.space(12)
+            anchors.verticalCenter: parent.verticalCenter
+            text: root.filterText ? "⌕  " + root.filterText : "⌕  Type to filter clipboard history"
+            color: root.filterText ? Color.text : Color.muted
+            opacity: root.filterText ? 1.0 : 0.58
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.bodySmall
+            elide: Text.ElideRight
+            width: parent.width - Style.space(24)
+          }
+        }
+
+        PanelSeparator {
+          foreground: Color.outline
+        }
+
+        Item {
+          width: parent.width
+          height: Math.max(
+            Style.space(160),
+            parent.height - Style.space(58 + 40 + 1 + 1 + 42)
+          )
           clip: true
 
           ListView {
             id: resultList
             anchors.fill: parent
+            anchors.leftMargin: Style.space(10)
+            anchors.rightMargin: Style.space(10)
+            anchors.topMargin: Style.space(8)
+            anchors.bottomMargin: Style.space(8)
             model: displayModel
             clip: true
-            spacing: 0
+            spacing: Style.space(4)
             boundsBehavior: Flickable.StopAtBounds
+            interactive: contentHeight > height
 
             delegate: Rectangle {
               id: row
@@ -510,34 +544,38 @@ Item {
 
               readonly property bool hasCursor: root.cursorActive && index === root.selectedIndex
               width: ListView.view.width
-              height: root.rowHeight + Style.space(4)
+              height: root.rowHeight
               color: "transparent"
 
               Rectangle {
                 anchors.fill: parent
-                anchors.topMargin: Style.space(1)
-                anchors.bottomMargin: Style.space(1)
                 color: row.hasCursor
-                  ? Util.alpha(root.selectedBackground, 0.86)
+                  ? Util.alpha(root.selectedBackground, 0.90)
                   : Util.alpha(root.foreground, 0.025)
                 border.width: Style.normalBorderWidth
                 border.color: row.hasCursor
-                  ? Util.alpha(root.selectedText, 0.88)
-                  : Util.alpha(root.border, 0.30)
+                  ? Util.alpha(Color.accent, 0.85)
+                  : Util.alpha(root.border, 0.24)
+              }
+
+              Rectangle {
+                visible: row.hasCursor
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                width: Style.space(2)
+                color: Color.accent
               }
 
               Row {
                 anchors.fill: parent
-                anchors.leftMargin: Style.space(10)
+                anchors.leftMargin: Style.space(12)
                 anchors.rightMargin: Style.space(10)
-                anchors.topMargin: Style.space(4)
-                anchors.bottomMargin: Style.space(4)
                 spacing: Style.space(8)
 
                 Item {
                   width: Style.space(30)
                   height: parent.height
-                  anchors.verticalCenter: parent.verticalCenter
 
                   Image {
                     visible: row.previewImage.length > 0
@@ -553,7 +591,11 @@ Item {
                   Text {
                     visible: !row.previewImage
                     anchors.centerIn: parent
-                    text: row.entryType === "image" ? "󰋩" : row.entryType === "file" ? "󰈔" : "󰅌"
+                    text: row.entryType === "image"
+                      ? "󰋩"
+                      : row.entryType === "file"
+                        ? "󰈔"
+                        : "󰅌"
                     color: row.hasCursor ? root.selectedText : root.foreground
                     opacity: row.hasCursor ? 1 : 0.72
                     font.family: root.fontFamily
@@ -562,7 +604,7 @@ Item {
                 }
 
                 Column {
-                  width: parent.width - Style.space(42)
+                  width: parent.width - Style.space(38)
                   height: parent.height
                   anchors.verticalCenter: parent.verticalCenter
                   spacing: Style.space(2)
@@ -582,7 +624,11 @@ Item {
                   Text {
                     width: parent.width
                     height: parent.height * 0.38
-                    text: row.entryType === "image" ? "IMAGE" : row.entryType === "file" ? "FILE" : "TEXT"
+                    text: row.entryType === "image"
+                      ? "IMAGE"
+                      : row.entryType === "file"
+                        ? "FILE"
+                        : "TEXT"
                     color: row.hasCursor ? root.selectedText : root.foreground
                     opacity: row.hasCursor ? 0.72 : 0.42
                     font.family: root.fontFamily
@@ -592,14 +638,15 @@ Item {
                 }
               }
 
-
               MouseArea {
                 anchors.fill: parent
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
+
                 onPositionChanged: function(mouse) {
                   root.selectFromPointer(row.index, row, mouse)
                 }
+
                 onClicked: {
                   root.cursorActive = true
                   root.selectedIndex = row.index
@@ -615,27 +662,67 @@ Item {
             visible: displayModel.count === 0
 
             Text {
-              text: "󰅌"
-              color: root.selectedText
-              opacity: 0.75
+              text: root.filterText ? "󰅌" : "󰅌"
+              color: Color.accent
+              opacity: 0.72
               font.family: root.fontFamily
               font.pixelSize: Style.font.displayLarge
               horizontalAlignment: Text.AlignHCenter
-              width: parent.width
+              width: Style.space(300)
             }
 
             Text {
-              text: root.history.length === 0 ? "Clipboard is empty" : "No matches for “" + root.filterText + "”"
+              text: root.history.length === 0
+                ? "Clipboard is empty"
+                : "No matches for “" + root.filterText + "”"
               color: root.foreground
               opacity: 0.62
               font.family: root.fontFamily
               font.pixelSize: Style.font.body
               horizontalAlignment: Text.AlignHCenter
-              width: parent.width
+              width: Style.space(300)
             }
+          }
+        }
+
+        PanelSeparator {
+          foreground: Color.outline
+        }
+
+        Item {
+          width: parent.width
+          height: Style.space(42)
+
+          Button {
+            id: clearButton
+            anchors.left: parent.left
+            anchors.leftMargin: Style.space(10)
+            anchors.verticalCenter: parent.verticalCenter
+            width: Style.space(86)
+            text: "Clear"
+            iconText: "󰆴"
+            foreground: root.foreground
+            fontFamily: root.fontFamily
+            fontSize: Style.font.bodySmall
+            bordered: true
+            enabled: root.history.length > 0
+            onClicked: root.requestClearHistory()
+          }
+
+          Text {
+            anchors.right: parent.right
+            anchors.rightMargin: Style.space(12)
+            anchors.verticalCenter: parent.verticalCenter
+            text: "ENTER  COPY   SHIFT+ENTER  PASTE"
+            color: Color.muted
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            horizontalAlignment: Text.AlignRight
           }
         }
       }
     }
   }
+}
 }
