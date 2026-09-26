@@ -11,7 +11,7 @@ import qs.ui
 // stops the traffic, so the download workers never keep saturating the link
 // behind a closed overlay. The payload may carry the connection's display
 // name -- {"connection": "MyWifi"} -- and the panel looks it up itself via
-// omarchy-network-status when the caller doesn't know it.
+// swayp-network-status when the caller doesn't know it.
 Item {
   id: root
 
@@ -99,7 +99,7 @@ Item {
     expectedStop = false
     phase = nextPhase
     stderrText = ""
-    speedTestProc.command = ["omarchy-network-speedtest", nextPhase]
+    speedTestProc.command = ["swayp-network-speedtest", nextPhase]
     speedTestProc.running = true
     phaseTimer.restart()
   }
@@ -184,7 +184,7 @@ Item {
 
   SpeedTestOverlay {
     fontFamily: Style.font.family
-    layerNamespace: "omarchy-network-speedtest"
+    layerNamespace: "swayp-network-speedtest"
     title: root.connectionName
     leftLabel: "DOWNLOAD"
     rightLabel: "UPLOAD"
