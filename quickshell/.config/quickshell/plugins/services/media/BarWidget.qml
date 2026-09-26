@@ -47,11 +47,10 @@ BarWidget {
         id: labelText
         textFormat: Text.PlainText
         text: root.artist ? root.title + "  ·  " + root.artist : root.title
-        color: root.activePlayer && root.activePlayer.isPlaying ? Color.accent : root.bar.barForeground
+        color: Color.accent
         font.family: root.bar.fontFamily
         font.pixelSize: Style.font.body
-        font.bold: root.activePlayer && root.activePlayer.isPlaying
-        font.weight: Font.Medium
+        font.bold: true
         anchors.verticalCenter: parent.verticalCenter
         width: scrollClip.width
         elide: Text.ElideRight

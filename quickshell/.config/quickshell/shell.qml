@@ -1025,8 +1025,8 @@ Component.onCompleted: {
   }
 
   // keepLoaded services (lock, idle, polkit) must survive plugin hot-reload.
-  // Destroying omarchy.lock drops the ext-session-lock client while Hyprland
-  // still holds the lock, which surfaces the crashed-lockscreen fallback.
+  // Destroying omarchy.lock while the session lock is active can surface the
+  // crashed-lockscreen fallback.
   function unloadPluginServices() {
     var next = ({})
     for (var existingId in _services) {

@@ -11,7 +11,6 @@ PACKAGES=(
   sway
   swaybg
   swayidle
-  hyprlock
   quickshell
   matugen
   awww

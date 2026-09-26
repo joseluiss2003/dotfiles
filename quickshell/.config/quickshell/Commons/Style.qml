@@ -8,13 +8,9 @@ import Quickshell.Io
 // rounding, gap to screen edges, state affordances, spacing, typography
 // scale, and bar dimensions.
 //
-// `cornerRadius` mirrors Hyprland's `decoration:rounding`. `gapsOut` is
-// half of Hyprland's `general:gaps_out` — Hyprland's value works well as
-// a window-to-window gap but feels too cavernous when used as the
-// distance from a panel/notification to the screen edge, so the shell
-// halves it. Themes and user Hyprland config own those values; the
-// shell picks them up by re-running `hyprctl getoption` on startup and
-// after theme IPC applies a theme.
+// `cornerRadius` is kept at zero for the square shell geometry.
+// `gapsOut` controls the distance from panels/notifications to the
+// screen edge.
 //
 // Typography, spacing, and bar size come from theme/shell.toml.
 // `[font] base-size` is the rem root; every `Style.font.<token>` derives
@@ -356,28 +352,6 @@ QtObject {
     refreshTimer.restart()
   }
 
-  function applyRoundingJson(raw) {
-    try {
-      var json = JSON.parse(raw || "{}")
-      var n = Number(json.int)
-      if (isFinite(n) && n >= 0) cornerRadius = n
-    } catch (e) {
-      // hyprctl missing / Hyprland not running — leave the previous value.
-    }
-  }
-
-  function applyGapsOutJson(raw) {
-    try {
-      var json = JSON.parse(raw || "{}")
-      var css = String(json.css || "")
-      var parts = css.match(/-?\d+(?:\.\d+)?/g) || []
-      var n = parts.length > 0 ? Number(parts[0]) : Number(json.int)
-      if (isFinite(n) && n >= 0) gapsOut = Math.max(0, Math.round(n / 2))
-    } catch (e) {
-      // hyprctl missing / Hyprland not running — leave the previous value.
-    }
-  }
-
   // Pull typography, bar dimensions, state tokens, and spacing out of the
   // shell.toml dict that Color already parsed. Called by Color.loadShell so
   // a single parse pass feeds both singletons.
@@ -467,27 +441,13 @@ QtObject {
     onLoadFailed: root.resolveFontFamily()
   }
 
-  // Re-poll Hyprland a beat after either input file changes. Hyprland's
-  // auto-reload runs asynchronously when its sourced .lua files change,
-  // so racing it with an immediate hyprctl gives the old value. 200ms is
-  // generous enough for Hyprland to settle without being user-visible.
+  // Defer structural refreshes slightly so theme changes settle before
+  // dependent components read the updated style values.
   property Timer refreshTimer: Timer {
     id: refreshTimer
     interval: 200
     repeat: false
     onTriggered: root.refresh()
-  }
-
-  // `omarchy toggle window-gaps` creates/removes this flag file. Hyprland
-  // reloads its config when sourced files change, then hyprctl reflects
-  // the new effective value.
-  property FileView windowNoGapsToggle: FileView {
-    path: Quickshell.env("HOME") + "/.local/state/omarchy/toggles/hypr/window-no-gaps.lua"
-    watchChanges: true
-    printErrors: false
-    onFileChanged: refreshTimer.restart()
-    onLoaded: refreshTimer.restart()
-    onLoadFailed: refreshTimer.restart()
   }
 
   Component.onCompleted: {

@@ -38,7 +38,6 @@ Item {
   // copy lives and dies with the JSON file whose stem it carries.
   readonly property string imagesDir: popupStateDir + "images/"
   // Corner radius is shared with the menu and shell panels.
-  // It mirrors Hyprland's current decoration:rounding value.
   readonly property int cornerRadius: Style.cornerRadius
   // Toasts are fixed to the top-right corner. They only clear the omarchy bar
   // when the bar occupies the top or right edge, so left/bottom bars do not
@@ -396,18 +395,76 @@ Item {
     dismissPopup(index)
   }
 
-  // Try to focus an existing Hyprland window matching the notification's
-  // sender. The helper handles case-insensitive class matching.
+  // Try to focus an existing Sway window matching the notification's
+  // sender. Supports native Wayland app_id and XWayland window class.
   function focusApp(entry) {
     if (!entry || !entry.app) return
-    focusAppProc.command = [
-      service.omarchyPath + "/bin/omarchy-hyprland-focus-app",
-      String(entry.app)
-    ]
+
+    focusAppName = String(entry.app)
     focusAppProc.running = true
   }
 
-  Process { id: focusAppProc; running: false }
+  function findAndFocusApp(raw) {
+    var wanted = String(focusAppName || "").trim().toLowerCase()
+    if (!wanted) return
+
+    try {
+      var tree = JSON.parse(String(raw || "{}"))
+      var matchId = null
+
+      function visit(node) {
+        if (!node || matchId !== null) return
+
+        var appId = String(node.app_id || "").trim().toLowerCase()
+        var klass = ""
+        if (node.window_properties)
+          klass = String(node.window_properties.class || "").trim().toLowerCase()
+
+        if ((appId && appId === wanted) || (klass && klass === wanted)) {
+          if (node.type === "con" || node.type === "floating_con")
+            matchId = node.id
+        }
+
+        var children = Array.isArray(node.nodes) ? node.nodes : []
+        for (var i = 0; i < children.length && matchId === null; i++)
+          visit(children[i])
+
+        var floating = Array.isArray(node.floating_nodes) ? node.floating_nodes : []
+        for (var j = 0; j < floating.length && matchId === null; j++)
+          visit(floating[j])
+      }
+
+      visit(tree)
+
+      if (matchId !== null) {
+        focusAppFocusProc.command = [
+          "swaymsg",
+          "[con_id=" + Number(matchId) + "]",
+          "focus"
+        ]
+        focusAppFocusProc.running = true
+      }
+    } catch (e) {
+      console.warn("Could not parse Sway tree while focusing notification:", e)
+    }
+  }
+
+  property string focusAppName: ""
+
+  Process {
+    id: focusAppProc
+    command: ["swaymsg", "-t", "get_tree", "-r"]
+
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: root.findAndFocusApp(text)
+    }
+  }
+
+  Process {
+    id: focusAppFocusProc
+    running: false
+  }
 
   Process {
     id: ensureDirsProc

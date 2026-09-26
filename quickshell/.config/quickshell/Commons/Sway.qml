@@ -5,7 +5,7 @@ import Quickshell.I3
 
 // Sway compositor facade.
 // Keep compositor-specific access here so Omarchy UI components do not need
-// to know whether they are running on Sway or Hyprland.
+// to keep compositor-specific access out of Omarchy UI components.
 QtObject {
   id: root
 
