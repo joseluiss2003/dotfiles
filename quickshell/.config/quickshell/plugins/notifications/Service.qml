@@ -57,6 +57,11 @@ Item {
   // map only holds a wrapper, which degrades to a catchable error instead.
   property var liveRefs: ({})
 
+  // Emitted after an archived notification is actually on disk.
+  // Consumers such as the notification center can refresh their history model
+  // without coupling themselves to the popup lifecycle. 
+  signal historyChanged()
+
   // PersistentProperties handles in-process QML reloads. The on-disk
   // notifications.json file is the cross-restart backstop — its `dnd` key
   // is hydrated into persisted.doNotDisturb on startup and written back via
@@ -606,7 +611,8 @@ Item {
       String(historyLimit),
       NotificationLogic.popupFileName(row),
       popupStateDir,
-      imagesDir])
+      imagesDir],
+      function() { service.historyChanged() })
   }
 
   // Record a notification that never made it to the screen (DND silenced it),
@@ -639,7 +645,10 @@ Item {
       imagesDir]
     for (var i = 0; i < persistable.copies.length; i++)
       command.push(persistable.copies[i].from, persistable.copies[i].to)
-    enqueuePopupFileJob(command, done)
+    enqueuePopupFileJob(command, function() {
+      service.historyChanged()
+      if (done) done()
+    })
   }
 
   function clearHistory() {
