@@ -52,8 +52,8 @@ BarWidget {
     focusTarget: keyCatcher
     padding: 0
     borderSpec: Border.surfaceSpec("power-session", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.space(280), panel.availableCardWidth)
-    contentHeight: Math.min(Style.space(318), panel.availableCardHeight)
+    contentWidth: Math.min(Style.space(220), panel.availableCardWidth)
+    contentHeight: Math.min(Style.space(260), panel.availableCardHeight)
     gap: Style.space(5)
 
     BorderSurface {
@@ -77,13 +77,13 @@ BarWidget {
 
         Item {
           width: parent.width
-          height: Style.space(56)
+          height: Style.space(50)
 
           Row {
             anchors.left: parent.left
-            anchors.leftMargin: Style.space(16)
+            anchors.leftMargin: Style.space(12)
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(10)
+            spacing: Style.space(8)
 
             Text {
               text: "󰯙"
@@ -123,9 +123,9 @@ BarWidget {
 
         Column {
           width: parent.width
-          spacing: Style.space(5)
-          topPadding: Style.space(10)
-          bottomPadding: Style.space(10)
+          spacing: Style.space(4)
+          topPadding: Style.space(8)
+          bottomPadding: Style.space(8)
 
           component Action: Item {
             id: action
@@ -135,17 +135,17 @@ BarWidget {
             property bool hot: false
 
             width: parent.width
-            height: Style.space(36)
+            height: Style.space(32)
 
             Rectangle {
               anchors.fill: parent
               color: action.hot
-                ? Util.alpha(Color.accentSoft, 0.18)
-                : Util.alpha(Color.surfaceAlt, 0.10)
+                ? Util.alpha(Color.accentSoft, 0.16)
+                : "transparent"
               border.width: Style.normalBorderWidth
               border.color: action.hot
-                ? Util.alpha(Color.accent, 0.48)
-                : Util.alpha(Color.outline, 0.24)
+                ? Util.alpha(Color.accent, 0.45)
+                : "transparent"
             }
 
             Rectangle {
@@ -154,17 +154,17 @@ BarWidget {
               anchors.top: parent.top
               anchors.bottom: parent.bottom
               width: Style.space(1)
-              color: Util.alpha(Color.accent, 0.58)
+              color: Util.alpha(Color.accent, 0.55)
             }
 
             Row {
               anchors.fill: parent
-              anchors.leftMargin: Style.space(12)
-              anchors.rightMargin: Style.space(12)
-              spacing: Style.space(10)
+              anchors.leftMargin: Style.space(10)
+              anchors.rightMargin: Style.space(10)
+              spacing: Style.space(8)
 
               Text {
-                width: Style.space(22)
+                width: Style.space(20)
                 text: action.iconText
                 color: action.labelText === "Power off"
                   ? Color.error
@@ -176,7 +176,7 @@ BarWidget {
               }
 
               Text {
-                width: parent.width - Style.space(32)
+                width: parent.width - Style.space(28)
                 text: action.labelText
                 color: action.labelText === "Power off"
                   ? Color.error
