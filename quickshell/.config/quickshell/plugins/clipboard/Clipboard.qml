@@ -514,11 +514,11 @@ Item {
               Rectangle {
                 anchors.fill: parent
                 color: row.hasCursor
-                  ? Util.alpha(root.selectedBackground, 0.92)
+                  ? Util.alpha(root.selectedBackground, 0.32)
                   : Util.alpha(root.foreground, 0.025)
                 border.width: Style.normalBorderWidth
                 border.color: row.hasCursor
-                  ? Util.alpha(Color.accent, 0.88)
+                  ? Util.alpha(Color.accent, 0.55)
                   : Util.alpha(root.border, 0.22)
               }
 
@@ -527,8 +527,8 @@ Item {
                 anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                width: Style.space(2)
-                color: Color.accent
+                width: Style.space(1)
+                color: Util.alpha(Color.accent, 0.65)
               }
 
               Row {
