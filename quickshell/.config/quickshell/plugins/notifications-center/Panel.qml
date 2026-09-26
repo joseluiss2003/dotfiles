@@ -57,13 +57,17 @@ Panel {
     return rows
   }
 
-  function isActiveEntry(originalId, timestamp) {
-    if (!notifications) return false
+  function activeIndex(originalId, timestamp) {
+    if (!notifications) return -1
     for (var i = 0; i < notifications.count; i++) {
       var row = notifications.get(i)
-      if (row && row.originalId === originalId && row.timestamp === timestamp) return true
+      if (row && row.originalId === originalId && row.timestamp === timestamp) return i
     }
-    return false
+    return -1
+  }
+
+  function isActiveEntry(originalId, timestamp) {
+    return activeIndex(originalId, timestamp) >= 0
   }
 
   function rebuildCenter(raw) {
@@ -141,6 +145,13 @@ Panel {
 
     function onDataChanged() {
       root.reloadHistory()
+    }
+  }
+
+  Connections {
+    target: root
+    function onOpenedChanged() {
+      if (root.opened) root.reloadHistory()
     }
   }
 
@@ -364,13 +375,13 @@ Panel {
                   onCloseRequested: {
                     if (!root.notificationService) return
                     if (root.isActiveEntry(row.originalId, row.timestamp))
-                      root.notificationService.dismissPopup(row.index)
+                      root.notificationService.dismissPopup(root.activeIndex(row.originalId, row.timestamp))
                   }
 
                   onCardClicked: {
                     if (!root.notificationService) return
                     if (root.isActiveEntry(row.originalId, row.timestamp))
-                      root.notificationService.invokePopupDefault(row.index)
+                      root.notificationService.invokePopupDefault(root.activeIndex(row.originalId, row.timestamp))
                     else
                       root.notificationService.focusApp({
                         app: row.app
