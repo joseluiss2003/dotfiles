@@ -11,19 +11,22 @@
 
   "display": {
     "separator": "  ",
-    "color": {
-      "keys": "cyan",
-      "title": "green"
+    "key": {
+      "width": 10
     }
   },
 
   "modules": [
     "title",
-    "separator",
+
+    {
+      "type": "custom",
+      "key": "SYSTEM",
+      "format": ""
+    },
     {
       "type": "os",
-      "key": "OS",
-      "format": "{name} {version}"
+      "key": "OS"
     },
     {
       "type": "kernel",
@@ -37,6 +40,12 @@
       "type": "packages",
       "key": "Packages"
     },
+
+    {
+      "type": "custom",
+      "key": "ENVIRONMENT",
+      "format": ""
+    },
     {
       "type": "shell",
       "key": "Shell"
@@ -49,6 +58,12 @@
     {
       "type": "terminal",
       "key": "Terminal"
+    },
+
+    {
+      "type": "custom",
+      "key": "HARDWARE",
+      "format": ""
     },
     {
       "type": "cpu",
