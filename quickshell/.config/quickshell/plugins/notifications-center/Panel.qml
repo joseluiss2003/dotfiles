@@ -128,7 +128,6 @@ Panel {
   readonly property bool dnd:
     notificationService ? !!notificationService.doNotDisturb : false
 
-  readonly property string fontFamily: Style.font.resolvedFamily
 
   function toggleDnd() {
     if (notificationService)
