@@ -767,7 +767,7 @@ Panel {
                   outputSlider.dragging ? outputSlider.liveValue : root.outputVolume,
                   root.outputMuted
                 ).toUpperCase()
-                color: Qt.darker(root.bar.foreground, 1.4)
+                color: Color.muted
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -804,7 +804,7 @@ Panel {
                 id: outputPercent
                 textFormat: Text.PlainText
                 text: Math.round((outputSlider.dragging ? outputSlider.liveValue : root.outputVolume) * 100) + "%"
-                color: Qt.darker(root.bar.foreground, 1.4)
+                color: Color.muted
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -891,7 +891,7 @@ Panel {
                 id: microphonePercent
                 textFormat: Text.PlainText
                 text: Math.round((inputSlider.dragging ? inputSlider.liveValue : root.inputVolume) * 100) + "%"
-                color: Qt.darker(root.bar.foreground, 1.4)
+                color: Color.muted
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -1203,7 +1203,7 @@ Panel {
           id: streamPct
           textFormat: Text.PlainText
           text: Math.round(streamRow.streamVolume * 100) + "%"
-          color: Qt.darker(root.bar.foreground, 1.5)
+          color: Color.muted
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.caption
           font.bold: true

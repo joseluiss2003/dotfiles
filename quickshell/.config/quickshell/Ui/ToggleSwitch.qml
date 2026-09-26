@@ -92,7 +92,7 @@ Item {
       radius: root.rounded ? height / 2 : 0
       x: root.checked ? track.width - width - root.knobInset : root.knobInset
       anchors.verticalCenter: parent.verticalCenter
-      color: root.checked ? Style.selectedStateColor(root.foreground, root.accent) : Qt.darker(root.foreground, 1.25)
+      color: root.checked ? root.accent : Color.muted
 
       Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
       Behavior on color { ColorAnimation { duration: 120 } }

@@ -362,7 +362,7 @@ Panel {
               id: heroStatus
               textFormat: Text.PlainText
               text: root.heroStatusText.toUpperCase()
-              color: Qt.darker(root.bar.foreground, 1.4)
+              color: Color.muted
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true

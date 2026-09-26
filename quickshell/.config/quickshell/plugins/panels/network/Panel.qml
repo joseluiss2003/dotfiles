@@ -1284,7 +1284,7 @@ Panel {
               return ""
             }
             visible: text !== ""
-            color: root.restricted ? root.bar.urgent : Qt.darker(root.bar.foreground, 1.4)
+            color: root.restricted ? root.bar.urgent : Color.muted
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.caption
             font.bold: true
@@ -1781,7 +1781,7 @@ Panel {
       if (isBusy) return root.bar.foreground
       if (isConnected && root.kind === "wifi" && root.hasCaptivePortal) return root.bar.urgent
       if (isConnected) return root.bar.foreground
-      return Qt.darker(root.bar.foreground, 1.5)
+      return Color.muted
     }
 
     implicitHeight: rowBody.implicitHeight + (isPasswordOpen ? passwordPanel.implicitHeight + Style.spacing.md : 0)
@@ -1862,7 +1862,7 @@ Panel {
           anchors.verticalCenter: parent.verticalCenter
           horizontalAlignment: Text.AlignHCenter
           text: row.forgetVisible ? "󰅙" : "󰌾"
-          color: row.forgetVisible ? root.bar.urgent : Qt.darker(root.bar.foreground, 1.4)
+          color: row.forgetVisible ? root.bar.urgent : Color.muted
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.subtitle
         }

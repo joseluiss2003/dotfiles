@@ -74,7 +74,7 @@ BorderSurface {
     text: root.iconText
     color: root.enabled
       ? (root.hoverColor === Color.urgent ? Color.urgent : Color.accent)
-      : Qt.darker(root.foreground, 2.0)
+      : Color.muted
     font.family: root.fontFamily
     font.pixelSize: root.fontSize
   }

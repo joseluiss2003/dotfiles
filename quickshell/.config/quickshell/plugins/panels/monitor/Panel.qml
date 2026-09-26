@@ -578,7 +578,7 @@ Panel {
 
                   return "FIXED BRIGHTNESS"
                 }
-                color: Qt.darker(root.bar.foreground, 1.4)
+                color: Color.muted
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -624,7 +624,7 @@ Panel {
                     ? brightnessSlider.liveValue
                     : root.brightnessPercent
                 ) + "%"
-                color: Qt.darker(root.bar.foreground, 1.4)
+                color: Color.muted
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -721,7 +721,7 @@ Panel {
                     : root.displayedTextPx()
                 ) + "px"
 
-                color: Qt.darker(root.bar.foreground, 1.4)
+                color: Color.muted
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -815,7 +815,7 @@ Panel {
                   root.focusedMonitor !== "" &&
                   root.enabledDisplayCount > 1
 
-                color: Qt.darker(root.bar.foreground, 1.4)
+                color: Color.muted
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
