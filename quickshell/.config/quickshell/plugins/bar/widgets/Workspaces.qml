@@ -10,7 +10,7 @@ BarWidget {
   id: root
   moduleName: "swayp.workspaces"
 
-  // Omarchy-style geometry: 1..5 are always visible. Sway workspaces
+  // SwayP geometry: 1..5 are always visible. Sway workspaces
   // 6..10 appear when occupied, without changing the Sway backend.
   property var occupiedNumbers: []
   property int refreshSerial: 0
