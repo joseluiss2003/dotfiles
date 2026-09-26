@@ -17,10 +17,27 @@ Panel {
 
   bar: shell && shell.bar ? shell.bar : null
 
+  property string preferredScreenName: ""
+
   readonly property var notificationBarSlot:
-    bar && typeof bar.visibleModuleSlot === "function"
-      ? bar.visibleModuleSlot("right", "omarchy.notification-center", null)
-      : null
+    bar && preferredScreenName !== "" && typeof bar.visibleModuleSlotOnScreen === "function"
+      ? bar.visibleModuleSlotOnScreen("right", "omarchy.notification-center", preferredScreenName)
+      : (bar && typeof bar.visibleModuleSlot === "function"
+        ? bar.visibleModuleSlot("right", "omarchy.notification-center", null)
+        : null)
+
+  function open(payload) {
+    preferredScreenName = ""
+    if (payload) {
+      try {
+        var parsed = JSON.parse(String(payload))
+        if (parsed && parsed.screenName) preferredScreenName = String(parsed.screenName)
+      } catch (e) {
+        console.warn("notification center: invalid open payload:", e)
+      }
+    }
+    controller.show()
+  }
 
   readonly property var notificationBarItem:
     notificationBarSlot
