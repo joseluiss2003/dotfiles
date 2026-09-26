@@ -32,6 +32,11 @@ Panel {
   readonly property bool dnd:
     notificationService ? !!notificationService.doNotDisturb : false
 
+  readonly property string fontFamily:
+    shell && shell.bar && shell.bar.fontFamily
+      ? shell.bar.fontFamily
+      : Style.font.family
+
   function toggleDnd() {
     if (notificationService)
       notificationService.setDoNotDisturb(!notificationService.doNotDisturb)
@@ -42,10 +47,6 @@ Panel {
       notificationService.clearPopups()
   }
 
-  function showHistory() {
-    if (notificationService)
-      notificationService.showRecentHistory()
-  }
 
   function closePanel() {
     root.close()
@@ -164,7 +165,7 @@ Panel {
               textFormat: Text.PlainText
               text: root.dnd ? "󰂛" : "󰂚"
               color: root.dnd ? Color.urgent : Color.accent
-              font.family: Style.font.family
+              font.family: root.fontFamily
               font.pixelSize: Style.font.display
               anchors.left: parent.left
               anchors.leftMargin: Style.space(14)
@@ -180,7 +181,7 @@ Panel {
               Text {
                 text: "Notifications"
                 color: Color.notifications.text
-                font.family: Style.font.family
+                font.family: root.fontFamily
                 font.pixelSize: Style.font.heading
                 font.bold: true
               }
@@ -188,7 +189,7 @@ Panel {
               Text {
                 text: root.dnd ? "DO NOT DISTURB" : "LIVE · SWAY"
                 color: Color.notifications.countdown
-                font.family: Style.font.family
+                font.family: root.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
                 font.letterSpacing: 1.1
@@ -201,7 +202,7 @@ Panel {
               anchors.verticalCenter: parent.verticalCenter
               text: root.notificationCount + (root.notificationCount === 1 ? " ALERT" : " ALERTS")
               color: Color.notifications.countdown
-              font.family: Style.font.family
+              font.family: root.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
             }
@@ -261,7 +262,7 @@ Panel {
                   urgency: row.urgency
                   timestamp: row.timestamp
                   cornerRadius: 0
-                  fontFamily: Style.font.family
+                  fontFamily: root.fontFamily
 
                   // The service already owns action dispatch and lifecycle.
                   // Reuse it rather than duplicating notification handling.
@@ -288,7 +289,7 @@ Panel {
                 text: "󰂚"
                 color: Color.accent
                 opacity: 0.75
-                font.family: Style.font.family
+                font.family: root.fontFamily
                 font.pixelSize: Style.font.displayLarge
                 horizontalAlignment: Text.AlignHCenter
               }
@@ -300,7 +301,7 @@ Panel {
                   : "No pending notifications"
                 color: Color.notifications.text
                 opacity: 0.62
-                font.family: Style.font.family
+                font.family: root.fontFamily
                 font.pixelSize: Style.font.body
                 horizontalAlignment: Text.AlignHCenter
               }
@@ -320,33 +321,22 @@ Panel {
               spacing: Style.space(6)
 
               Button {
-                width: (parent.width - parent.spacing * 2) / 3
+                width: (parent.width - parent.spacing) / 2
                 text: root.dnd ? "Allow" : "Silence"
                 iconText: root.dnd ? "󰂚" : "󰂛"
                 foreground: Color.notifications.text
-                fontFamily: Style.font.family
+                fontFamily: root.fontFamily
                 fontSize: Style.font.bodySmall
                 bordered: true
                 onClicked: root.toggleDnd()
               }
 
               Button {
-                width: (parent.width - parent.spacing * 2) / 3
-                text: "History"
-                iconText: "󰋼"
-                foreground: Color.notifications.text
-                fontFamily: Style.font.family
-                fontSize: Style.font.bodySmall
-                bordered: true
-                onClicked: root.showHistory()
-              }
-
-              Button {
-                width: (parent.width - parent.spacing * 2) / 3
+                width: (parent.width - parent.spacing) / 2
                 text: "Clear"
                 iconText: "󰆴"
                 foreground: Color.notifications.text
-                fontFamily: Style.font.family
+                fontFamily: root.fontFamily
                 fontSize: Style.font.bodySmall
                 bordered: true
                 enabled: root.notificationCount > 0
