@@ -9,7 +9,7 @@ url_count=3
 
 case "$direction" in
   down | up) ;;
-  *) echo "Usage: omarchy-network-speedtest [down|up]" >&2; exit 2 ;;
+  *) echo "Usage: swayp-network-speedtest [down|up]" >&2; exit 2 ;;
 esac
 
 format_mbps() {

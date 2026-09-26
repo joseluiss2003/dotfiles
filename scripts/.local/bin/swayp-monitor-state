@@ -5,7 +5,7 @@ set -eu
 outputs="$(swaymsg -t get_outputs -r)"
 
 brightness="$(
-    omarchy-brightness-display --get 2>/dev/null ||
+    swayp-brightness-display --get 2>/dev/null ||
     printf '%s\n' "unavailable"
 )"
 

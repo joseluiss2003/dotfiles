@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# omarchy:summary=Show or pin the Wi-Fi band for the active connection
-# omarchy:group=network
-# omarchy:args=[auto|2.4|5|6]
-# omarchy:examples=omarchy network band | omarchy network band 5 | omarchy network band auto
+# swayp:summary=Show or pin the Wi-Fi band for the active connection
+# swayp:group=network
+# swayp:args=[auto|2.4|5|6]
+# swayp:examples=omarchy network band | omarchy network band 5 | omarchy network band auto
 
 set -euo pipefail
 
@@ -168,7 +168,7 @@ set_band() {
 }
 
 usage() {
-  echo "Usage: omarchy-network-band [auto|2.4|5|6]" >&2
+  echo "Usage: swayp-network-band [auto|2.4|5|6]" >&2
 }
 
 if (($# == 0)); then

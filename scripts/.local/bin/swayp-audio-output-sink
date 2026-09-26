@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# omarchy:summary=Print the sink whose volume and mute a given output really uses
-# omarchy:args=[sink-name]
-# omarchy:group=audio
-# omarchy:examples=omarchy audio output sink | omarchy audio output sink omarchy_speaker_tuning
+# swayp:summary=Print the sink whose volume and mute a given output really uses
+# swayp:args=[sink-name]
+# swayp:group=audio
+# swayp:examples=omarchy audio output sink | omarchy audio output sink omarchy_speaker_tuning
 
 set -uo pipefail
 

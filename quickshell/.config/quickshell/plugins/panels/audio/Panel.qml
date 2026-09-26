@@ -114,7 +114,7 @@ Panel {
   // *into* the processing, so the slider would move while the speakers did not,
   // and on a chain with a limiter it would change the tone as well.
   //
-  // omarchy-audio-output-sink resolves the *current* default output through any
+  // swayp-audio-output-sink resolves the *current* default output through any
   // such sink to the physical one, which is the same definition the volume keys
   // and the output switcher use. Resolving the default (rather than "whatever a
   // tuning fronts") is what keeps this correct when headphones or HDMI are
@@ -585,7 +585,7 @@ Panel {
 
   Process {
     id: sinkAvailabilityProc
-    command: ["omarchy-audio-sink-availability"]
+    command: ["swayp-audio-sink-availability"]
     stdout: StdioCollector {
       waitForEnd: true
       onStreamFinished: root.updateSinkAvailability(text)
@@ -594,7 +594,7 @@ Panel {
 
   Process {
     id: volumeSinkProc
-    command: ["omarchy-audio-output-sink"]
+    command: ["swayp-audio-output-sink"]
     stdout: StdioCollector {
       waitForEnd: true
       onStreamFinished: root.volumeSinkName = String(text).trim()

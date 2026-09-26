@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# omarchy:summary=Print active network status for the shell
-# omarchy:group=network
-# omarchy:args=[--verbose]
+# swayp:summary=Print active network status for the shell
+# swayp:group=network
+# swayp:args=[--verbose]
 
 verbose=false
 internet_probe=1.1.1.1
@@ -14,7 +14,7 @@ case "${1:-}" in
     verbose=true
     ;;
   *)
-    echo "Usage: omarchy-network-status [--verbose]" >&2
+    echo "Usage: swayp-network-status [--verbose]" >&2
     exit 2
     ;;
 esac

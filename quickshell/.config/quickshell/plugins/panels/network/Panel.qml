@@ -33,7 +33,7 @@ Panel {
   property var info: ({})  // { iface, type, ip, prefix, gateway, speed, duplex, ssid, signal, freq, bitrate, rx_bytes, tx_bytes, router_ping_ms, internet_ping_ms }
 
   // Throughput tracking. Rates are computed as deltas between successive
-  // `omarchy-network-status --verbose` samples (~1.5s apart via detailsPoll).
+  // `swayp-network-status --verbose` samples (~1.5s apart via detailsPoll).
   // We hold "prev" alongside a timestamp so the first sample after open or
   // after an interface switch doesn't manufacture a spike.
   property real prevRxBytes: 0
@@ -76,7 +76,7 @@ Panel {
   property bool wifiStationAvailable: false
   property string dnsProvider: ""
   property string pendingDnsProvider: ""
-  // Wi-Fi band state from `omarchy-network-band`. `bandCurrent` is the band
+  // Wi-Fi band state from `swayp-network-band`. `bandCurrent` is the band
   // the radio is actually on; `bandSelected` is the pinned choice ("auto" when
   // nothing is pinned), and the two differ whenever Auto is in effect.
   property string bandCurrent: ""
@@ -534,7 +534,7 @@ Panel {
       dnsProc.running = true
     }
     if (!bandProc.running) {
-      bandProc.command = ["omarchy-network-band"]
+      bandProc.command = ["swayp-network-band"]
       bandProc.running = true
     }
     // A closed panel has no nearby-network list to fill, and bare refresh()
@@ -699,7 +699,7 @@ Panel {
     if (!band || actionProc.running) return
 
     root.pendingBand = band
-    actionProc.command = ["omarchy-network-band", band]
+    actionProc.command = ["swayp-network-band", band]
     actionProc.running = true
   }
 
@@ -867,7 +867,7 @@ Panel {
   // Pulls everything we want about the active route's interface in one shot.
   Process {
     id: detailsProc
-    command: ["omarchy-network-status", "--verbose"]
+    command: ["swayp-network-status", "--verbose"]
     stdout: StdioCollector {
       waitForEnd: true
       onStreamFinished: root.updateDetails(text)
@@ -918,7 +918,7 @@ Panel {
     running: root.opened
     onTriggered: {
       if (bandProc.running) return
-      bandProc.command = ["omarchy-network-band"]
+      bandProc.command = ["swayp-network-band"]
       bandProc.running = true
     }
   }
