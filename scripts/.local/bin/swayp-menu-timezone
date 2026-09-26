@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+command -v fuzzel >/dev/null 2>&1 || exit 0
+command -v timedatectl >/dev/null 2>&1 || exit 0
+
+current="$(timedatectl show --property=Timezone --value 2>/dev/null || true)"
+choice="$(timedatectl list-timezones 2>/dev/null | fuzzel --dmenu --prompt="Timezone: " --placeholder="${current:-Select timezone}" | sed '/^[[:space:]]*$/d')"
+
+[ -n "$choice" ] || exit 0
+[ "$choice" = "$current" ] && exit 0
+
+timedatectl set-timezone "$choice"
