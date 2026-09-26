@@ -10,13 +10,8 @@ Item {
   id: root
 
   // Lets the bar associate the KeyboardPanel coordinator with this widget.
-  readonly property string moduleName: "omarchy.clipboard"
+  readonly property string moduleName: "swayp.clipboard"
 
-  property string omarchyPath: {
-    var configured = Quickshell.env("OMARCHY_PATH")
-    var home = Quickshell.env("HOME")
-    return configured && configured.trim() !== "" ? configured : home + "/.local/share/omarchy-quattro-sway/source"
-  }
   property bool opened: false
   // Injected by the bar-widget host so PopupCard can anchor to the actual bar button.
   property Item anchorItem: null
@@ -26,7 +21,7 @@ Item {
   property bool clearConfirmOpen: false
   property var history: []
 
-  property string historyPath: Quickshell.env("HOME") + "/.local/state/omarchy/clipboard-history.json"
+  property string historyPath: Quickshell.env("HOME") + "/.local/state/swayp/clipboard-history.json"
   property string captureScript: Quickshell.env("HOME") + "/.config/quickshell/plugins/clipboard/capture.sh"
   // Shares the [menu] surface tokens — themes that style the menu also
   // style the clipboard. Selected-row colors composed in the
