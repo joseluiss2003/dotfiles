@@ -17,7 +17,8 @@ setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_SAVE_NO_DUPS
-setopt SHARE_HISTORY
+# Avoid shared-history file races that can corrupt ~/.zsh_history.
+setopt INC_APPEND_HISTORY
 
 # Completion
 autoload -Uz compinit
