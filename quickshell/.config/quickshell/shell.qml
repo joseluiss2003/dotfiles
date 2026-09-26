@@ -32,7 +32,7 @@ ShellRoot {
   }
   readonly property string shellPath: Quickshell.shellDir
   readonly property string firstPartyPluginsDir: shellPath + "/plugins"
-  readonly property string defaultsPath: home + "/.config/omarchy/shell.json"
+  readonly property string defaultsPath: home + "/.config/swayp/shell.json"
   readonly property string userConfigPath: home + "/.config/omarchy/shell.json"
 
   // Bundled fallback so the shell can start even when the default shell.json is
