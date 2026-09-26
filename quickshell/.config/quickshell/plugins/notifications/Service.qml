@@ -687,6 +687,20 @@ Item {
       function() { service.historyChanged() })
   }
 
+  // Remove one notification from the persistent history. If the row is
+  // currently live, its dismiss/archive job (queued by the caller) runs before
+  // this delete, so the entry cannot immediately reappear in the center.
+  function removeHistoryEntry(entry) {
+    if (!entry) return
+    var name = NotificationLogic.popupFileName(entry)
+    enqueuePopupFileJob(["bash", "-c",
+      "rm -f -- \"$1/$2.json\" \"$3/$2\"-*", "--",
+      historyDir,
+      name.replace(/\\.json$/, ""),
+      imagesDir],
+      function() { service.historyChanged() })
+  }
+
   function clearHistory() {
     enqueuePopupFileJob(["bash", "-c",
       "for f in \"$1\"/*.json; do\n" +
