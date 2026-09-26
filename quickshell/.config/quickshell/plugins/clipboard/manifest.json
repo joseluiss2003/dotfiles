@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "omarchy.clipboard",
+  "id": "swayp.clipboard",
   "name": "Clipboard",
   "version": "1.0.0",
-  "author": "Omarchy",
+  "author": "SwayP",
   "description": "Clipboard history dropdown",
   "kinds": [
     "bar-widget"
