@@ -1,0 +1,18 @@
+{
+  // SwayP default menu. User overrides live in ~/.config/swayp/menu.jsonc.
+  "apps": {"icon":"󰀻","label":"Apps","aliases":["app","applications"],"provider":"apps"},
+  "style": {"icon":"󰸌","label":"Style"},
+  "style.background": {"icon":"","label":"Wallpaper","aliases":["background","wallpaper"],"action":"~/.local/bin/wallpaper-picker"},
+  "system": {"icon":"","label":"System","aliases":["power-menu"]},
+  "system.lock": {"icon":"","label":"Lock","action":"qs ipc call lock lock"},
+  "system.suspend": {"icon":"󰒲","label":"Suspend","action":"systemctl suspend"},
+  "system.logout": {"icon":"󰍃","label":"Logout","action":"swaymsg exit"},
+  "system.reboot": {"icon":"󰜉","label":"Reboot","action":"systemctl reboot"},
+  "system.shutdown": {"icon":"󰐥","label":"Shutdown","action":"systemctl poweroff"},
+  "sway": {"icon":"","label":"Sway"},
+  "sway.reload": {"icon":"󰑓","label":"Reload","action":"swaymsg reload"},
+  "sway.exit": {"icon":"󰍃","label":"Exit Sway","action":"swaymsg exit"},
+  "learn": {"icon":"󰧑","label":"Learn"},
+  "learn.arch": {"icon":"󰣇","label":"Arch Linux","action":"xdg-open https://wiki.archlinux.org/"},
+  "learn.swayp": {"icon":"","label":"SwayP","action":"xdg-open https://github.com/joseluiss2003/dotfiles"}
+}

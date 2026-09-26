@@ -24,13 +24,6 @@ ShellRoot {
   property string home: Quickshell.env("HOME")
 
   // The omarchy-shell host is the long-running entry point. Plugins live in
-  // sibling directories under plugins/. OMARCHY_PATH is provided by the uwsm
-  // session environment and is the single source of truth for this checkout.
-  property string omarchyPath: {
-    var configured = Quickshell.env("OMARCHY_PATH")
-    return configured && configured.trim() !== "" ? configured : home + "/.local/share/omarchy-quattro-sway/source"
-  }
-  readonly property string shellPath: Quickshell.shellDir
   readonly property string firstPartyPluginsDir: shellPath + "/plugins"
   readonly property string defaultsPath: home + "/.config/swayp/shell.json"
   readonly property string userConfigPath: home + "/.config/swayp/shell.json"
@@ -148,7 +141,6 @@ ShellRoot {
 
 Component.onCompleted: {
     console.log("omarchy-shell paths",
-      "omarchyPath=" + shell.omarchyPath,
       "shellDir=" + Quickshell.shellDir,
       "firstPartyPluginsDir=" + shell.firstPartyPluginsDir,
       "defaultsPath=" + shell.defaultsPath,
@@ -225,7 +217,6 @@ Component.onCompleted: {
 
   function configureBar(target, manifest) {
     if (!target) return
-    if ("omarchyPath" in target) target.omarchyPath = shell.omarchyPath
     if ("shell" in target) target.shell = shell.pluginShellFor(manifest)
     if ("manifest" in target) target.manifest = shell.publicPluginManifest(manifest)
     if ("barWidgetRegistry" in target) target.barWidgetRegistry = shell.pluginBarWidgetRegistryFor(manifest)
@@ -238,7 +229,6 @@ Component.onCompleted: {
     id: defaultBarComponent
 
     Bar {
-      omarchyPath: shell.omarchyPath
       barWidgetRegistry: shell.barWidgetRegistry
       barConfig: shell.barConfig
       shell: shell
@@ -922,7 +912,6 @@ Component.onCompleted: {
         console.warn("service plugin createObject returned null for", key)
         return
       }
-      if ("omarchyPath" in inst) inst.omarchyPath = shell.omarchyPath
       if ("shell" in inst) inst.shell = shell.pluginShellFor(manifest)
       if ("manifest" in inst) inst.manifest = shell.publicPluginManifest(manifest)
       if ("barWidgetRegistry" in inst) inst.barWidgetRegistry = shell.pluginBarWidgetRegistryFor(manifest)
@@ -1335,7 +1324,6 @@ Component.onCompleted: {
         asynchronous: true
         onLoaded: {
           if (!item) return
-          if ("omarchyPath" in item) item.omarchyPath = shell.omarchyPath
           if ("shell" in item) item.shell = shell.pluginShellFor(panelEntry.manifest)
           if ("manifest" in item) item.manifest = shell.publicPluginManifest(panelEntry.manifest)
           if ("barWidgetRegistry" in item) item.barWidgetRegistry = shell.pluginBarWidgetRegistryFor(panelEntry.manifest)
