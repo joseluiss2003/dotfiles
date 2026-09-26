@@ -35,6 +35,11 @@ Panel {
   readonly property int notificationCount: centerModel.count
   property bool historyReloadPending: false
 
+  // The center is a standalone panel, not a child of the bar. Keep its
+  // typography independent from bar lifetime while using the same resolved
+  // font that the bar ultimately uses.
+  readonly property string fontFamily: Style.font.resolvedFamily
+
   readonly property var notificationPhrases: [
     "Catching signals",
     "Watching events",
@@ -227,12 +232,12 @@ Panel {
         anchors.fill: parent
         focus: root.opened
 
-        Keys.onEscapePressed: {
+        Keys.onEscapePressed: function(event) {
           root.closePanel()
           event.accepted = true
         }
 
-        Keys.onReturnPressed: {
+        Keys.onReturnPressed: function(event) {
           root.closePanel()
           event.accepted = true
         }
@@ -304,7 +309,7 @@ Panel {
               textFormat: Text.PlainText
               text: root.dnd ? "󰂛" : "󰂚"
               color: root.dnd ? Color.urgent : Color.accent
-              font.family: root.bar.fontFamily
+              font.family: root.fontFamily
               font.pixelSize: Style.font.display
               anchors.left: parent.left
               anchors.leftMargin: Style.space(14)
@@ -320,7 +325,7 @@ Panel {
               Text {
                 text: "Notifications"
                 color: Color.notifications.text
-                font.family: root.bar.fontFamily
+                font.family: root.fontFamily
                 font.pixelSize: Style.font.title
                 font.bold: true
               }
@@ -328,7 +333,7 @@ Panel {
               Text {
                 text: root.dnd ? "DO NOT DISTURB" : root.notificationPhrase.toUpperCase()
                 color: Color.muted
-                font.family: root.bar.fontFamily
+                font.family: root.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
                 font.letterSpacing: 1.1
@@ -341,7 +346,7 @@ Panel {
               anchors.verticalCenter: parent.verticalCenter
               text: root.notificationCount + (root.notificationCount === 1 ? " ALERT" : " ALERTS")
               color: Color.notifications.countdown
-              font.family: root.bar.fontFamily
+              font.family: root.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
             }
@@ -448,7 +453,7 @@ Panel {
                 text: "󰂚"
                 color: Color.accent
                 opacity: 0.75
-                font.family: root.bar.fontFamily
+                font.family: root.fontFamily
                 font.pixelSize: Style.font.displayLarge
                 horizontalAlignment: Text.AlignHCenter
               }
@@ -460,7 +465,7 @@ Panel {
                   : "No notifications"
                 color: Color.notifications.text
                 opacity: 0.62
-                font.family: root.bar.fontFamily
+                font.family: root.fontFamily
                 font.pixelSize: Style.font.body
                 horizontalAlignment: Text.AlignHCenter
               }
