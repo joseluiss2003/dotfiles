@@ -147,7 +147,20 @@ Item {
       return labelFor(a).localeCompare(labelFor(b))
     })
 
-    return list
+    var unique = []
+    for (var j = 0; j < list.length; j++) {
+      var candidate = list[j]
+      var duplicate = false
+      for (var k = 0; k < unique.length; k++) {
+        if (MediaModel.sameTrack(candidate, unique[k])) {
+          duplicate = true
+          break
+        }
+      }
+      if (!duplicate) unique.push(candidate)
+    }
+
+    return unique
   }
 
   function orderedCycleSourcePlayers() {
@@ -160,11 +173,25 @@ Item {
     }
 
     list.sort(function(a, b) {
+      if (!!a.isPlaying !== !!b.isPlaying) return a.isPlaying ? -1 : 1
       if (isProxyPlayer(a) !== isProxyPlayer(b)) return isProxyPlayer(a) ? 1 : -1
       return labelFor(a).localeCompare(labelFor(b))
     })
 
-    return list
+    var unique = []
+    for (var j = 0; j < list.length; j++) {
+      var candidate = list[j]
+      var duplicate = false
+      for (var k = 0; k < unique.length; k++) {
+        if (MediaModel.sameTrack(candidate, unique[k])) {
+          duplicate = true
+          break
+        }
+      }
+      if (!duplicate) unique.push(candidate)
+    }
+
+    return unique
   }
 
   function oldestPlayingPlayer(requirePlaybackStream) {
