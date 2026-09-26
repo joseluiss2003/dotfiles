@@ -8,6 +8,7 @@ PACKAGES=(
   stow
   zsh
   starship
+  fastfetch
   sway
   swaybg
   swayidle
