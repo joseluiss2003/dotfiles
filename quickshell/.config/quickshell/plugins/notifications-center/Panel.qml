@@ -1,0 +1,358 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.I3
+import Quickshell.Wayland
+import qs.Commons
+import qs.Ui
+import "components" as NotificationComponents
+
+Panel {
+  id: root
+
+  moduleName: "omarchy.notification-center"
+  ipcTarget: "omarchy.notification-center"
+
+  // This panel deliberately consumes the existing notification service instead
+  // of creating a second NotificationServer. The service owns lifetime,
+  // persistence, DND and notification actions; this plugin is presentation.
+  readonly property var notificationService:
+    shell && typeof shell.firstPartyServiceFor === "function"
+      ? shell.firstPartyServiceFor("omarchy.notifications")
+      : null
+
+  readonly property var notifications:
+    notificationService && notificationService.popupModel
+      ? notificationService.popupModel
+      : null
+
+  readonly property int notificationCount:
+    notifications ? notifications.count : 0
+
+  readonly property bool dnd:
+    notificationService ? !!notificationService.doNotDisturb : false
+
+  function toggleDnd() {
+    if (notificationService)
+      notificationService.setDoNotDisturb(!notificationService.doNotDisturb)
+  }
+
+  function clearAll() {
+    if (notificationService)
+      notificationService.clearPopups()
+  }
+
+  function showHistory() {
+    if (notificationService)
+      notificationService.showRecentHistory()
+  }
+
+  function closePanel() {
+    root.close()
+  }
+
+  Variants {
+    model: Quickshell.screens
+
+    PanelWindow {
+      id: window
+      required property var modelData
+
+      screen: modelData
+      visible: root.opened
+        && I3.focusedMonitor
+        && String(I3.focusedMonitor.name || "") === String(modelData.name || "")
+
+      focusable: root.opened
+      exclusionMode: ExclusionMode.Ignore
+      color: "transparent"
+
+      WlrLayershell.namespace: "omarchy-notification-center"
+      WlrLayershell.layer: WlrLayer.Overlay
+
+      anchors {
+        top: true
+        right: true
+        bottom: true
+        left: true
+      }
+
+      // Only the card receives input. The rest of the overlay remains
+      // click-through, so opening the center never creates a giant invisible
+      // input blocker over the desktop.
+      mask: Region { item: card }
+
+      Item {
+        id: focusCatcher
+        anchors.fill: parent
+        focus: root.opened
+
+        Keys.onEscapePressed: {
+          root.closePanel()
+          event.accepted = true
+        }
+
+        Keys.onReturnPressed: {
+          root.closePanel()
+          event.accepted = true
+        }
+
+        Component.onCompleted: {
+          if (root.opened)
+            Qt.callLater(function() { forceActiveFocus() })
+        }
+
+        Connections {
+          target: root
+          function onOpenedChanged() {
+            if (root.opened)
+              Qt.callLater(function() { focusCatcher.forceActiveFocus() })
+          }
+        }
+      }
+
+      BorderSurface {
+        id: card
+
+        readonly property int widthLimit: Style.space(460)
+        readonly property int maxListHeight: Style.space(520)
+        readonly property int headerHeight: Style.space(70)
+
+        width: Math.min(parent.width - Style.space(24), widthLimit)
+        height: Math.min(
+          parent.height - Style.space(24),
+          headerHeight
+            + Style.space(8)
+            + notificationList.implicitHeight
+            + Style.space(12)
+            + footer.implicitHeight
+            + borderTop + borderBottom
+        )
+
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.topMargin: Style.space(12)
+        anchors.rightMargin: Style.space(12)
+
+        color: Color.notifications.background
+        borderSpec: Border.surfaceSpec(
+          "notifications",
+          "border",
+          Color.notifications.border,
+          Math.max(1, Style.space(2))
+        )
+        radius: 0
+        clip: true
+
+        ColumnLayout {
+          anchors.fill: parent
+          anchors.topMargin: card.borderTop
+          anchors.leftMargin: card.borderLeft
+          anchors.rightMargin: card.borderRight
+          anchors.bottomMargin: card.borderBottom
+          spacing: 0
+
+          Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: card.headerHeight
+
+            Text {
+              id: headerIcon
+              textFormat: Text.PlainText
+              text: root.dnd ? "󰂛" : "󰂚"
+              color: root.dnd ? Color.urgent : Color.accent
+              font.family: Style.font.family
+              font.pixelSize: Style.font.display
+              anchors.left: parent.left
+              anchors.leftMargin: Style.space(14)
+              anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Column {
+              anchors.left: headerIcon.right
+              anchors.leftMargin: Style.space(12)
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: Style.space(2)
+
+              Text {
+                text: "Notifications"
+                color: Color.notifications.text
+                font.family: Style.font.family
+                font.pixelSize: Style.font.heading
+                font.bold: true
+              }
+
+              Text {
+                text: root.dnd ? "DO NOT DISTURB" : "LIVE · SWAY"
+                color: Color.notifications.countdown
+                font.family: Style.font.family
+                font.pixelSize: Style.font.caption
+                font.bold: true
+                font.letterSpacing: 1.1
+              }
+            }
+
+            Text {
+              anchors.right: parent.right
+              anchors.rightMargin: Style.space(14)
+              anchors.verticalCenter: parent.verticalCenter
+              text: root.notificationCount + (root.notificationCount === 1 ? " ALERT" : " ALERTS")
+              color: Color.notifications.countdown
+              font.family: Style.font.family
+              font.pixelSize: Style.font.caption
+              font.bold: true
+            }
+          }
+
+          PanelSeparator {
+            foreground: Color.notifications.border
+          }
+
+          Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: Math.min(
+              card.maxListHeight,
+              Math.max(notificationList.implicitHeight, Style.space(84))
+            )
+
+            ListView {
+              id: notificationList
+
+              anchors.fill: parent
+              anchors.leftMargin: Style.space(10)
+              anchors.rightMargin: Style.space(10)
+              anchors.topMargin: Style.space(8)
+              anchors.bottomMargin: Style.space(8)
+
+              model: root.notifications
+              spacing: Style.space(8)
+              clip: true
+              boundsBehavior: Flickable.StopAtBounds
+
+              delegate: Item {
+                id: row
+
+                required property int index
+                required property string app
+                required property string appIcon
+                required property string summary
+                required property string body
+                required property string image
+                required property string glyph
+                required property int urgency
+                required property double timestamp
+
+                width: notificationList.width
+                implicitHeight: notificationCard.implicitHeight
+
+                NotificationComponents.NotificationCard {
+                  id: notificationCard
+
+                  width: parent.width
+                  app: row.app
+                  appIcon: row.appIcon
+                  summary: row.summary
+                  body: row.body
+                  image: row.image
+                  glyph: row.glyph
+                  urgency: row.urgency
+                  timestamp: row.timestamp
+                  cornerRadius: 0
+                  fontFamily: Style.font.family
+
+                  // The service already owns action dispatch and lifecycle.
+                  // Reuse it rather than duplicating notification handling.
+                  onCloseRequested: {
+                    if (root.notificationService)
+                      root.notificationService.dismissPopup(row.index)
+                  }
+
+                  onCardClicked: {
+                    if (root.notificationService)
+                      root.notificationService.invokePopupDefault(row.index)
+                  }
+                }
+              }
+            }
+
+            Column {
+              anchors.centerIn: parent
+              visible: root.notificationCount === 0
+              spacing: Style.space(8)
+
+              Text {
+                width: parent.width
+                text: "󰂚"
+                color: Color.accent
+                opacity: 0.75
+                font.family: Style.font.family
+                font.pixelSize: Style.font.displayLarge
+                horizontalAlignment: Text.AlignHCenter
+              }
+
+              Text {
+                width: Style.space(300)
+                text: root.dnd
+                  ? "Notifications are silenced"
+                  : "No pending notifications"
+                color: Color.notifications.text
+                opacity: 0.62
+                font.family: Style.font.family
+                font.pixelSize: Style.font.body
+                horizontalAlignment: Text.AlignHCenter
+              }
+            }
+          }
+
+          Item {
+            id: footer
+            Layout.fillWidth: true
+            implicitHeight: Style.space(52)
+
+            Row {
+              anchors.fill: parent
+              anchors.leftMargin: Style.space(10)
+              anchors.rightMargin: Style.space(10)
+              anchors.bottomMargin: Style.space(8)
+              spacing: Style.space(6)
+
+              Button {
+                width: (parent.width - parent.spacing * 2) / 3
+                text: root.dnd ? "Allow" : "Silence"
+                iconText: root.dnd ? "󰂚" : "󰂛"
+                foreground: Color.notifications.text
+                fontFamily: Style.font.family
+                fontSize: Style.font.bodySmall
+                bordered: true
+                onClicked: root.toggleDnd()
+              }
+
+              Button {
+                width: (parent.width - parent.spacing * 2) / 3
+                text: "History"
+                iconText: "󰋼"
+                foreground: Color.notifications.text
+                fontFamily: Style.font.family
+                fontSize: Style.font.bodySmall
+                bordered: true
+                onClicked: root.showHistory()
+              }
+
+              Button {
+                width: (parent.width - parent.spacing * 2) / 3
+                text: "Clear"
+                iconText: "󰆴"
+                foreground: Color.notifications.text
+                fontFamily: Style.font.family
+                fontSize: Style.font.bodySmall
+                bordered: true
+                enabled: root.notificationCount > 0
+                onClicked: root.clearAll()
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
