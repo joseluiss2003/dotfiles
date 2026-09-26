@@ -31,10 +31,14 @@ BarWidget {
 
   function toggleCenter() {
     if (!bar || !bar.shell) return
+    var screenName = button.QsWindow && button.QsWindow.window && button.QsWindow.window.screen
+      ? String(button.QsWindow.window.screen.name || "")
+      : ""
+    var payload = JSON.stringify({ screenName: screenName })
     if (typeof bar.shell.toggle === "function")
-      bar.shell.toggle("omarchy.notification-center", "{}")
+      bar.shell.toggle("omarchy.notification-center", payload)
     else if (typeof bar.shell.summon === "function")
-      bar.shell.summon("omarchy.notification-center", "{}")
+      bar.shell.summon("omarchy.notification-center", payload)
   }
 
   BarIconButton {
