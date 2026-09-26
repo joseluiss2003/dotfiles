@@ -651,6 +651,42 @@ Item {
     })
   }
 
+  // Clear the notification center as a true reset: remove live popups
+  // without archiving them, forget restored rows, and delete both the live
+  // persistence files and the history. Queued writes that existed before the
+  // reset are discarded; the delete job runs after any job already in flight,
+  // so a notification arriving after the click can still persist normally.
+  function clearAllNotifications() {
+    var refs = liveRefs
+    liveRefs = ({})
+    restoredPopups = ({})
+    popupFileQueue = []
+
+    while (popupModel.count > 0)
+      popupModel.remove(0)
+
+    for (var key in refs) {
+      var ref = refs[key]
+      try {
+        if (ref && ref.tracked && typeof ref.dismiss === "function")
+          ref.dismiss()
+      } catch (e) {
+        // The sender may already have gone away; the persisted state is still
+        // cleared below regardless.
+      }
+    }
+
+    enqueuePopupFileJob(["bash", "-c",
+      "for dir in \\\"$1\\\" \\\"$2\\\"; do\\n" +
+      "  for f in \\\"$dir\\\"/*.json; do [[ -e $f ]] && rm -f -- \\\"$f\\\"; done\\n" +
+      "done\\n" +
+      "rm -f -- \\\"$3\\\"/*", "--",
+      popupStateDir,
+      historyDir,
+      imagesDir],
+      function() { service.historyChanged() })
+  }
+
   function clearHistory() {
     enqueuePopupFileJob(["bash", "-c",
       "for f in \"$1\"/*.json; do\n" +
