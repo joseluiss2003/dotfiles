@@ -18,7 +18,6 @@ Item {
   // Injected by the bar-widget host so PopupCard can anchor to the actual bar button.
   property Item anchorItem: null
   property QtObject bar: null
-  property string filterText: ""
   property int selectedIndex: 0
   property bool cursorActive: false
   property bool clearConfirmOpen: false
@@ -42,13 +41,12 @@ Item {
   property int headerHeight: Style.space(48)
   property int contentSpacing: 0
   property int cardWidth: Style.space(440)
-  property int cardHeight: Style.space(360)
-  property int rowHeight: Style.space(42)
+  property int cardHeight: Style.space(390)
+  property int rowHeight: Style.space(46)
   property int historyLimit: 500
 
   function open(payloadJson) {
     root.opened = true
-    root.filterText = ""
     root.selectedIndex = 0
     root.cursorActive = true
     root.disarmPointer()
@@ -138,7 +136,7 @@ Item {
   }
 
   function rebuildDisplay() {
-    var rows = ClipboardHistory.displayRows(root.history, root.filterText, 50)
+    var rows = ClipboardHistory.displayRows(root.history, "", 50)
 
     displayModel.clear()
     for (var i = 0; i < rows.length; i++) {
@@ -181,14 +179,6 @@ Item {
     root.cursorActive = true
     root.selectedIndex = Math.max(0, Math.min(index, displayModel.count - 1))
     resultList.positionViewAtIndex(root.selectedIndex, ListView.Contain)
-  }
-
-  function setFilter(nextFilter) {
-    root.filterText = nextFilter
-    root.selectedIndex = 0
-    root.cursorActive = true
-    root.disarmPointer()
-    root.rebuildDisplay()
   }
 
   function disarmPointer() {
@@ -367,11 +357,7 @@ Item {
           }
 
           if (event.key === Qt.Key_Escape) {
-            if (root.filterText) root.setFilter("")
-            else root.close()
-            event.accepted = true
-          } else if (Util.editsFilter(event, root.filterText)) {
-            root.setFilter(Util.editedFilter(event, root.filterText))
+            root.close()
             event.accepted = true
           } else if (event.key === Qt.Key_Delete) {
             if (event.modifiers & Qt.ShiftModifier) root.requestClearHistory()
@@ -401,10 +387,6 @@ Item {
             else if (root.cursorActive) root.activateIndex(root.selectedIndex)
             else if (displayModel.count > 0) root.cursorActive = true
             event.accepted = true
-          } else if (event.text && event.text.length === 1 && event.text.charCodeAt(0) >= 32 && event.text.charCodeAt(0) !== 127) {
-            root.setFilter(root.filterText + event.text)
-            event.accepted = true
-          }
         }
 
         Component.onCompleted: {
@@ -434,13 +416,15 @@ Item {
         anchors.fill: parent
         spacing: 0
 
+        // Header — same visual grammar as the notification center:
+        // icon, title, quiet subtitle, count.
         Item {
           width: parent.width
-          height: Style.space(48)
+          height: Style.space(58)
 
           Row {
             anchors.left: parent.left
-            anchors.leftMargin: Style.space(14)
+            anchors.leftMargin: Style.space(16)
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.space(10)
 
@@ -465,9 +449,7 @@ Item {
               }
 
               Text {
-                text: root.filterText
-                  ? "FILTERING HISTORY"
-                  : "RECENT FRAGMENTS"
+                text: "RECENT FRAGMENTS"
                 color: Color.muted
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.caption
@@ -479,7 +461,7 @@ Item {
 
           Text {
             anchors.right: parent.right
-            anchors.rightMargin: Style.space(14)
+            anchors.rightMargin: Style.space(16)
             anchors.verticalCenter: parent.verticalCenter
             text: root.history.length + (root.history.length === 1 ? " ITEM" : " ITEMS")
             color: Color.muted
@@ -493,24 +475,25 @@ Item {
           foreground: Color.outline
         }
 
+        // History — deliberately quiet until an item is selected.
         Item {
           width: parent.width
           height: Math.max(
-            Style.space(120),
-            parent.height - Style.space(48 + 1 + 38)
+            Style.space(150),
+            parent.height - Style.space(58 + 1 + 48)
           )
           clip: true
 
           ListView {
             id: resultList
             anchors.fill: parent
-            anchors.leftMargin: Style.space(14)
-            anchors.rightMargin: Style.space(14)
+            anchors.leftMargin: Style.space(12)
+            anchors.rightMargin: Style.space(12)
             anchors.topMargin: Style.space(10)
             anchors.bottomMargin: Style.space(10)
             model: displayModel
             clip: true
-            spacing: Style.space(4)
+            spacing: Style.space(5)
             boundsBehavior: Flickable.StopAtBounds
             interactive: contentHeight > height
 
@@ -530,12 +513,12 @@ Item {
               Rectangle {
                 anchors.fill: parent
                 color: row.hasCursor
-                  ? Util.alpha(root.selectedBackground, 0.90)
+                  ? Util.alpha(root.selectedBackground, 0.92)
                   : Util.alpha(root.foreground, 0.025)
                 border.width: Style.normalBorderWidth
                 border.color: row.hasCursor
-                  ? Util.alpha(Color.accent, 0.85)
-                  : Util.alpha(root.border, 0.24)
+                  ? Util.alpha(Color.accent, 0.88)
+                  : Util.alpha(root.border, 0.22)
               }
 
               Rectangle {
@@ -551,7 +534,7 @@ Item {
                 anchors.fill: parent
                 anchors.leftMargin: Style.space(12)
                 anchors.rightMargin: Style.space(12)
-                spacing: Style.space(8)
+                spacing: Style.space(10)
 
                 Item {
                   width: Style.space(30)
@@ -576,44 +559,41 @@ Item {
                       : row.entryType === "file"
                         ? "󰈔"
                         : "󰅌"
-                    color: row.hasCursor ? root.selectedText : root.foreground
-                    opacity: row.hasCursor ? 1 : 0.72
+                    color: row.hasCursor ? root.selectedText : Color.accent
+                    opacity: row.hasCursor ? 1 : 0.78
                     font.family: root.fontFamily
                     font.pixelSize: Style.font.body
                   }
                 }
 
                 Column {
-                  width: parent.width - Style.space(38)
-                  height: parent.height
                   anchors.verticalCenter: parent.verticalCenter
+                  width: parent.width - Style.space(40)
                   spacing: Style.space(2)
 
                   Text {
                     width: parent.width
-                    height: parent.height * 0.62
                     text: row.previewText
                     color: row.hasCursor ? root.selectedText : root.foreground
                     font.family: root.fontFamily
                     font.pixelSize: Style.font.body
-                    verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
                     wrapMode: Text.NoWrap
                   }
 
                   Text {
                     width: parent.width
-                    height: parent.height * 0.38
                     text: row.entryType === "image"
                       ? "IMAGE"
                       : row.entryType === "file"
                         ? "FILE"
                         : "TEXT"
-                    color: row.hasCursor ? root.selectedText : root.foreground
-                    opacity: row.hasCursor ? 0.72 : 0.42
+                    color: row.hasCursor ? root.selectedText : Color.muted
+                    opacity: row.hasCursor ? 0.76 : 0.58
                     font.family: root.fontFamily
                     font.pixelSize: Style.font.caption
-                    verticalAlignment: Text.AlignVCenter
+                    font.bold: true
+                    font.letterSpacing: 0.7
                   }
                 }
               }
@@ -638,11 +618,11 @@ Item {
 
           Column {
             anchors.centerIn: parent
-            spacing: Style.space(8)
+            spacing: Style.space(7)
             visible: displayModel.count === 0
 
             Text {
-              text: root.filterText ? "󰅌" : "󰅌"
+              text: "󰅌"
               color: Color.accent
               opacity: 0.72
               font.family: root.fontFamily
@@ -652,9 +632,7 @@ Item {
             }
 
             Text {
-              text: root.history.length === 0
-                ? "Clipboard is empty"
-                : "No matches for “" + root.filterText + "”"
+              text: "Clipboard is empty"
               color: root.foreground
               opacity: 0.62
               font.family: root.fontFamily
@@ -669,14 +647,15 @@ Item {
           foreground: Color.outline
         }
 
+        // Footer — one deliberate action, aligned to the same inset as the list.
         Item {
           width: parent.width
-          height: Style.space(44)
+          height: Style.space(48)
 
           Button {
             id: clearButton
             anchors.right: parent.right
-            anchors.rightMargin: Style.space(14)
+            anchors.rightMargin: Style.space(12)
             anchors.verticalCenter: parent.verticalCenter
             width: Style.space(82)
             height: Style.space(30)
@@ -689,9 +668,9 @@ Item {
             enabled: root.history.length > 0
             onClicked: root.requestClearHistory()
           }
-
         }
       }
+}
     }
   }
 }
