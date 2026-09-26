@@ -9,6 +9,9 @@ import "ClipboardHistory.js" as ClipboardHistory
 Item {
   id: root
 
+  // Lets the bar associate the KeyboardPanel coordinator with this widget.
+  readonly property string moduleName: "omarchy.clipboard"
+
   property string omarchyPath: {
     var configured = Quickshell.env("OMARCHY_PATH")
     var home = Quickshell.env("HOME")
