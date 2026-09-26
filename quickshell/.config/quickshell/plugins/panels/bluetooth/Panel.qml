@@ -18,7 +18,7 @@ Panel {
   manageIpc: false
 
   // Address -> "connecting" | "disconnecting" | "forgetting".
-  // The actual Bluetooth sequencing lives in bin/omarchy-bluetooth-device;
+  // Bluetooth actions are handled directly through BlueZ from this panel;
   // this map only keeps the panel responsive while BlueZ catches up.
   property var pendingActions: ({})
 
@@ -208,11 +208,7 @@ Panel {
     if (!sink) return
     Pipewire.preferredDefaultAudioSink = sink
     if (sink.id !== undefined && sink.name) {
-      Quickshell.execDetached([
-        "omarchy-audio-output-set-default",
-        String(sink.id),
-        String(sink.name)
-      ])
+      Pipewire.preferredDefaultAudioSink = sink
     }
   }
 
@@ -264,14 +260,17 @@ Panel {
     if (action) pendingTimeout.restart()
   }
 
-  function deviceCommand(action, address) {
-    return ["omarchy-bluetooth-device", action, address]
-  }
-
   function runDeviceAction(device, action, pending) {
     if (!device || !device.address) return
     setPendingAction(device.address, pending)
-    Quickshell.execDetached(deviceCommand(action, device.address))
+    var address = String(device.address)
+    if (action === "connect") {
+      Quickshell.execDetached(["bluetoothctl", "connect", address])
+    } else if (action === "pair") {
+      Quickshell.execDetached(["bluetoothctl", "pair", address])
+    } else if (action === "forget") {
+      Quickshell.execDetached(["bluetoothctl", "remove", address])
+    }
   }
 
   function connectDevice(device) {
@@ -285,7 +284,7 @@ Panel {
     if (!device.connected) return
     setPendingAction(device.address, "disconnecting")
     if (device.disconnect) device.disconnect()
-    Quickshell.execDetached(deviceCommand("disconnect", device.address))
+    Quickshell.execDetached(["bluetoothctl", "disconnect", String(device.address)])
   }
 
   function forgetDevice(device) {
@@ -398,7 +397,7 @@ Panel {
   }
 
   // 'x' forgets remembered devices. For connected devices this first
-  // disconnects, then removes the BlueZ pairing record via omarchy-bluetooth-device.
+  // disconnects and removes the BlueZ pairing record directly through bluetoothctl.
   function deleteSelected() {
     if (focusSection !== "known" && focusSection !== "connected") return
     var dev = deviceAt(focusSection, selectedIndex)
