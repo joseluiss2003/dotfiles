@@ -40,22 +40,22 @@
           "id": "omarchy.audio"
         },
         {
-          "id": "omarchy.monitor"
-        },
-        {
           "id": "omarchy.power"
         },
         {
+          "id": "omarchy.monitor"
+        },
+        {
           "id": "omarchy.clipboard"
+        },
+        {
+          "id": "omarchy.notification-center"
         },
         {
           "id": "omarchy.clock",
           "format": "HH:mm",
           "formatAlt": "d MMMM 'W'ww yyyy",
           "verticalFormat": "HH\n—\nmm"
-        },
-        {
-          "id": "omarchy.notification-center"
         }
       ]
     }
