@@ -64,7 +64,7 @@ Item {
   property int barConfigSerial: 0
   property string position: "top"
   // Resolves through fontconfig at paint time (Style.font.family defaults
-  // to "monospace"), so changing the system font (via `omarchy-font-set`)
+  // to "monospace"), so changing the system font (via the configured fontconfig monospace alias)
   // updates the bar without a reload.
   property string fontFamily: Style.font.family
   // Bound to the central Color singleton so the bar tracks shell.toml's
