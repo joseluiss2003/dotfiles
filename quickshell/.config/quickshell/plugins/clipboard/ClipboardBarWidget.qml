@@ -4,7 +4,7 @@ import qs.ui
 
 BarWidget {
   id: root
-  moduleName: "omarchy.clipboard"
+  moduleName: "swayp.clipboard"
 
   property bool popupOpen: false
   readonly property var clipboard: clipboardLoader.item
