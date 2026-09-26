@@ -319,7 +319,7 @@ Panel {
 
               Text {
                 text: "Notifications"
-                color: root.bar.foreground
+                color: Color.notifications.text
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.title
                 font.bold: true
