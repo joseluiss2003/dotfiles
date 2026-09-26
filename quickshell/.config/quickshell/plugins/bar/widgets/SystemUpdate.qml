@@ -7,7 +7,7 @@ import qs.ui
 
 BarWidget {
   id: root
-  moduleName: "omarchy.system-update"
+  moduleName: "swayp.system-update"
 
   property bool updateAvailable: false
 
@@ -28,7 +28,7 @@ BarWidget {
   IpcHandler {
 
     enabled: root.ipcInstanceOwner
-    target: "omarchy.system-update"
+    target: "swayp.system-update"
 
     function refresh(): void {
       root.broadcast("refresh")
@@ -62,7 +62,7 @@ BarWidget {
     text: "\uf021"
     slotSize: Style.bar.statusSlot
     fontSize: Style.font.caption
-    tooltipText: "Pending Omarchy Updates"
+    tooltipText: "Pending SwayP Updates"
     onPressed: root.runUpdate()
   }
 }
