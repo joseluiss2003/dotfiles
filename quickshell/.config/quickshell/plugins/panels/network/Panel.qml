@@ -74,8 +74,6 @@ Panel {
   property var wifiNetworks: []
   property bool scanning: false
   property bool wifiStationAvailable: false
-  property string dnsProvider: ""
-  property string pendingDnsProvider: ""
   // Wi-Fi band state from `swayp-network-band`. `bandCurrent` is the band
   // the radio is actually on; `bandSelected` is the pinned choice ("auto" when
   // nothing is pinned), and the two differ whenever Auto is in effect.
@@ -120,9 +118,9 @@ Panel {
   property bool cursorActive: false
 
   // Keyboard focus zone for the panel. j/k crosses row boundaries:
-  // header actions ⇄ portal ⇄ band ⇄ DNS row ⇄ Wi-Fi networks. h/l move
-  // within header actions, band pills, or DNS providers.
-  property string focusSection: "dns"  // "header" | "portal" | "band" | "dns" | "wifi"
+  // header actions ⇄ portal ⇄ band ⇄ Wi-Fi networks. h/l move within
+  // header actions, band pills, or Wi-Fi rows.
+  property string focusSection: "wifi"  // "header" | "portal" | "band" | "wifi"
   property int headerIndex: 0
   readonly property bool canDisconnect: !!connectedWifiNetwork
   readonly property bool headerHasDisconnect: false
@@ -139,8 +137,6 @@ Panel {
   readonly property bool speedHeaderHasCursor: cursorActive && focusSection === "header" && headerIndex === speedHeaderIndex
   readonly property bool toggleHeaderHasCursor: cursorActive && focusSection === "header" && headerIndex === toggleHeaderIndex
   readonly property string toggleHint: Networking.wifiEnabled ? "Turn Wi-Fi off" : "Turn Wi-Fi on"
-  readonly property var dnsProviders: ["DHCP", "Cloudflare", "Google", "Custom"]
-  property int dnsIndex: 0
   // ["2.4", "5", ...], or empty when there is nothing to choose between.
   // Wi-Fi only: on Ethernet the band of a secondary radio is not what the
   // panel is describing.
@@ -181,7 +177,7 @@ Panel {
 
   onCanSelectBandChanged: {
     if (!canSelectBand && focusSection === "band") {
-      focusSection = "dns"
+      focusSection = "wifi"
       bandAutoFocused = true
     }
   }
@@ -239,15 +235,6 @@ Panel {
     headerIndex = index
   }
 
-  function selectDnsByDelta(delta) {
-    dnsIndex = Math.max(0, Math.min(dnsProviders.length - 1, dnsIndex + delta))
-  }
-
-  function activateDns() {
-    if (dnsIndex < 0 || dnsIndex >= dnsProviders.length) return
-    setDns(dnsProviders[dnsIndex])
-  }
-
   function selectBandByDelta(delta) {
     bandIndex = Math.max(0, Math.min(bandAvailable.length - 1, bandIndex + delta))
   }
@@ -290,7 +277,7 @@ Panel {
   }
 
   // Single cursor model: exactly one highlighted spot across the whole
-  // panel, located via `focusSection` + (`headerIndex` | `dnsIndex` |
+  // panel, located via `focusSection` + (`headerIndex` |
   // `selectedIndex`). Mouse hover and keyboard nav both mutate this state
   // at the root; items never read containsMouse for visuals. See
   // CursorSurface for the shared chrome shared by rows and pills.
@@ -327,9 +314,7 @@ Panel {
       refresh(true)
       selectedIndex = wifiNetworks.length > 0 ? 0 : -1
       wifiActionFocused = false
-      focusSection = hasCaptivePortal ? "portal" : (wifiNetworks.length > 0 ? "wifi" : "dns")
-      var idx = dnsProviders.indexOf(dnsProvider)
-      dnsIndex = idx >= 0 ? idx : 0
+      focusSection = hasCaptivePortal ? "portal" : (canSelectBand ? "band" : "wifi")
       syncBandIndex()
       cursorActive = hasCaptivePortal
     } else {
@@ -364,13 +349,13 @@ Panel {
   }
 
   // Keep selectedIndex valid as scans refresh the network list.
-  // If the list empties (station gone, e.g. wifi off), bounce the cursor
-  // back to the DNS row so the panel doesn't end up with no cursor at all.
+  // If the list empties (station gone, e.g. wifi off), keep the cursor in
+  // the nearest visible section so the panel doesn't end up with no cursor.
   onWifiNetworksChanged: {
     if (wifiNetworks.length === 0) {
       selectedIndex = -1
       wifiActionFocused = false
-      if (focusSection === "wifi") focusSection = "dns"
+      if (focusSection === "wifi") focusSection = canSelectBand ? "band" : (hasCaptivePortal ? "portal" : "header")
     } else if (passwordSsid !== "") {
       var passwordIndex = wifiIndexForSsid(passwordSsid)
       if (passwordIndex >= 0) {
@@ -529,10 +514,6 @@ Panel {
     checkConnectivity()
     if (scanWifi === undefined) scanWifi = false
     if (!detailsProc.running) detailsProc.running = true
-    if (!dnsProc.running) {
-      dnsProc.command = ["bash", "-c", root.dnsCommand("")]
-      dnsProc.running = true
-    }
     if (!bandProc.running) {
       bandProc.command = ["swayp-network-band"]
       bandProc.running = true
@@ -674,11 +655,6 @@ Panel {
     return Model.wifiIconFor(strength)
   }
 
-  function updateDns(raw) {
-    var value = String(raw || "").trim()
-    dnsProvider = value || "DHCP"
-  }
-
   function updateBand(raw) {
     var status = Model.parseBandStatus(raw)
 
@@ -714,32 +690,6 @@ Panel {
     if (info.type === "wifi") connection = info.ssid || "Wi-Fi"
     else if (info.type === "ethernet") connection = "Ethernet"
     bar.shell.summon("swayp.speedtest", connection ? JSON.stringify({ connection: connection }) : "{}")
-  }
-
-  function dnsCommand(provider) {
-    var nmcliCommand = "nmcli"
-    if (!provider || provider === "DHCP") return "true"
-    if (provider === "Cloudflare") return nmcliCommand + " connection modify \"$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)\" ipv4.dns \"1.1.1.1 1.0.0.1\" ipv4.ignore-auto-dns yes && nmcli connection up \"$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)\""
-    if (provider === "Google") return nmcliCommand + " connection modify \"$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)\" ipv4.dns \"8.8.8.8 8.8.4.4\" ipv4.ignore-auto-dns yes && nmcli connection up \"$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)\""
-    return ""
-  }
-
-  function setDns(provider) {
-    if (!root.bar || !provider || actionProc.running) return
-
-    if (provider === "Custom") {
-      root.bar.run("kitty --title swayp-dns -e bash -lc " + Util.shellQuote("nmcli connection show | sed -n '1,12p'; printf '\\nCustom DNS can be set with nmcli connection modify <profile> ipv4.dns \"...\" ipv4.ignore-auto-dns yes\\n'; exec bash"))
-      root.close()
-      return
-    }
-
-    var command = root.dnsCommand(provider)
-    if (!command) return
-
-    root.pendingDnsProvider = provider
-    actionProc.command = ["bash", "-c", command]
-    actionProc.running = true
-    root.close()
   }
 
   function requiresCredentials(security) {
@@ -898,14 +848,6 @@ Panel {
   }
 
   Process {
-    id: dnsProc
-    stdout: StdioCollector {
-      waitForEnd: true
-      onStreamFinished: root.updateDns(text)
-    }
-  }
-
-  Process {
     id: bandProc
     stdout: StdioCollector {
       waitForEnd: true
@@ -927,17 +869,12 @@ Panel {
     }
   }
 
-  // Action runner for DNS provider changes. Wi-Fi actions use the
-  // Quickshell.Networking NetworkManager backend directly.
+  // Action runner for Wi-Fi and band changes.
   Process {
     id: actionProc
     stdout: StdioCollector { id: actionStdout; waitForEnd: true }
     stderr: StdioCollector { id: actionStderr; waitForEnd: true }
     onExited: function(exitCode) {
-      if (root.pendingDnsProvider !== "") {
-        if (exitCode === 0) root.dnsProvider = root.pendingDnsProvider
-        root.pendingDnsProvider = ""
-      }
       if (root.pendingBand !== "") {
         // A refused or reverted pin leaves bandSelected alone, so the pills
         // keep showing what is actually in force rather than what was asked.
@@ -1075,7 +1012,7 @@ Panel {
                 root.focusSection = "band"
                 root.bandAutoFocused = true
               } else {
-                root.focusSection = "dns"
+                root.focusSection = "wifi"
               }
             }
           } else if (root.focusSection === "portal") {
@@ -1103,7 +1040,7 @@ Panel {
             } else {
               root.focusSection = "dns"
             }
-          } else if (root.focusSection === "dns") {
+          } else if (false) {
             // k from DNS moves up into the band section when it's on screen,
             // then the disconnect button; otherwise stays put. j drops into the
             // wifi list if there's anywhere to land.
@@ -1143,7 +1080,6 @@ Panel {
           if (root.focusSection === "header") root.activateHeader()
           else if (root.focusSection === "portal") root.openCaptivePortal()
           else if (root.focusSection === "band") root.activateBand()
-          else if (root.focusSection === "dns") root.activateDns()
           else root.activateSelected()
         }
       }
@@ -1519,64 +1455,6 @@ Panel {
 
       }
 
-      // DNS provider selection.
-      PanelSeparator {
-        foreground: root.bar.foreground
-      }
-
-      Column {
-        width: parent.width
-        spacing: Style.space(10)
-
-        PanelSectionHeader {
-          text: "DNS PROVIDER"
-          foreground: root.bar.foreground
-          fontFamily: root.bar.fontFamily
-        }
-
-        Row {
-          id: dnsRow
-          width: parent.width
-          spacing: Style.space(6)
-
-          readonly property int count: 4
-          readonly property real cellWidth: (width - spacing * (count - 1)) / count
-
-          DnsProviderPill {
-            provider: "DHCP"
-            index: 0
-            tooltipText: "Use DNS from DHCP"
-            width: dnsRow.cellWidth
-            onClicked: root.setDns(provider)
-          }
-
-          DnsProviderPill {
-            provider: "Cloudflare"
-            index: 1
-            tooltipText: "Set DNS to Cloudflare"
-            width: dnsRow.cellWidth
-            onClicked: root.setDns(provider)
-          }
-
-          DnsProviderPill {
-            provider: "Google"
-            index: 2
-            tooltipText: "Set DNS to Google"
-            width: dnsRow.cellWidth
-            onClicked: root.setDns(provider)
-          }
-
-          DnsProviderPill {
-            provider: "Custom"
-            index: 3
-            tooltipText: "Set custom DNS servers"
-            width: dnsRow.cellWidth
-            onClicked: root.setDns(provider)
-          }
-        }
-      }
-
-
       // Wi-Fi networks (only if a Wi-Fi station is available).
       PanelSeparator {
         visible: root.wifiStationAvailable
@@ -1677,36 +1555,6 @@ Panel {
       root.cursorActive = true
       root.focusSection = "band"
       root.bandIndex = pill.slot
-    }
-  }
-
-  // One DNS provider pill. The cursor + current visuals come entirely from
-  // CursorSurface; this component just binds them to the panel's cursor
-  // state and renders the label/tooltip/click target.
-  component DnsProviderPill: Button {
-    id: pill
-    required property string provider
-    required property int index
-
-    text: provider
-    fontSize: Style.font.bodySmall
-    foreground: root.bar.foreground
-    fontFamily: root.bar.fontFamily
-    horizontalPadding: Style.spacing.controlPaddingX
-    verticalPadding: Style.spacing.controlPaddingY + Style.space(2)
-    bordered: true
-
-    // Map the panel's domain semantics onto Button's structural props:
-    // `current DNS` is the pill's `active` fill; the keyboard cursor lights
-    // up `hasCursor`.
-    active: root.dnsProvider === provider
-    hasCursor: root.cursorActive && root.focusSection === "dns" && root.dnsIndex === index
-
-    onHovered: function(isHovered) {
-      if (!isHovered) return
-      root.cursorActive = true
-      root.focusSection = "dns"
-      root.dnsIndex = pill.index
     }
   }
 
