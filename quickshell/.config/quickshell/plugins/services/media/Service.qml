@@ -132,7 +132,9 @@ Item {
     var list = []
     for (var i = 0; i < players.length; i++) {
       var p = players[i]
-      if (hasMetadata(p)) list.push(p)
+      if (!hasMetadata(p)) continue
+      if (MediaModel.isRedundantProxy(p, players)) continue
+      list.push(p)
     }
 
     list.sort(function(a, b) {
@@ -152,7 +154,9 @@ Item {
     var list = []
     for (var i = 0; i < players.length; i++) {
       var p = players[i]
-      if (canCycleSource(p)) list.push(p)
+      if (!canCycleSource(p)) continue
+      if (MediaModel.isRedundantProxy(p, players)) continue
+      list.push(p)
     }
 
     list.sort(function(a, b) {
@@ -174,6 +178,7 @@ Item {
       if (!p) continue
 
       var proxyPlayer = isProxyPlayer(p)
+      if (proxyPlayer && MediaModel.isRedundantProxy(p, players)) continue
       if (p.isPlaying) {
         if (requirePlaybackStream && !playerHasPlaybackStream(p)) continue
 
