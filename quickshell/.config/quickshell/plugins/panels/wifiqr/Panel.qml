@@ -144,7 +144,7 @@ Item {
     // Only a deliberate new lookup lowers the canceled-fetch guard, right as
     // it launches -- see the pwProc comment.
     pwExpectedStop = false
-    pwProc.command = ["omarchy-network-password", iface]
+    pwProc.command = ["swayp-network-password", iface]
     pwProc.running = true
   }
 
@@ -152,7 +152,7 @@ Item {
     id: qrProc
     // Both collectors check expectedStop: a dismissal mid-generation kills
     // the process, but buffered output still arrives afterwards and would
-    // repopulate qrSize -- reopening the card the user just closed. The flag
+    // repopulate the QR -- reopening the card the user just closed. The flag
     // stays set through onExited (generate resets it) because the exit and
     // stream-finished signals have no guaranteed order.
     stdout: StdioCollector {
@@ -208,7 +208,7 @@ Item {
     anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.namespace: "omarchy-network-qr"
+    WlrLayershell.namespace: "swayp-network-qr"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
