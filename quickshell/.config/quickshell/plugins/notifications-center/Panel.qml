@@ -35,22 +35,6 @@ Panel {
   readonly property int notificationCount: centerModel.count
   property bool historyReloadPending: false
 
-  // Short Omarchy-style hero phrases. A new one is selected whenever the
-  // notification center opens, matching the playful status copy used by the
-  // network/audio/display heroes.
-  readonly property var notificationPhrases: [
-    "Catching signals",
-    "Watching events",
-    "Listening quietly",
-    "Sorting alerts",
-    "Holding messages",
-    "Keeping watch",
-    "Reading the room"
-  ]
-  property int notificationPhraseIndex: Math.floor(Math.random() * notificationPhrases.length)
-  readonly property string notificationPhrase:
-    notificationPhrases[notificationPhraseIndex % notificationPhrases.length]
-
   function activeRows() {
     var rows = []
     if (!notifications) return rows
@@ -127,7 +111,7 @@ Panel {
   readonly property bool dnd:
     notificationService ? !!notificationService.doNotDisturb : false
 
-  readonly property string fontFamily: bar ? bar.fontFamily : Style.font.resolvedFamily
+  readonly property string fontFamily: Style.font.resolvedFamily
 
   function toggleDnd() {
     if (notificationService)
@@ -187,13 +171,6 @@ Panel {
     target: root
     function onOpenedChanged() {
       if (root.opened) root.reloadHistory()
-    }
-  }
-
-  onOpenedChanged: {
-    if (opened) {
-      notificationPhraseIndex = Math.floor(Math.random() * notificationPhrases.length)
-      root.reloadHistory()
     }
   }
 
@@ -315,48 +292,43 @@ Panel {
               font.family: root.fontFamily
               font.pixelSize: Style.font.display
               anchors.left: parent.left
+              anchors.leftMargin: Style.space(14)
               anchors.verticalCenter: parent.verticalCenter
             }
 
             Column {
-              id: heroLabels
               anchors.left: headerIcon.right
-              anchors.leftMargin: Style.space(14)
-              anchors.right: headerCount.left
-              anchors.rightMargin: Style.space(12)
+              anchors.leftMargin: Style.space(12)
               anchors.verticalCenter: parent.verticalCenter
               spacing: Style.space(2)
 
               Text {
                 text: "Notifications"
-                color: root.bar.foreground
+                color: Color.notifications.text
                 font.family: root.fontFamily
-                font.pixelSize: Style.font.title
+                font.pixelSize: Style.font.heading
                 font.bold: true
-                elide: Text.ElideRight
               }
 
               Text {
-                text: root.dnd ? "DO NOT DISTURB" : root.notificationPhrase.toUpperCase()
-                color: Color.muted
+                text: root.dnd ? "DO NOT DISTURB" : "LIVE · SWAY"
+                color: Color.notifications.countdown
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
-                font.letterSpacing: 1.2
-                elide: Text.ElideRight
+                font.letterSpacing: 1.1
               }
             }
 
             Text {
-              id: headerCount
               anchors.right: parent.right
+              anchors.rightMargin: Style.space(14)
               anchors.verticalCenter: parent.verticalCenter
               text: root.notificationCount + (root.notificationCount === 1 ? " ALERT" : " ALERTS")
-              color: Color.muted
+              color: Color.notifications.countdown
               font.family: root.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
-              elide: Text.ElideRight
             }
           }
 
@@ -471,8 +443,8 @@ Panel {
                 text: root.dnd
                   ? "Notifications are silenced"
                   : "No notifications"
-                color: Color.muted
-                opacity: 0.85
+                color: Color.notifications.text
+                opacity: 0.62
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.body
                 horizontalAlignment: Text.AlignHCenter
