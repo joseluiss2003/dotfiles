@@ -333,6 +333,8 @@ Panel {
     
         PanelSeparator {
           Layout.fillWidth: true
+          Layout.leftMargin: Style.space(10)
+          Layout.rightMargin: Style.space(10)
           foreground: Color.notifications.border
         }
     
