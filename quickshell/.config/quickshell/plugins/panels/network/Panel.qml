@@ -11,8 +11,8 @@ import "Model.js" as Model
 
 Panel {
   id: root
-  moduleName: "omarchy.network"
-  ipcTarget: "omarchy.network"
+  moduleName: "swayp.network"
+  ipcTarget: "swayp.network"
   // manageIpc: false so this panel can own the single IpcHandler the target
   // permits — needed for the toggleNetwork method below.
   manageIpc: false
@@ -211,7 +211,7 @@ Panel {
   IpcHandler {
 
     enabled: root.ipcInstanceOwner
-    target: "omarchy.network"
+    target: "swayp.network"
 
     function open() { root.open() }
     function close() { root.close() }
@@ -522,7 +522,7 @@ Panel {
       payload.iface = info.iface
       if (info.ssid) payload.ssid = info.ssid
     }
-    bar.shell.summon("omarchy.wifiqr", JSON.stringify(payload))
+    bar.shell.summon("swayp.wifiqr", JSON.stringify(payload))
   }
 
   function refresh(scanWifi) {
@@ -713,7 +713,7 @@ Panel {
     var connection = ""
     if (info.type === "wifi") connection = info.ssid || "Wi-Fi"
     else if (info.type === "ethernet") connection = "Ethernet"
-    bar.shell.summon("omarchy.speedtest", connection ? JSON.stringify({ connection: connection }) : "{}")
+    bar.shell.summon("swayp.speedtest", connection ? JSON.stringify({ connection: connection }) : "{}")
   }
 
   function dnsCommand(provider) {
