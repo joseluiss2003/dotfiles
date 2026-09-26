@@ -366,7 +366,7 @@ Item {
 
   PamContext {
     id: fingerprintPam
-    config: "omarchy-lock-fingerprint"
+    config: "swaylock"
     user: root.userName
 
     onCompleted: function(result) {
