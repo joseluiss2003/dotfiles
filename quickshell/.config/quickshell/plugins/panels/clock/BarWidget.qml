@@ -12,7 +12,7 @@ import "Model.js" as Model
 // middle click opens the timezone picker.
 BarWidget {
   id: root
-  moduleName: "omarchy.clock"
+  moduleName: "swayp.clock"
 
   property date displayDate: clock.date
 
@@ -132,7 +132,7 @@ BarWidget {
 
   IpcHandler {
     enabled: root.ipcInstanceOwner
-    target: "omarchy.clock"
+    target: "swayp.clock"
 
     function refresh(): void { root.broadcast("refresh") }
     function cycleFormat(): void { root.cycleFormat() }
