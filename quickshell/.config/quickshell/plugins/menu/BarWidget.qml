@@ -52,7 +52,7 @@ BarWidget {
     focusTarget: keyCatcher
     padding: 0
     borderSpec: Border.surfaceSpec("power-session", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.space(220), panel.availableCardWidth)
+    contentWidth: Math.min(Style.space(200), panel.availableCardWidth)
     contentHeight: Math.min(Style.space(240), panel.availableCardHeight)
     gap: Style.space(5)
 
@@ -81,7 +81,7 @@ BarWidget {
 
           Row {
             anchors.left: parent.left
-            anchors.leftMargin: Style.space(12)
+            anchors.leftMargin: Style.space(10)
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.space(8)
 
@@ -134,17 +134,18 @@ BarWidget {
             required property var callback
             property bool hot: false
 
-            width: parent.width
+            width: parent.width - Style.space(20)
             height: Style.space(32)
+            x: Style.space(10)
 
             Rectangle {
               anchors.fill: parent
               color: action.hot
-                ? Util.alpha(Color.accentSoft, 0.08)
+                ? Util.alpha(Color.text, 0.075)
                 : Util.alpha(Color.surfaceAlt, 0.055)
               border.width: Style.normalBorderWidth
               border.color: action.hot
-                ? Util.alpha(Color.accent, 0.22)
+                ? Util.alpha(Color.text, 0.16)
                 : Util.alpha(Color.outline, 0.18)
             }
 
@@ -154,7 +155,7 @@ BarWidget {
               anchors.top: parent.top
               anchors.bottom: parent.bottom
               width: Style.space(1)
-              color: Util.alpha(Color.accent, 0.30)
+              color: Util.alpha(Color.text, 0.18)
             }
 
             Row {
@@ -168,7 +169,7 @@ BarWidget {
                 text: action.iconText
                 color: action.labelText === "Power off"
                   ? Color.error
-                  : (action.hot ? Color.accent : Color.text)
+                  : (action.hot ? Color.text : Color.text)
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.icon
                 horizontalAlignment: Text.AlignHCenter
@@ -183,7 +184,7 @@ BarWidget {
                   : Color.text
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.bodySmall
-                font.bold: action.hot
+                font.bold: false
                 anchors.verticalCenter: parent.verticalCenter
                 elide: Text.ElideRight
               }
