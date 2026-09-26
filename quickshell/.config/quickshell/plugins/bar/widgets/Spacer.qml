@@ -3,7 +3,7 @@ import qs.ui
 
 BarWidget {
   id: root
-  moduleName: "omarchy.spacer"
+  moduleName: "swayp.spacer"
 
   readonly property int span: settings && settings.size !== undefined ? Number(settings.size) : 12
 
