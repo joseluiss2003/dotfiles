@@ -320,7 +320,7 @@ Panel {
               Text {
                 text: "Notifications"
                 color: root.bar.foreground
-                font.family: root.fontFamily
+                font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.title
                 font.bold: true
               }
@@ -328,7 +328,7 @@ Panel {
               Text {
                 text: root.dnd ? "DO NOT DISTURB" : root.notificationPhrase.toUpperCase()
                 color: Color.muted
-                font.family: root.fontFamily
+                font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
                 font.letterSpacing: 1.1
@@ -341,7 +341,7 @@ Panel {
               anchors.verticalCenter: parent.verticalCenter
               text: root.notificationCount + (root.notificationCount === 1 ? " ALERT" : " ALERTS")
               color: Color.notifications.countdown
-              font.family: root.fontFamily
+              font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
             }
@@ -448,7 +448,7 @@ Panel {
                 text: "󰂚"
                 color: Color.accent
                 opacity: 0.75
-                font.family: root.fontFamily
+                font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.displayLarge
                 horizontalAlignment: Text.AlignHCenter
               }
@@ -460,7 +460,7 @@ Panel {
                   : "No notifications"
                 color: Color.notifications.text
                 opacity: 0.62
-                font.family: root.fontFamily
+                font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.body
                 horizontalAlignment: Text.AlignHCenter
               }
