@@ -362,6 +362,7 @@ Panel {
                 id: row
 
                 required property int index
+                required property int originalId
                 required property string app
                 required property string appIcon
                 required property string summary
