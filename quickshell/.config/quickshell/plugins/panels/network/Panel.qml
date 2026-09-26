@@ -495,7 +495,7 @@ Panel {
     if (!hasCaptivePortal) return
     // Explicit user action only. argv (not a shell string), and a fixed HTTP
     // URL: let the browser handle the redirect without trusting portal input.
-    Quickshell.execDetached(["omarchy-launch-browser", Model.captivePortalUrl])
+    Quickshell.execDetached(["xdg-open", Model.captivePortalUrl])
     close()
   }
 
@@ -509,7 +509,7 @@ Panel {
     onTriggered: root.checkConnectivity()
   }
 
-  // The share card is its own panel plugin (omarchy.wifiqr) so a replacement
+  // The share card is its own panel plugin (swayp.wifiqr) so a replacement
   // design can take it over; summon() routes to whichever implementation is
   // enabled. The panel's own button pins the interface it is showing. The
   // IPC route forces self-detection instead: details polling stops while the
@@ -703,7 +703,7 @@ Panel {
     actionProc.running = true
   }
 
-  // The speed test is its own panel plugin (omarchy.speedtest) so a
+  // The speed test is its own panel plugin (swayp.speedtest) so a
   // replacement design can take it over; summon() routes to whichever
   // implementation is enabled. The payload names the connection when this
   // panel knows it; the plugin looks it up itself otherwise.
@@ -717,23 +717,27 @@ Panel {
   }
 
   function dnsCommand(provider) {
-    var command = "omarchy-dns"
-    if (provider) command += " " + Util.shellQuote(provider)
-    return command
+    var nmcliCommand = "nmcli"
+    if (!provider || provider === "DHCP") return "true"
+    if (provider === "Cloudflare") return nmcliCommand + " connection modify "$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)" ipv4.dns "1.1.1.1 1.0.0.1" ipv4.ignore-auto-dns yes && nmcli connection up "$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)""
+    if (provider === "Google") return nmcliCommand + " connection modify "$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)" ipv4.dns "8.8.8.8 8.8.4.4" ipv4.ignore-auto-dns yes && nmcli connection up "$(nmcli -t -g GENERAL.CONNECTION device show | head -n1)""
+    return ""
   }
 
   function setDns(provider) {
     if (!root.bar || !provider || actionProc.running) return
 
     if (provider === "Custom") {
-      var launcher = "omarchy-launch-floating-terminal-with-presentation"
-      root.bar.run(launcher + " " + Util.shellQuote(root.dnsCommand(provider)))
+      root.bar.run("kitty --title swayp-dns -e bash -lc " + Util.shellQuote("nmcli connection show | sed -n '1,12p'; printf '\\nCustom DNS can be set with nmcli connection modify <profile> ipv4.dns \"...\" ipv4.ignore-auto-dns yes\\n'; exec bash"))
       root.close()
       return
     }
 
+    var command = root.dnsCommand(provider)
+    if (!command) return
+
     root.pendingDnsProvider = provider
-    actionProc.command = ["bash", "-c", root.dnsCommand(provider)]
+    actionProc.command = ["bash", "-c", command]
     actionProc.running = true
     root.close()
   }
