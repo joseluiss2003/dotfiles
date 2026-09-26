@@ -473,6 +473,8 @@ Item {
         }
 
         PanelSeparator {
+          width: parent.width - Style.space(20)
+          x: Style.space(10)
           foreground: Color.outline
         }
 
@@ -645,6 +647,8 @@ Item {
         }
 
         PanelSeparator {
+          width: parent.width - Style.space(20)
+          x: Style.space(10)
           foreground: Color.outline
         }
 
