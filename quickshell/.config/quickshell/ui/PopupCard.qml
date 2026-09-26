@@ -106,7 +106,7 @@ PanelWindow {
   color: "transparent"
   exclusionMode: ExclusionMode.Ignore
 
-  WlrLayershell.namespace: "omarchy-popup-card"
+  WlrLayershell.namespace: "swayp-popup-card"
   WlrLayershell.layer: WlrLayer.Overlay
   WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
