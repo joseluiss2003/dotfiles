@@ -58,7 +58,7 @@ Item {
   function dismiss() {
     root.opened = false
     if (root.shell && typeof root.shell.hide === "function")
-      root.shell.hide((root.manifest && root.manifest.id) || "omarchy.emojis")
+      root.shell.hide((root.manifest && root.manifest.id) || "swayp.emojis")
   }
 
   function toggle() {
@@ -148,7 +148,7 @@ Item {
   function applySelected(emoji) {
     if (!emoji) return
     root.dismiss()
-    Quickshell.execDetached(["omarchy-menu-emoji-insert", emoji])
+    Quickshell.execDetached(["swayp-menu-emoji-insert", emoji])
   }
 
   ListModel { id: displayModel }
@@ -162,7 +162,7 @@ Item {
     visible: root.opened
     anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
-    WlrLayershell.namespace: "omarchy-emojis"
+    WlrLayershell.namespace: "swayp-emojis"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
     exclusionMode: ExclusionMode.Ignore
