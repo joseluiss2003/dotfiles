@@ -46,8 +46,6 @@ Panel {
 
   readonly property int notificationCount: centerModel.count
   property bool historyReloadPending: false
-  property int selectedIndex: 0
-  property bool cursorActive: true
 
   // The center is a standalone panel, not a child of the bar. Keep its
   // typography independent from bar lifetime while using the same resolved
@@ -153,20 +151,6 @@ Panel {
     root.close()
   }
 
-  function select(delta) {
-    if (centerModel.count === 0) return
-    root.cursorActive = true
-    root.selectedIndex = (root.selectedIndex + delta + centerModel.count) % centerModel.count
-    notificationList.positionViewAtIndex(root.selectedIndex, ListView.Contain)
-  }
-
-  function selectAbsolute(index) {
-    if (centerModel.count === 0) return
-    root.cursorActive = true
-    root.selectedIndex = Math.max(0, Math.min(index, centerModel.count - 1))
-    notificationList.positionViewAtIndex(root.selectedIndex, ListView.Contain)
-  }
-
   Process {
     id: historyReader
     running: false
@@ -216,8 +200,6 @@ Panel {
     function onOpenedChanged() {
       if (root.opened) {
         root.notificationPhraseIndex = Math.floor(Math.random() * root.notificationPhrases.length)
-        root.selectedIndex = 0
-        root.cursorActive = true
         root.reloadHistory()
       }
     }
@@ -261,26 +243,6 @@ Panel {
 
       Keys.onReturnPressed: function(event) {
         root.closePanel()
-        event.accepted = true
-      }
-
-      Keys.onUpPressed: function(event) {
-        root.select(-1)
-        event.accepted = true
-      }
-
-      Keys.onDownPressed: function(event) {
-        root.select(1)
-        event.accepted = true
-      }
-
-      Keys.onHomePressed: function(event) {
-        root.selectAbsolute(0)
-        event.accepted = true
-      }
-
-      Keys.onEndPressed: function(event) {
-        root.selectAbsolute(centerModel.count - 1)
         event.accepted = true
       }
 
