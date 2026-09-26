@@ -107,7 +107,7 @@
 
     {
       "type": "custom",
-      "format": "{##{{ colors.primary.default.hex }}}██{#}{##{{ colors.secondary.default.hex }}}██{#}{##{{ colors.tertiary.default.hex }}}██{#}{##{{ colors.primary_container.default.hex }}}██{#}{##{{ colors.secondary_container.default.hex }}}██{#}{##{{ colors.tertiary_container.default.hex }}}██{#}"
+      "format": "{#{{ colors.primary.default.hex }}}██{#}{#{{ colors.secondary.default.hex }}}██{#}{#{{ colors.tertiary.default.hex }}}██{#}{#{{ colors.primary_container.default.hex }}}██{#}{#{{ colors.secondary_container.default.hex }}}██{#}{#{{ colors.tertiary_container.default.hex }}}██{#}"
     }
   ]
 }
