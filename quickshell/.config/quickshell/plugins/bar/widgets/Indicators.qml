@@ -7,7 +7,7 @@ import qs.ui
 
 BarWidget {
   id: root
-  moduleName: "omarchy.indicators"
+  moduleName: "swayp.indicators"
 
   readonly property var defaultIndicatorEntries: [ "Dictation", "ScreenRecording", "Reminder", "NightLight", "Dnd", "StayAwake" ]
   readonly property var indicatorEntries: indicatorEntriesFromSettings(settings)
@@ -169,7 +169,7 @@ BarWidget {
   IpcHandler {
 
     enabled: root.ipcInstanceOwner
-    target: "omarchy.indicators"
+    target: "swayp.indicators"
 
     function refresh(): void {
       root.broadcast("refresh")
