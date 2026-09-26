@@ -439,7 +439,9 @@ Item {
           height: Style.space(48)
 
           Row {
-            anchors.centerIn: parent
+            anchors.left: parent.left
+            anchors.leftMargin: Style.space(14)
+            anchors.verticalCenter: parent.verticalCenter
             spacing: Style.space(10)
 
             Text {
@@ -452,6 +454,7 @@ Item {
 
             Column {
               spacing: Style.space(2)
+              anchors.verticalCenter: parent.verticalCenter
 
               Text {
                 text: "Clipboard"
@@ -668,14 +671,15 @@ Item {
 
         Item {
           width: parent.width
-          height: Style.space(38)
+          height: Style.space(44)
 
           Button {
             id: clearButton
             anchors.right: parent.right
             anchors.rightMargin: Style.space(14)
             anchors.verticalCenter: parent.verticalCenter
-            width: Style.space(86)
+            width: Style.space(82)
+            height: Style.space(30)
             text: "Clear"
             iconText: "󰆴"
             foreground: root.foreground
