@@ -114,18 +114,21 @@ Panel {
       BorderSurface {
         id: card
 
-        readonly property int widthLimit: Style.space(460)
-        readonly property int maxListHeight: Style.space(520)
-        readonly property int headerHeight: Style.space(70)
+        readonly property int widthLimit: Style.space(440)
+        readonly property int maxListHeight: Style.space(480)
+        readonly property int headerHeight: Style.space(58)
 
         width: Math.min(parent.width - Style.space(24), widthLimit)
         height: Math.min(
           parent.height - Style.space(24),
           headerHeight
             + Style.space(8)
-            + notificationList.implicitHeight
-            + Style.space(12)
-            + footer.implicitHeight
+            + Math.min(
+              card.maxListHeight,
+              Math.max(notificationList.contentHeight + Style.space(16), Style.space(72))
+            )
+            + Style.space(8)
+            + Style.space(48)
             + borderTop + borderBottom
         )
 
@@ -307,7 +310,7 @@ Panel {
           Item {
             id: footer
             Layout.fillWidth: true
-            implicitHeight: Style.space(52)
+            implicitHeight: Style.space(48)
 
             Row {
               anchors.fill: parent
