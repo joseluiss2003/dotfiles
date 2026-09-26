@@ -5,54 +5,54 @@
     "lock": 300
   },
   "bar": {
-    "id": "omarchy.bar",
+    "id": "swayp.bar",
     "position": "top",
     "transparent": false,
-    "centerAnchor": "omarchy.media",
+    "centerAnchor": "swayp.media",
     "layout": {
       "left": [
         {
-          "id": "omarchy.menu"
+          "id": "swayp.menu"
         },
         {
-          "id": "omarchy.workspaces"
+          "id": "swayp.workspaces"
         },
         {
-          "id": "omarchy.active-window"
+          "id": "swayp.active-window"
         }
       ],
       "center": [
         {
-          "id": "omarchy.media"
+          "id": "swayp.media"
         }
       ],
       "right": [
         {
-          "id": "omarchy.tray"
+          "id": "swayp.tray"
         },
         {
-          "id": "omarchy.bluetooth"
+          "id": "swayp.bluetooth"
         },
         {
-          "id": "omarchy.network"
+          "id": "swayp.network"
         },
         {
-          "id": "omarchy.audio"
+          "id": "swayp.audio"
         },
         {
-          "id": "omarchy.power"
+          "id": "swayp.power"
         },
         {
-          "id": "omarchy.monitor"
+          "id": "swayp.monitor"
         },
         {
-          "id": "omarchy.clipboard"
+          "id": "swayp.clipboard"
         },
         {
-          "id": "omarchy.notification-center"
+          "id": "swayp.notification-center"
         },
         {
-          "id": "omarchy.clock",
+          "id": "swayp.clock",
           "format": "HH:mm",
           "formatAlt": "d MMMM 'W'ww yyyy",
           "verticalFormat": "HH\n—\nmm"
