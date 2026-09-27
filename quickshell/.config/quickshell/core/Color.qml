@@ -22,6 +22,16 @@ QtObject {
   property var aetherColors: []
   property bool aetherPaletteValid: false
 
+  function colorFromValue(value, fallback) {
+    if (typeof value !== "string" || !/^#[0-9A-Fa-f]{6}$/.test(value))
+      return fallback
+
+    var r = parseInt(value.slice(1, 3), 16) / 255
+    var g = parseInt(value.slice(3, 5), 16) / 255
+    var b = parseInt(value.slice(5, 7), 16) / 255
+    return Qt.rgba(r, g, b, 1)
+  }
+
   function parseAether(raw) {
     var parsed
     try {
