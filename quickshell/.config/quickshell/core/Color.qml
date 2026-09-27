@@ -77,7 +77,11 @@ QtObject {
   readonly property color aetherDarkerBackground: aetherPaletteValid ? colorFromValue(semanticValue("darker_background", aetherColors[0]), aetherBackground) : aetherBackground
   readonly property color aetherLighterBackground: aetherPaletteValid ? colorFromValue(semanticValue("lighter_background", aetherColors[0]), aetherBackground) : aetherBackground
   readonly property color aetherLightForeground: aetherPaletteValid ? colorFromValue(semanticValue("light_foreground", aetherColors[7]), aetherForeground) : aetherForeground
-  readonly property color aetherAccent: aetherPaletteValid ? colorFromValue(semanticValue("accent", aetherColors[6]), aetherCyan) : aetherCyan
+  // SwayP keeps normal UI chrome monochromatic: the theme foreground
+  // (the warm cream in Osaka Jade, for example) is the accent used by
+  // applets, active controls and ordinary highlights. Semantic colors such
+  // as red/green/yellow remain available for status/error states.
+  readonly property color aetherAccent: aetherForeground
   readonly property color aetherSelection: aetherPaletteValid ? colorFromValue(semanticValue("selection", aetherColors[4]), aetherBlue) : aetherBlue
 
   // Blend helpers keep the 16-color Aether palette expressive without
