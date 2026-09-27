@@ -37,6 +37,9 @@ else
         --json > "$STATE_TMP"
 fi
 
+# Normalize Aether's two JSON shapes into the palette file consumed by SwayP.
+jq -e 'if (.palette | type) == "array" then .palette else .colors end' "$STATE_TMP" > "$TMP"
+
 jq -e '
     (.colors | type == "array") and
     (.colors | length == 16) and
