@@ -9,7 +9,7 @@ Quickshell is the UI layer of SwayP. It hosts the bar, panels, popups, widgets a
 - `ui/` — reusable visual and interaction components.
 - `services/` — registries and shared service infrastructure.
 - `plugins/` — first-party bar widgets, panels and services.
-- `generated/` — SwayP-generated runtime theme files.
+- `generated/` — legacy runtime-generated module location kept only for ignored/generated files.
 
 ## Configuration
 
@@ -26,7 +26,7 @@ The bar, panels and services communicate through the shell's internal plugin reg
 ## Design goals
 
 - Native Sway integration.
-- Matugen as the central theme source.
+- Aether as the central theme source.
 - Zero-radius, compact UI where configured.
 - Multi-monitor aware panels and notifications.
 - Clear separation between core, UI, services and plugins.
