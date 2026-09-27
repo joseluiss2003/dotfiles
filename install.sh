@@ -48,6 +48,7 @@ PACKAGES=(
   power-profiles-daemon
   playerctl
   python
+  python-gobject
   qt5-wayland
   qt6-wayland
   qrencode
