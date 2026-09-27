@@ -88,7 +88,7 @@ default_orientation horizontal
 ### =========================
 
 bindsym $mod+Return exec $term
-bindsym $mod+d exec $menu
+bindsym $mod+d exec env PATH="$HOME/.local/bin:$PATH" swayp-launcher
 bindsym $mod+q kill
 bindsym $mod+f exec nautilus
 
