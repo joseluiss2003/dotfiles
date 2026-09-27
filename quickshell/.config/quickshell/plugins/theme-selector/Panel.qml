@@ -181,7 +181,7 @@ Item {
     ]
     stdout: StdioCollector {
       waitForEnd: true
-      onStreamFinished: root.parseThemes(String(text() || ""))
+      onStreamFinished: root.parseThemes(this.text)
     }
   }
 
@@ -197,7 +197,7 @@ Item {
     ]
     stdout: StdioCollector {
       waitForEnd: true
-      onStreamFinished: root.parseWallpapers(String(text() || ""))
+      onStreamFinished: root.parseWallpapers(this.text)
     }
   }
 
