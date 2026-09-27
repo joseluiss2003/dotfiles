@@ -38,7 +38,7 @@ Item {
   readonly property string imagesDir: popupStateDir + "images/"
   // Corner radius is shared with the menu and shell panels.
   readonly property int cornerRadius: Style.cornerRadius
-  // Toasts are fixed to the top-right corner. They only clear the omarchy bar
+  // Toasts are fixed to the top-right corner. They only clear the swayp bar
   // when the bar occupies the top or right edge, so left/bottom bars do not
   // pull notification popups away from the expected top-right location.
   // Falls back to the bar's default size (26 horizontal / 28 vertical) when
@@ -123,11 +123,11 @@ Item {
 
   // DND bypass: only let through notifications we trust to be intentional
   // and rare.
-  //   - omarchy-action: a user-action confirmation toast ("Theme changed",
+  //   - swayp-action: a user-action confirmation toast ("Theme changed",
   //     "Screenshot saved"). The user JUST did something — their feedback
   //     should show.
   //   - urgency=critical AND app_name=notify-send: bare-CLI emergency alerts.
-  //     Trusted because it's almost always omarchy or system shell scripts —
+  //     Trusted because it's almost always swayp or system shell scripts —
   //     chat apps set app_name to their brand (Discord/Slack/Vesktop), which
   //     falls outside this rule.
   function shouldBypassDnd(notification) {
@@ -143,7 +143,7 @@ Item {
   //   - app_name is "notify-send" (the CLI default — means the sender
   //     didn't bother declaring an identity, so it's almost certainly
   //     ephemeral test/feedback noise)
-  //   - app_name is "swayp-action" (Omarchy's own user-action toasts —
+  //   - app_name is "swayp-action" (SwayP's own user-action toasts —
   //     the user just triggered them)
   // Their toasts still land in history like any other once they've been on
   // screen; the distinction only decides whether a DND-silenced one is worth
@@ -355,7 +355,7 @@ Item {
     while (popupModel.count > 0) dismissPopup(0)
   }
 
-  // Run the popup's click action, then dismiss. Omarchy's own toasts carry the
+  // Run the popup's click action, then dismiss. SwayP's own toasts carry the
   // action as an argv vector in the `execArgv` role (see execArgvFromHints),
   // which the persistence files preserve, so restored toasts stay clickable.
   // Third-party clients register a libnotify action under the canonical
@@ -479,7 +479,7 @@ Item {
   // ---------------------------------------------------- popup persistence
   //
   // Mirror every on-screen popup to its own file under popupStateDir so
-  // toasts survive shell restarts (notably the restart `omarchy-update`
+  // toasts survive shell restarts (notably the restart `swayp-shell`
   // performs). Writes, moves and deletes go through one serialized queue: a
   // burst of replaces_id updates must not race a single reused Process, and
   // ordering guarantees a delete issued after a write wins.
