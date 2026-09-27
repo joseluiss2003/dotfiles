@@ -215,7 +215,8 @@ QtObject {
 
   // Reusable surfaces all inherit the same Aether-derived tint.
   readonly property QtObject bar: QtObject {
-    readonly property color background: root.backgroundDeep
+    // Bar and popup cards intentionally share the exact same Aether-derived surface.
+    readonly property color background: root.surface
     readonly property color text: root.text
     readonly property color active: root.accent
   }
