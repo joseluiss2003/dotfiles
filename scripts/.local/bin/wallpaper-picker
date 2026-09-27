@@ -187,8 +187,8 @@ selected_file=$(
 # ------------------------------------------------------------
 # Apply wallpaper/theme.
 #
-# IMPORTANT: this script deliberately contains NO "qs" command.
-# Matugen is only run once; Quickshell is left alone.
+# Aether is the single palette authority. The picker never invokes Matugen;
+# SwayP exports the resulting palette to every runtime consumer.
 # ------------------------------------------------------------
 
 if ! swayp-aether-theme "$selected_file"; then
@@ -196,8 +196,8 @@ if ! swayp-aether-theme "$selected_file"; then
     exit 1
 fi
 
-if ! matugen image "$selected_file" -m dark; then
-    notify-send "Wallpaper" "Matugen no pudo aplicar $(basename "$selected_file")"
+if ! awww img --transition-type center "$selected_file"; then
+    notify-send "Wallpaper" "No se pudo aplicar $(basename "$selected_file")"
     exit 1
 fi
 
