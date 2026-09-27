@@ -80,6 +80,17 @@ echo "==> Instalando paquetes..."
 sudo pacman -S --needed "${PACKAGES[@]}"
 
 echo
+echo "==> Instalando Aether (motor de paletas)..."
+if command -v yay >/dev/null 2>&1; then
+    yay -S --needed aether
+elif command -v paru >/dev/null 2>&1; then
+    paru -S --needed aether
+else
+    echo "AVISO: Aether está en AUR y no se encontró yay/paru."
+    echo "      Instálalo después con: yay -S aether"
+fi
+
+echo
 echo "==> Activando servicios..."
 
 sudo systemctl enable bluetooth.service
