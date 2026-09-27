@@ -9,13 +9,13 @@ Quickshell is the UI layer of SwayP. It hosts the bar, panels, popups, widgets a
 - `ui/` — reusable visual and interaction components.
 - `services/` — registries and shared service infrastructure.
 - `plugins/` — first-party bar widgets, panels and services.
-- `generated/` — Matugen-generated theme files.
+- `generated/` — SwayP-generated runtime theme files.
 
 ## Configuration
 
 The shell keeps user configuration under `~/.config/swayp/`.
 
-Matugen owns the generated theme layer. Quickshell consumes the generated theme and the SwayP shell configuration without depending on an Omarchy installation.
+Aether owns the generated palette layer. Quickshell consumes the SwayP-generated runtime state without depending on Matugen or an Omarchy installation.
 
 ## Runtime model
 
