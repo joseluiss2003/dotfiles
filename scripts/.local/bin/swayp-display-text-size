@@ -83,3 +83,10 @@ fi
 chmod 600 "$tmp"
 mv "$tmp" "$CONFIG"
 trap - EXIT HUP INT TERM
+
+# Quickshell's FileView watches the config, but an atomic mv can leave the
+# current shell instance with the previous values. Restart only Quickshell so
+# Sway, applications, and the user's session remain untouched.
+if command -v qs >/dev/null 2>&1 && pgrep -x qs >/dev/null 2>&1; then
+    pkill -x qs
+fi
