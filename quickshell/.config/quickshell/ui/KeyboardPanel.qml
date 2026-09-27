@@ -49,6 +49,9 @@ PanelWindow {
   property bool open: false
   // Panels that provide their own card surface can disable the wrapper fill.
   property bool drawBackground: true
+  // Override the wrapper surface alpha for panels that need visible translucency.
+  // The RGB remains the shared Aether-derived popup surface.
+  property color backgroundColor: Color.popups.background
   property int gap: Style.gapsOut  // distance between bar edge and panel
   property bool popoutSwitching: false
   property bool popoutSwitchClosing: false
@@ -387,7 +390,7 @@ PanelWindow {
     y: root.cardOrigin.y
     width: root.contentWidth
     height: root.contentHeight
-    color: root.drawBackground ? Color.popups.background : "transparent"
+    color: root.drawBackground ? root.backgroundColor : "transparent"
     borderSpec: root.borderSpec
     padding: root.padding
     radius: Style.cornerRadius
