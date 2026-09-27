@@ -7,8 +7,7 @@ import "BorderGeometry.js" as Geometry
 
 // SwayP color system for Sway + Quickshell.
 //
-// Aether is the visual palette authority. Matugen remains loaded as a
-// compatibility fallback for external templates and older generated files.
+// Aether is the sole visual palette authority.
 // The shell deliberately tints even its darkest surfaces from Aether so the
 // wallpaper palette is visible across the whole UI instead of producing a
 // black/gray shell with colored icons.
@@ -21,64 +20,6 @@ QtObject {
   readonly property string matugenThemePath: home + "/.config/quickshell/generated/Theme.qml"
   readonly property string aetherPalettePath: stateHome + "/swayp/current/aether-palette.json"
 
-  // Parsed Matugen colors. Values are kept as strings so missing roles can
-  // safely fall back without making the singleton itself invalid.
-  property var matugenColors: ({
-    background: "#000000",
-    text: "#ffffff",
-    surface: "#111111",
-    surfaceAlt: "#1a1a1a",
-    textMuted: "#bbbbbb",
-    accent: "#ffffff",
-    accentText: "#000000",
-    accentSoft: "#333333",
-    secondary: "#aaaaaa",
-    tertiary: "#aaaaaa",
-    outline: "#777777",
-    error: "#ff5555"
-  })
-
-  function colorFromValue(value, fallback) {
-    var s = String(value || "").trim()
-    if (!/^#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?$/.test(s)) return fallback
-    return Qt.color(s)
-  }
-
-  function parseMatugen(raw) {
-    var text = String(raw || "")
-    var next = {}
-    for (var key in root.matugenColors) next[key] = root.matugenColors[key]
-
-    // Matches the exact format produced by the user's matugen template:
-    // readonly property color background: "#RRGGBB"
-    // Also accepts `property color ...` without readonly for robustness.
-    var re = /(?:readonly\s+)?property\s+color\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*["'](#[0-9A-Fa-f]{6}(?:[0-9A-Fa-f]{2})?)["']/g
-    var match
-    var matched = 0
-    while ((match = re.exec(text)) !== null) {
-      next[match[1]] = match[2]
-      matched++
-    }
-
-    // Only publish a new palette when the generated file contains the core
-    // roles. During Matugen's atomic replacement there can be a tiny window
-    // where the file is empty/partial; retaining the previous palette avoids
-    // flashing to the hardcoded fallback colors.
-    if (matched >= 4 && next.background && next.text && next.accent)
-      root.matugenColors = next
-  }
-
-  readonly property color matugenBackground: colorFromValue(matugenColors.background, Qt.rgba(0, 0, 0, 1))
-  readonly property color matugenText: colorFromValue(matugenColors.text, Qt.rgba(1, 1, 1, 1))
-  readonly property color matugenSurface: colorFromValue(matugenColors.surface, matugenBackground)
-  readonly property color matugenSurfaceAlt: colorFromValue(matugenColors.surfaceAlt, matugenSurface)
-  readonly property color matugenTextMuted: colorFromValue(matugenColors.textMuted, matugenText)
-  readonly property color matugenAccent: colorFromValue(matugenColors.accent, matugenText)
-  readonly property color matugenAccentText: colorFromValue(matugenColors.accentText, matugenBackground)
-  readonly property color matugenAccentSoft: colorFromValue(matugenColors.accentSoft, matugenSurfaceAlt)
-  readonly property color matugenSecondary: colorFromValue(matugenColors.secondary, matugenAccent)
-  readonly property color matugenTertiary: colorFromValue(matugenColors.tertiary, matugenAccent)
-  readonly property color matugenOutline: colorFromValue(matugenColors.outline, matugenTextMuted)
   property var aetherColors: []
   property bool aetherPaletteValid: false
 
@@ -101,16 +42,17 @@ QtObject {
     root.aetherPaletteValid = true
   }
 
-  readonly property color aetherBackground: aetherPaletteValid ? colorFromValue(aetherColors[0], matugenBackground) : matugenBackground
-  readonly property color aetherForeground: aetherPaletteValid ? colorFromValue(aetherColors[7], matugenText) : matugenText
-  readonly property color aetherMuted: aetherPaletteValid ? colorFromValue(aetherColors[8], matugenTextMuted) : matugenTextMuted
-  readonly property color aetherRed: aetherPaletteValid ? colorFromValue(aetherColors[1], matugenError) : matugenError
-  readonly property color aetherGreen: aetherPaletteValid ? colorFromValue(aetherColors[2], matugenAccent) : matugenAccent
-  readonly property color aetherYellow: aetherPaletteValid ? colorFromValue(aetherColors[3], matugenAccent) : matugenAccent
-  readonly property color aetherBlue: aetherPaletteValid ? colorFromValue(aetherColors[4], matugenAccent) : matugenAccent
-  readonly property color aetherMagenta: aetherPaletteValid ? colorFromValue(aetherColors[5], matugenAccent) : matugenAccent
-  readonly property color aetherCyan: aetherPaletteValid ? colorFromValue(aetherColors[6], matugenAccent) : matugenAccent
-  readonly property color aetherBrightForeground: aetherPaletteValid ? colorFromValue(aetherColors[15], matugenText) : matugenText
+  // Safe startup fallbacks. A valid Aether palette replaces every role above.
+  readonly property color aetherBackground: aetherPaletteValid ? colorFromValue(aetherColors[0], Qt.rgba(0.07, 0.07, 0.07, 1)) : Qt.rgba(0.07, 0.07, 0.07, 1)
+  readonly property color aetherForeground: aetherPaletteValid ? colorFromValue(aetherColors[7], Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
+  readonly property color aetherMuted: aetherPaletteValid ? colorFromValue(aetherColors[8], Qt.rgba(0.62, 0.62, 0.62, 1)) : Qt.rgba(0.62, 0.62, 0.62, 1)
+  readonly property color aetherRed: aetherPaletteValid ? colorFromValue(aetherColors[1], Qt.rgba(1, 0.33, 0.33, 1)) : Qt.rgba(1, 0.33, 0.33, 1)
+  readonly property color aetherGreen: aetherPaletteValid ? colorFromValue(aetherColors[2], Qt.rgba(0.31, 0.98, 0.48, 1)) : Qt.rgba(0.31, 0.98, 0.48, 1)
+  readonly property color aetherYellow: aetherPaletteValid ? colorFromValue(aetherColors[3], Qt.rgba(0.95, 0.85, 0.30, 1)) : Qt.rgba(0.95, 0.85, 0.30, 1)
+  readonly property color aetherBlue: aetherPaletteValid ? colorFromValue(aetherColors[4], Qt.rgba(0.35, 0.65, 1, 1)) : Qt.rgba(0.35, 0.65, 1, 1)
+  readonly property color aetherMagenta: aetherPaletteValid ? colorFromValue(aetherColors[5], Qt.rgba(0.9, 0.45, 0.9, 1)) : Qt.rgba(0.9, 0.45, 0.9, 1)
+  readonly property color aetherCyan: aetherPaletteValid ? colorFromValue(aetherColors[6], Qt.rgba(0.2, 0.85, 0.75, 1)) : Qt.rgba(0.2, 0.85, 0.75, 1)
+  readonly property color aetherBrightForeground: aetherPaletteValid ? colorFromValue(aetherColors[15], Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
 
   // Blend helpers keep the 16-color Aether palette expressive without
   // hard-coding wallpaper-specific RGB values. The ANSI colors become the
@@ -131,7 +73,6 @@ QtObject {
   readonly property color aetherSurfaceAltTinted: mix(aetherBackground, aetherTint, 0.22)
   readonly property color aetherElevatedTinted: mix(aetherBackground, aetherTint, 0.26)
 
-  readonly property color matugenError: colorFromValue(matugenColors.error, Qt.rgba(1, 0.3, 0.3, 1))
 
   // Single shell surface opacity. Change this one value to tune transparency everywhere.
   readonly property real shellOpacity: 0.97
@@ -278,8 +219,7 @@ QtObject {
     readonly property color unselectedBorder: Util.alpha(root.outline, 0.45)
   }
 
-  // Keep the shell.toml parser for typography/spacing and any non-color style
-  // options. Matugen owns the actual palette regardless of those files.
+  // Keep the shell.toml parser for typography/spacing and user style options.
   function loadColors(raw) {
   }
 
@@ -318,17 +258,6 @@ QtObject {
   function loadUserShell(raw) {
     userShellValues = parseShell(raw)
     mergeShell()
-  }
-
-  // Poll rather than attaching a filesystem callback to the generated QML.
-  // Matugen replaces Theme.qml atomically, and polling avoids a rapid
-  // change->reload callback loop in Quickshell while still tracking updates.
-  property Timer matugenPoll: Timer {
-    interval: 1000
-    repeat: true
-    running: true
-    triggeredOnStart: true
-    onTriggered: root.matugenThemeFile.reload()
   }
 
   property FileView aetherPaletteFile: FileView {
@@ -379,13 +308,6 @@ QtObject {
     }
   }
 
-  property FileView matugenThemeFile: FileView {
-    path: root.matugenThemePath
-    watchChanges: false
-    printErrors: false
-    onLoaded: root.parseMatugen(text())
-  }
-
   property FileView shellFile: FileView {
     id: shellFile
     path: root.currentThemePath + "/shell.toml"
@@ -407,7 +329,6 @@ QtObject {
 
   Component.onCompleted: {
     aetherPaletteFile.reload()
-    matugenThemeFile.reload()
     shellFile.reload()
     userShellFile.reload()
   }
