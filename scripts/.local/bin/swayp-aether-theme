@@ -4,7 +4,10 @@ set -eu
 WALLPAPER="${1:-}"
 STATE_DIR="${HOME}/.local/state/swayp/current"
 OUTPUT="${STATE_DIR}/aether-palette.json"
+STATE_OUTPUT="${STATE_DIR}/aether-state.json"
 TMP="${OUTPUT}.tmp"
+STATE_TMP="${STATE_OUTPUT}.tmp"
+MODE="${SWAYP_AETHER_MODE:-material}"
 
 [ -n "$WALLPAPER" ] || {
     printf '%s\n' "usage: swayp-aether-theme <wallpaper>" >&2
@@ -23,9 +26,16 @@ command -v aether >/dev/null 2>&1 || {
 
 mkdir -p "$STATE_DIR"
 
-aether --extract-palette "$WALLPAPER" \
-    --extract-mode material \
-    --json > "$TMP"
+# If the Aether editor is running, keep its current extraction mode as the
+# source of truth. Headless use falls back to the SwayP recipe below.
+if aether status --json > "$STATE_TMP" 2>/dev/null; then
+    aether extract "$WALLPAPER" >/dev/null
+    aether status --json > "$STATE_TMP"
+else
+    aether --extract-palette "$WALLPAPER" \
+        --extract-mode "$MODE" \
+        --json > "$STATE_TMP"
+fi
 
 jq -e '
     (.colors | type == "array") and
@@ -34,3 +44,4 @@ jq -e '
 ' "$TMP" >/dev/null
 
 mv -f "$TMP" "$OUTPUT"
+mv -f "$STATE_TMP" "$STATE_OUTPUT"
