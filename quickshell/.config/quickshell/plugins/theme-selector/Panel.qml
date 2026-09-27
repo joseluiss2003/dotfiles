@@ -260,7 +260,7 @@ Item {
       "  [ -n \"$name\" ] || name=\"$id\"; " +
       "  desc=$(awk -F= '/^[[:space:]]*description[[:space:]]*=/{sub(/^[[:space:]]*/, \"\", $2); sub(/[[:space:]]*$/, \"\", $2); gsub(/^\"|\"$/, \"\", $2); print $2; exit}' \"$dir/theme.toml\" 2>/dev/null); " +
       "  preview=$(find \"$HOME/.config/swayp/wallpapers/$id\" -maxdepth 1 -type f " +
-      "    \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \\) -print 2>/dev/null | sort | head -n1); " +
+      "    \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \\) -print 2>/dev/null | sort | head -n1); " +
       "  printf '%s\\t%s\\t%s\\t%s\\n' \"$id\" \"$name\" \"$desc\" \"$preview\"; " +
       "done 2>/dev/null | sort",
       "swayp-theme-list",
