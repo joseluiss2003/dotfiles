@@ -9,7 +9,7 @@
     "bar-widget"
   ],
   "entryPoints": {
-    "barWidget": "ActiveWindow.qml"
+    "barWidget": "BarWidget.qml"
   },
   "barWidget": {
     "displayName": "Active window",
