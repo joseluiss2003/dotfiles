@@ -122,7 +122,7 @@ ShellRoot {
         anchors.bottom: true
         anchors.left: true
         anchors.right: true
-        WlrLayershell.layer: WlrLayer.Background
+        WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
         Rectangle {
