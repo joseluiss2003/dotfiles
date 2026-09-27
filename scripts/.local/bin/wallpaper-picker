@@ -4,7 +4,7 @@ set -eu
 # ============================================================
 # Wallpaper picker
 # - Fuzzel selection with real image thumbnails
-# - Matugen applies the selected wallpaper/theme
+# - Aether extracts the UI palette; Matugen keeps wallpaper/app template integration
 # - Never starts or restarts Quickshell
 # - Lock prevents double-launching the picker
 # ============================================================
@@ -189,6 +189,11 @@ selected_file=$(
 # IMPORTANT: this script deliberately contains NO "qs" command.
 # Matugen is only run once; Quickshell is left alone.
 # ------------------------------------------------------------
+
+if ! swayp-aether-theme "$selected_file"; then
+    notify-send "Wallpaper" "Aether no pudo extraer la paleta de $(basename "$selected_file")"
+    exit 1
+fi
 
 if ! matugen image "$selected_file" -m dark; then
     notify-send "Wallpaper" "Matugen no pudo aplicar $(basename "$selected_file")"
