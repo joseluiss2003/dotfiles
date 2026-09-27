@@ -197,17 +197,17 @@ write("fastfetch.jsonc", f'''{{
     "type": "builtin",
     "color": {{
       "1": "{fg}",
-      "2": "{fg}",
-      "3": "{fg}",
-      "4": "{fg}",
-      "5": "{fg}",
-      "6": "{fg}"
+      "2": "{accent}",
+      "3": "{c["blue"]}",
+      "4": "{c["cyan"]}",
+      "5": "{c["magenta"]}",
+      "6": "{c["green"]}"
     }},
     "padding": {{ "top": 1, "right": 6, "left": 1 }}
   }},
   "display": {{
     "disableLinewrap": true,
-    "color": {{ "keys": "{fg}", "output": "{fg}", "separator": "{muted}" }},
+    "color": {{ "keys": "{accent}", "output": "{fg}", "separator": "{muted}" }},
     "key": {{ "width": 14, "type": "string" }}
   }},
   "modules": [
