@@ -252,12 +252,11 @@ LEGACY_ROOT_LINKS=(
   scripts
   starship
   sway
-  sw ay p
+  swayp
   install.sh
 )
 
 for name in "${LEGACY_ROOT_LINKS[@]}"; do
-    name="${name// /}"
     target="$HOME/$name"
     expected="$DOTFILES_DIR/$name"
 
