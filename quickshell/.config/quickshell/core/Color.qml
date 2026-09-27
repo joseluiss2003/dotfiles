@@ -336,6 +336,45 @@ QtObject {
     onLoadFailed: root.aetherPaletteValid = false
   }
 
+  // When the Aether editor is open, mirror its live palette directly through
+  // the Aether IPC-backed CLI. This means slider/color changes in the GUI are
+  // reflected in SwayP without requiring "Apply Theme" or a shell restart.
+  property Process aetherStatusProc: Process {
+    id: aetherStatusProc
+    command: ["aether", "status", "--json"]
+    running: false
+
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: {
+        var raw = String(text || "")
+        if (!raw) return
+        try {
+          var parsed = JSON.parse(raw)
+          if (parsed && Array.isArray(parsed.palette) && parsed.palette.length === 16) {
+            root.parseAether(JSON.stringify({
+              colors: parsed.palette
+            }))
+          }
+        } catch (e) {
+          // Aether is optional at runtime; keep the last valid palette when
+          // the GUI is closed or its IPC socket is unavailable.
+        }
+      }
+    }
+  }
+
+  property Timer aetherLivePoll: Timer {
+    interval: 1000
+    repeat: true
+    running: true
+    triggeredOnStart: true
+    onTriggered: {
+      if (!aetherStatusProc.running)
+        aetherStatusProc.running = true
+    }
+  }
+
   property FileView matugenThemeFile: FileView {
     path: root.matugenThemePath
     watchChanges: false
