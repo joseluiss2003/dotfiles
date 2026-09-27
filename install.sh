@@ -28,6 +28,7 @@ PACKAGES=(
   ffmpegthumbnailer
   greetd
   greetd-tuigreet
+  cage
   grim
   gtk4
   gtk4-layer-shell
@@ -121,6 +122,13 @@ echo "==> Aplicando dotfiles..."
 
 cd "$DOTFILES_DIR"
 stow -t "$HOME" "${STOW_PACKAGES[@]}"
+
+echo
+echo "==> Instalando SwayP Greeter..."
+sudo install -Dm755 "$DOTFILES_DIR/swayp-greeter/usr/share/swayp/greeter/greetd-bridge.py" /usr/share/swayp/greeter/greetd-bridge.py
+sudo install -Dm644 "$DOTFILES_DIR/swayp-greeter/usr/share/swayp/greeter/shell.qml" /usr/share/swayp/greeter/shell.qml
+sudo install -Dm755 "$DOTFILES_DIR/swayp-greeter/usr/share/swayp/greeter/run-greeter.sh" /usr/share/swayp/greeter/run-greeter.sh
+sudo install -Dm644 "$DOTFILES_DIR/swayp-greeter/etc/greetd/swayp-greeter.toml" /usr/share/swayp/greeter/greetd.toml
 
 echo
 echo "==> Configurando Zsh..."
