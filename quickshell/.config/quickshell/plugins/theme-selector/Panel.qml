@@ -156,7 +156,7 @@ Item {
     watchChanges: true
     printErrors: false
     onLoaded: {
-      var value = String(text || "").trim()
+      var value = String(currentThemeFile.text() || "").trim()
       if (value.length > 0) root.selectedTheme = value
     }
   }
