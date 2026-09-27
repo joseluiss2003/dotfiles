@@ -135,20 +135,20 @@ QtObject {
 
   // Foundational roles consumed throughout Commons/Ui and by bar widgets.
   readonly property color foreground: aetherForeground
-  readonly property color background: aetherBackgroundTinted
+  readonly property color background: Util.alpha(aetherBackgroundTinted, 0.97)
   readonly property color accent: aetherCyan
   readonly property color urgent: aetherRed
   readonly property color muted: aetherMuted
 
   // Semantic surfaces are intentionally opaque and visibly tinted. This is
   // what makes the bar, popups and menus feel like one wallpaper-derived UI.
-  readonly property color backgroundDeep: aetherBackgroundDeep
-  readonly property color backgroundRaised: aetherSurfaceTinted
-  readonly property color backgroundElevated: aetherElevatedTinted
+  readonly property color backgroundDeep: Util.alpha(aetherBackgroundDeep, 0.97)
+  readonly property color backgroundRaised: Util.alpha(aetherSurfaceTinted, 0.97)
+  readonly property color backgroundElevated: Util.alpha(aetherElevatedTinted, 0.97)
 
   readonly property color text: aetherForeground
-  readonly property color surface: aetherSurfaceTinted
-  readonly property color surfaceAlt: aetherSurfaceAltTinted
+  readonly property color surface: Util.alpha(aetherSurfaceTinted, 0.97)
+  readonly property color surfaceAlt: Util.alpha(aetherSurfaceAltTinted, 0.97)
   readonly property color textMuted: aetherMuted
   readonly property color accentText: aetherBackgroundDeep
   readonly property color accentSoft: Util.alpha(aetherCyan, 0.30)
