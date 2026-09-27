@@ -85,8 +85,8 @@ QtObject {
   readonly property color themeTint: mix(themeGreen, themeCyan, 0.50)
   readonly property color themeBackgroundDeep: themeDarkerBackground
   readonly property color themeSurfaceTinted: themeLighterBackground
-  readonly property color themeSurfaceAltTinted: mix(themeLighterBackground, themeLightForeground, 0.06)
-  readonly property color themeElevatedTinted: mix(themeLighterBackground, themeLightForeground, 0.12)
+  readonly property color themeSurfaceAltTinted: themeLighterBackground
+  readonly property color themeElevatedTinted: themeLighterBackground
 
   readonly property real shellOpacity: 0.97
 
@@ -105,7 +105,7 @@ QtObject {
   readonly property color surfaceAlt: Util.alpha(themeSurfaceAltTinted, root.shellOpacity)
   readonly property color textMuted: themeMuted
   readonly property color accentText: themeBackground
-  readonly property color accentSoft: Util.alpha(themeAccent, 0.30)
+  readonly property color accentSoft: Util.alpha(themeAccent, 0.22)
   readonly property color secondary: themeBlue
   readonly property color secondarySoft: Util.alpha(themeBlue, 0.26)
   readonly property color tertiary: themeMagenta
@@ -113,12 +113,12 @@ QtObject {
   readonly property color success: themeGreen
   readonly property color warning: themeYellow
   readonly property color info: themeCyan
-  readonly property color outline: mix(themeForeground, themeTint, 0.34)
-  readonly property color outlineStrong: mix(themeForeground, themeTint, 0.50)
+  readonly property color outline: themeMuted
+  readonly property color outlineStrong: themeLightForeground
   readonly property color divider: Util.alpha(themeForeground, 0.16)
-  readonly property color hover: Util.alpha(themeAccent, 0.22)
-  readonly property color active: Util.alpha(themeAccent, 0.30)
-  readonly property color selection: Util.alpha(themeSelection, 0.34)
+  readonly property color hover: Util.alpha(themeAccent, 0.16)
+  readonly property color active: Util.alpha(themeAccent, 0.24)
+  readonly property color selection: Util.alpha(themeSelection, 0.30)
   readonly property color error: themeRed
 
   property var shellValues: ({})
