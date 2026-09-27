@@ -233,6 +233,7 @@ Panel {
     focusTarget: focusCatcher
 
     padding: 0
+    drawBackground: false
     borderSpec: Border.surfaceSpec("notifications", "panel-wrapper", "transparent", 0)
     contentWidth: Math.min(Style.space(440), popup.availableCardWidth)
     contentHeight: Math.min(
