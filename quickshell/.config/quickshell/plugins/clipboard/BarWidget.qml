@@ -19,7 +19,7 @@ BarWidget {
   Loader {
     id: clipboardLoader
     active: true
-    source: Qt.resolvedUrl("Clipboard.qml")
+    source: Qt.resolvedUrl("Panel.qml")
     onLoaded: {
       item.anchorItem = button
       item.bar = root.bar
