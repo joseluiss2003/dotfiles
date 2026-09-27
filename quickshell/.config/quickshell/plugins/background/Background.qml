@@ -178,6 +178,18 @@ Item {
     }
   }
 
+  // The wallpaper picker is launched by Sway, not by this process, so its
+  // Process.onExited handler cannot detect external wallpaper changes.
+  // Poll the canonical symlink and refresh only when the readlink process is idle.
+  Timer {
+    id: backgroundPoll
+    interval: 500
+    repeat: true
+    running: true
+    triggeredOnStart: true
+    onTriggered: root.refreshBackground()
+  }
+
   Component.onCompleted: refreshBackground()
 
   Variants {
