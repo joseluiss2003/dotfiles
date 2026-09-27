@@ -1,0 +1,36 @@
+#!/bin/sh
+set -eu
+
+WALLPAPER="${1:-}"
+STATE_DIR="${HOME}/.local/state/swayp/current"
+OUTPUT="${STATE_DIR}/aether-palette.json"
+TMP="${OUTPUT}.tmp"
+
+[ -n "$WALLPAPER" ] || {
+    printf '%s\n' "usage: swayp-aether-theme <wallpaper>" >&2
+    exit 2
+}
+
+[ -f "$WALLPAPER" ] || {
+    printf '%s\n' "Wallpaper not found: $WALLPAPER" >&2
+    exit 1
+}
+
+command -v aether >/dev/null 2>&1 || {
+    printf '%s\n' "aether is required but was not found on PATH" >&2
+    exit 127
+}
+
+mkdir -p "$STATE_DIR"
+
+aether --extract-palette "$WALLPAPER" \
+    --extract-mode material \
+    --json > "$TMP"
+
+jq -e '
+    (.colors | type == "array") and
+    (.colors | length == 16) and
+    all(.colors[]; type == "string" and test("^#[0-9A-Fa-f]{6}$"))
+' "$TMP" >/dev/null
+
+mv -f "$TMP" "$OUTPUT"
