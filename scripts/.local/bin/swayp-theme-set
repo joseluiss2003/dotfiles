@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+PERSISTENT_THEME_FILE="${HOME}/.config/swayp/current-theme"
+
 THEME="${1:-}"
 
 # Restore the persisted selection when no theme was explicitly requested.
@@ -15,7 +17,6 @@ BASE="${HOME}/.config/swayp/themes"
 THEME_DIR="${BASE}/${THEME}"
 STATE_DIR="${HOME}/.local/state/swayp/current"
 GENERATED_DIR="${HOME}/.config/swayp/generated"
-PERSISTENT_THEME_FILE="${HOME}/.config/swayp/current-theme"
 
 [ -n "$THEME" ] || { printf '%s\n' "usage: swayp-theme-set <theme>" >&2; exit 2; }
 [ -d "$THEME_DIR" ] || { printf 'Unknown SwayP theme: %s\n' "$THEME" >&2; exit 1; }
