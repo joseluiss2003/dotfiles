@@ -9,7 +9,7 @@
     "bar-widget"
   ],
   "entryPoints": {
-    "barWidget": "KeyboardLayout.qml"
+    "barWidget": "BarWidget.qml"
   },
   "barWidget": {
     "displayName": "Keyboard layout",
