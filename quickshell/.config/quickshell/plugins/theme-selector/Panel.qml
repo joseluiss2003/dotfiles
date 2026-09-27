@@ -278,8 +278,8 @@ Item {
     command: [
       "bash", "-c",
       "find \"$1\" -maxdepth 1 -type f " +
-      "\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \) " +
-      "-print | sort",
+      "\\\\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \\\\) " +
+      "-print 2>/dev/null | sort",
       "swayp-wallpaper-list",
       root.wallpapersRoot + "/" + root.selectedTheme
     ]
@@ -289,7 +289,6 @@ Item {
       onStreamFinished: root.parseWallpapers(this.text)
     }
   }
-
   Process {
     id: applyProc
     running: false
