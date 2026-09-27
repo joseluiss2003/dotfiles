@@ -93,10 +93,9 @@ QtObject {
   readonly property color urgent: aetherRed
   readonly property color muted: aetherMuted
 
-  // Shared popup transparency. Every popup uses the same Aether-derived RGB
-  // surface and this single alpha value, so individual plugins do not drift.
-  readonly property real popupOpacity: 0.65
-
+  // Popups use the exact same surface and opacity as the bar and Kitty.
+  // There is intentionally no separate popup alpha: every shell surface
+  // follows the single shellOpacity token below.
   readonly property color backgroundDeep: Util.alpha(aetherBackgroundDeep, root.shellOpacity)
   readonly property color backgroundRaised: Util.alpha(aetherSurfaceTinted, root.shellOpacity)
   readonly property color backgroundElevated: Util.alpha(aetherElevatedTinted, root.shellOpacity)
@@ -174,7 +173,7 @@ QtObject {
   }
 
   readonly property QtObject popups: QtObject {
-    readonly property color background: Util.alpha(root.aetherSurfaceTinted, root.popupOpacity)
+    readonly property color background: root.surface
     readonly property color text: root.text
     readonly property color border: root.outline
   }
