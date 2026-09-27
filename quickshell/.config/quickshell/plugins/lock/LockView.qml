@@ -152,19 +152,20 @@ Item {
     color: Color.aetherBackgroundDeep
 
     Column {
-      anchors.centerIn: parent
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
       spacing: 34
 
       Text {
         anchors.horizontalCenter: parent.horizontalCenter
 
-        text: "SWAYP"
+        text: Qt.formatTime(root.currentTime, "HH:mm")
 
         color: Color.foreground
         font.family: Style.font.family
-        font.pixelSize: 54
+        font.pixelSize: 72
         font.weight: Font.Black
-        font.letterSpacing: 8
+        font.letterSpacing: 5
         horizontalAlignment: Text.AlignHCenter
         renderType: Text.NativeRendering
       }
