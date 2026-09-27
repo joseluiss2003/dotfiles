@@ -17,6 +17,6 @@
     "defaultSection": "right"
   },
   "entryPoints": {
-    "barWidget": "ClipboardBarWidget.qml"
+    "barWidget": "BarWidget.qml"
   }
 }
