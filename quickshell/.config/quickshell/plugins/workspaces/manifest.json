@@ -9,7 +9,7 @@
     "bar-widget"
   ],
   "entryPoints": {
-    "barWidget": "Workspaces.qml"
+    "barWidget": "BarWidget.qml"
   },
   "barWidget": {
     "displayName": "Workspaces",
