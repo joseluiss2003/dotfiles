@@ -31,7 +31,9 @@ PACKAGES=(
   grim
   gtk4-layer-shell
   iw
+  imagemagick
   jq
+  libnotify
   kitty
   mako
   networkmanager
@@ -52,6 +54,7 @@ PACKAGES=(
   upower
   wlsunset
   wireplumber
+  wtype
   wl-clipboard
   xdg-desktop-portal-wlr
   xdg-user-dirs
