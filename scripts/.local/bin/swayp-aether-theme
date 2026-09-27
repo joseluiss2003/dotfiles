@@ -205,10 +205,10 @@ cat > "${GENERATED_DIR}/starship.toml" <<EOF
 palette = "swayp"
 
 format = """
-$directory\
-$git_branch\
-$git_status
-$character
+\$directory\
+\$git_branch\
+\$git_status
+\$character
 """
 
 [palettes.swayp]
