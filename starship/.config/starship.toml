@@ -1,6 +1,6 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
-palette = "matugen"
+palette = "swayp"
 
 format = """
 $directory\
@@ -9,7 +9,7 @@ $git_status
 $character
 """
 
-[palettes.matugen]
+[palettes.swayp]
 foreground = "#f0dee0"
 primary = "#ffb2bf"
 secondary = "#d9a8b0"
