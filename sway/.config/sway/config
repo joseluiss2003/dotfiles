@@ -123,6 +123,7 @@ for_window [app_id="pavucontrol"] floating enable, sticky enable, border pixel 1
 ### =========================
 
 exec awww-daemon
+exec env PATH="$HOME/.local/bin:$PATH" swayp-theme-set "$(cat "$HOME/.config/swayp/current-theme" 2>/dev/null || cat "$HOME/.local/state/swayp/current/theme.name" 2>/dev/null || true)"
 exec env PATH="$HOME/.local/bin:$PATH" wallpaper-startup
 exec env PATH="$HOME/.local/bin:$PATH" qs
 exec playerctld daemon
