@@ -22,6 +22,7 @@ QtObject {
 
   property string paletteSource: "aether"
   property var aetherColors: []
+  property var semanticColors: ({})
   property bool aetherPaletteValid: false
 
   function colorFromValue(value, fallback) {
@@ -50,20 +51,34 @@ QtObject {
     }
 
     root.aetherColors = colors
+    root.semanticColors = parsed && parsed.semantic && typeof parsed.semantic === "object"
+      ? parsed.semantic : ({})
     root.aetherPaletteValid = true
   }
 
-  // Safe startup fallbacks. A valid Aether palette replaces every role above.
-  readonly property color aetherBackground: aetherPaletteValid ? colorFromValue(aetherColors[0], Qt.rgba(0.07, 0.07, 0.07, 1)) : Qt.rgba(0.07, 0.07, 0.07, 1)
-  readonly property color aetherForeground: aetherPaletteValid ? colorFromValue(aetherColors[7], Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
-  readonly property color aetherMuted: aetherPaletteValid ? colorFromValue(aetherColors[8], Qt.rgba(0.62, 0.62, 0.62, 1)) : Qt.rgba(0.62, 0.62, 0.62, 1)
+  function semanticValue(key, fallback) {
+    var value = semanticColors[key]
+    return typeof value === "string" && /^#[0-9A-Fa-f]{6}$/.test(value) ? value : fallback
+  }
+
+  // The static theme path carries semantic roles alongside the ANSI palette.
+  // Aether/live palettes fall back to the traditional ANSI slots.
+  readonly property color aetherBackground: aetherPaletteValid ? colorFromValue(semanticValue("background", aetherColors[0]), Qt.rgba(0.07, 0.07, 0.07, 1)) : Qt.rgba(0.07, 0.07, 0.07, 1)
+  readonly property color aetherForeground: aetherPaletteValid ? colorFromValue(semanticValue("foreground", aetherColors[7]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
+  readonly property color aetherMuted: aetherPaletteValid ? colorFromValue(semanticValue("muted", aetherColors[8]), Qt.rgba(0.62, 0.62, 0.62, 1)) : Qt.rgba(0.62, 0.62, 0.62, 1)
   readonly property color aetherRed: aetherPaletteValid ? colorFromValue(aetherColors[1], Qt.rgba(1, 0.33, 0.33, 1)) : Qt.rgba(1, 0.33, 0.33, 1)
   readonly property color aetherGreen: aetherPaletteValid ? colorFromValue(aetherColors[2], Qt.rgba(0.31, 0.98, 0.48, 1)) : Qt.rgba(0.31, 0.98, 0.48, 1)
   readonly property color aetherYellow: aetherPaletteValid ? colorFromValue(aetherColors[3], Qt.rgba(0.95, 0.85, 0.30, 1)) : Qt.rgba(0.95, 0.85, 0.30, 1)
   readonly property color aetherBlue: aetherPaletteValid ? colorFromValue(aetherColors[4], Qt.rgba(0.35, 0.65, 1, 1)) : Qt.rgba(0.35, 0.65, 1, 1)
   readonly property color aetherMagenta: aetherPaletteValid ? colorFromValue(aetherColors[5], Qt.rgba(0.9, 0.45, 0.9, 1)) : Qt.rgba(0.9, 0.45, 0.9, 1)
   readonly property color aetherCyan: aetherPaletteValid ? colorFromValue(aetherColors[6], Qt.rgba(0.2, 0.85, 0.75, 1)) : Qt.rgba(0.2, 0.85, 0.75, 1)
-  readonly property color aetherBrightForeground: aetherPaletteValid ? colorFromValue(aetherColors[15], Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
+  readonly property color aetherBrightForeground: aetherPaletteValid ? colorFromValue(semanticValue("bright_foreground", aetherColors[15]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
+  readonly property color aetherDarkBackground: aetherPaletteValid ? colorFromValue(semanticValue("dark_background", aetherColors[0]), aetherBackground) : aetherBackground
+  readonly property color aetherDarkerBackground: aetherPaletteValid ? colorFromValue(semanticValue("darker_background", aetherColors[0]), aetherBackground) : aetherBackground
+  readonly property color aetherLighterBackground: aetherPaletteValid ? colorFromValue(semanticValue("lighter_background", aetherColors[0]), aetherBackground) : aetherBackground
+  readonly property color aetherLightForeground: aetherPaletteValid ? colorFromValue(semanticValue("light_foreground", aetherColors[7]), aetherForeground) : aetherForeground
+  readonly property color aetherAccent: aetherPaletteValid ? colorFromValue(semanticValue("accent", aetherColors[6]), aetherCyan) : aetherCyan
+  readonly property color aetherSelection: aetherPaletteValid ? colorFromValue(semanticValue("selection", aetherColors[4]), aetherBlue) : aetherBlue
 
   // Blend helpers keep the 16-color Aether palette expressive without
   // hard-coding wallpaper-specific RGB values. The ANSI colors become the
@@ -78,11 +93,11 @@ QtObject {
   }
 
   readonly property color aetherTint: mix(aetherGreen, aetherCyan, 0.50)
-  readonly property color aetherBackgroundTinted: mix(aetherBackground, aetherTint, 0.14)
-  readonly property color aetherBackgroundDeep: mix(aetherBackground, aetherTint, 0.10)
-  readonly property color aetherSurfaceTinted: mix(aetherBackground, aetherTint, 0.18)
-  readonly property color aetherSurfaceAltTinted: mix(aetherBackground, aetherTint, 0.22)
-  readonly property color aetherElevatedTinted: mix(aetherBackground, aetherTint, 0.26)
+  readonly property color aetherBackgroundTinted: aetherBackground
+  readonly property color aetherBackgroundDeep: aetherDarkerBackground
+  readonly property color aetherSurfaceTinted: aetherLighterBackground
+  readonly property color aetherSurfaceAltTinted: mix(aetherLighterBackground, aetherLightForeground, 0.06)
+  readonly property color aetherElevatedTinted: mix(aetherLighterBackground, aetherLightForeground, 0.12)
 
 
   // Single shell surface opacity. Change this one value to tune transparency everywhere.
@@ -90,8 +105,8 @@ QtObject {
 
   // Foundational roles consumed throughout Commons/Ui and by bar widgets.
   readonly property color foreground: aetherForeground
-  readonly property color background: Util.alpha(aetherBackgroundTinted, root.shellOpacity)
-  readonly property color accent: aetherCyan
+  readonly property color background: Util.alpha(aetherBackground, root.shellOpacity)
+  readonly property color accent: aetherAccent
   readonly property color urgent: aetherRed
   readonly property color muted: aetherMuted
 
@@ -106,8 +121,8 @@ QtObject {
   readonly property color surface: Util.alpha(aetherSurfaceTinted, root.shellOpacity)
   readonly property color surfaceAlt: Util.alpha(aetherSurfaceAltTinted, root.shellOpacity)
   readonly property color textMuted: aetherMuted
-  readonly property color accentText: aetherBackgroundDeep
-  readonly property color accentSoft: Util.alpha(aetherCyan, 0.30)
+  readonly property color accentText: aetherBackground
+  readonly property color accentSoft: Util.alpha(aetherAccent, 0.30)
   readonly property color secondary: aetherBlue
   readonly property color secondarySoft: Util.alpha(aetherBlue, 0.26)
   readonly property color tertiary: aetherMagenta
@@ -118,9 +133,9 @@ QtObject {
   readonly property color outline: mix(aetherForeground, aetherTint, 0.34)
   readonly property color outlineStrong: mix(aetherForeground, aetherTint, 0.50)
   readonly property color divider: Util.alpha(aetherForeground, 0.16)
-  readonly property color hover: Util.alpha(aetherCyan, 0.22)
-  readonly property color active: Util.alpha(aetherGreen, 0.30)
-  readonly property color selection: Util.alpha(aetherBlue, 0.34)
+  readonly property color hover: Util.alpha(aetherAccent, 0.22)
+  readonly property color active: Util.alpha(aetherAccent, 0.30)
+  readonly property color selection: Util.alpha(aetherSelection, 0.34)
   readonly property color error: aetherRed
 
   property var shellValues: ({})
@@ -168,8 +183,8 @@ QtObject {
 
   // Reusable surfaces all inherit the same Aether-derived tint.
   readonly property QtObject bar: QtObject {
-    // Bar and popup cards intentionally share the exact same Aether-derived surface.
-    readonly property color background: root.surface
+    // The bar uses the theme's actual background; popups use the lighter surface.
+    readonly property color background: root.background
     readonly property color text: root.text
     readonly property color active: root.accent
   }
