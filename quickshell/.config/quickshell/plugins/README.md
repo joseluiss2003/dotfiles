@@ -1,50 +1,39 @@
 # SwayP first-party plugins
 
-First-party plugins are shipped with SwayP and discovered by the shell at startup. Each plugin declares its contract in a `manifest.json`.
+First-party plugins are shipped with SwayP and discovered by the shell at startup. Every plugin declares its contract in manifest.json.
 
-## Plugin catalogue
+## Plugin kinds
+- bar — complete bar implementation.
+- bar-widget — widget hosted inside a bar.
+- panel — standalone panel/popup.
+- service — long-lived backend service.
+- menu — command/action menu.
 
-| Plugin | ID | Entry point |
+A plugin can declare multiple kinds and expose multiple entry points.
+
+## Reference plugins
+| Plugin | Kind | Useful reference |
 |---|---|---|
-| Background | `swayp.background` | `background/Background.qml` |
-| Bar | `swayp.bar` | `bar/Bar.qml` |
-| Active window | `swayp.active-window` | `active-window/BarWidget.qml` |
-| Indicators | `swayp.indicators` | `indicators/BarWidget.qml` |
-| Keyboard layout | `swayp.keyboard-layout` | `keyboard-layout/BarWidget.qml` |
-| Microphone | `swayp.microphone` | `microphone/BarWidget.qml` |
-| Spacer | `swayp.spacer` | `spacer/BarWidget.qml` |
-| System update | `swayp.system-update` | `system-update/BarWidget.qml` |
-| Tray | `swayp.tray` | `tray/BarWidget.qml` |
-| Workspaces | `swayp.workspaces` | `workspaces/BarWidget.qml` |
-| Clipboard | `swayp.clipboard` | `clipboard/Panel.qml` |
-| Dev gallery | `swayp.dev-gallery` | `dev-gallery/GalleryPanel.qml` |
-| Emojis | `swayp.emojis` | `emojis/Emojis.qml` |
-| Image picker | `swayp.image-picker` | `image-picker/ImagePicker.qml` |
-| Lock | `swayp.lock` | `lock/Service.qml` |
-| Menu | `swayp.menu` | `menu/Menu.qml` |
-| Notification center | `swayp.notification-center` | `notifications-center/Panel.qml` |
-| Notifications | `swayp.notifications` | `notifications/Service.qml` |
-| OSD | `swayp.osd` | `osd/Osd.qml` |
-| Audio | `swayp.audio` | `audio/Panel.qml` |
-| Bluetooth | `swayp.bluetooth` | `bluetooth/Panel.qml` |
-| Clock | `swayp.clock` | `clock/BarWidget.qml` |
-| Monitor | `swayp.monitor` | `monitor/Panel.qml` |
-| Network | `swayp.network` | `network/Panel.qml` |
-| Power | `swayp.power` | `power/Panel.qml` |
-| Speed test | `swayp.speedtest` | `speedtest/Panel.qml` |
-| Wi-Fi QR | `swayp.wifiqr` | `wifiqr/Panel.qml` |
-| Polkit | `swayp.polkit` | `polkit/PolkitAgent.qml` |
-| Battery | `swayp.battery` | `services/battery/Service.qml` |
-| Idle | `swayp.idle` | `services/idle/Service.qml` |
-| Media | `swayp.media` | `services/media/Service.qml` + `BarWidget.qml` |
-| Night light | `swayp.nightlight` | `services/nightlight/Service.qml` |
+| clock | bar-widget | widget + popup + settings |
+| audio | panel | PipeWire-backed panel |
+| clipboard | bar-widget | widget + helper process |
+| notifications | service | long-lived service |
+| lock | service | authentication/session lock |
+| menu | menu + bar-widget | multiple kinds |
+| theme-selector | panel | file discovery + horizontal selection |
+| bar | bar | complete bar implementation |
 
-## Configuration
+For the creation recipe, see [docs/PLUGINS.md](../../../docs/PLUGINS.md).
 
-The bar reads its configuration from `~/.config/swayp/shell.json`. The shell ships a SwayP default layout and user configuration can override it.
+## First-party vs user plugins
+First-party plugins live in quickshell/.config/quickshell/plugins/.
+User/third-party plugins live in ~/.config/swayp/plugins/.
 
-Third-party or user-specific extensions should live outside the repository under the user's SwayP configuration directory.
-
-## Ownership
-
-SwayP owns the plugin IDs, runtime namespaces and configuration paths. External commands used by a small number of optional features are compatibility dependencies and are deliberately kept isolated from the core plugin architecture.
+## Rules
+- Use the swayp.* ID namespace.
+- Keep entry points relative to the plugin directory.
+- Never use absolute entry points or .. traversal.
+- Reuse qs.core.Color and qs.core.Style.
+- Do not hardcode theme hex values.
+- Use Sway IPC/shared helpers instead of Hyprland assumptions.
+- Keep shared state injected through shell/plugin infrastructure.

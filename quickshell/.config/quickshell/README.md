@@ -1,33 +1,40 @@
 # SwayP Quickshell
 
-Quickshell is the UI layer of SwayP. It hosts the bar, panels, popups, widgets and shared desktop services in a single shell process.
+Quickshell is the UI and service layer of SwayP. It hosts the bar, panels, widgets, overlays and shared desktop services in one shell process.
 
 ## Structure
+~~~text
+quickshell/.config/quickshell/
+├── shell.qml      # shell entry point and orchestration
+├── core/          # shared state, colors, style and helpers
+├── ui/            # reusable visual components
+├── services/      # registries and shared service infrastructure
+└── plugins/       # first-party widgets, panels, services and overlays
+~~~
 
-- `shell.qml` — shell entry point, plugin lifecycle and IPC.
-- `core/` — shared state, styling, compositor helpers and utilities.
-- `ui/` — reusable visual and interaction components.
-- `services/` — registries and shared service infrastructure.
-- `plugins/` — first-party bar widgets, panels and services.
-- `generated/` — legacy runtime-generated module location kept only for ignored/generated files.
+## Theme system
+SwayP does not use a runtime theme daemon.
 
-## Configuration
+The source of truth is ~/.config/swayp/themes/<theme>/ with colors.toml and theme.toml.
 
-The shell keeps user configuration under `~/.config/swayp/`.
+swayp-theme-set generates application configuration and writes the active semantic palette to runtime state. Quickshell consumes that palette through core/Color.qml.
 
-Aether owns the generated palette layer. Quickshell consumes the SwayP-generated runtime state without depending on Matugen or an Omarchy installation.
+See:
+- [Project architecture](../../../docs/ARCHITECTURE.md)
+- [Plugin guide](../../../docs/PLUGINS.md)
+- [Theme guide](../../../docs/THEMES.md)
 
 ## Runtime model
+SwayP runs one long-lived Quickshell process.
 
-SwayP runs one long-lived Quickshell process. Plugins are registered through their `manifest.json` files and loaded according to their kind and lifecycle policy.
+First-party plugins are discovered from the bundled plugins/ directory. User plugins can live under ~/.config/swayp/plugins/.
 
-The bar, panels and services communicate through the shell's internal plugin registry and IPC instead of launching a second shell process.
+Plugins declare their contract in manifest.json and are loaded according to their declared kind and lifecycle.
 
-## Design goals
-
-- Native Sway integration.
-- Aether as the central theme source.
-- Zero-radius, compact UI where configured.
-- Multi-monitor aware panels and notifications.
-- Clear separation between core, UI, services and plugins.
-- SwayP-owned paths and runtime identifiers.
+## Design rules
+- Keep the shell Sway-native.
+- Reuse qs.core.Color and qs.core.Style.
+- Keep plugin-specific logic inside the plugin directory.
+- Inject shared services instead of instantiating duplicates.
+- Do not introduce a second theme system.
+- Keep UI compact, composable and multi-monitor aware.
