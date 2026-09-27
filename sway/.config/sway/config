@@ -70,7 +70,7 @@ bindsym $mod+Shift+Right move right
 bindsym $mod+Shift+Space floating toggle
 
 ### Focus entre tiling/floating
-bindsym $mod+Space focus mode_toggle
+bindsym $mod+Space exec env PATH="$HOME/.local/bin:$PATH" sh ~/.local/bin/swayp-theme-picker
 
 ### =========================
 ### Workspaces
