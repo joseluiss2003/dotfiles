@@ -243,7 +243,7 @@ QtObject {
     readonly property color background: root.surface
     readonly property color text: root.text
     readonly property color border: root.outline
-    readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
+    readonly property color scrim: Util.alpha(root.backgroundDeep, 0.38)
     readonly property color selectedBackground: root.selection
     readonly property color selectedText: root.text
     readonly property color selectedBorder: root.accent
