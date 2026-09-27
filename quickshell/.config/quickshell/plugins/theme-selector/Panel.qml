@@ -667,7 +667,6 @@ Item {
               }
             }
           }
-        }
         PanelSeparator {
           Layout.fillWidth: true
           foreground: root.border
