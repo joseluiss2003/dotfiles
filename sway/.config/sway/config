@@ -1,73 +1,45 @@
 include ~/.config/swayp/generated/sway-colors.conf
 
-
 ### =========================
-### Sway - José Luis
+### SwayP - Sway configuration
 ### =========================
 
-### Mod
 set $mod Mod4
-
-### Terminal
 set $term kitty
-
-### Launcher
 set $menu fuzzel
 
-###Layout tabbed
-workspace_layout tabbed
-default_orientation horizontal
-
-### =========================
-### Apariencia
-### =========================
-
 font pango:JetBrains Mono Nerd Font 10
-
-### =========================
-### Input
-### =========================
 
 input type:keyboard {
     xkb_layout es
 }
 
 ### =========================
-### Atajos básicos
+### Window management
 ### =========================
 
-# Terminal
-bindsym $mod+Return exec $term
-
-# Launcher
-bindsym $mod+d exec $menu
-
-# Cerrar ventana
-bindsym $mod+q kill
-
-# Recargar configuración
-bindsym $mod+Shift+c reload
-
-# Salir de Sway
-bindsym $mod+Shift+e exit
-
-### Movimiento con flechas
+# Focus
 bindsym $mod+Left  focus left
 bindsym $mod+Down  focus down
 bindsym $mod+Up    focus up
 bindsym $mod+Right focus right
 
-### =========================
-### Mover ventanas
-### =========================
-
-bindsym $mod+Shift+Left move left
-bindsym $mod+Shift+Down move down
-bindsym $mod+Shift+Up move up
+# Move windows
+bindsym $mod+Shift+Left  move left
+bindsym $mod+Shift+Down  move down
+bindsym $mod+Shift+Up    move up
 bindsym $mod+Shift+Right move right
 
-### Floating
+# Floating
 bindsym $mod+Shift+Space floating toggle
+
+# Resize
+bindsym $mod+Ctrl+Left  resize shrink width 10 px
+bindsym $mod+Ctrl+Right resize grow width 10 px
+bindsym $mod+Ctrl+Up    resize shrink height 10 px
+bindsym $mod+Ctrl+Down  resize grow height 10 px
+
+floating_modifier $mod normal
 
 ### =========================
 ### Workspaces
@@ -84,6 +56,7 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
+# Switch workspace
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
@@ -95,7 +68,7 @@ bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
 bindsym $mod+0 workspace $ws10
 
-### Mover ventana a workspace
+# Move window to workspace
 bindsym $mod+Shift+1 move container to workspace $ws1
 bindsym $mod+Shift+2 move container to workspace $ws2
 bindsym $mod+Shift+3 move container to workspace $ws3
@@ -107,29 +80,42 @@ bindsym $mod+Shift+8 move container to workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9
 bindsym $mod+Shift+0 move container to workspace $ws10
 
-### =========================
-### Resize ventanas
-### =========================
-
-bindsym $mod+Ctrl+Left  resize shrink width 10 px
-bindsym $mod+Ctrl+Right resize grow width 10 px
-bindsym $mod+Ctrl+Up    resize shrink height 10 px
-bindsym $mod+Ctrl+Down  resize grow height 10 px
+workspace_layout tabbed
+default_orientation horizontal
 
 ### =========================
-### Screenshot
+### Basic actions
+### =========================
+
+bindsym $mod+Return exec $term
+bindsym $mod+d exec $menu
+bindsym $mod+q kill
+
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+e exit
+
+### =========================
+### Screenshots
 ### =========================
 
 bindsym $mod+Shift+s exec grim -g "$(slurp)" - | wl-copy
 
 ### =========================
+### SwayP
+### =========================
+
+# Wallpaper and appearance selectors stay last so system snippets cannot override them.
+bindsym --no-repeat $mod+w exec env PATH="$HOME/.local/bin:$PATH" wallpaper-picker
+bindsym --no-repeat $mod+t exec env PATH="$HOME/.local/bin:$PATH" swayp-theme-picker
+
+# Manual lock
+bindsym $mod+l exec qs ipc call lock lock
+
+### =========================
 ### Window rules
 ### =========================
 
-# Firefox/Chromium y demás permanecen en tiling por defecto.
-# Aquí añadiremos reglas específicas cuando las necesitemos.
-floating_modifier $mod normal
-
+for_window [app_id="pavucontrol"] floating enable, sticky enable, border pixel 1
 
 ### =========================
 ### Startup
@@ -140,12 +126,17 @@ exec env PATH="$HOME/.local/bin:$PATH" wallpaper-startup
 exec env PATH="$HOME/.local/bin:$PATH" qs
 exec playerctld daemon
 
-
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
 
 exec gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 exec gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+
+exec swayidle -w \
+    timeout 300 'qs ipc call lock lock' \
+    timeout 600 'swaymsg "output * power off"' \
+    before-sleep 'qs ipc call lock lock' \
+    resume 'swaymsg "output * power on"'
 
 ### =========================
 ### Defaults
@@ -155,37 +146,11 @@ default_border pixel 2
 default_floating_border normal 2
 focus_follows_mouse yes
 
-# Espacio entre ventanas
 gaps inner 2
-
-# Margen entre ventanas y los bordes de la pantalla
 gaps outer 2
 
-
 ### =========================
-### Include
+### System configuration
 ### =========================
 
 include /etc/sway/config.d/*
-
-# Keep SwayP wallpaper binding last so distro/system config snippets cannot override it.
-bindsym --no-repeat $mod+w exec env PATH="$HOME/.local/bin:$PATH" wallpaper-picker
-
-# Keep the SwayP appearance binding last so distro/system config snippets cannot override it.
-bindsym --no-repeat $mod+t exec env PATH="$HOME/.local/bin:$PATH" swayp-theme-picker
-
-### =========================
-### sonido
-### =========================
-for_window [app_id="pavucontrol"] floating enable, sticky enable, border pixel 1
-
-# Bloqueo manual
-bindsym $mod+l exec qs ipc call lock lock
-
-
-# Idle / lock
-exec swayidle -w \
-    timeout 300 'qs ipc call lock lock' \
-    timeout 600 'swaymsg "output * power off"' \
-    before-sleep 'qs ipc call lock lock' \
-    resume 'swaymsg "output * power on"'
