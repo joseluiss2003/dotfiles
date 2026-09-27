@@ -70,12 +70,7 @@ with open(palette_path, "w") as f:
 bg, red, green, yellow, blue, magenta, cyan, fg, muted, br, bg_, by, bb, bm, bc, bfg = p
 accent = c["accent"]
 
-def rgb(h):
-    h = h.lstrip("#")
-    return tuple(int(h[i:i+2],16) for i in (0,2,4))
-B,G,C = rgb(bg), rgb(green), rgb(cyan)
-T = tuple((G[i]+C[i])/2 for i in range(3))
-surface = "#" + "".join(f"{round(B[i]*.82+T[i]*.18):02x}" for i in range(3))
+surface = bg
 
 def write(name, text):
     with open(os.path.join(generated_dir,name),"w") as f: f.write(text)
