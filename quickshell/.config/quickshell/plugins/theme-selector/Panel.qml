@@ -278,7 +278,7 @@ Item {
     command: [
       "bash", "-c",
       "find \"$1\" -maxdepth 1 -type f " +
-      "\\\\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \\\\) " +
+      "\\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \\) " +
       "-print 2>/dev/null | sort",
       "swayp-wallpaper-list",
       root.wallpapersRoot + "/" + root.selectedTheme
