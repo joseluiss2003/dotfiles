@@ -20,8 +20,8 @@
   "swayp": {
     "clonePaths": [
       {
-        "source": "TrayModel.js",
-        "target": "TrayModel.js"
+        "source": "Model.js",
+        "target": "Model.js"
       }
     ]
   }
