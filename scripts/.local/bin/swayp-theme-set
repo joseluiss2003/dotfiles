@@ -2,16 +2,26 @@
 set -eu
 
 THEME="${1:-}"
+
+# Restore the persisted selection when no theme was explicitly requested.
+# The runtime state is kept as a fallback for upgrades from older SwayP versions.
+if [ -z "$THEME" ] && [ -f "$PERSISTENT_THEME_FILE" ]; then
+    THEME="$(sed -n '1p' "$PERSISTENT_THEME_FILE")"
+elif [ -z "$THEME" ] && [ -f "$HOME/.local/state/swayp/current/theme.name" ]; then
+    THEME="$(sed -n '1p' "$HOME/.local/state/swayp/current/theme.name")"
+fi
+
 BASE="${HOME}/.config/swayp/themes"
 THEME_DIR="${BASE}/${THEME}"
 STATE_DIR="${HOME}/.local/state/swayp/current"
 GENERATED_DIR="${HOME}/.config/swayp/generated"
+PERSISTENT_THEME_FILE="${HOME}/.config/swayp/current-theme"
 
 [ -n "$THEME" ] || { printf '%s\n' "usage: swayp-theme-set <theme>" >&2; exit 2; }
 [ -d "$THEME_DIR" ] || { printf 'Unknown SwayP theme: %s\n' "$THEME" >&2; exit 1; }
 [ -f "$THEME_DIR/colors.toml" ] || { printf 'Theme has no colors.toml: %s\n' "$THEME" >&2; exit 1; }
 
-mkdir -p "$STATE_DIR" "$GENERATED_DIR"
+mkdir -p "$STATE_DIR" "$GENERATED_DIR" "$(dirname "$PERSISTENT_THEME_FILE")"
 mkdir -p "$HOME/.config/fastfetch"
 
 python3 - "$THEME_DIR/colors.toml" "$STATE_DIR/aether-palette.json" "$GENERATED_DIR" "$THEME" <<'PY'
@@ -212,6 +222,7 @@ ln -sfn "$GENERATED_DIR/fastfetch.jsonc" "$HOME/.config/fastfetch/config.jsonc"
 
 ln -sfn "$THEME_DIR" "$STATE_DIR/theme"
 printf '%s\n' "$THEME" > "$STATE_DIR/theme.name"
+printf '%s\n' "$THEME" > "$PERSISTENT_THEME_FILE"
 printf '%s\n' 'theme' > "$STATE_DIR/palette-source"
 
 # Keep a running Aether editor synchronized, without making it the source of
