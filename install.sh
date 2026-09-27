@@ -51,6 +51,7 @@ PACKAGES=(
   git
   github-cli
   glances
+  gedit
   greetd
   greetd-tuigreet
   grim
@@ -66,6 +67,7 @@ PACKAGES=(
   hwinfo
   inetutils
   inotify-tools
+  imv
   inxi
   iptables
   iwd
