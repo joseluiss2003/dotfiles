@@ -308,7 +308,11 @@ QtObject {
     watchChanges: true
     printErrors: false
     onLoaded: {
-      if (root.paletteSource !== "theme") root.parseAether(text())
+      // The palette file is the canonical color payload for both dynamic
+      // Aether palettes and static SwayP themes. Static themes also carry
+      // semantic roles (accent, selection, surfaces, etc.), so never fall
+      // back to the ANSI cyan slot just because palette-source is "theme".
+      root.parseAether(text())
     }
     onFileChanged: reload()
     onLoadFailed: root.aetherPaletteValid = false
