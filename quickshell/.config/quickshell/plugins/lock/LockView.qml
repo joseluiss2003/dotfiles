@@ -180,6 +180,7 @@ Item {
 
           width: 360
           height: 68
+          anchors.horizontalCenter: parent.horizontalCenter
 
           color: Color.lock.background
           borderSpec: root.inputBorderSpec
