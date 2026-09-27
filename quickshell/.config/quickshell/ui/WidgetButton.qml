@@ -12,6 +12,8 @@ Item {
   property color foreground: bar ? bar.barForeground : Color.foreground
   property color activeColor: Color.accent
   property color hoverColor: Color.accent
+  // Passive widgets use the bar foreground tint; active/hover states retain the full accent.
+  property color passiveColor: Color.bar.text
   property bool active: false
   property real horizontalMargin: 8.5
   property real verticalPadding: 6
@@ -82,7 +84,7 @@ Item {
     anchors.centerIn: parent
     text: root.text
     color: root.active && root.useActiveColor ? root.activeColor
-        : (root.hot && root.bar ? root.hoverColor : root.foreground)
+        : (root.hot && root.bar ? root.hoverColor : root.passiveColor)
     font.family: root.fontFamily
     font.pixelSize: root.fontSize
     font.weight: root.fontWeight
