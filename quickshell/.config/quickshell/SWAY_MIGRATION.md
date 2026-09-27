@@ -6,7 +6,7 @@ SwayP is the Sway-native evolution of the original Quickshell configuration.
 
 - `core/Sway.qml` contains compositor-specific access.
 - `core/Style.qml` owns shared typography, spacing and sizing tokens.
-- `core/Color.qml` consumes the Matugen-generated theme.
+- `core/Color.qml` consumes the Aether-generated palette.
 - `ui/` contains reusable shell surfaces and controls.
 - `services/PluginRegistry.qml` discovers first-party plugins.
 - `plugins/` contains the bar, panels, services and overlays.
@@ -20,7 +20,7 @@ Idle locking is coordinated with Sway/SwayIdle. The lock surface itself uses Qui
 
 ## Theme integration
 
-Matugen generates the shared theme consumed by Sway, Kitty, Fuzzel, Mako, Starship and Quickshell.
+Aether generates the shared palette consumed by Sway, Kitty, Fuzzel, Mako, Starship and Quickshell.
 
 ## Migration status
 
