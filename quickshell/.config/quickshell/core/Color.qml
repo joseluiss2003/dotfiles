@@ -88,6 +88,12 @@ QtObject {
   readonly property color themeSurfaceAltTinted: themeLighterBackground
   readonly property color themeElevatedTinted: themeLighterBackground
 
+  // Bar-specific roles: lift the bar slightly from the base background and
+  // give passive applets a restrained tint of the theme accent. Active
+  // controls still use the full accent, so hierarchy remains clear.
+  readonly property color themeBarBackground: mix(themeBackground, themeLighterBackground, 0.24)
+  readonly property color themeBarForeground: mix(themeForeground, themeAccent, 0.28)
+
   readonly property real shellOpacity: 0.97
 
   readonly property color foreground: themeForeground
@@ -165,8 +171,8 @@ QtObject {
   }
 
   readonly property QtObject bar: QtObject {
-    readonly property color background: root.background
-    readonly property color text: root.text
+    readonly property color background: Util.alpha(root.themeBarBackground, root.shellOpacity)
+    readonly property color text: root.themeBarForeground
     readonly property color active: root.accent
   }
 
