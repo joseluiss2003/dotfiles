@@ -17,7 +17,6 @@ QtObject {
   readonly property string home: Quickshell.env("HOME")
   readonly property string stateHome: home + "/.local/state"
   readonly property string currentThemePath: stateHome + "/swayp/current/theme"
-  readonly property string matugenThemePath: home + "/.config/quickshell/generated/Theme.qml"
   readonly property string aetherPalettePath: stateHome + "/swayp/current/aether-palette.json"
 
   property var aetherColors: []
