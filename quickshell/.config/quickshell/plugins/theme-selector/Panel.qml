@@ -253,17 +253,16 @@ Item {
 
     command: [
       "bash", "-c",
-      "set -eu; " +
       "for dir in \"$1\"/*; do " +
       "  [ -d \"$dir\" ] || continue; " +
       "  id=$(basename \"$dir\"); " +
-      "  name=$(grep -m1 '^name[[:space:]]*=' \"$dir/theme.toml\" 2>/dev/null | cut -d= -f2- | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/^[\\x22]//; s/[\\x22]$//'); " +
+      "  name=$(awk -F= '/^[[:space:]]*name[[:space:]]*=/{sub(/^[[:space:]]*/, \"\", $2); sub(/[[:space:]]*$/, \"\", $2); gsub(/^\"|\"$/, \"\", $2); print $2; exit}' \"$dir/theme.toml\" 2>/dev/null); " +
       "  [ -n \"$name\" ] || name=\"$id\"; " +
-      "  desc=$(grep -m1 '^description[[:space:]]*=' \"$dir/theme.toml\" 2>/dev/null | cut -d= -f2- | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/^[\\x22]//; s/[\\x22]$//'); " +
+      "  desc=$(awk -F= '/^[[:space:]]*description[[:space:]]*=/{sub(/^[[:space:]]*/, \"\", $2); sub(/[[:space:]]*$/, \"\", $2); gsub(/^\"|\"$/, \"\", $2); print $2; exit}' \"$dir/theme.toml\" 2>/dev/null); " +
       "  preview=$(find \"$HOME/.config/swayp/wallpapers/$id\" -maxdepth 1 -type f " +
-      "    \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) -print | sort | head -n1); " +
+      "    \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \\) -print 2>/dev/null | sort | head -n1); " +
       "  printf '%s\\t%s\\t%s\\t%s\\n' \"$id\" \"$name\" \"$desc\" \"$preview\"; " +
-      "done | sort",
+      "done 2>/dev/null | sort",
       "swayp-theme-list",
       root.themesDir
     ]
@@ -273,7 +272,6 @@ Item {
       onStreamFinished: root.parseThemes(this.text)
     }
   }
-
   Process {
     id: wallpapersProc
 
