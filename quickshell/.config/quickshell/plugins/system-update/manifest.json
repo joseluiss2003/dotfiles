@@ -9,7 +9,7 @@
     "bar-widget"
   ],
   "entryPoints": {
-    "barWidget": "SystemUpdate.qml"
+    "barWidget": "BarWidget.qml"
   },
   "barWidget": {
     "displayName": "SwayP update",
