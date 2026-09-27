@@ -6,36 +6,29 @@ import Quickshell.Io
 import "BorderGeometry.js" as Geometry
 
 // SwayP color system for Sway + Quickshell.
-//
-// Aether is the sole visual palette authority.
-// The shell deliberately tints even its darkest surfaces from Aether so the
-// wallpaper palette is visible across the whole UI instead of producing a
-// black/gray shell with colored icons.
+// The active static theme is the single palette authority.
 QtObject {
   id: root
 
   readonly property string home: Quickshell.env("HOME")
   readonly property string stateHome: home + "/.local/state"
   readonly property string currentThemePath: stateHome + "/swayp/current/theme"
-  readonly property string aetherPalettePath: stateHome + "/swayp/current/aether-palette.json"
-  readonly property string paletteSourcePath: stateHome + "/swayp/current/palette-source"
+  readonly property string palettePath: stateHome + "/swayp/current/palette.json"
 
-  property string paletteSource: "aether"
-  property var aetherColors: []
+  property var paletteColors: []
   property var semanticColors: ({})
-  property bool aetherPaletteValid: false
+  property bool paletteValid: false
 
   function colorFromValue(value, fallback) {
     if (typeof value !== "string" || !/^#[0-9A-Fa-f]{6}$/.test(value))
       return fallback
-
     var r = parseInt(value.slice(1, 3), 16) / 255
     var g = parseInt(value.slice(3, 5), 16) / 255
     var b = parseInt(value.slice(5, 7), 16) / 255
     return Qt.rgba(r, g, b, 1)
   }
 
-  function parseAether(raw) {
+  function parsePalette(raw) {
     var parsed
     try {
       parsed = JSON.parse(String(raw || ""))
@@ -50,10 +43,10 @@ QtObject {
       if (typeof colors[i] !== "string" || !/^#[0-9A-Fa-f]{6}$/.test(colors[i])) return
     }
 
-    root.aetherColors = colors
+    root.paletteColors = colors
     root.semanticColors = parsed && parsed.semantic && typeof parsed.semantic === "object"
       ? parsed.semantic : ({})
-    root.aetherPaletteValid = true
+    root.paletteValid = true
   }
 
   function semanticValue(key, fallback) {
@@ -61,32 +54,25 @@ QtObject {
     return typeof value === "string" && /^#[0-9A-Fa-f]{6}$/.test(value) ? value : fallback
   }
 
-  // The static theme path carries semantic roles alongside the ANSI palette.
-  // Aether/live palettes fall back to the traditional ANSI slots.
-  readonly property color aetherBackground: aetherPaletteValid ? colorFromValue(semanticValue("background", aetherColors[0]), Qt.rgba(0.07, 0.07, 0.07, 1)) : Qt.rgba(0.07, 0.07, 0.07, 1)
-  readonly property color aetherForeground: aetherPaletteValid ? colorFromValue(semanticValue("foreground", aetherColors[7]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
-  readonly property color aetherMuted: aetherPaletteValid ? colorFromValue(semanticValue("muted", aetherColors[8]), Qt.rgba(0.62, 0.62, 0.62, 1)) : Qt.rgba(0.62, 0.62, 0.62, 1)
-  readonly property color aetherRed: aetherPaletteValid ? colorFromValue(aetherColors[1], Qt.rgba(1, 0.33, 0.33, 1)) : Qt.rgba(1, 0.33, 0.33, 1)
-  readonly property color aetherGreen: aetherPaletteValid ? colorFromValue(aetherColors[2], Qt.rgba(0.31, 0.98, 0.48, 1)) : Qt.rgba(0.31, 0.98, 0.48, 1)
-  readonly property color aetherYellow: aetherPaletteValid ? colorFromValue(aetherColors[3], Qt.rgba(0.95, 0.85, 0.30, 1)) : Qt.rgba(0.95, 0.85, 0.30, 1)
-  readonly property color aetherBlue: aetherPaletteValid ? colorFromValue(aetherColors[4], Qt.rgba(0.35, 0.65, 1, 1)) : Qt.rgba(0.35, 0.65, 1, 1)
-  readonly property color aetherMagenta: aetherPaletteValid ? colorFromValue(aetherColors[5], Qt.rgba(0.9, 0.45, 0.9, 1)) : Qt.rgba(0.9, 0.45, 0.9, 1)
-  readonly property color aetherCyan: aetherPaletteValid ? colorFromValue(aetherColors[6], Qt.rgba(0.2, 0.85, 0.75, 1)) : Qt.rgba(0.2, 0.85, 0.75, 1)
-  readonly property color aetherBrightForeground: aetherPaletteValid ? colorFromValue(semanticValue("bright_foreground", aetherColors[15]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
-  readonly property color aetherDarkBackground: aetherPaletteValid ? colorFromValue(semanticValue("dark_background", aetherColors[0]), aetherBackground) : aetherBackground
-  readonly property color aetherDarkerBackground: aetherPaletteValid ? colorFromValue(semanticValue("darker_background", aetherColors[0]), aetherBackground) : aetherBackground
-  readonly property color aetherLighterBackground: aetherPaletteValid ? colorFromValue(semanticValue("lighter_background", aetherColors[0]), aetherBackground) : aetherBackground
-  readonly property color aetherLightForeground: aetherPaletteValid ? colorFromValue(semanticValue("light_foreground", aetherColors[7]), aetherForeground) : aetherForeground
-  // SwayP keeps normal UI chrome monochromatic: the theme foreground
-  // (the warm cream in Osaka Jade, for example) is the accent used by
-  // applets, active controls and ordinary highlights. Semantic colors such
-  // as red/green/yellow remain available for status/error states.
-  readonly property color aetherAccent: aetherForeground
-  readonly property color aetherSelection: aetherPaletteValid ? colorFromValue(semanticValue("selection", aetherColors[4]), aetherBlue) : aetherBlue
+  readonly property color themeBackground: paletteValid ? colorFromValue(semanticValue("background", paletteColors[0]), Qt.rgba(0.07, 0.07, 0.07, 1)) : Qt.rgba(0.07, 0.07, 0.07, 1)
+  readonly property color themeForeground: paletteValid ? colorFromValue(semanticValue("foreground", paletteColors[7]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
+  readonly property color themeMuted: paletteValid ? colorFromValue(semanticValue("muted", paletteColors[8]), Qt.rgba(0.62, 0.62, 0.62, 1)) : Qt.rgba(0.62, 0.62, 0.62, 1)
+  readonly property color themeRed: paletteValid ? colorFromValue(paletteColors[1], Qt.rgba(1, 0.33, 0.33, 1)) : Qt.rgba(1, 0.33, 0.33, 1)
+  readonly property color themeGreen: paletteValid ? colorFromValue(paletteColors[2], Qt.rgba(0.31, 0.98, 0.48, 1)) : Qt.rgba(0.31, 0.98, 0.48, 1)
+  readonly property color themeYellow: paletteValid ? colorFromValue(paletteColors[3], Qt.rgba(0.95, 0.85, 0.30, 1)) : Qt.rgba(0.95, 0.85, 0.30, 1)
+  readonly property color themeBlue: paletteValid ? colorFromValue(paletteColors[4], Qt.rgba(0.35, 0.65, 1, 1)) : Qt.rgba(0.35, 0.65, 1, 1)
+  readonly property color themeMagenta: paletteValid ? colorFromValue(paletteColors[5], Qt.rgba(0.9, 0.45, 0.9, 1)) : Qt.rgba(0.9, 0.45, 0.9, 1)
+  readonly property color themeCyan: paletteValid ? colorFromValue(paletteColors[6], Qt.rgba(0.2, 0.85, 0.75, 1)) : Qt.rgba(0.2, 0.85, 0.75, 1)
+  readonly property color themeBrightForeground: paletteValid ? colorFromValue(semanticValue("bright_foreground", paletteColors[15]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
+  readonly property color themeDarkBackground: paletteValid ? colorFromValue(semanticValue("dark_background", paletteColors[0]), themeBackground) : themeBackground
+  readonly property color themeDarkerBackground: paletteValid ? colorFromValue(semanticValue("darker_background", paletteColors[0]), themeBackground) : themeBackground
+  readonly property color themeLighterBackground: paletteValid ? colorFromValue(semanticValue("lighter_background", paletteColors[0]), themeBackground) : themeBackground
+  readonly property color themeLightForeground: paletteValid ? colorFromValue(semanticValue("light_foreground", paletteColors[7]), themeForeground) : themeForeground
 
-  // Blend helpers keep the 16-color Aether palette expressive without
-  // hard-coding wallpaper-specific RGB values. The ANSI colors become the
-  // source for a family of dark, tinted surfaces.
+  // Keep normal UI chrome monochromatic: the theme foreground is the accent.
+  readonly property color themeAccent: themeForeground
+  readonly property color themeSelection: paletteValid ? colorFromValue(semanticValue("selection", paletteColors[4]), themeBlue) : themeBlue
+
   function mix(first, second, amount) {
     var t = Math.max(0, Math.min(1, Number(amount)))
     return Qt.rgba(
@@ -96,51 +82,44 @@ QtObject {
       1)
   }
 
-  readonly property color aetherTint: mix(aetherGreen, aetherCyan, 0.50)
-  readonly property color aetherBackgroundTinted: aetherBackground
-  readonly property color aetherBackgroundDeep: aetherDarkerBackground
-  readonly property color aetherSurfaceTinted: aetherLighterBackground
-  readonly property color aetherSurfaceAltTinted: mix(aetherLighterBackground, aetherLightForeground, 0.06)
-  readonly property color aetherElevatedTinted: mix(aetherLighterBackground, aetherLightForeground, 0.12)
+  readonly property color themeTint: mix(themeGreen, themeCyan, 0.50)
+  readonly property color themeBackgroundDeep: themeDarkerBackground
+  readonly property color themeSurfaceTinted: themeLighterBackground
+  readonly property color themeSurfaceAltTinted: mix(themeLighterBackground, themeLightForeground, 0.06)
+  readonly property color themeElevatedTinted: mix(themeLighterBackground, themeLightForeground, 0.12)
 
-
-  // Single shell surface opacity. Change this one value to tune transparency everywhere.
   readonly property real shellOpacity: 0.97
 
-  // Foundational roles consumed throughout Commons/Ui and by bar widgets.
-  readonly property color foreground: aetherForeground
-  readonly property color background: Util.alpha(aetherBackground, root.shellOpacity)
-  readonly property color accent: aetherAccent
-  readonly property color urgent: aetherRed
-  readonly property color muted: aetherMuted
+  readonly property color foreground: themeForeground
+  readonly property color background: Util.alpha(themeBackground, root.shellOpacity)
+  readonly property color accent: themeAccent
+  readonly property color urgent: themeRed
+  readonly property color muted: themeMuted
 
-  // Popups use the exact same surface and opacity as the bar and Kitty.
-  // There is intentionally no separate popup alpha: every shell surface
-  // follows the single shellOpacity token below.
-  readonly property color backgroundDeep: Util.alpha(aetherBackgroundDeep, root.shellOpacity)
-  readonly property color backgroundRaised: Util.alpha(aetherSurfaceTinted, root.shellOpacity)
-  readonly property color backgroundElevated: Util.alpha(aetherElevatedTinted, root.shellOpacity)
+  readonly property color backgroundDeep: Util.alpha(themeBackgroundDeep, root.shellOpacity)
+  readonly property color backgroundRaised: Util.alpha(themeSurfaceTinted, root.shellOpacity)
+  readonly property color backgroundElevated: Util.alpha(themeElevatedTinted, root.shellOpacity)
 
-  readonly property color text: aetherForeground
-  readonly property color surface: Util.alpha(aetherSurfaceTinted, root.shellOpacity)
-  readonly property color surfaceAlt: Util.alpha(aetherSurfaceAltTinted, root.shellOpacity)
-  readonly property color textMuted: aetherMuted
-  readonly property color accentText: aetherBackground
-  readonly property color accentSoft: Util.alpha(aetherAccent, 0.30)
-  readonly property color secondary: aetherBlue
-  readonly property color secondarySoft: Util.alpha(aetherBlue, 0.26)
-  readonly property color tertiary: aetherMagenta
-  readonly property color tertiarySoft: Util.alpha(aetherMagenta, 0.22)
-  readonly property color success: aetherGreen
-  readonly property color warning: aetherYellow
-  readonly property color info: aetherCyan
-  readonly property color outline: mix(aetherForeground, aetherTint, 0.34)
-  readonly property color outlineStrong: mix(aetherForeground, aetherTint, 0.50)
-  readonly property color divider: Util.alpha(aetherForeground, 0.16)
-  readonly property color hover: Util.alpha(aetherAccent, 0.22)
-  readonly property color active: Util.alpha(aetherAccent, 0.30)
-  readonly property color selection: Util.alpha(aetherSelection, 0.34)
-  readonly property color error: aetherRed
+  readonly property color text: themeForeground
+  readonly property color surface: Util.alpha(themeSurfaceTinted, root.shellOpacity)
+  readonly property color surfaceAlt: Util.alpha(themeSurfaceAltTinted, root.shellOpacity)
+  readonly property color textMuted: themeMuted
+  readonly property color accentText: themeBackground
+  readonly property color accentSoft: Util.alpha(themeAccent, 0.30)
+  readonly property color secondary: themeBlue
+  readonly property color secondarySoft: Util.alpha(themeBlue, 0.26)
+  readonly property color tertiary: themeMagenta
+  readonly property color tertiarySoft: Util.alpha(themeMagenta, 0.22)
+  readonly property color success: themeGreen
+  readonly property color warning: themeYellow
+  readonly property color info: themeCyan
+  readonly property color outline: mix(themeForeground, themeTint, 0.34)
+  readonly property color outlineStrong: mix(themeForeground, themeTint, 0.50)
+  readonly property color divider: Util.alpha(themeForeground, 0.16)
+  readonly property color hover: Util.alpha(themeAccent, 0.22)
+  readonly property color active: Util.alpha(themeAccent, 0.30)
+  readonly property color selection: Util.alpha(themeSelection, 0.34)
+  readonly property color error: themeRed
 
   property var shellValues: ({})
   property var themeShellValues: ({})
@@ -185,9 +164,7 @@ QtObject {
     return Util.alpha(flatColor(pick(colorKey, colorFallback), colorFallback), pickAlpha(alphaKey, alphaFallback))
   }
 
-  // Reusable surfaces all inherit the same Aether-derived tint.
   readonly property QtObject bar: QtObject {
-    // The bar uses the theme's actual background; popups use the lighter surface.
     readonly property color background: root.background
     readonly property color text: root.text
     readonly property color active: root.accent
@@ -250,8 +227,8 @@ QtObject {
     readonly property color unselectedBorder: Util.alpha(root.outline, 0.45)
   }
 
-  // Keep the shell.toml parser for typography/spacing and user style options.
   function loadColors(raw) {
+    root.parsePalette(raw)
   }
 
   function parseShell(raw) {
@@ -291,74 +268,13 @@ QtObject {
     mergeShell()
   }
 
-  property FileView paletteSourceFile: FileView {
-    path: root.paletteSourcePath
+  property FileView paletteFile: FileView {
+    path: root.palettePath
     watchChanges: true
     printErrors: false
-    onLoaded: {
-      var value = String(text || "").trim()
-      root.paletteSource = value === "theme" ? "theme" : "aether"
-      root.aetherPaletteFile.reload()
-    }
+    onLoaded: root.parsePalette(text())
     onFileChanged: reload()
-    onLoadFailed: {
-      root.paletteSource = "aether"
-      root.aetherPaletteFile.reload()
-    }
-  }
-
-  property FileView aetherPaletteFile: FileView {
-    path: root.aetherPalettePath
-    watchChanges: true
-    printErrors: false
-    onLoaded: {
-      // The palette file is the canonical color payload for both dynamic
-      // Aether palettes and static SwayP themes. Static themes also carry
-      // semantic roles (accent, selection, surfaces, etc.), so never fall
-      // back to the ANSI cyan slot just because palette-source is "theme".
-      root.parseAether(text())
-    }
-    onFileChanged: reload()
-    onLoadFailed: root.aetherPaletteValid = false
-  }
-
-  // When the Aether editor is open, mirror its live palette directly through
-  // the Aether IPC-backed CLI. This means slider/color changes in the GUI are
-  // reflected in SwayP without requiring "Apply Theme" or a shell restart.
-  property Process aetherStatusProc: Process {
-    id: aetherStatusProc
-    command: ["aether", "status", "--json"]
-    running: false
-
-    stdout: StdioCollector {
-      waitForEnd: true
-      onStreamFinished: {
-        var raw = String(text || "")
-        if (!raw) return
-        try {
-          var parsed = JSON.parse(raw)
-          if (root.paletteSource !== "theme" && parsed && Array.isArray(parsed.palette) && parsed.palette.length === 16) {
-            root.parseAether(JSON.stringify({
-              colors: parsed.palette
-            }))
-          }
-        } catch (e) {
-          // Aether is optional at runtime; keep the last valid palette when
-          // the GUI is closed or its IPC socket is unavailable.
-        }
-      }
-    }
-  }
-
-  property Timer aetherLivePoll: Timer {
-    interval: 1000
-    repeat: true
-    running: root.paletteSource !== "theme"
-    triggeredOnStart: true
-    onTriggered: {
-      if (!aetherStatusProc.running)
-        aetherStatusProc.running = true
-    }
+    onLoadFailed: root.paletteValid = false
   }
 
   property FileView shellFile: FileView {
@@ -381,7 +297,7 @@ QtObject {
   }
 
   Component.onCompleted: {
-    aetherPaletteFile.reload()
+    paletteFile.reload()
     shellFile.reload()
     userShellFile.reload()
   }
