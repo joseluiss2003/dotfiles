@@ -9,7 +9,22 @@ set -eu
 # - Lock prevents double-launching the picker
 # ============================================================
 
-WALLPAPER_DIR="${HOME}/Pictures/wallpapers"
+THEME_NAME=""
+THEME_FILE="${HOME}/.local/state/swayp/current/theme.name"
+if [ -f "$THEME_FILE" ]; then
+    THEME_NAME=$(cat "$THEME_FILE")
+fi
+
+THEME_WALLPAPER_DIR="${HOME}/.config/swayp/wallpapers/${THEME_NAME}"
+GLOBAL_WALLPAPER_DIR="${HOME}/Pictures/wallpapers"
+
+# Prefer the active theme wallpaper pool; fall back to the global pool.
+if [ -n "$THEME_NAME" ] && [ -d "$THEME_WALLPAPER_DIR" ] && find "$THEME_WALLPAPER_DIR" -maxdepth 1 -type f -print -quit | grep -q .; then
+    WALLPAPER_DIR="$THEME_WALLPAPER_DIR"
+else
+    WALLPAPER_DIR="$GLOBAL_WALLPAPER_DIR"
+fi
+
 STATE_DIR="${HOME}/.local/state/wallpaper"
 SWAYP_STATE_DIR="${HOME}/.local/state/swayp/current"
 CURRENT="${STATE_DIR}/current"
