@@ -41,7 +41,6 @@ bindsym $mod+Return exec $term
 
 # Launcher
 bindsym $mod+d exec $menu
-bindsym $mod+w exec ~/.local/bin/wallpaper-picker
 
 # Cerrar ventana
 bindsym $mod+q kill
@@ -171,6 +170,9 @@ gaps outer 2
 ### =========================
 
 include /etc/sway/config.d/*
+
+# Keep SwayP wallpaper binding last so distro/system config snippets cannot override it.
+bindsym --no-repeat $mod+w exec env PATH="$HOME/.local/bin:$PATH" wallpaper-picker
 
 ### =========================
 ### sonido
