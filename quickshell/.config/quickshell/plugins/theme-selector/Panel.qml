@@ -29,6 +29,13 @@ Item {
   property color muted: Color.muted
 
   readonly property int themeCardHeight: Style.space(132)
+  readonly property int themeColumns: 5
+  readonly property int themeRows: Math.max(1, Math.ceil(themeModel.count / themeColumns))
+  readonly property int themeSectionHeight:
+    themeModel.count > 0
+      ? themeRows * themeCardHeight
+        + Math.max(0, themeRows - 1) * Style.space(8)
+      : themeCardHeight
   readonly property int wallpaperCardHeight: Style.space(142)
   readonly property int wallpaperColumns: 3
   readonly property int wallpaperRows: Math.max(1, Math.ceil(wallpaperModel.count / wallpaperColumns))
@@ -538,7 +545,7 @@ Item {
           id: themeFlow
 
           Layout.fillWidth: true
-          Layout.preferredHeight: root.themeCardHeight
+          Layout.preferredHeight: root.themeSectionHeight
           spacing: Style.space(8)
 
           Repeater {
@@ -548,7 +555,8 @@ Item {
               id: themeCard
 
               width: Math.floor(
-                (themeFlow.width - Style.space(8) * 4) / 5
+                (themeFlow.width - Style.space(8) * (root.themeColumns - 1))
+                / root.themeColumns
               )
               height: root.themeCardHeight
 
