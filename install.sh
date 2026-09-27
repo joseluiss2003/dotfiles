@@ -45,6 +45,7 @@ PACKAGES=(
   pipewire-alsa
   pipewire-jack
   pipewire-pulse
+  power-profiles-daemon
   playerctl
   python
   qt5-wayland
@@ -79,6 +80,7 @@ echo "==> Activando servicios..."
 
 sudo systemctl enable bluetooth.service
 sudo systemctl enable NetworkManager.service
+sudo systemctl enable power-profiles-daemon.service
 sudo systemctl enable greetd.service
 
 echo
