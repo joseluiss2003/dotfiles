@@ -170,9 +170,10 @@ Item {
         renderType: Text.NativeRendering
       }
 
-      Row {
+      Item {
+        width: inputField.width + 48 + 12
+        height: inputField.height
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 12
 
         BorderSurface {
           id: inputField
@@ -302,6 +303,10 @@ Item {
         Item {
           width: 48
           height: 68
+
+          anchors.left: inputField.right
+          anchors.leftMargin: 12
+          anchors.verticalCenter: inputField.verticalCenter
 
           Text {
             anchors.fill: parent
