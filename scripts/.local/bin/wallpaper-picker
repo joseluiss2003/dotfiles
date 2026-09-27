@@ -11,11 +11,12 @@ set -eu
 
 WALLPAPER_DIR="${HOME}/Pictures/wallpapers"
 STATE_DIR="${HOME}/.local/state/wallpaper"
+SWAYP_STATE_DIR="${HOME}/.local/state/swayp/current"
 CURRENT="${STATE_DIR}/current"
 THUMB_DIR="${STATE_DIR}/thumbnails"
 MENU_FILE="${STATE_DIR}/picker-menu"
 
-mkdir -p "$STATE_DIR" "$THUMB_DIR"
+mkdir -p "$STATE_DIR" "$THUMB_DIR" "$SWAYP_STATE_DIR"
 
 # Prevent two picker windows from existing at the same time.
 LOCK_FILE="${STATE_DIR}/picker.lock"
@@ -201,5 +202,8 @@ if ! matugen image "$selected_file" -m dark; then
 fi
 
 printf '%s\n' "$selected_file" > "$CURRENT"
+
+# Quickshell background plugin resolves this symlink for the desktop layer.
+ln -sfn "$selected_file" "$SWAYP_STATE_DIR/background"
 
 notify-send "Wallpaper" "$(basename "$selected_file")"
