@@ -2,7 +2,7 @@
 
 Personal Sway desktop environment built around **Sway + Quickshell + Aether**.
 
-SwayP is a native Sway setup with a modular Quickshell shell, dynamic Matugen theming, and a small collection of user-level utilities. The project is being separated from its Omarchy origins while keeping the parts that are useful for this environment.
+SwayP is a native Sway setup with a modular Quickshell shell, dynamic Aether theming, and a small collection of user-level utilities. The project evolved from an Omarchy-inspired configuration while removing the desktop/runtime dependency itself.
 
 ## Stack
 
@@ -46,5 +46,3 @@ git clone https://github.com/joseluiss2003/dotfiles.git
 cd dotfiles
 ./install.sh
 ```
-
-
