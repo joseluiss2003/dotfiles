@@ -26,6 +26,7 @@ QtObject {
   readonly property string stateHome: home + "/.local/state"
   readonly property string currentThemePath: stateHome + "/swayp/current/theme"
   readonly property string matugenThemePath: home + "/.config/quickshell/generated/Theme.qml"
+  readonly property string aetherPalettePath: stateHome + "/swayp/current/aether-palette.json"
 
   // Parsed Matugen colors. Values are kept as strings so missing roles can
   // safely fall back without making the singleton itself invalid.
@@ -85,28 +86,61 @@ QtObject {
   readonly property color matugenSecondary: colorFromValue(matugenColors.secondary, matugenAccent)
   readonly property color matugenTertiary: colorFromValue(matugenColors.tertiary, matugenAccent)
   readonly property color matugenOutline: colorFromValue(matugenColors.outline, matugenTextMuted)
+  property var aetherColors: []
+  property bool aetherPaletteValid: false
+
+  function parseAether(raw) {
+    var parsed
+    try {
+      parsed = JSON.parse(String(raw || ""))
+    } catch (e) {
+      return
+    }
+
+    var colors = parsed && parsed.colors
+    if (!Array.isArray(colors) || colors.length !== 16) return
+
+    for (var i = 0; i < colors.length; i++) {
+      if (typeof colors[i] !== "string" || !/^#[0-9A-Fa-f]{6}$/.test(colors[i])) return
+    }
+
+    root.aetherColors = colors
+    root.aetherPaletteValid = true
+  }
+
+  readonly property color aetherBackground: aetherPaletteValid ? colorFromValue(aetherColors[0], matugenBackground) : matugenBackground
+  readonly property color aetherForeground: aetherPaletteValid ? colorFromValue(aetherColors[7], matugenText) : matugenText
+  readonly property color aetherMuted: aetherPaletteValid ? colorFromValue(aetherColors[8], matugenTextMuted) : matugenTextMuted
+  readonly property color aetherRed: aetherPaletteValid ? colorFromValue(aetherColors[1], matugenError) : matugenError
+  readonly property color aetherGreen: aetherPaletteValid ? colorFromValue(aetherColors[2], matugenAccent) : matugenAccent
+  readonly property color aetherYellow: aetherPaletteValid ? colorFromValue(aetherColors[3], matugenAccent) : matugenAccent
+  readonly property color aetherBlue: aetherPaletteValid ? colorFromValue(aetherColors[4], matugenAccent) : matugenAccent
+  readonly property color aetherMagenta: aetherPaletteValid ? colorFromValue(aetherColors[5], matugenAccent) : matugenAccent
+  readonly property color aetherCyan: aetherPaletteValid ? colorFromValue(aetherColors[6], matugenAccent) : matugenAccent
+  readonly property color aetherBrightForeground: aetherPaletteValid ? colorFromValue(aetherColors[15], matugenText) : matugenText
+
   readonly property color matugenError: colorFromValue(matugenColors.error, Qt.rgba(1, 0.3, 0.3, 1))
 
   // Foundational roles consumed throughout Commons/Ui and by bar widgets.
-  readonly property color foreground: matugenText
-  readonly property color background: matugenBackground
-  readonly property color accent: matugenAccent
-  readonly property color urgent: matugenError
-  readonly property color muted: matugenTextMuted
+  readonly property color foreground: aetherForeground
+  readonly property color background: aetherBackground
+  readonly property color accent: aetherCyan
+  readonly property color urgent: aetherRed
+  readonly property color muted: aetherMuted
 
   // Short aliases used by custom bar widgets. These all resolve to the same
   // Matugen source of truth, so a widget cannot accidentally fall back to a
   // second palette.
-  readonly property color text: matugenText
-  readonly property color surface: matugenSurface
-  readonly property color surfaceAlt: matugenSurfaceAlt
-  readonly property color textMuted: matugenTextMuted
-  readonly property color accentText: matugenAccentText
-  readonly property color accentSoft: matugenAccentSoft
-  readonly property color secondary: matugenSecondary
-  readonly property color tertiary: matugenTertiary
-  readonly property color outline: matugenOutline
-  readonly property color error: matugenError
+  readonly property color text: aetherForeground
+  readonly property color surface: Util.alpha(aetherBackground, 0.96)
+  readonly property color surfaceAlt: Util.alpha(aetherBackground, 0.88)
+  readonly property color textMuted: aetherMuted
+  readonly property color accentText: aetherBackground
+  readonly property color accentSoft: Util.alpha(aetherCyan, 0.24)
+  readonly property color secondary: aetherMagenta
+  readonly property color tertiary: aetherYellow
+  readonly property color outline: Util.alpha(aetherForeground, 0.30)
+  readonly property color error: aetherRed
 
   property var shellValues: ({})
   property var themeShellValues: ({})
@@ -270,6 +304,15 @@ QtObject {
     onTriggered: root.matugenThemeFile.reload()
   }
 
+  property FileView aetherPaletteFile: FileView {
+    path: root.aetherPalettePath
+    watchChanges: true
+    printErrors: false
+    onLoaded: root.parseAether(text())
+    onFileChanged: reload()
+    onLoadFailed: root.aetherPaletteValid = false
+  }
+
   property FileView matugenThemeFile: FileView {
     path: root.matugenThemePath
     watchChanges: false
@@ -297,6 +340,7 @@ QtObject {
   }
 
   Component.onCompleted: {
+    aetherPaletteFile.reload()
     matugenThemeFile.reload()
     shellFile.reload()
     userShellFile.reload()
