@@ -254,6 +254,18 @@ LEGACY_ROOT_LINKS=(
   sway
   swayp
   install.sh
+  etc
+  usr
+  HEAD
+  config
+  description
+  hooks
+  index
+  info
+  logs
+  objects
+  packed-refs
+  refs
 )
 
 for name in "${LEGACY_ROOT_LINKS[@]}"; do
@@ -275,6 +287,7 @@ mapfile -t STOW_PACKAGES < <(
         -maxdepth 1 \
         -type d \
         ! -name ".git" \
+        ! -name "swayp-greeter" \
         -printf '%f\n' |
         sort
 )
