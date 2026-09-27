@@ -37,8 +37,20 @@ else
         --json > "$STATE_TMP"
 fi
 
-# Normalize Aether's two JSON shapes into the palette file consumed by SwayP.
-jq -e 'if (.palette | type) == "array" then .palette else .colors end' "$STATE_TMP" > "$TMP"
+# Normalize Aether's JSON shapes into the object consumed by SwayP.
+# Aether versions can expose the palette as a bare array, as .palette, or as
+# .colors. Always persist the canonical SwayP shape: { "colors": [...] }.
+jq -e '
+    if type == "array" then
+        {colors: .}
+    elif (.palette | type) == "array" then
+        {colors: .palette}
+    elif (.colors | type) == "array" then
+        {colors: .colors}
+    else
+        error("Aether JSON does not contain a palette array")
+    end
+' "$STATE_TMP" > "$TMP"
 
 jq -e '
     (.colors | type == "array") and
