@@ -55,6 +55,9 @@ BarWidget {
     contentWidth: Math.min(Style.space(200), panel.availableCardWidth)
     contentHeight: Math.min(Style.space(240), panel.availableCardHeight)
     gap: Style.space(5)
+    // This plugin owns its own card surface below. Do not let KeyboardPanel
+    // draw a second copy of the popup background underneath it.
+    drawBackground: false
 
     BorderSurface {
       id: card
