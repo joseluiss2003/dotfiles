@@ -92,6 +92,8 @@ ShellRoot {
         if (username.length === 0)
             return
 
+        var retry = root.errorMessage.length > 0
+
         root.password = ""
         root.errorMessage = ""
         root.authMessage = ""
@@ -99,7 +101,7 @@ ShellRoot {
         root.authenticating = true
 
         send({
-            action: "create_session",
+            action: retry ? "restart_session" : "create_session",
             username: username
         })
     }
@@ -115,7 +117,7 @@ ShellRoot {
         send({
             action: "start_session",
             command: ["/usr/bin/sway"],
-            environment: []
+            username: root.username
         })
     }
 
