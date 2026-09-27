@@ -80,6 +80,9 @@ PanelWindow {
   screen: anchorWindow ? anchorWindow.screen : null
   visible: open || card.opacity > 0 || popoutSwitching
   color: "transparent"
+  // Popup cards use Aether colors with alpha; keep the layer surface composited
+  // so wallpaper can actually show through the 97% shell surface.
+  surfaceFormat.opaque: false
   exclusionMode: ExclusionMode.Ignore
 
   WlrLayershell.namespace: "swayp-keyboard-panel"
