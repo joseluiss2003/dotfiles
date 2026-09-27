@@ -1,44 +1,12 @@
 #!/bin/sh
 set -eu
 
-THEMES_DIR="${HOME}/.config/swayp/themes"
-THEME_SET="${HOME}/.local/bin/swayp-theme-set"
+# Visual SwayP theme selector. The actual UI is a Quickshell panel.
+if command -v qs >/dev/null 2>&1; then
+    exec qs ipc call shell toggle swayp.theme-selector "{}"
+fi
 
-[ -d "$THEMES_DIR" ] || exit 1
-[ -f "$THEME_SET" ] || exit 1
-
-choices=$(
-    for dir in "$THEMES_DIR"/*; do
-        [ -d "$dir" ] || continue
-
-        name=""
-        if [ -f "$dir/theme.toml" ]; then
-            name=$(sed -n 's/^name[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$dir/theme.toml" | head -n1)
-        fi
-
-        [ -n "$name" ] || name=$(basename "$dir")
-        printf '%s\n' "$name"
-    done
-)
-
-[ -n "$choices" ] || exit 1
-
-selected=$(printf '%s\n' "$choices" | fuzzel --dmenu --prompt "Theme: " --width 28) || exit 0
-[ -n "$selected" ] || exit 0
-
-for dir in "$THEMES_DIR"/*; do
-    [ -d "$dir" ] || continue
-
-    name=""
-    if [ -f "$dir/theme.toml" ]; then
-        name=$(sed -n 's/^name[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$dir/theme.toml" | head -n1)
-    fi
-
-    [ -n "$name" ] || name=$(basename "$dir")
-
-    if [ "$name" = "$selected" ]; then
-        exec sh "$THEME_SET" "$(basename "$dir")"
-    fi
-done
-
-exit 1
+# Fallback for sessions where Quickshell IPC is unavailable.
+exec fuzzel --dmenu --prompt "Theme: " <<EOF
+Visual theme selector unavailable
+EOF
