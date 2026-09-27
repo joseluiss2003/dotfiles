@@ -116,6 +116,9 @@ BarWidget {
       panel.availableCardHeight
     )
     gap: Style.space(5)
+    // The media popup owns its card surface below; avoid drawing the
+    // KeyboardPanel wrapper a second time over the same translucent card.
+    drawBackground: false
 
     Item {
       id: keyCatcher
@@ -155,7 +158,7 @@ BarWidget {
     BorderSurface {
       id: card
       anchors.fill: parent
-      color: Color.popups.background
+      color: Util.alpha(Color.popups.background, 0.88)
       borderSpec: Border.surfaceSpec(
         "media",
         "border",
