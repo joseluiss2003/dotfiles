@@ -158,7 +158,7 @@ BarWidget {
     BorderSurface {
       id: card
       anchors.fill: parent
-      color: Util.alpha(Color.popups.background, 0.88)
+      color: Color.popups.background
       borderSpec: Border.surfaceSpec(
         "media",
         "border",
