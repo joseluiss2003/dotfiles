@@ -52,6 +52,9 @@
           "id": "swayp.notification-center"
         },
         {
+          "id": "swayp.theme-selector"
+        },
+        {
           "id": "swayp.clock",
           "format": "HH:mm",
           "formatAlt": "d MMMM 'W'ww yyyy",
