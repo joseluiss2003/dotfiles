@@ -552,16 +552,14 @@ Item {
           boundsBehavior: Flickable.StopAtBounds
           snapMode: ListView.SnapToItem
           currentIndex: root.themeIndex
+          model: themeModel
 
           onCurrentIndexChanged: {
             if (currentIndex >= 0 && currentIndex !== root.themeIndex)
               root.selectTheme(currentIndex)
           }
 
-          Repeater {
-            model: themeModel
-
-            delegate: Item {
+          delegate: Item {
               id: themeCard
 
               width: root.themeCardWidth
