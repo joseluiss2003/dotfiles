@@ -12,5 +12,7 @@ fi
 sleep 1
 
 if [ -f "$CURRENT" ] && [ -f "$(cat "$CURRENT")" ]; then
-    swayp-aether-theme "$(cat "$CURRENT")"
+    WALLPAPER="$(cat "$CURRENT")"
+    swayp-aether-theme "$WALLPAPER"
+    awww img --transition-type center "$WALLPAPER"
 fi
