@@ -124,7 +124,7 @@ Item {
 
   Process {
     id: readlinkProc
-    command: ["readlink", "-f", root.currentBackgroundLink]
+    command: ["readlink", "-e", root.currentBackgroundLink]
     stdout: StdioCollector {
       onStreamFinished: root.setBackground(String(text || "").trim(), false)
     }
