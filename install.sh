@@ -30,6 +30,7 @@ PACKAGES=(
   greetd
   greetd-tuigreet
   grim
+  gtk4
   gtk4-layer-shell
   iw
   imagemagick
