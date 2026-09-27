@@ -81,8 +81,8 @@ set $color_bg {bg}
 set $color_surface {surface}
 set $color_fg {fg}
 set $color_primary {accent}
-set $color_primary_container {blue}
-set $color_secondary {blue}
+set $color_primary_container {c["lighter_background"]}
+set $color_secondary {c["lighter_background"]}
 set $color_error {red}
 set $color_outline {muted}
 
