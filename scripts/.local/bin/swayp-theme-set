@@ -16,6 +16,7 @@ fi
 BASE="${HOME}/.config/swayp/themes"
 THEME_DIR="${BASE}/${THEME}"
 STATE_DIR="${HOME}/.local/state/swayp/current"
+PALETTE_OUTPUT="${STATE_DIR}/palette.json"
 GENERATED_DIR="${HOME}/.config/swayp/generated"
 
 [ -n "$THEME" ] || { printf '%s\n' "usage: swayp-theme-set <theme>" >&2; exit 2; }
@@ -25,7 +26,7 @@ GENERATED_DIR="${HOME}/.config/swayp/generated"
 mkdir -p "$STATE_DIR" "$GENERATED_DIR" "$(dirname "$PERSISTENT_THEME_FILE")"
 mkdir -p "$HOME/.config/fastfetch"
 
-python3 - "$THEME_DIR/colors.toml" "$STATE_DIR/aether-palette.json" "$GENERATED_DIR" "$THEME" <<'PY'
+python3 - "$THEME_DIR/colors.toml" "$PALETTE_OUTPUT" "$GENERATED_DIR" "$THEME" <<'PY'
 import json, os, sys, tomllib
 
 colors_path, palette_path, generated_dir, theme = sys.argv[1:]
@@ -239,17 +240,6 @@ ln -sfn "$THEME_DIR" "$STATE_DIR/theme"
 printf '%s\n' "$THEME" > "$STATE_DIR/theme.name"
 printf '%s\n' "$THEME" > "$PERSISTENT_THEME_FILE"
 printf '%s\n' 'theme' > "$STATE_DIR/palette-source"
-
-# Keep a running Aether editor synchronized, without making it the source of
-# truth for a static SwayP theme.
-if command -v aether >/dev/null 2>&1; then
-    palette=$(python3 - "$STATE_DIR/aether-palette.json" <<'PY'
-import json,sys
-print(json.dumps(json.load(open(sys.argv[1]))["colors"], separators=(",",":")))
-PY
-)
-    aether set-palette "$palette" >/dev/null 2>&1 || true
-fi
 
 if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
     makoctl reload >/dev/null 2>&1 || true
