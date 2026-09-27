@@ -1066,6 +1066,9 @@ Item {
     visible: root.opened && root.rowsLoaded
     anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
+    // The menu card uses Color.menu.background with shellOpacity; keep the
+    // layer itself composited so that alpha is visible against the wallpaper.
+    surfaceFormat.opaque: false
     WlrLayershell.namespace: "swayp-menu"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
