@@ -18,7 +18,9 @@ QtObject {
   readonly property string stateHome: home + "/.local/state"
   readonly property string currentThemePath: stateHome + "/swayp/current/theme"
   readonly property string aetherPalettePath: stateHome + "/swayp/current/aether-palette.json"
+  readonly property string paletteSourcePath: stateHome + "/swayp/current/palette-source"
 
+  property string paletteSource: "aether"
   property var aetherColors: []
   property bool aetherPaletteValid: false
 
@@ -270,11 +272,29 @@ QtObject {
     mergeShell()
   }
 
+  property FileView paletteSourceFile: FileView {
+    path: root.paletteSourcePath
+    watchChanges: true
+    printErrors: false
+    onLoaded: {
+      var value = String(text || "").trim()
+      root.paletteSource = value === "theme" ? "theme" : "aether"
+      root.aetherPaletteFile.reload()
+    }
+    onFileChanged: reload()
+    onLoadFailed: {
+      root.paletteSource = "aether"
+      root.aetherPaletteFile.reload()
+    }
+  }
+
   property FileView aetherPaletteFile: FileView {
     path: root.aetherPalettePath
     watchChanges: true
     printErrors: false
-    onLoaded: root.parseAether(text())
+    onLoaded: {
+      if (root.paletteSource !== "theme") root.parseAether(text())
+    }
     onFileChanged: reload()
     onLoadFailed: root.aetherPaletteValid = false
   }
@@ -294,7 +314,7 @@ QtObject {
         if (!raw) return
         try {
           var parsed = JSON.parse(raw)
-          if (parsed && Array.isArray(parsed.palette) && parsed.palette.length === 16) {
+          if (root.paletteSource !== "theme" && parsed && Array.isArray(parsed.palette) && parsed.palette.length === 16) {
             root.parseAether(JSON.stringify({
               colors: parsed.palette
             }))
@@ -310,7 +330,7 @@ QtObject {
   property Timer aetherLivePoll: Timer {
     interval: 1000
     repeat: true
-    running: true
+    running: root.paletteSource !== "theme"
     triggeredOnStart: true
     onTriggered: {
       if (!aetherStatusProc.running)

@@ -3,6 +3,7 @@
   "apps": {"icon":"󰀻","label":"Apps","aliases":["app","applications"],"provider":"apps"},
   "style": {"icon":"󰸌","label":"Style"},
   "style.background": {"icon":"","label":"Wallpaper","aliases":["background","wallpaper"],"action":"~/.local/bin/wallpaper-picker"},
+  "style.theme": {"icon":"󰏘","label":"Theme","aliases":["themes","theme"],"provider":"themes"},
   "system": {"icon":"","label":"System","aliases":["power-menu"]},
   "system.lock": {"icon":"","label":"Lock","action":"qs ipc call lock lock"},
   "system.suspend": {"icon":"󰒲","label":"Suspend","action":"systemctl suspend"},

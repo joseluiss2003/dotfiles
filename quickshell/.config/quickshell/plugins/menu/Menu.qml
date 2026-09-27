@@ -276,6 +276,11 @@ Item {
       script: "current=$(powerprofilesctl get 2>/dev/null); omarchy-powerprofiles-list 2>/dev/null | while read -r p; do [[ -z $p ]] && continue; printf '%s\\t%s\\t%s\\n' \"$p\" \"$p\" \"$current\"; done",
       icon: "\udb81\udc0b",
       actionFor: function(value) { return "omarchy-powerprofiles-set autodetect " + Util.shellQuote(value) }
+    },
+    "themes": {
+      script: "current=$(cat ~/.local/state/swayp/current/theme.name 2>/dev/null || true); for d in ~/.config/swayp/themes/*; do [ -f \"$d/colors.toml\" ] || continue; slug=$(basename \"$d\"); name=$(awk -F'= *' '/^name[[:space:]]*=/{gsub(/[\\"\x27]/,\\"\", $2); print $2; exit}' \"$d/theme.toml\" 2>/dev/null); [ -n \"$name\" ] || name=\"$slug\"; printf '%s\\t%s\\t%s\\n' \"$name\" \"$slug\" \"$current\"; done",
+      icon: "󰏘",
+      actionFor: function(value) { return "swayp-theme-set " + Util.shellQuote(value) }
     }
   })
 
