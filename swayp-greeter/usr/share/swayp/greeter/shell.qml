@@ -190,8 +190,13 @@ ShellRoot {
                         enabled: !root.startingSession
 
                         onAccepted: {
-                            if (!root.authenticating)
+                            if (root.startingSession)
                                 return
+
+                            if (!root.authenticating) {
+                                root.beginLogin()
+                                return
+                            }
 
                             root.password = text
                             text = ""
