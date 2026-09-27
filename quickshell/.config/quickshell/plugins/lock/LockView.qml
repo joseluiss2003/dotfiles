@@ -147,459 +147,187 @@ Item {
   Rectangle {
     anchors.fill: parent
 
-    color: Color.background
+    // The lock is intentionally independent from the desktop wallpaper.
+    // It uses the active SwayP theme as a solid visual surface.
+    color: Color.aetherBackgroundDeep
 
-    BackgroundMedia {
-      id: wallpaper
+    Column {
+      anchors.centerIn: parent
+      spacing: 34
 
-      objectName: "lockWallpaper"
+      Text {
+        anchors.horizontalCenter: parent.horizontalCenter
 
-      anchors.fill: parent
+        text: "SWAYP"
 
-      path:
-        root.loadBackground
-          ? (
-              root.video
-                ? root.videoPosterPath
-                : root.backgroundPath
-            )
-          : ""
+        color: Color.foreground
+        font.family: Style.font.family
+        font.pixelSize: 54
+        font.weight: Font.Black
+        font.letterSpacing: 8
+        horizontalAlignment: Text.AlignHCenter
+        renderType: Text.NativeRendering
+      }
 
-      version:
-        root.backgroundVersion
-    }
+      Row {
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 12
 
-    MultiEffect {
-      anchors.fill: wallpaper
+        BorderSurface {
+          id: inputField
 
-      source: wallpaper
+          width: 360
+          height: 68
 
-      autoPaddingEnabled: false
+          color: Color.lock.background
+          borderSpec: root.inputBorderSpec
+          radius: 0
+          clip: true
 
-      blurEnabled:
-        root.loadBackground &&
-        wallpaper.ready
+          TextInput {
+            id: passwordInput
 
-      blur: 1.0
-      blurMax: 128
-      blurMultiplier: 1.25
-      contrast: -0.08
-    }
+            anchors.fill: parent
+            anchors.topMargin: inputField.borderTop
+            anchors.rightMargin: inputField.borderRight + 18
+            anchors.bottomMargin: inputField.borderBottom
+            anchors.leftMargin: inputField.borderLeft + 18
 
-    // The cached poster stays behind the feed when policy pauses playback,
-    // the module is unavailable, or a new connection has not received a frame.
-    Loader {
-      id: feedLoader
+            verticalAlignment: TextInput.AlignVCenter
+            horizontalAlignment: TextInput.AlignHCenter
+            activeFocusOnPress: true
+            clip: true
 
-      objectName: "lockFeedLoader"
+            enabled: root.inputEnabled && !root.authenticatingPassword
+            readOnly: root.authenticatingPassword
+            echoMode: TextInput.Password
+            passwordCharacter: "\u25CF"
+            passwordMaskDelay: 0
 
-      anchors.fill: parent
+            color: Color.lock.text
+            selectionColor: Color.lock.selection
+            selectedTextColor: Color.lock.text
 
-      active:
-        root.feedActive
+            font.family: Style.font.family
+            font.pixelSize:
+              text.length > 0
+                ? Math.max(1, Math.floor(root.passwordDotFontSize * root.passwordDotScale))
+                : root.fieldFontSize
 
-      source:
-        "LockFeedSurface.qml"
+            font.letterSpacing:
+              text.length > 0
+                ? root.passwordDotLetterSpacing * root.passwordDotScale
+                : 0
 
-      visible:
-        status === Loader.Ready
-    }
+            cursorVisible:
+              activeFocus &&
+              root.showPasswordCursor &&
+              text.length > 0
 
-    // The feed item cannot be sampled by MultiEffect on every renderer.
-    // Keep video wallpapers visible and darken them slightly for legibility.
-    Rectangle {
-      anchors.fill: feedLoader
+            cursorDelegate: Rectangle {
+              width: 2
+              color: Color.lock.text
+              visible: passwordInput.cursorVisible
+            }
 
-      visible:
-        root.video
+            onTextChanged: {
+              if (!root.syncingPasswordText)
+                root.passwordTextEdited(text)
 
-      color:
-        "#22000000"
+              if (text.length > 0)
+                root.wakeRequested()
+
+              if (text.length > 0 && root.failureMessage.length > 0)
+                root.clearFailureRequested()
+            }
+
+            onAccepted: {
+              var submitted = root.passwordText
+              root.passwordTextEdited("")
+
+              if (submitted.length > 0)
+                root.submitPassword(submitted)
+            }
+
+            Keys.onPressed: function(event) {
+              root.wakeRequested()
+
+              if (
+                event.key === Qt.Key_Escape ||
+                (
+                  event.modifiers &
+                  Qt.ControlModifier &&
+                  event.key === Qt.Key_U
+                )
+              ) {
+                root.passwordTextEdited("")
+                event.accepted = true
+              }
+            }
+          }
+
+          Text {
+            anchors.fill: passwordInput
+
+            text:
+              root.authenticatingPassword
+                ? "Checking…"
+                : (
+                    root.failureMessage.length > 0
+                      ? root.failureMessage
+                      : root.placeholderText
+                  )
+
+            visible: passwordInput.text.length === 0
+
+            color:
+              root.authenticatingPassword
+                ? Color.lock.text
+                : (
+                    root.failureMessage.length > 0
+                      ? Color.lock.textError
+                      : Color.lock.placeholder
+                  )
+
+            font.family: Style.font.family
+            font.pixelSize: root.fieldFontSize
+            font.italic: !root.authenticatingPassword && root.failureMessage.length > 0
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+          }
+        }
+
+        BorderSurface {
+          width: 68
+          height: 68
+
+          color: Color.lock.background
+          borderSpec: root.inputBorderSpec
+          radius: 0
+
+          Text {
+            anchors.fill: parent
+
+            text: root.authenticatingPassword ? "󰦪" : "󰌾"
+
+            color: root.failureMessage.length > 0
+              ? Color.lock.textError
+              : Color.lock.text
+
+            font.family: Style.font.family
+            font.pixelSize: 30
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+          }
+        }
+      }
     }
 
     MouseArea {
       anchors.fill: parent
-
-      hoverEnabled: true
-
-      onClicked: {
-        root.wakeRequested()
-        root.forcePasswordFocus()
-      }
-
-      onPositionChanged:
-        root.wakeRequested()
-    }
-
-    /*
-     * ============================================================
-     * CLOCK + DATE
-     * ============================================================
-     */
-
-    Column {
-      id: lockInfo
-
-      anchors.horizontalCenter:
-        parent.horizontalCenter
-
-      anchors.bottom:
-        inputField.top
-
-      anchors.bottomMargin:
-        36
-
-      spacing:
-        4
-
-      Text {
-        anchors.horizontalCenter:
-          parent.horizontalCenter
-
-        text:
-          Qt.formatTime(
-            root.currentTime,
-            "HH:mm"
-          )
-
-        color:
-          Color.lock.text
-
-        font.family:
-          Style.font.family
-
-        font.pixelSize:
-          110
-
-        font.weight:
-          Font.Black
-
-        horizontalAlignment:
-          Text.AlignHCenter
-
-        renderType:
-          Text.NativeRendering
-      }
-
-      Text {
-        anchors.horizontalCenter:
-          parent.horizontalCenter
-
-        text:
-          Qt.formatDate(
-            root.currentTime,
-            "dddd, d MMMM"
-          )
-
-        color:
-          Color.lock.text
-
-        font.family:
-          Style.font.family
-
-        font.pixelSize:
-          38
-
-        font.weight:
-          Font.Black
-
-        horizontalAlignment:
-          Text.AlignHCenter
-
-        renderType:
-          Text.NativeRendering
-      }
-    }
-
-    BorderSurface {
-      id: inputField
-
-      width:
-        root.fieldWidth
-
-      height:
-        root.fieldHeight
-
-      anchors.centerIn:
-        parent
-
-      color:
-        Color.lock.background
-
-      borderSpec:
-        root.inputBorderSpec
-
-      // Square Omarchy/Sway lock aesthetic.
-      radius:
-        0
-
-      clip:
-        true
-
-      TextInput {
-        id: passwordInput
-
-        anchors.fill:
-          parent
-
-        anchors.topMargin:
-          inputField.borderTop
-
-        // Reserve the fingerprint icon's width on both sides so the centered
-        // dots stay symmetric and never slide under the icon as they grow.
-        anchors.rightMargin:
-          inputField.borderRight +
-          18 +
-          root.fingerprintReserve
-
-        anchors.bottomMargin:
-          inputField.borderBottom
-
-        anchors.leftMargin:
-          inputField.borderLeft +
-          18 +
-          root.fingerprintReserve
-
-        verticalAlignment:
-          TextInput.AlignVCenter
-
-        horizontalAlignment:
-          TextInput.AlignHCenter
-
-        activeFocusOnPress:
-          true
-
-        clip:
-          true
-
-        enabled:
-          root.inputEnabled &&
-          !root.authenticatingPassword
-
-        readOnly:
-          root.authenticatingPassword
-
-        echoMode:
-          TextInput.Password
-
-        passwordCharacter:
-          "\u25CF"
-
-        passwordMaskDelay:
-          0
-
-        color:
-          Color.lock.text
-
-        selectionColor:
-          Color.lock.selection
-
-        selectedTextColor:
-          Color.lock.text
-
-        font.family:
-          Style.font.family
-
-        font.pixelSize:
-          text.length > 0
-            ? Math.max(
-                1,
-                Math.floor(
-                  root.passwordDotFontSize *
-                  root.passwordDotScale
-                )
-              )
-            : root.fieldFontSize
-
-        font.letterSpacing:
-          text.length > 0
-            ? root.passwordDotLetterSpacing *
-              root.passwordDotScale
-            : 0
-
-        cursorVisible:
-          activeFocus &&
-          root.showPasswordCursor &&
-          text.length > 0
-
-        cursorDelegate: Rectangle {
-          width:
-            2
-
-          color:
-            Color.lock.text
-
-          visible:
-            passwordInput.cursorVisible
-        }
-
-        onTextChanged: {
-          if (!root.syncingPasswordText)
-            root.passwordTextEdited(text)
-
-          if (text.length > 0)
-            root.wakeRequested()
-
-          if (
-            text.length > 0 &&
-            root.failureMessage.length > 0
-          ) {
-            root.clearFailureRequested()
-          }
-        }
-
-        onAccepted: {
-          var submitted =
-            root.passwordText
-
-          root.passwordTextEdited("")
-
-          if (submitted.length > 0)
-            root.submitPassword(submitted)
-        }
-
-        Keys.onPressed: function(event) {
-          root.wakeRequested()
-
-          if (
-            event.key === Qt.Key_Escape ||
-            (
-              event.modifiers &
-              Qt.ControlModifier &&
-              event.key === Qt.Key_U
-            )
-          ) {
-            root.passwordTextEdited("")
-            event.accepted = true
-          }
-        }
-      }
-
-      Text {
-        textFormat:
-          Text.PlainText
-
-        anchors.fill:
-          passwordInput
-
-        text:
-          root.authenticatingPassword
-            ? "Checking…"
-            : (
-                root.failureMessage.length > 0
-                  ? root.failureMessage
-                  : root.placeholderText
-              )
-
-        visible:
-          passwordInput.text.length === 0
-
-        color:
-          root.authenticatingPassword
-            ? Color.lock.text
-            : (
-                root.failureMessage.length > 0
-                  ? Color.lock.textError
-                  : Color.lock.placeholder
-              )
-
-        font.family:
-          Style.font.family
-
-        font.pixelSize:
-          root.fieldFontSize
-
-        font.italic:
-          !root.authenticatingPassword &&
-          root.failureMessage.length > 0
-
-        horizontalAlignment:
-          Text.AlignHCenter
-
-        verticalAlignment:
-          Text.AlignVCenter
-
-        elide:
-          Text.ElideRight
-      }
-
-      // Fingerprint hint pinned inside the field's right edge when a sensor is
-      // enrolled, so the user knows they can touch to unlock instead of typing.
-      Text {
-        id: fingerprintIcon
-
-        objectName:
-          "fingerprintIndicator"
-
-        anchors.right:
-          parent.right
-
-        anchors.rightMargin:
-          inputField.borderRight + 18
-
-        anchors.verticalCenter:
-          parent.verticalCenter
-
-        visible:
-          root.fingerprintConfigured
-
-        text:
-          "󰈷"
-
-        color:
-          Color.lock.placeholder
-
-        font.family:
-          Style.font.family
-
-        font.pixelSize:
-          Math.round(
-            root.fieldFontSize * 1.1
-          )
-
-        horizontalAlignment:
-          Text.AlignHCenter
-
-        verticalAlignment:
-          Text.AlignVCenter
-      }
-    }
-
-    /*
-     * ============================================================
-     * USERNAME
-     * ============================================================
-     */
-
-    Text {
-      anchors.horizontalCenter:
-        inputField.horizontalCenter
-
-      anchors.top:
-        inputField.bottom
-
-      anchors.topMargin:
-        14
-
-      text:
-        root.userName
-
-      color:
-        Color.lock.placeholder
-
-      font.family:
-        Style.font.family
-
-      font.pixelSize:
-        Math.round(
-          Style.font.heading * 0.8
-        )
-
-      font.weight:
-        Font.Medium
-
-      horizontalAlignment:
-        Text.AlignHCenter
+      acceptedButtons: Qt.NoButton
+      onPositionChanged: root.wakeRequested()
     }
   }
 }
