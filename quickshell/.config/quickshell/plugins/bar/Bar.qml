@@ -1261,7 +1261,7 @@ Item {
     implicitWidth: root.vertical ? root.barSize : 0
     implicitHeight: root.vertical ? 0 : root.barSize
     color: root.background
-    surfaceFormat.opaque: true
+    // Keep the layer surface composited so the Aether-tinted background can show\n    // the wallpaper through the shell at the shared 97% surface alpha.\n    surfaceFormat.opaque: false
     WlrLayershell.namespace: "swayp-bar"
     WlrLayershell.layer: WlrLayer.Top
 
