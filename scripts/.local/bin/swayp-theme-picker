@@ -5,6 +5,4 @@ if command -v qs >/dev/null 2>&1; then
     exec qs ipc call shell toggle swayp.theme-selector "{}"
 fi
 
-exec fuzzel --dmenu --prompt "Theme: " <<EOF
-Visual theme selector unavailable
-EOF
+exit 0
