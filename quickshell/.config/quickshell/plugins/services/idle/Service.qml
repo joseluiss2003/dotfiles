@@ -189,7 +189,9 @@ Item {
     }
 
     function toggle(): string {
-      return root.setIdleEnabled(!root.idleEnabled)
+      // Toggle the persisted inhibitor state directly. Do not derive it from
+      // the computed idleEnabled property, which depends on the async state probe.
+      return root.applyStayAwake(!root.stayAwake, true, "ipc")
     }
   }
 }
