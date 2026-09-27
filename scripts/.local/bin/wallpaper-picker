@@ -4,7 +4,7 @@ set -eu
 # ============================================================
 # Wallpaper picker
 # - Fuzzel selection with real image thumbnails
-# - Aether extracts the UI palette; Matugen keeps wallpaper/app template integration
+# - Aether is the single source of truth for the UI palette
 # - Never starts or restarts Quickshell
 # - Lock prevents double-launching the picker
 # ============================================================
@@ -207,3 +207,8 @@ printf '%s\n' "$selected_file" > "$CURRENT"
 ln -sfn "$selected_file" "$SWAYP_STATE_DIR/background"
 
 notify-send "Wallpaper" "$(basename "$selected_file")"
+
+# Reload Sway so its generated Aether colors become active immediately.
+# The wallpaper-startup path is intentionally reload-safe: it reapplies the
+# current wallpaper but does not request another reload.
+swaymsg reload >/dev/null
