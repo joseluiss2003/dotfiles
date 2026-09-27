@@ -69,9 +69,6 @@ bindsym $mod+Shift+Right move right
 ### Floating
 bindsym $mod+Shift+Space floating toggle
 
-### Focus entre tiling/floating
-# Reserved: Super+Space opens the SwayP static theme selector.
-
 ### =========================
 ### Workspaces
 ### =========================
@@ -174,8 +171,8 @@ include /etc/sway/config.d/*
 # Keep SwayP wallpaper binding last so distro/system config snippets cannot override it.
 bindsym --no-repeat $mod+w exec env PATH="$HOME/.local/bin:$PATH" wallpaper-picker
 
-# Keep the SwayP theme binding last so distro/system config snippets cannot override it.
-bindsym --no-repeat $mod+Space exec env PATH="$HOME/.local/bin:$PATH" swayp-theme-picker
+# Keep the SwayP appearance binding last so distro/system config snippets cannot override it.
+bindsym --no-repeat $mod+t exec env PATH="$HOME/.local/bin:$PATH" swayp-theme-picker
 
 ### =========================
 ### sonido
