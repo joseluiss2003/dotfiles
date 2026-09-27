@@ -105,7 +105,6 @@ mapfile -t STOW_PACKAGES < <(
         -mindepth 1 \
         -maxdepth 1 \
         -type d \
-        ! -name matugen \
         -printf '%f\n' |
         sort
 )
