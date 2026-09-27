@@ -1,8 +1,5 @@
-# Matugen generated files
-matugen/.config/matugen/generated/*
-
-# Quickshell generated theme
-quickshell/.config/quickshell/generated/Theme.qml
+# SwayP runtime-generated files
+quickshell/.config/quickshell/generated/*
 
 # Backups
 *.backup
