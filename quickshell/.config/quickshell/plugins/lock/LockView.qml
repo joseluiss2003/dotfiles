@@ -298,13 +298,9 @@ Item {
           }
         }
 
-        BorderSurface {
-          width: 68
+        Item {
+          width: 48
           height: 68
-
-          color: Color.lock.background
-          borderSpec: root.inputBorderSpec
-          radius: 0
 
           Text {
             anchors.fill: parent
