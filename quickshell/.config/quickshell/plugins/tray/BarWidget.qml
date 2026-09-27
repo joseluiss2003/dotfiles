@@ -5,7 +5,7 @@ import QtQuick.Effects
 import Quickshell.Services.SystemTray
 import qs.core
 import qs.ui
-import "TrayModel.js" as TrayModel
+import "Model.js" as TrayModel
 
 BarWidget {
   id: root
