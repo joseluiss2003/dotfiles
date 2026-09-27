@@ -4,68 +4,204 @@ set -euo pipefail
 DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 PACKAGES=(
-  git
-  stow
-  zsh
-  zsh-completions
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-  starship
-  fastfetch
-  sway
-  swaybg
-  swayidle
-  swaylock
-  quickshell
+  accountsservice
+  alsa-firmware
+  alsa-plugins
+  alsa-utils
+  amd-ucode
+  aspell
+  aspell-es
   awww
+  b43-fwcutter
+  base
+  base-devel
+  bash-completion
+  bind
   bluez
   bluez-utils
   brightnessctl
+  btop
+  btrfs-progs
+  cage
+  cantarell-fonts
   cliphist
-  curl
+  cryptsetup
+  device-mapper
+  dialog
+  diffutils
+  dmidecode
+  dmraid
+  dnsmasq
+  dosfstools
+  downgrade
+  dracut
+  duf
+  e2fsprogs
+  efibootmgr
+  efitools
+  ethtool
+  exfatprogs
+  ex-vi-compat
+  f2fs-tools
+  fastfetch
+  ffmpegthumbnailer
+  firefox
   fprintd
   fuzzel
-  ffmpegthumbnailer
+  git
+  github-cli
+  glances
   greetd
   greetd-tuigreet
-  cage
   grim
-  gtk4
+  grub
+  gst-libav
+  gst-plugin-pipewire
+  gst-plugins-bad
+  gst-plugins-ugly
   gtk4-layer-shell
-  iw
-  imagemagick
+  haveged
+  hdparm
+  hwdetect
+  hwinfo
+  inetutils
   inotify-tools
+  inxi
+  iptables
+  iwd
+  jfsutils
   jq
-  libnotify
   kitty
+  less
+  libadwaita
+  libdvdcss
+  libgsf
+  libnotify
+  libopenraw
+  linux
+  linux-firmware
+  linux-headers
+  logrotate
+  lsb-release
+  lsscsi
+  lvm2
   mako
+  man-db
+  man-pages
+  matugen
+  mdadm
+  meld
+  mesa-utils
+  modemmanager
+  mpv
+  mtools
+  nano
+  nano-syntax-highlighting
+  nautilus
+  netctl
   networkmanager
+  networkmanager-openconnect
+  networkmanager-openvpn
+  nfs-utils
+  nilfs-utils
   noto-fonts
   noto-fonts-cjk
   noto-fonts-emoji
   noto-fonts-extra
-  pipewire
+  nss-mdns
+  ntfs-3g
+  ntp
+  obsidian
+  openssh
+  os-prober
+  pacman-contrib
+  pavucontrol
+  perl
+  pinta
   pipewire-alsa
   pipewire-jack
   pipewire-pulse
-  power-profiles-daemon
+  pkgfile
   playerctl
+  plocate
+  polkit-gnome
+  poppler-glib
+  power-profiles-daemon
   python
-  python-gobject
+  python-defusedxml
+  python-jinja
+  python-packaging
+  qemu-guest-agent
   qt5-wayland
   qt6-wayland
-  qrencode
+  quickshell
+  rebuild-detector
+  reflector
+  rsync
+  rtkit
+  sg3_utils
   slurp
+  smartmontools
+  s-nail
+  sof-firmware
+  spice-vdagent
+  starship
+  stow
+  sudo
+  sway
+  swaybg
+  swayidle
+  swaylock
+  sysfsutils
+  systemd-sysvcompat
+  texinfo
+  tldr
+  tree
+  ttf-bitstream-vera
+  ttf-dejavu
+  ttf-jetbrains-mono-nerd
+  ttf-liberation
+  ttf-opensans
+  unrar
+  unzip
   upower
-  wlsunset
+  usb_modeswitch
+  usbutils
+  vulkan-virtio
+  waybar
+  wget
+  which
+  whois
+  wireless-regdb
   wireplumber
-  wtype
   wl-clipboard
+  wlsunset
+  wtype
   xdg-desktop-portal-wlr
   xdg-user-dirs
   xdg-utils
+  xf86-input-libinput
+  xfsprogs
+  xl2tpd
+  xorg-server
+  xorg-xdpyinfo
+  xorg-xinit
+  xorg-xinput
+  xorg-xkill
+  xorg-xrandr
   xorg-xwayland
-  ttf-jetbrains-mono-nerd
+  xterm
+  yazi
+  zsh
+  zsh-autosuggestions
+  zsh-completions
+  zsh-syntax-highlighting
+)
+
+AUR_PACKAGES=(
+  aether
+  localsend
+  spotify
 )
 
 echo "==> Comprobando distribución..."
@@ -75,20 +211,27 @@ if [[ ! -f /etc/arch-release ]]; then
     exit 1
 fi
 
-echo "==> Instalando paquetes..."
+echo "==> Instalando paquetes del sistema..."
 
 sudo pacman -S --needed "${PACKAGES[@]}"
 
 echo
-echo "==> Instalando Aether (motor de paletas)..."
+echo "==> Instalando paquetes AUR..."
+
+AUR_HELPER=""
 if command -v yay >/dev/null 2>&1; then
-    yay -S --needed aether
+    AUR_HELPER="yay"
 elif command -v paru >/dev/null 2>&1; then
-    paru -S --needed aether
+    AUR_HELPER="paru"
 else
-    echo "AVISO: Aether está en AUR y no se encontró yay/paru."
-    echo "      Instálalo después con: yay -S aether"
+    echo "ERROR: Se necesita yay o paru para instalar los paquetes AUR:"
+    printf '  - %s\n' "${AUR_PACKAGES[@]}"
+    echo
+    echo "Instala un helper AUR y vuelve a ejecutar el instalador."
+    exit 1
 fi
+
+"$AUR_HELPER" -S --needed "${AUR_PACKAGES[@]}"
 
 echo
 echo "==> Activando servicios..."
@@ -147,12 +290,16 @@ echo "========================================"
 echo " Instalación completada correctamente"
 echo "========================================"
 echo
+echo "Paquetes del sistema instalados: ${#PACKAGES[@]}"
+echo "Paquetes AUR instalados: ${#AUR_PACKAGES[@]}"
+echo
 echo "Dotfiles instalados:"
 printf '  ✓ %s\n' "${STOW_PACKAGES[@]}"
 echo
 echo "Servicios habilitados:"
 echo "  ✓ Bluetooth"
 echo "  ✓ NetworkManager"
+echo "  ✓ power-profiles-daemon"
 echo "  ✓ greetd"
 echo
 echo "Reinicia para aplicar todos los cambios:"
