@@ -4,16 +4,16 @@ Themes are data. A new theme should not require QML changes.
 
 ## 1. Minimal structure
 ~~~text
-quickshell/.config/quickshell/themes/<id>/
+swayp/.config/swayp/themes/<id>/
 ├── colors.toml
 └── theme.toml
 
-quickshell/.config/swayp/wallpapers/<id>/
+swayp/.config/swayp/wallpapers/<id>/
 ├── wallpaper-01.jpg
 └── wallpaper-02.jpg
 ~~~
 
-The actual repository theme path is the SwayP config tree under quickshell/.config/swayp. The theme ID must match the wallpaper directory ID.
+The repository theme path is the SwayP config tree under swayp/.config/swayp. The theme ID must match the wallpaper directory ID.
 
 ## 2. theme.toml
 ~~~toml

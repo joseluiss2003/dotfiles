@@ -39,7 +39,7 @@ The script scripts/.local/bin/swayp-theme-set turns one theme into runtime confi
 These files are runtime output. Do not edit them manually.
 
 ## Theme authority
-Theme source lives under ~/.config/swayp/themes/<theme>/:
+Theme source lives in the repository under swayp/.config/swayp/themes/<theme>/:
 
 ~~~text
 ├── colors.toml
