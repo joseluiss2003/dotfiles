@@ -1455,7 +1455,7 @@ Item {
       width: targetRect ? targetRect.width : 0
       height: targetRect ? targetRect.height : 0
       color: Color.accent
-      radius: Math.min(width, height) / 2
+      radius: 0
     }
   }
 
