@@ -197,22 +197,26 @@ write("fastfetch.jsonc", f'''{{
     "type": "builtin",
     "color": {{
       "1": "{fg}",
-      "2": "{fg}",
-      "3": "{fg}",
-      "4": "{fg}",
-      "5": "{fg}",
-      "6": "{fg}"
+      "2": "{accent}",
+      "3": "{blue}",
+      "4": "{green}",
+      "5": "{magenta}",
+      "6": "{cyan}"
     }},
     "padding": {{ "top": 1, "right": 6, "left": 1 }}
   }},
   "display": {{
     "disableLinewrap": true,
-    "color": {{ "keys": "{fg}", "output": "{fg}", "separator": "{muted}" }},
+    "color": {{
+      "keys": "{fg}",
+      "output": "{c["light_foreground"]}",
+      "separator": "{muted}"
+    }},
     "key": {{ "width": 14, "type": "string" }}
   }},
   "modules": [
     "break",
-    {{ "type": "custom", "outputColor": "{muted}", "format": "┌──────────────────────Hardware────────────────────┐" }},
+    {{ "type": "custom", "outputColor": "{accent}", "format": "┌────────────────────── Hardware ───────────────────┐" }},
     {{ "type": "host", "key": " PC" }},
     {{ "type": "cpu", "key": " CPU" }},
     {{ "type": "gpu", "key": " GPU" }},
@@ -220,7 +224,7 @@ write("fastfetch.jsonc", f'''{{
     {{ "type": "disk", "key": " Disco", "folders": ["/"] }},
     {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }},
     "break",
-    {{ "type": "custom", "outputColor": "{muted}", "format": "┌──────────────────────Software────────────────────┐" }},
+    {{ "type": "custom", "outputColor": "{accent}", "format": "┌────────────────────── Software ───────────────────┐" }},
     {{ "type": "os", "key": " OS" }},
     {{ "type": "kernel", "key": " Kernel" }},
     {{ "type": "de", "key": " Entorno" }},
