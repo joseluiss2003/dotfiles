@@ -17,7 +17,6 @@ PACKAGES=(
   swayidle
   swaylock
   quickshell
-  matugen
   awww
   bluez
   bluez-utils
