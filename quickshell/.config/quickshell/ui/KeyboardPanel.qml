@@ -47,6 +47,8 @@ PanelWindow {
   property var borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Math.max(1, Style.space(2)))
   property bool centerOnBar: false
   property bool open: false
+  // Panels that provide their own card surface can disable the wrapper fill.
+  property bool drawBackground: true
   property int gap: Style.gapsOut  // distance between bar edge and panel
   property bool popoutSwitching: false
   property bool popoutSwitchClosing: false
@@ -385,7 +387,7 @@ PanelWindow {
     y: root.cardOrigin.y
     width: root.contentWidth
     height: root.contentHeight
-    color: Color.popups.background
+    color: root.drawBackground ? Color.popups.background : "transparent"
     borderSpec: root.borderSpec
     padding: root.padding
     radius: Style.cornerRadius
