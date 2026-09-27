@@ -93,8 +93,10 @@ QtObject {
   readonly property color urgent: aetherRed
   readonly property color muted: aetherMuted
 
-  // Semantic surfaces are intentionally opaque and visibly tinted. This is
-  // what makes the bar, popups and menus feel like one wallpaper-derived UI.
+  // Shared popup transparency. Every popup uses the same Aether-derived RGB
+  // surface and this single alpha value, so individual plugins do not drift.
+  readonly property real popupOpacity: 0.75
+
   readonly property color backgroundDeep: Util.alpha(aetherBackgroundDeep, root.shellOpacity)
   readonly property color backgroundRaised: Util.alpha(aetherSurfaceTinted, root.shellOpacity)
   readonly property color backgroundElevated: Util.alpha(aetherElevatedTinted, root.shellOpacity)
@@ -172,7 +174,7 @@ QtObject {
   }
 
   readonly property QtObject popups: QtObject {
-    readonly property color background: root.surface
+    readonly property color background: Util.alpha(root.aetherSurfaceTinted, root.popupOpacity)
     readonly property color text: root.text
     readonly property color border: root.outline
   }
@@ -191,7 +193,7 @@ QtObject {
   }
 
   readonly property QtObject menu: QtObject {
-    readonly property color background: root.surface
+    readonly property color background: root.popups.background
     readonly property color text: root.text
     readonly property color border: root.outline
     readonly property color scrim: Util.alpha(root.backgroundDeep, 0.38)
