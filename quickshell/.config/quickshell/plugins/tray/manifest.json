@@ -9,7 +9,7 @@
     "bar-widget"
   ],
   "entryPoints": {
-    "barWidget": "Tray.qml"
+    "barWidget": "BarWidget.qml"
   },
   "barWidget": {
     "displayName": "System tray",
