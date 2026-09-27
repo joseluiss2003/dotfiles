@@ -9,7 +9,7 @@
     "bar-widget"
   ],
   "entryPoints": {
-    "barWidget": "Indicators.qml"
+    "barWidget": "BarWidget.qml"
   },
   "barWidget": {
     "displayName": "Indicators",
