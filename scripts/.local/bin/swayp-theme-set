@@ -198,9 +198,9 @@ write("fastfetch.jsonc", f'''{{
     "color": {{
       "1": "{fg}",
       "2": "{accent}",
-      "3": "{blue}",
-      "4": "{green}",
-      "5": "{magenta}",
+      "3": "{fg}",
+      "4": "{blue}",
+      "5": "{fg}",
       "6": "{cyan}"
     }},
     "padding": {{ "top": 1, "right": 6, "left": 1 }}
@@ -216,25 +216,25 @@ write("fastfetch.jsonc", f'''{{
   }},
   "modules": [
     "break",
-    {{ "type": "custom", "outputColor": "{accent}", "format": "┌────────────────────── Hardware ───────────────────┐" }},
-    {{ "type": "host", "key": " PC" }},
-    {{ "type": "cpu", "key": " CPU" }},
-    {{ "type": "gpu", "key": " GPU" }},
-    {{ "type": "memory", "key": " Memoria" }},
-    {{ "type": "disk", "key": " Disco", "folders": ["/"] }},
+    {{ "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Hardware ───────────────────┐" }},
+    {{ "type": "host", "key": " PC", "keyColor": "{accent}" }},
+    {{ "type": "cpu", "key": " CPU", "keyColor": "{accent}" }},
+    {{ "type": "gpu", "key": " GPU", "keyColor": "{accent}" }},
+    {{ "type": "memory", "key": " Memoria", "keyColor": "{accent}" }},
+    {{ "type": "disk", "key": " Disco", "keyColor": "{accent}", "folders": ["/"] }},
     {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }},
     "break",
-    {{ "type": "custom", "outputColor": "{accent}", "format": "┌────────────────────── Software ───────────────────┐" }},
-    {{ "type": "os", "key": " OS" }},
-    {{ "type": "kernel", "key": " Kernel" }},
-    {{ "type": "de", "key": " Entorno" }},
-    {{ "type": "shell", "key": " Shell" }},
-    {{ "type": "terminal", "key": " Terminal" }},
-    {{ "type": "packages", "key": " Paquetes" }},
+    {{ "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Software ───────────────────┐" }},
+    {{ "type": "os", "key": " OS", "keyColor": "{accent}" }},
+    {{ "type": "kernel", "key": " Kernel", "keyColor": "{accent}" }},
+    {{ "type": "de", "key": " Entorno", "keyColor": "{accent}" }},
+    {{ "type": "shell", "key": " Shell", "keyColor": "{accent}" }},
+    {{ "type": "terminal", "key": " Terminal", "keyColor": "{accent}" }},
+    {{ "type": "packages", "key": " Paquetes", "keyColor": "{accent}" }},
     {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }}
   ]
 }}
-''')
+'''))
 PY
 
 ln -sfn "$GENERATED_DIR/fastfetch.jsonc" "$HOME/.config/fastfetch/config.jsonc"
