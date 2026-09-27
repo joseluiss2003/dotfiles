@@ -7,7 +7,7 @@ THEME_DIR="${BASE}/${THEME}"
 STATE_DIR="${HOME}/.local/state/swayp/current"
 GENERATED_DIR="${HOME}/.config/swayp/generated"
 
-[ -n "$THEME" ] || { printf '%s\n' "usage: sw ayp-theme-set <theme>" >&2; exit 2; }
+[ -n "$THEME" ] || { printf '%s\n' "usage: swayp-theme-set <theme>" >&2; exit 2; }
 [ -d "$THEME_DIR" ] || { printf 'Unknown SwayP theme: %s\n' "$THEME" >&2; exit 1; }
 [ -f "$THEME_DIR/colors.toml" ] || { printf 'Theme has no colors.toml: %s\n' "$THEME" >&2; exit 1; }
 
