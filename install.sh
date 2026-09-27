@@ -201,7 +201,6 @@ PACKAGES=(
 )
 
 AUR_PACKAGES=(
-  aether
   localsend
   spotify
 )
