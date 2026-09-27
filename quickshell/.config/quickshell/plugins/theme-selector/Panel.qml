@@ -169,9 +169,9 @@ Item {
       "for dir in \"$1\"/*; do " +
       "  [ -d \"$dir\" ] || continue; " +
       "  id=$(basename \"$dir\"); " +
-      "  name=$(sed -n 's/^name[[:space:]]*=[[:space:]]*\\"\\([^\\"]*\\)\\".*/\\1/p' \"$dir/theme.toml\" 2>/dev/null | head -n1); " +
+      name=$(grep -m1 '^name[[:space:]]*=' "$dir/theme.toml" 2>/dev/null | cut -d= -f2- | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/^"//; s/"$//')
       "  [ -n \"$name\" ] || name=\"$id\"; " +
-      "  desc=$(sed -n 's/^description[[:space:]]*=[[:space:]]*\\"\\([^\\"]*\\)\\".*/\\1/p' \"$dir/theme.toml\" 2>/dev/null | head -n1); " +
+      desc=$(grep -m1 '^description[[:space:]]*=' "$dir/theme.toml" 2>/dev/null | cut -d= -f2- | sed 's/^[[:space:]]*//; s/[[:space:]]*$//; s/^"//; s/"$//')
       "  preview=$(find \"$HOME/.config/swayp/wallpapers/$id\" -maxdepth 1 -type f " +
       "    \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) -print | sort | head -n1); " +
       "  printf '%s\\t%s\\t%s\\t%s\\n' \"$id\" \"$name\" \"$desc\" \"$preview\"; " +
