@@ -249,6 +249,7 @@ mapfile -t STOW_PACKAGES < <(
         -mindepth 1 \
         -maxdepth 1 \
         -type d \
+        ! -name ".git" \
         -printf '%f\n' |
         sort
 )
@@ -267,11 +268,15 @@ cd "$DOTFILES_DIR"
 stow -t "$HOME" "${STOW_PACKAGES[@]}"
 
 echo
-echo "==> Instalando SwayP Greeter..."
-sudo install -Dm755 "$DOTFILES_DIR/swayp-greeter/usr/share/swayp/greeter/greetd-bridge.py" /usr/share/swayp/greeter/greetd-bridge.py
-sudo install -Dm644 "$DOTFILES_DIR/swayp-greeter/usr/share/swayp/greeter/shell.qml" /usr/share/swayp/greeter/shell.qml
-sudo install -Dm755 "$DOTFILES_DIR/swayp-greeter/usr/share/swayp/greeter/run-greeter.sh" /usr/share/swayp/greeter/run-greeter.sh
-sudo install -Dm644 "$DOTFILES_DIR/swayp-greeter/etc/greetd/swayp-greeter.toml" /usr/share/swayp/greeter/greetd.toml
+echo "==> Configurando greetd + tuigreet..."
+sudo install -Dm644 /dev/stdin /etc/greetd/config.toml <<'EOF'
+[terminal]
+vt = 1
+
+[default_session]
+command = "tuigreet --time --remember --remember-session --sessions /usr/share/wayland-sessions"
+user = "greeter"
+EOF
 
 echo
 echo "==> Configurando Zsh..."
