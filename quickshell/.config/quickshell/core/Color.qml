@@ -133,22 +133,25 @@ QtObject {
 
   readonly property color matugenError: colorFromValue(matugenColors.error, Qt.rgba(1, 0.3, 0.3, 1))
 
+  // Single shell surface opacity. Change this one value to tune transparency everywhere.
+  readonly property real shellOpacity: 0.97
+
   // Foundational roles consumed throughout Commons/Ui and by bar widgets.
   readonly property color foreground: aetherForeground
-  readonly property color background: Util.alpha(aetherBackgroundTinted, 0.97)
+  readonly property color background: Util.alpha(aetherBackgroundTinted, root.shellOpacity)
   readonly property color accent: aetherCyan
   readonly property color urgent: aetherRed
   readonly property color muted: aetherMuted
 
   // Semantic surfaces are intentionally opaque and visibly tinted. This is
   // what makes the bar, popups and menus feel like one wallpaper-derived UI.
-  readonly property color backgroundDeep: Util.alpha(aetherBackgroundDeep, 0.97)
-  readonly property color backgroundRaised: Util.alpha(aetherSurfaceTinted, 0.97)
-  readonly property color backgroundElevated: Util.alpha(aetherElevatedTinted, 0.97)
+  readonly property color backgroundDeep: Util.alpha(aetherBackgroundDeep, root.shellOpacity)
+  readonly property color backgroundRaised: Util.alpha(aetherSurfaceTinted, root.shellOpacity)
+  readonly property color backgroundElevated: Util.alpha(aetherElevatedTinted, root.shellOpacity)
 
   readonly property color text: aetherForeground
-  readonly property color surface: Util.alpha(aetherSurfaceTinted, 0.93)
-  readonly property color surfaceAlt: Util.alpha(aetherSurfaceAltTinted, 0.93)
+  readonly property color surface: Util.alpha(aetherSurfaceTinted, root.shellOpacity)
+  readonly property color surfaceAlt: Util.alpha(aetherSurfaceAltTinted, root.shellOpacity)
   readonly property color textMuted: aetherMuted
   readonly property color accentText: aetherBackgroundDeep
   readonly property color accentSoft: Util.alpha(aetherCyan, 0.30)
@@ -257,7 +260,7 @@ QtObject {
   }
 
   readonly property QtObject lock: QtObject {
-    readonly property color background: Util.alpha(root.backgroundDeep, 0.96)
+    readonly property color background: Util.alpha(root.backgroundDeep, root.shellOpacity)
     readonly property color text: root.text
     readonly property color placeholder: root.textMuted
     readonly property color textError: root.error
