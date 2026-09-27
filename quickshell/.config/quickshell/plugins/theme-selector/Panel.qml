@@ -29,21 +29,11 @@ Item {
   property color muted: Color.muted
 
   readonly property int themeCardHeight: Style.space(132)
-  readonly property int themeColumns: 5
-  readonly property int themeRows: Math.max(1, Math.ceil(themeModel.count / themeColumns))
-  readonly property int themeSectionHeight:
-    themeModel.count > 0
-      ? themeRows * themeCardHeight
-        + Math.max(0, themeRows - 1) * Style.space(8)
-      : themeCardHeight
+  readonly property int themeCardWidth: Style.space(218)
+  readonly property int themeSectionHeight: themeCardHeight
   readonly property int wallpaperCardHeight: Style.space(142)
-  readonly property int wallpaperColumns: 3
-  readonly property int wallpaperRows: Math.max(1, Math.ceil(wallpaperModel.count / wallpaperColumns))
-  readonly property int wallpaperSectionHeight:
-    wallpaperModel.count > 0
-      ? wallpaperRows * wallpaperCardHeight
-        + Math.max(0, wallpaperRows - 1) * Style.space(10)
-      : Style.space(118)
+  readonly property int wallpaperCardWidth: Style.space(320)
+  readonly property int wallpaperSectionHeight: wallpaperCardHeight
 
   readonly property int cardWidth: Math.min(
     Math.max(Style.space(860), panel.width - Style.space(72)),
@@ -51,8 +41,8 @@ Item {
   )
 
   readonly property int contentHeight: Math.min(
-    Math.max(Style.space(560), panel.height - Style.space(72)),
-    Style.space(760)
+    Math.max(Style.space(500), panel.height - Style.space(72)),
+    Style.space(620)
   )
 
   readonly property var targetScreen: {
@@ -123,6 +113,10 @@ Item {
     root.selectedTheme = themeModel.get(root.themeIndex).id
     root.selectedWallpaper = ""
     root.loadWallpapers()
+    Qt.callLater(function() {
+      if (themeList)
+        themeList.positionViewAtIndex(root.themeIndex, ListView.Contain)
+    })
   }
 
   function loadWallpapers() {
@@ -177,6 +171,10 @@ Item {
 
     root.wallpaperIndex = index
     root.selectedWallpaper = wallpaperModel.get(index).path
+    Qt.callLater(function() {
+      if (wallpaperList)
+        wallpaperList.positionViewAtIndex(root.wallpaperIndex, ListView.Contain)
+    })
   }
 
   function moveTheme(delta) {
@@ -541,12 +539,24 @@ Item {
           }
         }
 
-        Flow {
-          id: themeFlow
+        ListView {
+          id: themeList
 
           Layout.fillWidth: true
           Layout.preferredHeight: root.themeSectionHeight
+
+          orientation: ListView.Horizontal
           spacing: Style.space(8)
+          clip: true
+          interactive: true
+          boundsBehavior: Flickable.StopAtBounds
+          snapMode: ListView.SnapToItem
+          currentIndex: root.themeIndex
+
+          onCurrentIndexChanged: {
+            if (currentIndex >= 0 && currentIndex !== root.themeIndex)
+              root.selectTheme(currentIndex)
+          }
 
           Repeater {
             model: themeModel
@@ -554,10 +564,7 @@ Item {
             delegate: Item {
               id: themeCard
 
-              width: Math.floor(
-                (themeFlow.width - Style.space(8) * (root.themeColumns - 1))
-                / root.themeColumns
-              )
+              width: root.themeCardWidth
               height: root.themeCardHeight
 
               property bool chosen: index === root.themeIndex
@@ -662,8 +669,11 @@ Item {
               }
             }
           }
-        }
 
+          ScrollBar.horizontal: ScrollBar {
+            policy: ScrollBar.AsNeeded
+          }
+        }
         PanelSeparator {
           Layout.fillWidth: true
           foreground: root.border
@@ -700,120 +710,122 @@ Item {
           Layout.fillWidth: true
           Layout.preferredHeight: root.wallpaperSectionHeight
 
-          Flow {
-            id: wallpaperFlow
+          ListView {
+            id: wallpaperList
 
             anchors.fill: parent
+
+            orientation: ListView.Horizontal
             spacing: Style.space(10)
+            clip: true
+            interactive: true
+            boundsBehavior: Flickable.StopAtBounds
+            snapMode: ListView.SnapToItem
+            currentIndex: root.wallpaperIndex
 
-            Repeater {
-              model: wallpaperModel
-
-              delegate: Item {
-                id: wallpaperCard
-
-                width: Math.floor(
-                  (wallpaperFlow.width - Style.space(10) * 2) / 3
-                )
-                height: root.wallpaperCardHeight
-
-                property bool chosen: model.path === root.selectedWallpaper
-                property bool hovered: false
-
-                scale: hovered ? 1.012 : 1
-
-                Behavior on scale {
-                  NumberAnimation {
-                    duration: 100
-                    easing.type: Easing.OutCubic
-                  }
-                }
-
-                Rectangle {
-                  anchors.fill: parent
-
-                  color: chosen
-                    ? Util.alpha(root.foreground, 0.10)
-                    : Util.alpha(root.foreground, 0.025)
-
-                  border.width: chosen ? 2 : 1
-                  border.color: chosen
-                    ? root.foreground
-                    : Util.alpha(root.foreground, hovered ? 0.34 : 0.13)
-                }
-
-                Image {
-                  anchors.fill: parent
-                  anchors.margins: 2
-
-                  source: model.url
-                  fillMode: Image.PreserveAspectCrop
-                  asynchronous: true
-                  cache: true
-                  smooth: true
-                }
-
-                Rectangle {
-                  anchors.left: parent.left
-                  anchors.right: parent.right
-                  anchors.bottom: parent.bottom
-
-                  height: Style.space(34)
-                  color: Util.alpha(root.background, 0.84)
-
-                  Text {
-                    anchors.fill: parent
-                    anchors.leftMargin: Style.space(9)
-                    anchors.rightMargin: Style.space(9)
-
-                    text: model.name
-                    color: root.foreground
-                    font.family: Style.font.resolvedFamily
-                    font.pixelSize: Style.font.caption
-                    font.bold: chosen
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideMiddle
-                  }
-                }
-
-                Rectangle {
-                  visible: chosen
-                  width: Style.space(7)
-                  height: Style.space(7)
-                  anchors.right: parent.right
-                  anchors.top: parent.top
-                  anchors.margins: Style.space(9)
-                  color: root.foreground
-                }
-
-                MouseArea {
-                  anchors.fill: parent
-                  hoverEnabled: true
-
-                  onEntered: wallpaperCard.hovered = true
-                  onExited: wallpaperCard.hovered = false
-                  onClicked: root.selectWallpaper(index)
-                }
-              }
+            onCurrentIndexChanged: {
+              if (currentIndex >= 0 && currentIndex !== root.wallpaperIndex)
+                root.selectWallpaper(currentIndex)
             }
 
-            Item {
-              visible: wallpaperModel.count === 0
-              width: wallpaperFlow.width
-              height: wallpaperFlow.height
+            model: wallpaperModel
 
-              Text {
-                anchors.centerIn: parent
+            delegate: Item {
+              id: wallpaperCard
 
-                text: "No curated wallpapers for this theme"
-                color: root.muted
-                font.family: Style.font.resolvedFamily
-                font.pixelSize: Style.font.body
+              width: root.wallpaperCardWidth
+              height: root.wallpaperCardHeight
+
+              property bool chosen: model.path === root.selectedWallpaper
+              property bool hovered: false
+
+              scale: hovered ? 1.012 : 1
+
+              Behavior on scale {
+                NumberAnimation {
+                  duration: 100
+                  easing.type: Easing.OutCubic
+                }
+              }
+
+              Rectangle {
+                anchors.fill: parent
+
+                color: chosen
+                  ? Util.alpha(root.foreground, 0.10)
+                  : Util.alpha(root.foreground, 0.025)
+
+                border.width: chosen ? 2 : 1
+                border.color: chosen
+                  ? root.foreground
+                  : Util.alpha(root.foreground, hovered ? 0.34 : 0.13)
+              }
+
+              Image {
+                anchors.fill: parent
+                anchors.margins: 2
+
+                source: model.url
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                cache: true
+                smooth: true
+              }
+
+              Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+
+                height: Style.space(34)
+                color: Util.alpha(root.background, 0.84)
+
+                Text {
+                  anchors.fill: parent
+                  anchors.leftMargin: Style.space(9)
+                  anchors.rightMargin: Style.space(9)
+
+                  text: model.name
+                  color: root.foreground
+                  font.family: Style.font.resolvedFamily
+                  font.pixelSize: Style.font.caption
+                  font.bold: chosen
+                  verticalAlignment: Text.AlignVCenter
+                  elide: Text.ElideMiddle
+                }
+              }
+
+              Rectangle {
+                visible: chosen
+                width: Style.space(7)
+                height: Style.space(7)
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.margins: Style.space(9)
+                color: root.foreground
+              }
+
+              MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onEntered: wallpaperCard.hovered = true
+                onExited: wallpaperCard.hovered = false
+                onClicked: root.selectWallpaper(index)
               }
             }
           }
-        }
 
+          Text {
+            anchors.centerIn: parent
+            visible: wallpaperModel.count === 0
+
+            text: "No curated wallpapers for this theme"
+            color: root.muted
+            font.family: Style.font.resolvedFamily
+            font.pixelSize: Style.font.body
+          }
+        }
         RowLayout {
           Layout.fillWidth: true
           Layout.preferredHeight: Style.space(44)
