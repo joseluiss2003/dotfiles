@@ -26,7 +26,7 @@ ShellRoot {
 
     Process {
         id: bridge
-        command: ["/usr/bin/python3", "/usr/share/swayp/greeter/greetd-bridge.py"]
+        command: ["/usr/bin/python3", Quickshell.env("SWAYP_GREETER_BRIDGE") || "/usr/share/swayp/greeter/greetd-bridge.py"]
         running: true
 
         stdout: SplitParser {
@@ -40,8 +40,10 @@ ShellRoot {
 
                 if (response.type === "users") {
                     root.users = response.users || []
-                    if (root.username.length === 0 && root.users.length > 0)
+                    if (root.username.length === 0 && root.users.length > 0) {
                         root.username = root.users[0].name
+                        Qt.callLater(root.beginLogin)
+                    }
                     return
                 }
 
