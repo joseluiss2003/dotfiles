@@ -88,14 +88,14 @@ bright_cyan="${15}"
 bright_fg="${16}"
 
 # Match Quickshell's Aether-tinted background:
-# backgroundTinted = mix(background, mix(green, cyan, 0.50), 0.14)
+# backgroundDeep = mix(background, mix(green, cyan, 0.50), 0.10)
 aether_bg_tinted="$(awk -v bg="$bg" -v green="$green" -v cyan="$cyan" '
 function hexpair(s, p) { return strtonum("0x" substr(s, p, 2)) }
 BEGIN {
     for (i = 1; i <= 6; i++) {
         b = hexpair(substr(bg, 2), i * 2 - 1)
         g = (hexpair(substr(green, 2), i * 2 - 1) + hexpair(substr(cyan, 2), i * 2 - 1)) / 2
-        v = int(b * 0.86 + g * 0.14 + 0.5)
+        v = int(b * 0.90 + g * 0.10 + 0.5)
         printf "%02x", v
     }
 }' )"
