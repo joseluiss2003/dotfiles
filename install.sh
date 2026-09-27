@@ -289,7 +289,6 @@ mapfile -t STOW_PACKAGES < <(
         -maxdepth 1 \
         -type d \
         ! -name ".git" \
-        ! -name "swayp-greeter" \
         -printf '%f\n' |
         sort
 )
