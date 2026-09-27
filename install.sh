@@ -214,7 +214,6 @@ fi
 echo "==> Instalando paquetes del sistema..."
 
 sudo pacman -S --needed "${PACKAGES[@]}"
-
 echo
 echo "==> Instalando paquetes AUR..."
 
@@ -240,6 +239,33 @@ sudo systemctl enable bluetooth.service
 sudo systemctl enable NetworkManager.service
 sudo systemctl enable power-profiles-daemon.service
 sudo systemctl enable greetd.service
+
+echo
+echo "==> Limpiando enlaces legacy de Stow..."
+
+LEGACY_ROOT_LINKS=(
+  fuzzel
+  kitty
+  mako
+  matugen
+  quickshell
+  scripts
+  starship
+  sway
+  sw ay p
+  install.sh
+)
+
+for name in "${LEGACY_ROOT_LINKS[@]}"; do
+    name="${name// /}"
+    target="$HOME/$name"
+    expected="$DOTFILES_DIR/$name"
+
+    if [[ -L "$target" ]] && [[ "$(readlink -f -- "$target")" == "$(realpath -- "$expected")" ]]; then
+        rm -- "$target"
+        echo "    ✓ Eliminado ~/$name"
+    fi
+done
 
 echo
 echo "==> Detectando paquetes de Stow..."
