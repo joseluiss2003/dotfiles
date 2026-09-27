@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "swayp.theme-selector",
+  "name": "SwayP theme selector",
+  "version": "1.0.0",
+  "author": "SwayP",
+  "description": "Visual theme and themed-wallpaper selector",
+  "kinds": ["panel", "bar-widget"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Theme",
+    "description": "Opens the visual SwayP theme selector",
+    "category": "Appearance",
+    "allowMultiple": false
+  }
+}
