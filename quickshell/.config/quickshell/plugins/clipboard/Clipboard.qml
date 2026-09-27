@@ -328,6 +328,7 @@ Item {
     focusTarget: keyCatcher
 
     padding: 0
+    drawBackground: false
     borderSpec: Border.surfaceSpec("clipboard", "panel-wrapper", "transparent", 0)
     contentWidth: Math.min(root.cardWidth, panel.availableCardWidth)
     contentHeight: Math.min(root.cardHeight, panel.availableCardHeight)
