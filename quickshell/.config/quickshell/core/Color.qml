@@ -147,8 +147,8 @@ QtObject {
   readonly property color backgroundElevated: Util.alpha(aetherElevatedTinted, 0.97)
 
   readonly property color text: aetherForeground
-  readonly property color surface: Util.alpha(aetherSurfaceTinted, 0.97)
-  readonly property color surfaceAlt: Util.alpha(aetherSurfaceAltTinted, 0.97)
+  readonly property color surface: Util.alpha(aetherSurfaceTinted, 0.93)
+  readonly property color surfaceAlt: Util.alpha(aetherSurfaceAltTinted, 0.93)
   readonly property color textMuted: aetherMuted
   readonly property color accentText: aetherBackgroundDeep
   readonly property color accentSoft: Util.alpha(aetherCyan, 0.30)
