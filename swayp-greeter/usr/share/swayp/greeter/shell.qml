@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 
 ShellRoot {
     id: root
@@ -116,8 +117,16 @@ ShellRoot {
         })
     }
 
-    Rectangle {
-        anchors.fill: parent
+    PanelWindow {
+        anchors.top: true
+        anchors.bottom: true
+        anchors.left: true
+        anchors.right: true
+        WlrLayershell.layer: WlrLayer.Background
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+
+        Rectangle {
+            anchors.fill: parent
         color: "#101010"
 
         Column {
@@ -205,9 +214,10 @@ ShellRoot {
             }
         }
 
-        MouseArea {
-            anchors.fill: parent
-            acceptedButtons: Qt.NoButton
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.NoButton
+            }
         }
     }
 
