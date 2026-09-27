@@ -26,12 +26,14 @@ PACKAGES=(
   curl
   fprintd
   fuzzel
+  ffmpegthumbnailer
   greetd
   greetd-tuigreet
   grim
   gtk4-layer-shell
   iw
   imagemagick
+  inotify-tools
   jq
   libnotify
   kitty
