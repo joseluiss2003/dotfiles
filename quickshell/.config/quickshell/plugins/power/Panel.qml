@@ -291,6 +291,9 @@ Panel {
     bar: root.bar
     open: root.opened && root.batteryPresent
     focusTarget: keyCatcher
+    // Keep the shared Aether surface RGB, but let the session panel show
+    // the wallpaper through it instead of using the near-opaque shell default.
+    backgroundColor: Util.alpha(Color.popups.background, 0.88)
     contentWidth: panel.fittedContentWidth(Style.space(380))
     contentHeight: panel.fittedContentHeight(column.implicitHeight)
 
