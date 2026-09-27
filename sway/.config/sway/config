@@ -140,6 +140,7 @@ floating_modifier $mod normal
 ### =========================
 
 exec awww-daemon
+exec env PATH="$HOME/.local/bin:$PATH" wallpaper-startup
 exec env PATH="$HOME/.local/bin:$PATH" qs
 exec playerctld daemon
 
