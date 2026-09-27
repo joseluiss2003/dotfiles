@@ -668,9 +668,6 @@ Item {
             }
           }
 
-          ScrollBar.horizontal: ScrollBar {
-            policy: ScrollBar.AsNeeded
-          }
         }
         PanelSeparator {
           Layout.fillWidth: true
