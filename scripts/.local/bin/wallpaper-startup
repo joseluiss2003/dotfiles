@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 STATE_DIR="$HOME/.local/state/wallpaper"
 CURRENT="$STATE_DIR/current"
@@ -13,6 +14,5 @@ sleep 1
 
 if [ -f "$CURRENT" ] && [ -f "$(cat "$CURRENT")" ]; then
     WALLPAPER="$(cat "$CURRENT")"
-    swayp-aether-theme "$WALLPAPER"
     awww img --transition-type center "$WALLPAPER"
 fi
