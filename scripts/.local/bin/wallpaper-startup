@@ -12,5 +12,5 @@ fi
 sleep 1
 
 if [ -f "$CURRENT" ] && [ -f "$(cat "$CURRENT")" ]; then
-    matugen image "$(cat "$CURRENT")" -m dark
+    swayp-aether-theme "$(cat "$CURRENT")"
 fi
