@@ -93,7 +93,7 @@ extract() {
     esac
 }
 
-# SwayP/Aether-generated Starship configuration
+# SwayP-generated Starship configuration
 export STARSHIP_CONFIG="$HOME/.config/swayp/generated/starship.toml"
 
 if command -v starship >/dev/null 2>&1; then

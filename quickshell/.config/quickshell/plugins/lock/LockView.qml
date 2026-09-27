@@ -149,7 +149,7 @@ Item {
 
     // The lock is intentionally independent from the desktop wallpaper.
     // It uses the active SwayP theme as a solid visual surface.
-    color: Color.aetherBackgroundDeep
+    color: Color.backgroundDeep
 
     Column {
       anchors.horizontalCenter: parent.horizontalCenter
