@@ -9,4 +9,4 @@ default-timeout=5000
 max-visible=5
 layer=overlay
 
-include=~/.config/matugen/generated/mako-colors
+include=~/.config/swayp/generated/mako-colors
