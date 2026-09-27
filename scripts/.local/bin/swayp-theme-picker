@@ -5,7 +5,7 @@ THEMES_DIR="${HOME}/.config/swayp/themes"
 THEME_SET="${HOME}/.local/bin/swayp-theme-set"
 
 [ -d "$THEMES_DIR" ] || exit 1
-[ -x "$THEME_SET" ] || exit 1
+[ -f "$THEME_SET" ] || exit 1
 
 choices=""
 for dir in "$THEMES_DIR"/*; do
