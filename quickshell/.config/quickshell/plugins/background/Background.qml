@@ -107,22 +107,18 @@ Item {
   }
 
   function openSelector() {
-    if (!bgSwitchProc.running) bgSwitchProc.running = true
+    if (!wallpaperPickerProc.running) wallpaperPickerProc.running = true
   }
 
   function openThemeSwitcher() {
-    if (!themeSwitchProc.running) themeSwitchProc.running = true
+    // SwayP uses the wallpaper picker as the theme entry point: Matugen applies
+    // the generated palette together with the selected wallpaper.
+    if (!wallpaperPickerProc.running) wallpaperPickerProc.running = true
   }
 
   Process {
-    id: bgSwitchProc
-    command: ["bash", "-c", "background=$(omarchy-theme-bg-switcher); [[ -n $background ]] && omarchy-theme-bg-set \"$background\""]
-    onExited: root.refreshBackground()
-  }
-
-  Process {
-    id: themeSwitchProc
-    command: ["bash", "-c", "theme=$(omarchy-theme-switcher); [[ -n $theme ]] && omarchy-theme-set \"$theme\" >/dev/null 2>&1 &"]
+    id: wallpaperPickerProc
+    command: [Quickshell.env("HOME") + "/.local/bin/wallpaper-picker"]
     onExited: root.refreshBackground()
   }
 
