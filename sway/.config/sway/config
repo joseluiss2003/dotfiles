@@ -127,6 +127,7 @@ exec env PATH="$HOME/.local/bin:$PATH" swayp-theme-set
 exec env PATH="$HOME/.local/bin:$PATH" wallpaper-startup
 exec env PATH="$HOME/.local/bin:$PATH" qs
 exec playerctld daemon
+output DP-2 mode 2560x1440@155Hz
 
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
