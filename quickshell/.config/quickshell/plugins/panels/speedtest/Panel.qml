@@ -171,7 +171,7 @@ Item {
   // field is the kind, second the SSID (wifi) or device (ethernet).
   Process {
     id: statusProc
-    command: ["omarchy-network-status"]
+    command: ["swayp-network-status"]
     stdout: StdioCollector {
       waitForEnd: true
       onStreamFinished: {
