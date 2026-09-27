@@ -200,16 +200,11 @@ selected_file=$(
 [ -f "$selected_file" ] || exit 1
 
 # ------------------------------------------------------------
-# Apply wallpaper/theme.
+# Apply wallpaper only.
 #
-# Aether is the single palette authority. The picker never invokes Matugen;
-# SwayP exports the resulting palette to every runtime consumer.
+# The active SwayP theme owns the palette. Changing a wallpaper from the
+# curated pool must not replace the theme colors with an image-derived palette.
 # ------------------------------------------------------------
-
-if ! swayp-aether-theme "$selected_file"; then
-    notify-send "Wallpaper" "Aether no pudo extraer la paleta de $(basename "$selected_file")"
-    exit 1
-fi
 
 if ! awww img --transition-type center "$selected_file"; then
     notify-send "Wallpaper" "No se pudo aplicar $(basename "$selected_file")"
