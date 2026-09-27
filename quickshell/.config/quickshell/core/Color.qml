@@ -5,20 +5,13 @@ import Quickshell
 import Quickshell.Io
 import "BorderGeometry.js" as Geometry
 
-// SwayP color compatibility layer for Sway + Matugen.
+// SwayP color system for Sway + Quickshell.
 //
-// Important: this intentionally does NOT import a Generated QML module.
-// Quickshell's import path does not automatically expose
-// ~/.config/quickshell/generated as a module, even when that directory has a
-// qmldir declaring `module Generated`. Instead we watch Matugen's generated
-// Theme.qml directly and mirror its color roles into Omarchy's Color API.
-//
-// This makes Matugen the source of truth for:
-//   - bar background/text/active accent
-//   - popup/tooltip backgrounds and borders
-//   - menu selections
-//   - notifications / polkit / lock / image picker
-//   - generic foreground/accent/error/muted roles used by applets
+// Aether is the visual palette authority. Matugen remains loaded as a
+// compatibility fallback for external templates and older generated files.
+// The shell deliberately tints even its darkest surfaces from Aether so the
+// wallpaper palette is visible across the whole UI instead of producing a
+// black/gray shell with colored icons.
 QtObject {
   id: root
 
@@ -119,27 +112,59 @@ QtObject {
   readonly property color aetherCyan: aetherPaletteValid ? colorFromValue(aetherColors[6], matugenAccent) : matugenAccent
   readonly property color aetherBrightForeground: aetherPaletteValid ? colorFromValue(aetherColors[15], matugenText) : matugenText
 
+  // Blend helpers keep the 16-color Aether palette expressive without
+  // hard-coding wallpaper-specific RGB values. The ANSI colors become the
+  // source for a family of dark, tinted surfaces.
+  function mix(first, second, amount) {
+    var t = Math.max(0, Math.min(1, Number(amount)))
+    return Qt.rgba(
+      first.r * (1 - t) + second.r * t,
+      first.g * (1 - t) + second.g * t,
+      first.b * (1 - t) + second.b * t,
+      1)
+  }
+
+  readonly property color aetherTint: mix(aetherGreen, aetherCyan, 0.50)
+  readonly property color aetherBackgroundTinted: mix(aetherBackground, aetherTint, 0.14)
+  readonly property color aetherBackgroundDeep: mix(aetherBackground, aetherTint, 0.10)
+  readonly property color aetherSurfaceTinted: mix(aetherBackground, aetherTint, 0.18)
+  readonly property color aetherSurfaceAltTinted: mix(aetherBackground, aetherTint, 0.22)
+  readonly property color aetherElevatedTinted: mix(aetherBackground, aetherTint, 0.26)
+
   readonly property color matugenError: colorFromValue(matugenColors.error, Qt.rgba(1, 0.3, 0.3, 1))
 
   // Foundational roles consumed throughout Commons/Ui and by bar widgets.
   readonly property color foreground: aetherForeground
-  readonly property color background: aetherBackground
+  readonly property color background: aetherBackgroundTinted
   readonly property color accent: aetherCyan
   readonly property color urgent: aetherRed
   readonly property color muted: aetherMuted
 
-  // Short aliases used by custom bar widgets. These all resolve to the same
-  // Matugen source of truth, so a widget cannot accidentally fall back to a
-  // second palette.
+  // Semantic surfaces are intentionally opaque and visibly tinted. This is
+  // what makes the bar, popups and menus feel like one wallpaper-derived UI.
+  readonly property color backgroundDeep: aetherBackgroundDeep
+  readonly property color backgroundRaised: aetherSurfaceTinted
+  readonly property color backgroundElevated: aetherElevatedTinted
+
   readonly property color text: aetherForeground
-  readonly property color surface: Util.alpha(aetherBackground, 0.96)
-  readonly property color surfaceAlt: Util.alpha(aetherBackground, 0.88)
+  readonly property color surface: aetherSurfaceTinted
+  readonly property color surfaceAlt: aetherSurfaceAltTinted
   readonly property color textMuted: aetherMuted
-  readonly property color accentText: aetherBackground
-  readonly property color accentSoft: Util.alpha(aetherCyan, 0.24)
-  readonly property color secondary: aetherMagenta
-  readonly property color tertiary: aetherYellow
-  readonly property color outline: Util.alpha(aetherForeground, 0.30)
+  readonly property color accentText: aetherBackgroundDeep
+  readonly property color accentSoft: Util.alpha(aetherCyan, 0.30)
+  readonly property color secondary: aetherBlue
+  readonly property color secondarySoft: Util.alpha(aetherBlue, 0.26)
+  readonly property color tertiary: aetherMagenta
+  readonly property color tertiarySoft: Util.alpha(aetherMagenta, 0.22)
+  readonly property color success: aetherGreen
+  readonly property color warning: aetherYellow
+  readonly property color info: aetherCyan
+  readonly property color outline: mix(aetherForeground, aetherTint, 0.34)
+  readonly property color outlineStrong: mix(aetherForeground, aetherTint, 0.50)
+  readonly property color divider: Util.alpha(aetherForeground, 0.16)
+  readonly property color hover: Util.alpha(aetherCyan, 0.22)
+  readonly property color active: Util.alpha(aetherGreen, 0.30)
+  readonly property color selection: Util.alpha(aetherBlue, 0.34)
   readonly property color error: aetherRed
 
   property var shellValues: ({})
@@ -185,70 +210,68 @@ QtObject {
     return Util.alpha(flatColor(pick(colorKey, colorFallback), colorFallback), pickAlpha(alphaKey, alphaFallback))
   }
 
-  // Explicit Matugen mapping for all reusable SwayP surfaces. Applets and
-  // popups inherit these through Color.*, so there is no separate theme layer
-  // fighting Matugen.
+  // Reusable surfaces all inherit the same Aether-derived tint.
   readonly property QtObject bar: QtObject {
-    readonly property color background: root.matugenBackground
-    readonly property color text: root.matugenText
-    readonly property color active: root.matugenAccent
+    readonly property color background: root.backgroundDeep
+    readonly property color text: root.text
+    readonly property color active: root.accent
   }
 
   readonly property QtObject popups: QtObject {
-    readonly property color background: root.matugenSurface
-    readonly property color text: root.matugenText
-    readonly property color border: root.matugenOutline
+    readonly property color background: root.surface
+    readonly property color text: root.text
+    readonly property color border: root.outline
   }
 
   readonly property QtObject tooltip: QtObject {
-    readonly property color background: root.matugenSurfaceAlt
-    readonly property color text: root.matugenText
-    readonly property color border: root.matugenOutline
+    readonly property color background: root.surfaceAlt
+    readonly property color text: root.text
+    readonly property color border: root.outline
   }
 
   readonly property QtObject notifications: QtObject {
-    readonly property color background: root.matugenSurface
-    readonly property color text: root.matugenText
-    readonly property color border: root.matugenOutline
-    readonly property color countdown: root.matugenAccent
+    readonly property color background: root.surface
+    readonly property color text: root.text
+    readonly property color border: root.outline
+    readonly property color countdown: root.accent
   }
 
   readonly property QtObject menu: QtObject {
-    readonly property color background: root.matugenSurface
-    readonly property color text: root.matugenText
-    readonly property color border: root.matugenOutline
-    readonly property color scrim: Util.alpha(root.matugenBackground, 0.5)
-    readonly property color selectedBackground: Util.alpha(root.matugenAccentSoft, 0.55)
-    readonly property color selectedText: root.matugenAccentText
-    readonly property color selectedBorder: root.matugenOutline
+    readonly property color background: root.surface
+    readonly property color text: root.text
+    readonly property color border: root.outline
+    readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
+    readonly property color selectedBackground: root.selection
+    readonly property color selectedText: root.text
+    readonly property color selectedBorder: root.accent
   }
 
   readonly property QtObject polkit: QtObject {
-    readonly property color background: root.matugenSurface
-    readonly property color text: root.matugenText
-    readonly property color textError: root.matugenError
-    readonly property color border: root.matugenOutline
-    readonly property color borderError: root.matugenError
-    readonly property color accent: root.matugenAccent
-    readonly property color scrim: Util.alpha(root.matugenBackground, 0.5)
+    readonly property color background: root.surface
+    readonly property color text: root.text
+    readonly property color textError: root.error
+    readonly property color border: root.outline
+    readonly property color borderError: root.error
+    readonly property color accent: root.accent
+    readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
   }
 
   readonly property QtObject lock: QtObject {
-    readonly property color background: Util.alpha(root.matugenBackground, 0.94)
-    readonly property color text: root.matugenText
-    readonly property color placeholder: root.matugenTextMuted
-    readonly property color textError: root.matugenError
-    readonly property color border: root.matugenOutline
-    readonly property color borderActive: root.matugenAccent
-    readonly property color borderError: root.matugenError
-    readonly property color selection: Util.alpha(root.matugenAccentSoft, 0.45)
+    readonly property color background: Util.alpha(root.backgroundDeep, 0.96)
+    readonly property color text: root.text
+    readonly property color placeholder: root.textMuted
+    readonly property color textError: root.error
+    readonly property color border: root.outline
+    readonly property color borderActive: root.accent
+    readonly property color borderError: root.error
+    readonly property color selection: root.selection
   }
 
   readonly property QtObject imagePicker: QtObject {
-    readonly property color scrim: Util.alpha(root.matugenBackground, 0.5)
-    readonly property color text: root.matugenText
-    readonly property color selectedBorder: root.matugenAccent
-    readonly property color unselectedBorder: Util.alpha(root.matugenOutline, 0.28)
+    readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
+    readonly property color text: root.text
+    readonly property color selectedBorder: root.accent
+    readonly property color unselectedBorder: Util.alpha(root.outline, 0.45)
   }
 
   // Keep the shell.toml parser for typography/spacing and any non-color style
