@@ -95,7 +95,7 @@ QtObject {
 
   // Shared popup transparency. Every popup uses the same Aether-derived RGB
   // surface and this single alpha value, so individual plugins do not drift.
-  readonly property real popupOpacity: 0.75
+  readonly property real popupOpacity: 0.65
 
   readonly property color backgroundDeep: Util.alpha(aetherBackgroundDeep, root.shellOpacity)
   readonly property color backgroundRaised: Util.alpha(aetherSurfaceTinted, root.shellOpacity)
@@ -180,13 +180,13 @@ QtObject {
   }
 
   readonly property QtObject tooltip: QtObject {
-    readonly property color background: root.surfaceAlt
+    readonly property color background: root.popups.background
     readonly property color text: root.text
     readonly property color border: root.outline
   }
 
   readonly property QtObject notifications: QtObject {
-    readonly property color background: root.surface
+    readonly property color background: root.popups.background
     readonly property color text: root.text
     readonly property color border: root.outline
     readonly property color countdown: root.accent
@@ -203,7 +203,7 @@ QtObject {
   }
 
   readonly property QtObject polkit: QtObject {
-    readonly property color background: root.surface
+    readonly property color background: root.popups.background
     readonly property color text: root.text
     readonly property color textError: root.error
     readonly property color border: root.outline
