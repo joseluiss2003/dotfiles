@@ -32,8 +32,6 @@ swayp-theme-set
 
 The theme files are the source of truth. Quickshell consumes the generated semantic palette through core/Color.qml; other applications receive generated configuration under ~/.config/swayp/generated/.
 
-There is **no Aether runtime dependency**.
-
 ## Repository layout
 ~~~text
 .
@@ -45,6 +43,7 @@ There is **no Aether runtime dependency**.
 ├── starship/     # Starship source/fallback configuration
 ├── fuzzel/       # Fuzzel configuration
 ├── mako/         # Mako configuration
+├── swayp/       # SwayP themes, wallpapers and runtime config
 └── scripts/      # User-level commands and generators
 ~~~
 
