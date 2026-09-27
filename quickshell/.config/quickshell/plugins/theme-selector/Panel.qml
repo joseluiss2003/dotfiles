@@ -792,16 +792,19 @@ Item {
               }
             }
 
-            Text {
+            Item {
               visible: wallpaperModel.count === 0
+              width: wallpaperFlow.width
+              height: wallpaperFlow.height
 
-              anchors.horizontalCenter: parent.horizontalCenter
-              anchors.verticalCenter: parent.verticalCenter
+              Text {
+                anchors.centerIn: parent
 
-              text: "No curated wallpapers for this theme"
-              color: root.muted
-              font.family: Style.font.resolvedFamily
-              font.pixelSize: Style.font.body
+                text: "No curated wallpapers for this theme"
+                color: root.muted
+                font.family: Style.font.resolvedFamily
+                font.pixelSize: Style.font.body
+              }
             }
           }
         }
