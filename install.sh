@@ -195,20 +195,26 @@ done
 echo
 echo "==> Detectando paquetes de Stow..."
 
-mapfile -t STOW_PACKAGES < <(
-    find "$DOTFILES_DIR" \
-        -mindepth 1 \
-        -maxdepth 1 \
-        -type d \
-        ! -name ".git" \
-        -printf '%f\n' |
-        sort
+# Only these directories are actual Stow packages.
+# Repository-only directories such as docs/ must never be linked into $HOME.
+STOW_PACKAGES=(
+  fuzzel
+  kitty
+  mako
+  quickshell
+  scripts
+  starship
+  sway
+  swayp
+  zsh
 )
 
-if [[ ${#STOW_PACKAGES[@]} -eq 0 ]]; then
-    echo "ERROR: No se encontraron paquetes de Stow."
-    exit 1
-fi
+for package in "${STOW_PACKAGES[@]}"; do
+    if [[ ! -d "$DOTFILES_DIR/$package" ]]; then
+        echo "ERROR: Falta el paquete de Stow: $package"
+        exit 1
+    fi
+done
 
 printf '    %s\n' "${STOW_PACKAGES[@]}"
 
