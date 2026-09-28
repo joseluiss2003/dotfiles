@@ -13,9 +13,9 @@ Item {
   // Keep the whole slider in the shell's monochrome foreground language.
   // Color.accent is currently the themed foreground, so no ANSI/dynamic
   // cyan/blue can leak into controls.
-  property color trackColor: Util.alpha(Color.foreground, 0.18)
-  property color fillColor: Color.foreground
-  property color knobColor: Color.foreground
+  property color trackColor: Util.alpha(Color.bar.text, 0.18)
+  property color fillColor: Color.bar.text
+  property color knobColor: Color.bar.text
   property bool dragging: false
   property real trackHeight: Math.max(4, Math.round(Style.spacing.controlHeight * 0.11))
   property real knobSize: Math.max(14, Math.round(Style.spacing.controlHeight * 0.38))
