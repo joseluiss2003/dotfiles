@@ -8,7 +8,7 @@ Item {
   property color highlightColor: Color.brand.highlight
   property color shadowColor: Color.brand.depth
 
-  readonly property var logoPalette:
+  property var logoPalette:
     Color.semanticColors && Array.isArray(Color.semanticColors.logo)
       ? Color.semanticColors.logo
       : []
