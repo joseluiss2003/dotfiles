@@ -19,7 +19,7 @@ QtObject {
   property var semanticColors: ({})
   property bool paletteValid: false
   // Shared timing signal for theme palette changes. The palette duration is kept
-  // identical to the wallpaper fade so both visual layers finish together.
+  // identical to the wallpaper fade, including a linear progress curve, so both visual layers track together frame-for-frame.
   property bool themeTransitionActive: false
   property real themeTransitionProgress: 1
   property var transitionFrom: ({})
@@ -319,7 +319,7 @@ QtObject {
     from: 0
     to: 1
     duration: 500
-    easing.type: Easing.InOutCubic
+    easing.type: Easing.Linear
     onFinished: {
       root.themeTransitionProgress = 1
       root.themeTransitionActive = false
