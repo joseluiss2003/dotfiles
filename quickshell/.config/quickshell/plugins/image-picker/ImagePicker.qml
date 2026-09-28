@@ -466,43 +466,43 @@ Item {
 
               Behavior on opacity {
                 NumberAnimation {
-                  duration: 180
-                  easing.type: Easing.OutCubic
+                  duration: 145
+                  easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on scale {
                 NumberAnimation {
-                  duration: 180
-                  easing.type: Easing.OutCubic
+                  duration: 145
+                  easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on x {
                 NumberAnimation {
-                  duration: 180
-                  easing.type: Easing.OutCubic
+                  duration: 145
+                  easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on y {
                 NumberAnimation {
-                  duration: 180
-                  easing.type: Easing.OutCubic
+                  duration: 145
+                  easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on width {
                 NumberAnimation {
-                  duration: 180
-                  easing.type: Easing.OutCubic
+                  duration: 145
+                  easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on height {
                 NumberAnimation {
-                  duration: 180
-                  easing.type: Easing.OutCubic
+                  duration: 145
+                  easing.type: Easing.OutQuint
                 }
               }
 
