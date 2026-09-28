@@ -80,6 +80,4 @@ elif [ "$value" -gt 100 ]; then
     value=100
 fi
 
-brightnessctl \
-    --device="$DEVICE" \
-    set "${value}%"
+brightnessctl set "${value}%"
