@@ -18,6 +18,7 @@ Item {
   property string selectedTheme: ""
   property string preferredScreenName: ""
   property int themeIndex: 0
+  property bool applying: false
 
   property color foreground: Color.bar.text
   property color muted: Color.foreground
@@ -141,6 +142,7 @@ Item {
   function applySelection() {
     if (!root.selectedTheme || applyProc.running) return
 
+    root.applying = true
     applyProc.command = ["swayp-theme-set", root.selectedTheme]
     applyProc.running = true
   }
@@ -204,14 +206,26 @@ Item {
       onStreamFinished: root.parseThemes(this.text)
     }
   }
+  Timer {
+    id: closeAfterApply
+    interval: 260
+    repeat: false
+    onTriggered: {
+      root.applying = false
+      root.close()
+      notifyProc.running = true
+    }
+  }
+
   Process {
     id: applyProc
     running: false
 
     onExited: function(exitCode) {
       if (exitCode === 0) {
-        root.close()
-        notifyProc.running = true
+        closeAfterApply.restart()
+      } else {
+        root.applying = false
       }
     }
   }
@@ -248,7 +262,7 @@ Item {
     Rectangle {
       anchors.fill: parent
       color: Util.alpha(Color.background, 0.82)
-      opacity: root.opened ? 1 : 0
+      opacity: root.opened ? (root.applying ? 0.34 : 1) : 0
 
       Behavior on opacity {
         NumberAnimation {
@@ -307,6 +321,14 @@ Item {
         root.previewWidth + root.sideWidth * 2 + root.sideGap * 2
       )
       height: root.previewHeight + Style.space(110)
+      opacity: root.applying ? 0 : 1
+
+      Behavior on opacity {
+        NumberAnimation {
+          duration: 220
+          easing.type: Easing.InOutCubic
+        }
+      }
 
       Repeater {
         model: themeModel
