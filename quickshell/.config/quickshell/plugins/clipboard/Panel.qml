@@ -36,7 +36,7 @@ Item {
   readonly property int cornerRadius: 0
   property string fontFamily: Style.font.menuFamily
   property int contentMargin: Style.spacing.xxl
-  property int headerHeight: Style.space(48)
+  property int headerHeight: Style.popup.headerHeight
   property int contentSpacing: 0
   property int cardWidth: Style.space(440)
   property int cardHeight: Style.space(390)
@@ -420,7 +420,7 @@ Item {
         // icon, title, quiet subtitle, count.
         Item {
           width: parent.width
-          height: Style.space(58)
+          height: Style.popup.headerHeight
 
           Row {
             anchors.left: parent.left
@@ -654,7 +654,7 @@ Item {
         // Footer — one deliberate action, aligned to the same inset as the list.
         Item {
           width: parent.width
-          height: Style.space(48)
+          height: Style.popup.footerHeight
 
           Button {
             id: clearButton
