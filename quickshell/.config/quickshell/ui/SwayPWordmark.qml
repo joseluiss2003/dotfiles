@@ -43,23 +43,23 @@ Item {
   }
 
   MultiEffect {
-    id: depth
-    x: root.logoX - root.depthBleed
-    y: root.logoY - root.depthBleed
-    width: root.logoWidth + root.depthBleed * 2
-    height: root.logoHeight + root.depthBleed * 2
-    source: depthSource
-    colorizationColor: root.shadowColor
-    colorization: 1.0
-  }
-
-  MultiEffect {
     id: faceUnderlay
     x: root.logoX - root.depthBleed
     y: root.logoY - root.depthBleed
     width: root.logoWidth + root.depthBleed * 2
     height: root.logoHeight + root.depthBleed * 2
     source: faceSource
+    colorizationColor: root.shadowColor
+    colorization: 1.0
+  }
+
+  MultiEffect {
+    id: depth
+    x: root.logoX - root.depthBleed
+    y: root.logoY - root.depthBleed
+    width: root.logoWidth + root.depthBleed * 2
+    height: root.logoHeight + root.depthBleed * 2
+    source: depthSource
     colorizationColor: root.shadowColor
     colorization: 1.0
   }
