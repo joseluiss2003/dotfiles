@@ -82,8 +82,8 @@ Item {
   readonly property real glyphHeight: 7 * unit
   readonly property real wordWidth: 5 * glyphWidth + 4 * letterGap * unit
   readonly property real wordHeight: 7 * unit
-  readonly property real left: (width - wordWidth) / 2
-  readonly property real top: (height - wordHeight) / 2
+  readonly property real logoLeft: (width - wordWidth) / 2
+  readonly property real logoTop: (height - wordHeight) / 2
 
   function paintLetter(ctx, letter, x, y, size, color) {
     ctx.fillStyle = color
@@ -114,8 +114,8 @@ Item {
       // Deep offset extrusion — the part that gives the mark the Omarchy-like
       // physical weight without adding a separate object to the lock screen.
       var extrusion = root.unit * 0.72
-      var x = root.left
-      var y = root.top
+      var x = root.logoLeft
+      var y = root.logoTop
 
       for (var i = 0; i < root.letters.length; i++) {
         root.paintLetter(
@@ -130,7 +130,7 @@ Item {
       }
 
       // Main face: same accent as the clock.
-      x = root.left
+      x = root.logoLeft
       ctx.fillStyle = root.color
 
       for (var j = 0; j < root.letters.length; j++) {
@@ -147,7 +147,7 @@ Item {
 
       // Strong top cap, following the reference's light upper plane.
       // It remains the theme's highlight, while the clock stays pure accent.
-      x = root.left
+      x = root.logoLeft
       var cap = Math.max(1.2, root.unit * 0.18)
 
       for (var k = 0; k < root.letters.length; k++) {
@@ -175,7 +175,7 @@ Item {
       // lock-screen wallpaper.
       ctx.fillStyle = root.shadowColor
       ctx.globalAlpha = 0.72
-      x = root.left
+      x = root.logoLeft
       for (var s = 0; s < root.letters.length; s++) {
         var sLetter = root.letters[s]
         for (var sr = 0; sr < root.rows; sr++) {
