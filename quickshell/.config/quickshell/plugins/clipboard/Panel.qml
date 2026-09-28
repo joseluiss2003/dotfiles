@@ -430,7 +430,7 @@ Item {
 
             Text {
               text: "󰅌"
-              color: Color.accent
+              color: Color.controls.text
               font.family: root.fontFamily
               font.pixelSize: Style.font.display
               anchors.verticalCenter: parent.verticalCenter
@@ -625,7 +625,7 @@ Item {
 
             Text {
               text: "󰅌"
-              color: Color.accent
+              color: Color.controls.text
               opacity: 0.72
               font.family: root.fontFamily
               font.pixelSize: Style.font.displayLarge
