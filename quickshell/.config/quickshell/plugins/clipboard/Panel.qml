@@ -35,7 +35,7 @@ Item {
   property color selectedText: Color.controls.selectedText
   readonly property int cornerRadius: 0
   property string fontFamily: Style.font.menuFamily
-  property int contentMargin: Style.space(12)
+  property int contentMargin: Style.spacing.xxl
   property int headerHeight: Style.space(48)
   property int contentSpacing: 0
   property int cardWidth: Style.space(440)
@@ -332,7 +332,7 @@ Item {
     borderSpec: Border.surfaceSpec("clipboard", "panel-wrapper", "transparent", 0)
     contentWidth: Math.min(root.cardWidth, panel.availableCardWidth)
     contentHeight: Math.min(root.cardHeight, panel.availableCardHeight)
-    gap: Style.space(5)
+    gap: Style.popup.gap
 
     BorderSurface {
       id: card
@@ -489,8 +489,8 @@ Item {
           ListView {
             id: resultList
             anchors.fill: parent
-            anchors.leftMargin: Style.space(12)
-            anchors.rightMargin: Style.space(12)
+            anchors.leftMargin: Style.spacing.xxl
+            anchors.rightMargin: Style.spacing.xxl
             anchors.topMargin: Style.spacing.sectionGap
             anchors.bottomMargin: Style.spacing.sectionGap
             model: displayModel
@@ -534,8 +534,8 @@ Item {
 
               Row {
                 anchors.fill: parent
-                anchors.leftMargin: Style.space(12)
-                anchors.rightMargin: Style.space(12)
+                anchors.leftMargin: Style.spacing.xxl
+                anchors.rightMargin: Style.spacing.xxl
                 spacing: Style.spacing.sectionGap
 
                 Item {
@@ -561,7 +561,7 @@ Item {
                       : row.entryType === "file"
                         ? "󰈔"
                         : "󰅌"
-                    color: row.hasCursor ? root.selectedText : Color.accent
+                    color: row.hasCursor ? root.selectedText : Color.controls.text
                     opacity: row.hasCursor ? 1 : 0.78
                     font.family: root.fontFamily
                     font.pixelSize: Style.font.body
@@ -659,7 +659,7 @@ Item {
           Button {
             id: clearButton
             anchors.right: parent.right
-            anchors.rightMargin: Style.space(12)
+            anchors.rightMargin: Style.spacing.xxl
             anchors.verticalCenter: parent.verticalCenter
             width: Style.space(82)
             height: Style.space(30)
