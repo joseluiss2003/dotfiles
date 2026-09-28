@@ -90,11 +90,10 @@ BarWidget {
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.spacing.controlGap
 
-            Text {
-              text: "󰯙"
-              color: Color.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.display
+            SwayPMark {
+              width: Style.font.display
+              height: Style.font.display
+              color: Color.accent
               anchors.verticalCenter: parent.verticalCenter
             }
 
