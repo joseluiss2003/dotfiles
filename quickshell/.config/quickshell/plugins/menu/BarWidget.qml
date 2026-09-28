@@ -59,7 +59,7 @@ BarWidget {
     padding: 0
     borderSpec: Border.surfaceSpec("power-session", "panel-wrapper", "transparent", 0)
     contentWidth: Math.min(Style.space(430), panel.availableCardWidth)
-    contentHeight: Math.min(Style.space(350), panel.availableCardHeight)
+    contentHeight: Math.min(Style.space(400), panel.availableCardHeight)
     gap: 0
     drawBackground: false
 
@@ -169,7 +169,7 @@ BarWidget {
             property bool destructive: labelText === "Power off" || labelText === "Log out"
 
             width: (parent.width - parent.columnSpacing) / 2
-            height: Style.space(88)
+            height: Style.space(78)
             radius: 0
             color: action.hot
               ? Color.controls.hoverBackground
