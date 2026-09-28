@@ -263,6 +263,18 @@ QtObject {
     readonly property color selection: root.foreground
   }
 
+  // Shared visual language for fullscreen experiences. Components may keep
+  // their own layout and compositing strength, but the underlying palette roles
+  // stay consistent with normal SwayP surfaces and states.
+  readonly property QtObject fullscreen: QtObject {
+    readonly property color background: root.surface
+    readonly property color text: root.foreground
+    readonly property color border: root.foreground
+    readonly property color scrim: root.backgroundDeep
+    readonly property color selectedBorder: root.foreground
+    readonly property color unselectedBorder: root.foreground
+  }
+
   readonly property QtObject imagePicker: QtObject {
     readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
     readonly property color text: root.foreground
