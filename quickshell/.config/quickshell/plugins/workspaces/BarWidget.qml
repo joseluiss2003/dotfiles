@@ -155,7 +155,7 @@ BarWidget {
         active: focused
         useActiveColor: true
         passiveColor: Color.bar.text
-        activeColor: Color.accent
+        activeColor: Color.foreground
         opacity: focused ? 1.0 : (urgent ? 0.95 : (occupied ? 0.82 : 0.45))
         horizontalMargin: 6
         verticalPadding: 6
