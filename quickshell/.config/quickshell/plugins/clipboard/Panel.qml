@@ -35,7 +35,7 @@ Item {
   property color selectedText: Color.controls.selectedText
   readonly property int cornerRadius: 0
   property string fontFamily: Style.font.menuFamily
-  property int contentMargin: Style.spacing.xxl
+  property int contentMargin: Style.popup.contentInset
   property int headerHeight: Style.popup.headerHeight
   property int contentSpacing: 0
   property int cardWidth: Style.space(440)
@@ -426,7 +426,7 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: Style.space(16)
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.sectionGap
+            spacing: Style.popup.sectionGap
 
             Text {
               text: "󰅌"
@@ -473,7 +473,7 @@ Item {
 
         PanelSeparator {
           width: parent.width - Style.spacing.wideGap
-          x: Style.spacing.sectionGap
+          x: Style.popup.sectionGap
           foreground: Color.outline
         }
 
@@ -489,10 +489,10 @@ Item {
           ListView {
             id: resultList
             anchors.fill: parent
-            anchors.leftMargin: Style.spacing.xxl
-            anchors.rightMargin: Style.spacing.xxl
-            anchors.topMargin: Style.spacing.sectionGap
-            anchors.bottomMargin: Style.spacing.sectionGap
+            anchors.leftMargin: Style.popup.contentInset
+            anchors.rightMargin: Style.popup.contentInset
+            anchors.topMargin: Style.popup.sectionGap
+            anchors.bottomMargin: Style.popup.sectionGap
             model: displayModel
             clip: true
             spacing: Style.spacing.sm
@@ -534,9 +534,9 @@ Item {
 
               Row {
                 anchors.fill: parent
-                anchors.leftMargin: Style.spacing.xxl
-                anchors.rightMargin: Style.spacing.xxl
-                spacing: Style.spacing.sectionGap
+                anchors.leftMargin: Style.popup.contentInset
+                anchors.rightMargin: Style.popup.contentInset
+                spacing: Style.popup.sectionGap
 
                 Item {
                   width: Style.space(30)
@@ -647,7 +647,7 @@ Item {
 
         PanelSeparator {
           width: parent.width - Style.spacing.wideGap
-          x: Style.spacing.sectionGap
+          x: Style.popup.sectionGap
           foreground: Color.outline
         }
 
@@ -659,7 +659,7 @@ Item {
           Button {
             id: clearButton
             anchors.right: parent.right
-            anchors.rightMargin: Style.spacing.xxl
+            anchors.rightMargin: Style.popup.contentInset
             anchors.verticalCenter: parent.verticalCenter
             width: Style.space(82)
             height: Style.space(30)
