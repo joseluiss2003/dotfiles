@@ -73,7 +73,7 @@ BorderSurface {
     anchors.centerIn: parent
     text: root.iconText
     color: root.enabled
-      ? (root.hoverColor === Color.urgent ? Color.urgent : Color.accent)
+      ? (root._hot ? root.hoverColor : root.foreground)
       : Color.muted
     font.family: root.fontFamily
     font.pixelSize: root.fontSize
