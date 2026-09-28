@@ -48,8 +48,8 @@ BarWidget {
     text: root.bellGlyph
     fontFamily: root.bar.fontFamily
     foreground: root.bar.barForeground
-    activeColor: Color.accent
-    hoverColor: Color.accent
+    activeColor: Color.foreground
+    hoverColor: Color.foreground
     tooltipText: root.notificationCount > 0
       ? root.notificationCount + (root.notificationCount === 1 ? " notification" : " notifications")
       : "Notifications"
