@@ -148,7 +148,8 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    foreground: Color.accent
+    foreground: Color.foreground
+    passiveColor: Color.foreground
     fontWeight: Font.Bold
     activeColor: Color.accent
     hoverColor: Color.accent
@@ -183,7 +184,7 @@ BarWidget {
           fontSize: modelData.length > 3
             ? button.fontSize * 0.9
             : button.fontSize
-          color: Color.accent
+          color: Color.foreground
         }
       }
     }
