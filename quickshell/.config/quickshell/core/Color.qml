@@ -213,6 +213,22 @@ QtObject {
     readonly property color active: root.accent
   }
 
+  // Shared interactive control language used by popup, menu, clipboard,
+  // session and other interactive surfaces. Components own layout; these roles
+  // keep hover/active/selected states visually consistent across SwayP.
+  readonly property QtObject controls: QtObject {
+    readonly property color background: root.surfaceAlt
+    readonly property color hoverBackground: root.hover
+    readonly property color activeBackground: root.active
+    readonly property color selectedBackground: root.accent
+    readonly property color text: root.foreground
+    readonly property color selectedText: root.foreground
+    readonly property color border: Util.alpha(root.foreground, 0.18)
+    readonly property color selectedBorder: root.foreground
+    readonly property color disabledText: Util.alpha(root.foreground, 0.40)
+    readonly property color danger: root.error
+  }
+
   readonly property QtObject popups: QtObject {
     readonly property color background: root.surface
     readonly property color text: root.foreground
