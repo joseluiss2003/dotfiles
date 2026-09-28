@@ -58,9 +58,9 @@ if [[ -r "$LOGO_TEMPLATE" ]]; then
   rm -f "$LOGO_TEMPLATE.tmp"
 fi
 
-exec fastfetch \
+exec /usr/bin/fastfetch \
   --config "$HOME/.config/swayp/generated/fastfetch.jsonc" \
   --logo "$LOGO" \
   --logo-type kitty \
-  --logo-width 42 \
+  --logo-width 46 \
   "$@"
