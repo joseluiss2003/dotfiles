@@ -247,7 +247,7 @@ Item {
         ColumnLayout {
           id: content
           anchors.fill: parent
-          spacing: Style.space(16)
+          spacing: Style.spacing.wideGap
 
           Text {
             textFormat: Text.PlainText
