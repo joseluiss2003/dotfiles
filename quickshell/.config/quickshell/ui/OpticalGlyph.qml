@@ -38,7 +38,7 @@ Item {
 
     Behavior on color {
       ColorAnimation {
-        duration: 120
+        duration: Color.themeTransitionActive ? 1200 : 120
         easing.type: Easing.OutCubic
       }
     }
