@@ -89,7 +89,7 @@ Item {
     height: root.knobSize
     radius: root.knobSize / 2
     color: root.knobColor
-    borderSpec: Border.flat(Util.alpha(Color.foreground, 0.45), Math.max(1, Style.space(1)))
+    borderSpec: Border.flat(Util.alpha(Color.bar.text, 0.45), Math.max(1, Style.space(1)))
     anchors.verticalCenter: track.verticalCenter
     x: Math.max(0, Math.min(track.width - width, track.width * root.progress - width / 2))
     scale: root._hot ? 1.15 : 1.0
