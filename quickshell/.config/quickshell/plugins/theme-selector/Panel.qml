@@ -2,7 +2,6 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
-import QtQuick.Layouts
 import qs.core
 import qs.ui
 
@@ -14,18 +13,14 @@ Item {
 
   property string home: Quickshell.env("HOME")
   property string themesDir: home + "/.config/swayp/themes"
-  property string wallpapersRoot: home + "/.config/swayp/wallpapers"
   property string currentThemePath: home + "/.config/swayp/current-theme"
 
   property string selectedTheme: ""
   property string selectedWallpaper: ""
   property string preferredScreenName: ""
   property int themeIndex: 0
-  property int wallpaperIndex: 0
 
-  property color background: Color.menu.background
   property color foreground: Color.bar.text
-  property color border: Color.foreground
   property color muted: Color.foreground
 
   readonly property int previewWidth: Style.space(760)
@@ -33,23 +28,6 @@ Item {
   readonly property int sideWidth: Style.space(250)
   readonly property int sideHeight: Style.space(350)
   readonly property int sideGap: Style.space(18)
-
-  readonly property int themeCardHeight: Style.space(132)
-  readonly property int themeCardWidth: Style.space(218)
-  readonly property int themeSectionHeight: themeCardHeight
-  readonly property int wallpaperCardHeight: Style.space(142)
-  readonly property int wallpaperCardWidth: Style.space(320)
-  readonly property int wallpaperSectionHeight: wallpaperCardHeight
-
-  readonly property int cardWidth: Math.min(
-    Math.max(Style.space(860), panel.width - Style.space(72)),
-    Style.space(1120)
-  )
-
-  readonly property int contentHeight: Math.min(
-    Math.max(Style.space(500), panel.height - Style.space(72)),
-    Style.space(620)
-  )
 
   readonly property var targetScreen: {
     var screens = Quickshell.screens || []
@@ -64,7 +42,6 @@ Item {
 
   function open(payloadJson) {
     root.opened = true
-    root.selectedWallpaper = ""
     root.loadCurrentTheme()
     root.loadThemes()
     screenProc.running = true
@@ -117,47 +94,6 @@ Item {
 
     root.themeIndex = found >= 0 ? found : 0
     root.selectedTheme = themeModel.get(root.themeIndex).id
-    Qt.callLater(function() {
-      if (themeList)
-        themeList.positionViewAtIndex(root.themeIndex, ListView.Contain)
-    })
-  }
-
-  function loadWallpapers() {
-    wallpaperModel.clear()
-    if (!root.selectedTheme) return
-
-    wallpapersProc.running = false
-    wallpapersProc.running = true
-  }
-
-  function parseWallpapers(raw) {
-    wallpaperModel.clear()
-
-    var lines = String(raw || "").split("\n")
-    for (var i = 0; i < lines.length; i++) {
-      var path = lines[i].trim()
-      if (!path) continue
-
-      wallpaperModel.append({
-        path: path,
-        url: Util.fileUrl(path),
-        name: path.split("/").pop()
-      })
-    }
-
-    if (wallpaperModel.count > 0) {
-      root.wallpaperIndex = Math.max(
-        0,
-        Math.min(root.wallpaperIndex, wallpaperModel.count - 1)
-      )
-
-      if (!root.selectedWallpaper)
-        root.selectedWallpaper = wallpaperModel.get(root.wallpaperIndex).path
-    } else {
-      root.wallpaperIndex = 0
-      root.selectedWallpaper = ""
-    }
   }
 
   function selectTheme(index) {
@@ -165,20 +101,8 @@ Item {
 
     root.themeIndex = index
     root.selectedTheme = themeModel.get(index).id
-    root.selectedWallpaper = ""
     root.wallpaperIndex = 0
     root.loadWallpapers()
-  }
-
-  function selectWallpaper(index) {
-    if (index < 0 || index >= wallpaperModel.count) return
-
-    root.wallpaperIndex = index
-    root.selectedWallpaper = wallpaperModel.get(index).path
-    Qt.callLater(function() {
-      if (wallpaperList)
-        wallpaperList.positionViewAtIndex(root.wallpaperIndex, ListView.Contain)
-    })
   }
 
   function moveTheme(delta) {
@@ -190,13 +114,12 @@ Item {
     root.selectTheme(next)
   }
 
-  function moveWallpaper(delta) {
-    if (wallpaperModel.count === 0) return
+  function carouselIndex(offset) {
+    if (themeModel.count === 0) return -1
 
-    var next = root.wallpaperIndex + delta
-    if (next < 0) next = wallpaperModel.count - 1
-    if (next >= wallpaperModel.count) next = 0
-    root.selectWallpaper(next)
+    var value = (root.themeIndex + offset) % themeModel.count
+    if (value < 0) value += themeModel.count
+    return value
   }
 
   function applySelection() {
@@ -207,7 +130,6 @@ Item {
   }
 
   ListModel { id: themeModel }
-  ListModel { id: wallpaperModel }
 
   FileView {
     id: currentThemeFile
@@ -267,23 +189,6 @@ Item {
     }
   }
   Process {
-    id: wallpapersProc
-
-    command: [
-      "bash", "-c",
-      "find \"$1\" -maxdepth 1 -type f " +
-      "\\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \\) " +
-      "-print 2>/dev/null | sort",
-      "swayp-wallpaper-list",
-      root.wallpapersRoot + "/" + root.selectedTheme
-    ]
-
-    stdout: StdioCollector {
-      waitForEnd: true
-      onStreamFinished: root.parseWallpapers(this.text)
-    }
-  }
-  Process {
     id: applyProc
     running: false
 
@@ -297,7 +202,7 @@ Item {
 
   Process {
     id: notifyProc
-    command: ["notify-send", "SwayP", "Appearance applied"]
+    command: ["notify-send", "SwayP", "Theme applied"]
   }
 
   PanelWindow {
