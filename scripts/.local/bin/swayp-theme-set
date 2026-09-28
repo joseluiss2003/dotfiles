@@ -281,9 +281,10 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
         mv -f "$PALETTE_STAGED_OUTPUT" "$PALETTE_OUTPUT"
 
-        # The wallpaper request is already running asynchronously; push the
-        # palette immediately so both transitions are launched from the same
-        # shell turn without an artificial delay.
+        # Give awww a tiny head start so its compositor-side fade begins just
+        # before Quickshell repaints the shell palette. 10 ms is the midpoint
+        # between the previous leading/lagging timings.
+        sleep 0.01
 
         # Push the exact new palette directly into the running Quickshell
         # instead of waiting for FileView's filesystem watcher. The watcher
