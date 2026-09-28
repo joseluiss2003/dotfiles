@@ -82,7 +82,7 @@ BarWidget {
 
         Item {
           width: parent.width
-          height: Style.space(50)
+          height: Style.popup.headerHeight
 
           Row {
             anchors.left: parent.left
@@ -131,8 +131,8 @@ BarWidget {
         Column {
           width: parent.width
           spacing: Style.spacing.sm
-          topPadding: Style.space(7)
-          bottomPadding: Style.space(7)
+          topPadding: Style.spacing.sm
+          bottomPadding: Style.spacing.sm
 
           component Action: Item {
             id: action
@@ -142,7 +142,7 @@ BarWidget {
             property bool hot: false
 
             width: parent.width - Style.spacing.wideGap
-            height: Style.space(32)
+            height: Style.popup.actionHeight
             x: Style.spacing.controlInset
 
             Rectangle {
