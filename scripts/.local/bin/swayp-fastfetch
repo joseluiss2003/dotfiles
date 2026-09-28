@@ -19,8 +19,28 @@ green=""
 cyan=""
 muted=""
 
-if [[ -r "$PALETTE" ]] && command -v jq >/dev/null 2>&1; then
+# Match the lock screen exactly: read the accent from the active theme's
+# colors.toml, which is the same source used to build Color.brand.accent.
+CURRENT_THEME_FILE="$HOME/.config/swayp/current-theme"
+CURRENT_THEME=""
+if [[ -r "$CURRENT_THEME_FILE" ]]; then
+  CURRENT_THEME="$(sed -n '1p' "$CURRENT_THEME_FILE" | tr -d '[:space:]')"
+fi
+
+if [[ -n "$CURRENT_THEME" ]] && [[ -r "$HOME/.config/swayp/themes/$CURRENT_THEME/colors.toml" ]] && command -v python3 >/dev/null 2>&1; then
+  accent="$(python3 - "$HOME/.config/swayp/themes/$CURRENT_THEME/colors.toml" <<'PY'
+import sys, tomllib
+with open(sys.argv[1], "rb") as f:
+    print(tomllib.load(f).get("accent", ""))
+PY
+)"
+fi
+
+if [[ -z "$accent" ]] && [[ -r "$PALETTE" ]] && command -v jq >/dev/null 2>&1; then
   accent="$(jq -r '.semantic.accent // .colors[4] // empty' "$PALETTE" 2>/dev/null || true)"
+fi
+
+if [[ -r "$PALETTE" ]] && command -v jq >/dev/null 2>&1; then
   foreground="$(jq -r '.semantic.foreground // .colors[7] // empty' "$PALETTE" 2>/dev/null || true)"
   bright_foreground="$(jq -r '.semantic.bright_foreground // .colors[15] // empty' "$PALETTE" 2>/dev/null || true)"
   logo1="$(jq -r '.semantic.logo[0] // empty' "$PALETTE" 2>/dev/null || true)"
