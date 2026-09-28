@@ -24,7 +24,7 @@ Item {
   property int wallpaperIndex: 0
 
   property color background: Color.menu.background
-  property color foreground: Color.menu.text
+  property color foreground: Color.bar.text
   property color border: Color.menu.border
   property color muted: Color.muted
 
