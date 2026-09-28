@@ -1554,6 +1554,8 @@ Item {
                 opacity: disabled ? 0.4 : 1
 
                 Behavior on color { ColorAnimation { duration: Style.popup.hoverDuration } }
+                scale: selected ? 1.015 : 1.0
+                Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
                 Row {
                   anchors.fill: parent
