@@ -7,7 +7,7 @@ import qs.core
 Text {
   id: root
 
-  property color foreground: Color.foreground
+  property color foreground: Color.bar.text
   property string fontFamily: Style.font.family
   property real fontSize: Style.font.caption
 
