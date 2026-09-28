@@ -34,7 +34,7 @@ BarWidget {
   Row {
     id: row
     anchors.centerIn: parent
-    spacing: Style.space(4)
+    spacing: Style.spacing.sm
 
     Text {
       text: "󰝚"
@@ -115,7 +115,7 @@ BarWidget {
         : 0),
       panel.availableCardHeight
     )
-    gap: Style.space(5)
+    gap: Style.popup.gap
     // The media popup owns its card surface below; avoid drawing the
     // KeyboardPanel wrapper a second time over the same translucent card.
     drawBackground: false
@@ -269,7 +269,7 @@ BarWidget {
             anchors.right: parent.right
             anchors.rightMargin: Style.space(14)
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(4)
+            spacing: Style.spacing.sm
 
             Text {
               text: root.title || "Nothing playing"
@@ -319,7 +319,7 @@ BarWidget {
 
           Row {
             anchors.centerIn: parent
-            spacing: Style.space(5)
+            spacing: Style.popup.gap
 
             MediaControl {
               iconText: "󰒮"
@@ -350,7 +350,7 @@ BarWidget {
         Column {
           id: playersSection
           width: parent.width
-          spacing: Style.space(4)
+          spacing: Style.spacing.sm
           visible: root.sourcePlayers.length > 1
 
           PanelSeparator {
@@ -378,7 +378,7 @@ BarWidget {
 
           Column {
             width: parent.width
-            spacing: Style.space(4)
+            spacing: Style.spacing.sm
             bottomPadding: Style.spacing.controlGap
 
             Repeater {
