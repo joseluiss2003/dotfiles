@@ -902,7 +902,7 @@ Panel {
                 anchors.fill: parent
                 anchors.leftMargin: Style.spacing.inset
                 anchors.rightMargin: Style.spacing.inset
-                spacing: Style.space(5)
+                spacing: Style.spacing.xs
 
                 PanelSlider {
                   id: inputSlider
@@ -921,7 +921,7 @@ Panel {
 
                 Rectangle {
                   width: parent.width
-                  height: Math.max(Style.space(5), Style.spacing.xs)
+                  height: Math.max(Style.spacing.xs, Style.spacing.xs)
                   color: Util.alpha(root.bar.foreground, 0.18)
                   opacity: root.inputMuted ? 0.35 : 1.0
 
