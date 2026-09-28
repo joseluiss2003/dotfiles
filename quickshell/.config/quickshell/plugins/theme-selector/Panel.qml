@@ -16,7 +16,6 @@ Item {
   property string currentThemePath: home + "/.config/swayp/current-theme"
 
   property string selectedTheme: ""
-  property string selectedWallpaper: ""
   property string preferredScreenName: ""
   property int themeIndex: 0
 
@@ -28,6 +27,8 @@ Item {
   readonly property int sideWidth: Style.space(250)
   readonly property int sideHeight: Style.space(350)
   readonly property int sideGap: Style.space(18)
+  readonly property int carouselSlots: themeModel.count >= 5 ? 5 : (themeModel.count > 1 ? 3 : 1)
+  readonly property int carouselCenter: Math.floor(carouselSlots / 2)
 
   readonly property var targetScreen: {
     var screens = Quickshell.screens || []
@@ -291,12 +292,12 @@ Item {
       height: root.previewHeight + Style.space(110)
 
       Repeater {
-        model: 5
+        model: root.carouselSlots
 
         delegate: Item {
           id: themeCard
 
-          readonly property int offset: index - 2
+          readonly property int offset: index - root.carouselCenter
           readonly property int themeSlot: root.carouselIndex(offset)
           readonly property bool selected: offset === 0
 
