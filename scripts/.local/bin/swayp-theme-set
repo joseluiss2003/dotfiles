@@ -272,6 +272,10 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     fi
 fi
 
+# Let the wallpaper reveal finish before reloading Sway so the
+# compositor is not disturbed during the visible transition.
+sleep 0.65
+
 if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
     makoctl reload >/dev/null 2>&1 || true
 fi
