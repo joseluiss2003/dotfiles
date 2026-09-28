@@ -25,8 +25,8 @@ Item {
 
   property color background: Color.menu.background
   property color foreground: Color.bar.text
-  property color border: Color.menu.border
-  property color muted: Color.muted
+  property color border: Color.foreground
+  property color muted: Color.foreground
 
   readonly property int themeCardHeight: Style.space(132)
   readonly property int themeCardWidth: Style.space(218)
