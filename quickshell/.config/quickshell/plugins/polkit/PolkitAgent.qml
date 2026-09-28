@@ -289,7 +289,7 @@ Item {
         anchors.rightMargin: card.contentRightInset
         anchors.bottomMargin: card.contentBottomInset
         anchors.leftMargin: card.contentLeftInset
-        spacing: Style.space(14)
+        spacing: Style.spacing.panelGap
 
         Text {
           text: "\uf023"
