@@ -88,12 +88,12 @@ QtObject {
   readonly property color themeSurfaceAltTinted: themeLighterBackground
   readonly property color themeElevatedTinted: themeLighterBackground
 
-  // Bar-specific roles: use the theme's own dark/light layers directly.
-  // The bar background comes from the theme's dark background and its text
-  // uses the lighter foreground, so every theme keeps its native contrast.
+  // Bar-specific roles: keep the same foreground used by Sway's tab text.
+  // The bar background follows the theme's dark layer; normal bar elements
+  // use the theme foreground directly, while active states use the accent.
   readonly property color themeBarBackground: themeDarkBackground
-  readonly property color themeBarForeground: themeLightForeground
-  readonly property color themeBarPassive: themeBarForeground
+  readonly property color themeBarForeground: themeForeground
+  readonly property color themeBarPassive: themeForeground
 
   readonly property real shellOpacity: 0.97
 
