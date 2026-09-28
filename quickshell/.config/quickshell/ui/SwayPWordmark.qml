@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Effects
 import qs.core
 
 Item {
@@ -9,58 +8,23 @@ Item {
   property color highlightColor: Color.brand.highlight
   property color shadowColor: Color.brand.depth
 
-  readonly property real aspectRatio: 1972 / 586
+  // Kept as the canonical source ratio of the supplied artwork.
+  readonly property real aspectRatio: 2528 / 600
   readonly property real logoWidth: Math.min(width, height * aspectRatio)
   readonly property real logoHeight: logoWidth / aspectRatio
   readonly property real logoX: (width - logoWidth) / 2
   readonly property real logoY: (height - logoHeight) / 2
-  readonly property real depthBleed: 1.5
 
   Image {
-    id: depthSource
     x: root.logoX
     y: root.logoY
     width: root.logoWidth
     height: root.logoHeight
-    source: "assets/swayp-wordmark-depth.svg"
+    source: "assets/swayp-wordmark-source.svg"
     fillMode: Image.Stretch
     smooth: false
     mipmap: false
-    visible: false
-  }
-
-  MultiEffect {
-    id: depth
-    x: root.logoX - root.depthBleed
-    y: root.logoY - root.depthBleed
-    width: root.logoWidth + root.depthBleed * 2
-    height: root.logoHeight + root.depthBleed * 2
-    source: depthSource
-    colorizationColor: root.shadowColor
-    colorization: 1.0
-  }
-
-  Image {
-    id: faceSource
-    x: root.logoX
-    y: root.logoY
-    width: root.logoWidth
-    height: root.logoHeight
-    source: "assets/swayp-wordmark-face.svg"
-    fillMode: Image.Stretch
-    smooth: false
-    mipmap: false
-    visible: false
-  }
-
-  MultiEffect {
-    id: face
-    x: root.logoX
-    y: root.logoY
-    width: root.logoWidth
-    height: root.logoHeight
-    source: faceSource
-    colorizationColor: root.color
-    colorization: 1.0
+    sourceSize.width: 2528
+    sourceSize.height: 600
   }
 }
