@@ -733,7 +733,7 @@ Panel {
             anchors.right: parent.right
             anchors.rightMargin: powerSwitch.visible ? powerSwitch.width + Style.space(12) : 0
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(2)
+            spacing: Style.spacing.compactGap
 
             Text {
               text: "Bluetooth"
@@ -770,7 +770,7 @@ Panel {
           id: connectedList
           visible: root.connectedDevices.length > 0
           width: parent.width
-          spacing: Style.space(10)
+          spacing: Style.spacing.sectionGap
 
           PanelSectionHeader {
             text: "CONNECTED"
@@ -805,7 +805,7 @@ Panel {
           id: deviceListView
           width: parent.width
           height: Math.min(contentHeight, Style.space(400))
-          spacing: Style.space(10)
+          spacing: Style.spacing.sectionGap
           clip: true
           boundsBehavior: Flickable.StopAtBounds
           interactive: contentHeight > height
@@ -835,7 +835,7 @@ Panel {
             Column {
               id: delegateColumn
               width: parent.width
-              spacing: Style.space(10)
+              spacing: Style.spacing.sectionGap
 
               PanelSeparator {
                 visible: index > 0 && sectionTitle !== ""
@@ -966,8 +966,8 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: Style.space(10)
-      anchors.rightMargin: Style.space(10)
+      anchors.leftMargin: Style.spacing.sectionGap
+      anchors.rightMargin: Style.spacing.sectionGap
       implicitHeight: Math.max(deviceIcon.implicitHeight, info.implicitHeight, forgetBtn.implicitHeight)
 
       Text {
@@ -985,9 +985,9 @@ Panel {
         id: info
         spacing: Style.space(1)
         anchors.left: deviceIcon.right
-        anchors.leftMargin: Style.space(10)
+        anchors.leftMargin: Style.spacing.sectionGap
         anchors.right: forgetBtn.visible ? forgetBtn.left : parent.right
-        anchors.rightMargin: forgetBtn.visible ? Style.space(8) : 0
+        anchors.rightMargin: forgetBtn.visible ? Style.spacing.controlGap : 0
         anchors.verticalCenter: parent.verticalCenter
 
         Text {
