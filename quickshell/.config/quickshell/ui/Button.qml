@@ -30,6 +30,8 @@ BorderSurface {
   property bool hasCursor: false
   property bool focusable: false
   property bool bordered: false
+  // Optional wallpaper-style cursor: transparent fill, explicit selection ring.
+  property bool selectionBorderOnly: false
 
   // Colors. Defaults track the theme; per-instance overrides are honored.
   property color foreground: Color.foreground
@@ -111,7 +113,7 @@ BorderSurface {
 
   color: mouseArea.pressed ? Style.pressedFillFor(root.foreground, root.accent)
     : _showFocusRing       ? Style.focusFillFor(root.foreground, root.accent)
-    : hot                  ? Style.hoverFillFor(root.foreground, root.accent)
+    : hot && !selectionBorderOnly ? Style.hoverFillFor(root.foreground, root.accent)
     : selected             ? Style.selectedFillFor(root.foreground, root.accent)
     : active               ? Style.selectedFillFor(root.foreground, root.accent)
     : background
@@ -123,7 +125,9 @@ BorderSurface {
   // default for plain buttons; explicitly bordered buttons keep their
   // normal border when selected unless selected-border-width opts in to a
   // dedicated selected border.
-  borderSpec: _borderSpec
+  borderSpec: selectionBorderOnly && hot
+    ? Border.withWidth(Border.flat(root.accent, 0), Style.space(3))
+    : _borderSpec
 
   Behavior on color { ColorAnimation { duration: 120 } }
 
