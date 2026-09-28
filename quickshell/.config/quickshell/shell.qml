@@ -39,18 +39,8 @@ ShellRoot {
     themeTransitionColor = value
     themeTransitionActive = true
     themeTransitionSerial += 1
-    themeTransitionRevealTimer.restart()
     themeTransitionFinishTimer.restart()
     return "ok"
-  }
-
-  Timer {
-    id: themeTransitionRevealTimer
-    interval: 55
-    repeat: false
-    onTriggered: {
-      themeTransitionAnimation.restart()
-    }
   }
 
   Timer {
@@ -1617,6 +1607,16 @@ Component.onCompleted: {
         required property var modelData
         screen: modelData
         visible: shell.themeTransitionActive
+
+        Connections {
+          target: shell
+
+          function onThemeTransitionSerialChanged() {
+            themeTransitionScale.xScale = 1
+            themeTransitionAnimation.restart()
+          }
+        }
+
         color: "transparent"
         aboveWindows: true
         exclusionMode: ExclusionMode.Ignore
