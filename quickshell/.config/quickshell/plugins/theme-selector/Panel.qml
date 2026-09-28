@@ -121,6 +121,23 @@ Item {
     return value
   }
 
+  // Circular carousel offset: each theme keeps its own delegate so changing
+  // selection moves the actual cards through the carousel instead of swapping
+  // their contents in fixed slots. This gives the theme picker the same
+  // sliding motion as the wallpaper picker.
+  function carouselOffset(index) {
+    var count = themeModel.count
+    if (count <= 1) return 0
+
+    var delta = index - root.themeIndex
+    var half = Math.floor(count / 2)
+
+    if (delta > half) delta -= count
+    if (delta < -half) delta += count
+
+    return delta
+  }
+
   function applySelection() {
     if (!root.selectedTheme || applyProc.running) return
 
@@ -292,46 +309,46 @@ Item {
       height: root.previewHeight + Style.space(110)
 
       Repeater {
-        model: root.carouselSlots
+        model: themeModel
 
         delegate: Item {
           id: themeCard
 
-          readonly property int offset: index - root.carouselCenter
-          readonly property int themeSlot: root.carouselIndex(offset)
-          readonly property bool selected: offset === 0
+          required property int index
+
+          readonly property int relativeIndex: root.carouselOffset(index)
+          readonly property bool nearby: Math.abs(relativeIndex) <= root.carouselCenter
+          readonly property bool selected: index === root.themeIndex
+          readonly property var themeData: themeModel.get(index)
+
+          visible: nearby
 
           width: selected ? root.previewWidth : root.sideWidth
           height: selected ? root.previewHeight : root.sideHeight
-          visible: themeSlot >= 0
           x: selected
-            ? (carousel.width - width) / 2
-            : (carousel.width - root.previewWidth) / 2
-                + (offset < 0
-                    ? offset * (root.sideWidth + root.sideGap) - root.sideGap
-                    : root.previewWidth + root.sideGap + (offset - 1) * (root.sideWidth + root.sideGap))
+            ? (carousel.width - root.previewWidth) / 2
+            : (relativeIndex < 0
+                ? (carousel.width - root.previewWidth) / 2
+                    + relativeIndex * (root.sideWidth + root.sideGap)
+                    - root.sideGap
+                : (carousel.width - root.previewWidth) / 2
+                    + root.previewWidth + root.sideGap
+                    + (relativeIndex - 1) * (root.sideWidth + root.sideGap))
           y: selected
             ? 0
             : (root.previewHeight - root.sideHeight) / 2
-          z: selected ? 100 : 50 - Math.abs(offset)
-          opacity: selected ? 1 : (Math.abs(offset) === 1 ? 0.72 : 0.34)
+          z: selected ? 100 : 50 - Math.abs(relativeIndex)
+          opacity: selected ? 1 : (Math.abs(relativeIndex) === 1 ? 0.72 : 0.34)
           scale: selected ? 1 : 0.96
 
           Behavior on x {
             NumberAnimation {
-              duration: 150
+              duration: 180
               easing.type: Easing.OutCubic
             }
           }
 
-          Behavior on opacity {
-            NumberAnimation {
-              duration: 150
-              easing.type: Easing.OutCubic
-            }
-          }
-
-          Behavior on scale {
+          Behavior on y {
             NumberAnimation {
               duration: 180
               easing.type: Easing.OutCubic
@@ -352,7 +369,14 @@ Item {
             }
           }
 
-          Behavior on y {
+          Behavior on opacity {
+            NumberAnimation {
+              duration: 180
+              easing.type: Easing.OutCubic
+            }
+          }
+
+          Behavior on scale {
             NumberAnimation {
               duration: 180
               easing.type: Easing.OutCubic
