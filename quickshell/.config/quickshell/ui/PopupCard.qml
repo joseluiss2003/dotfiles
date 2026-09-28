@@ -191,22 +191,10 @@ PanelWindow {
     }
   }
 
-  readonly property real animationDistance: Style.space(8)
-  readonly property real animationOffsetX: {
-    if (barPos === "left") return animationDistance
-    if (barPos === "right") return -animationDistance
-    return 0
-  }
-  readonly property real animationOffsetY: {
-    if (barPos === "top") return animationDistance
-    if (barPos === "bottom") return -animationDistance
-    return 0
-  }
-
   BorderSurface {
     id: card
-    x: root.cardOrigin.x + (root.open || root.popoutSwitching ? 0 : root.animationOffsetX)
-    y: root.cardOrigin.y + (root.open || root.popoutSwitching ? 0 : root.animationOffsetY)
+    x: root.cardOrigin.x
+    y: root.cardOrigin.y
     width: root.contentWidth
     height: root.contentHeight
     color: Color.popups.background
@@ -215,28 +203,9 @@ PanelWindow {
     radius: 0
     opacity: root.open || root.popoutSwitching ? 1.0 : 0
 
-    Behavior on x {
-      enabled: !root.popoutSwitching && !root.popoutSwitchClosing
-      NumberAnimation {
-        duration: root.open ? 180 : 140
-        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
-      }
-    }
-
-    Behavior on y {
-      enabled: !root.popoutSwitching && !root.popoutSwitchClosing
-      NumberAnimation {
-        duration: root.open ? 180 : 140
-        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
-      }
-    }
-
     Behavior on opacity {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
-      NumberAnimation {
-        duration: root.open ? 180 : 140
-        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
-      }
+      NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
     }
 
     MouseArea {
