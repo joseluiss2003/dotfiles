@@ -448,9 +448,12 @@ Item {
               readonly property bool matched: root.itemMatches(index)
               readonly property int relativeIndex: root.filteredPosition(index) - root.selectedFilteredPosition()
               readonly property bool selected: matched && index === root.selectedIndex
+              // Keep the new carousel compact, but preload a wider window so
+              // moving through the pool never reveals an unloaded thumbnail.
               readonly property bool nearby: matched && Math.abs(relativeIndex) <= 2
-              property bool sourceActivated: nearby
-              onNearbyChanged: if (nearby) sourceActivated = true
+              readonly property bool preloadable: matched && Math.abs(relativeIndex) <= 16
+              property bool sourceActivated: preloadable
+              onPreloadableChanged: if (preloadable) sourceActivated = true
 
               visible: nearby
               x: selected ? carousel.previewX : (relativeIndex < 0 ? carousel.previewX + relativeIndex * carousel.itemStep : carousel.previewX + root.expandedWidth + root.sliceSpacing + (relativeIndex - 1) * carousel.itemStep)
