@@ -18,7 +18,9 @@ QtObject {
   property var paletteColors: []
   property var semanticColors: ({})
   property bool paletteValid: false
-  // Shared timing signal for theme palette changes. Consumers use this only\n  // for theme-driven color interpolation, keeping hover/interaction motion fast.\n  property bool themeTransitionActive: false
+  // Shared timing signal for theme palette changes. Consumers use this only
+  // for theme-driven color interpolation, keeping hover/interaction motion fast.
+  property bool themeTransitionActive: false
 
   function colorFromValue(value, fallback) {
     if (typeof value !== "string" || !/^#[0-9A-Fa-f]{6}$/.test(value))
@@ -241,7 +243,8 @@ QtObject {
 
   function parseShell(raw) {
     var parsed = {}
-    var lines = String(raw || "").split("\n")
+    var lines = String(raw || "").split("
+")
     var section = ""
     for (var i = 0; i < lines.length; i++) {
       var line = lines[i].replace(/^\s+|\s+$/g, "")
@@ -276,12 +279,23 @@ QtObject {
     mergeShell()
   }
 
-  Timer {\n    id: themeTransitionTimer\n    interval: 1200\n    repeat: false\n    onTriggered: root.themeTransitionActive = false\n  }\n\n  property FileView paletteFile: FileView {
+  Timer {
+    id: themeTransitionTimer
+    interval: 1200
+    repeat: false
+    onTriggered: root.themeTransitionActive = false
+  }
+
+  property FileView paletteFile: FileView {
     path: root.palettePath
     watchChanges: true
     printErrors: false
     onLoaded: root.parsePalette(text())
-    onFileChanged: {\n      root.themeTransitionActive = true\n      themeTransitionTimer.restart()\n      reload()\n    }
+    onFileChanged: {
+      root.themeTransitionActive = true
+      themeTransitionTimer.restart()
+      reload()
+    }
     onLoadFailed: root.paletteValid = false
   }
 
