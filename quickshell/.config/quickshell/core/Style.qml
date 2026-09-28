@@ -252,7 +252,6 @@ QtObject {
     readonly property int itemDuration: 145
     readonly property int scrimDuration: 100
   }
-  }
 
   readonly property QtObject spacing: QtObject {
     readonly property real scale: root.effectiveSpacingScale
