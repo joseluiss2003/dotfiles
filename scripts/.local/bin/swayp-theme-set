@@ -232,41 +232,37 @@ write("fastfetch.jsonc", f'''{{
     "type": "file",
     "source": "{fastfetch_logo}",
     "color": {{
-      "1": "{accent}",
-      "2": "{accent}",
-      "3": "{accent}",
-      "4": "{accent}",
-      "5": "{accent}",
-      "6": "{accent}"
+      "1": "{fg}",
+      "2": "{fg}",
+      "3": "{fg}",
+      "4": "{fg}",
+      "5": "{fg}",
+      "6": "{fg}"
     }},
     "padding": {{ "top": 1, "right": 6, "left": 1 }}
   }},
   "display": {{
     "disableLinewrap": true,
-    "color": {{
-      "keys": "{fg}",
-      "output": "{fg}",
-      "separator": "{muted}"
-    }},
+    "color": {{ "keys": "{fg}", "output": "{fg}", "separator": "{muted}" }},
     "key": {{ "width": 14, "type": "string" }}
   }},
   "modules": [
     "break",
-    {{ "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Hardware ───────────────────┐" }},
-    {{ "type": "host", "key": " PC", "keyColor": "{accent}" }},
-    {{ "type": "cpu", "key": " CPU", "keyColor": "{accent}" }},
-    {{ "type": "gpu", "key": " GPU", "keyColor": "{accent}" }},
-    {{ "type": "memory", "key": " Memoria", "keyColor": "{accent}" }},
-    {{ "type": "disk", "key": " Disco", "keyColor": "{accent}", "folders": ["/"] }},
+    {{ "type": "custom", "outputColor": "{muted}", "format": "┌──────────────────────Hardware────────────────────┐" }},
+    {{ "type": "host", "key": " PC" }},
+    {{ "type": "cpu", "key": " CPU" }},
+    {{ "type": "gpu", "key": " GPU" }},
+    {{ "type": "memory", "key": " Memoria" }},
+    {{ "type": "disk", "key": " Disco", "folders": ["/"] }},
     {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }},
     "break",
-    {{ "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Software ───────────────────┐" }},
-    {{ "type": "os", "key": " OS", "keyColor": "{accent}" }},
-    {{ "type": "kernel", "key": " Kernel", "keyColor": "{accent}" }},
-    {{ "type": "de", "key": " Entorno", "keyColor": "{accent}" }},
-    {{ "type": "shell", "key": " Shell", "keyColor": "{accent}" }},
-    {{ "type": "terminal", "key": " Terminal", "keyColor": "{accent}" }},
-    {{ "type": "packages", "key": " Paquetes", "keyColor": "{accent}" }},
+    {{ "type": "custom", "outputColor": "{muted}", "format": "┌──────────────────────Software────────────────────┐" }},
+    {{ "type": "os", "key": " OS" }},
+    {{ "type": "kernel", "key": " Kernel" }},
+    {{ "type": "de", "key": " Entorno" }},
+    {{ "type": "shell", "key": " Shell" }},
+    {{ "type": "terminal", "key": " Terminal" }},
+    {{ "type": "packages", "key": " Paquetes" }},
     {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }}
   ]
 }}''')
