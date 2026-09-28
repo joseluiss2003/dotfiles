@@ -302,7 +302,7 @@ Panel {
                 anchors.baseline: heroDate.baseline
                 text: "󰃭"
                 color: heroMouse.containsMouse
-                  ? Style.hoverStateColor(root.contentForeground, Color.accent)
+                  ? Style.hoverStateColor(root.contentForeground, Color.foreground)
                   : root.contentForeground
                 font.family: root.contentFontFamily
                 // Decorative, and deliberately outside the Style.font.*
@@ -317,7 +317,7 @@ Panel {
                 anchors.verticalCenter: parent.verticalCenter
                 text: Qt.formatDate(root.today, "MMMM d")
                 color: heroMouse.containsMouse
-                  ? Style.hoverStateColor(root.contentForeground, Color.accent)
+                  ? Style.hoverStateColor(root.contentForeground, Color.foreground)
                   : root.contentForeground
                 font.family: root.contentFontFamily
                 font.pixelSize: 52
@@ -372,7 +372,7 @@ Panel {
                 Text {
                   anchors.verticalCenter: parent.verticalCenter
                   text: "BORN"
-                  color: Color.muted
+                  color: Color.foreground
                   font.family: root.contentFontFamily
                   font.pixelSize: Style.font.bodySmall
                   font.letterSpacing: 1
@@ -395,7 +395,7 @@ Panel {
                   anchors.verticalCenterOffset: 0
                   leftPadding: Style.space(6)
                   text: "LIVE TO"
-                  color: Color.muted
+                  color: Color.foreground
                   font.family: root.contentFontFamily
                   font.pixelSize: Style.font.bodySmall
                   font.letterSpacing: 1
@@ -421,7 +421,7 @@ Panel {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.today.getFullYear()
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.contentFontFamily
                 font.pixelSize: Style.font.bodySmall
                 font.letterSpacing: 1
@@ -455,7 +455,7 @@ Panel {
                   width: Math.round(parent.width * root.yearDone)
                   height: parent.height
                   radius: parent.radius
-                  color: Color.accent
+                  color: Color.foreground
 
                   Behavior on width { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
                 }
@@ -482,7 +482,7 @@ Panel {
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
                 text: "LIFE"
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.contentFontFamily
                 font.pixelSize: Style.font.bodySmall
                 font.letterSpacing: 1
@@ -513,7 +513,7 @@ Panel {
                   width: Math.round(parent.width * root.lifeDone)
                   height: parent.height
                   radius: parent.radius
-                  color: Color.accent
+                  color: Color.foreground
 
                   Behavior on width { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
                 }
@@ -575,15 +575,15 @@ Panel {
                   height: Style.space(16)
                   radius: Style.cornerRadius
                   color: weekStartMouse.containsMouse
-                    ? Style.hoverFillFor(root.contentForeground, Color.accent)
+                    ? Style.hoverFillFor(root.contentForeground, Color.foreground)
                     : "transparent"
 
                   Text {
                     anchors.centerIn: parent
                     text: "W"
                     color: weekStartMouse.containsMouse
-                      ? Style.hoverStateColor(root.contentForeground, Color.accent)
-                      : Color.outline
+                      ? Style.hoverStateColor(root.contentForeground, Color.foreground)
+                      : Color.foreground
                     font.family: root.contentFontFamily
                     font.pixelSize: Style.font.caption
                     font.letterSpacing: 1
@@ -621,7 +621,7 @@ Panel {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     text: root.weekdayLabel(modelData)
-                    color: Color.muted
+                    color: Color.foreground
                     font.family: root.contentFontFamily
                     font.pixelSize: Style.font.caption
                     font.letterSpacing: 1
@@ -644,7 +644,7 @@ Panel {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     text: modelData.week
-                    color: Color.outline
+                    color: Color.foreground
                     font.family: root.contentFontFamily
                     font.pixelSize: Style.font.caption
                   }
@@ -667,15 +667,15 @@ Panel {
                       // over a grid this quiet.
                       color: "transparent"
                       border.width: modelData.today ? Style.spacing.hairline : 0
-                      border.color: Style.normalBorderFor(root.contentForeground, Color.accent)
+                      border.color: Style.normalBorderFor(root.contentForeground, Color.foreground)
 
                       Text {
                         textFormat: Text.PlainText
                         anchors.centerIn: parent
                         text: modelData.day
                         color: modelData.inMonth
-                          ? (modelData.weekend ? Color.muted : root.contentForeground)
-                          : Color.outline
+                          ? (modelData.weekend ? Color.foreground : root.contentForeground)
+                          : Color.foreground
                         font.family: root.contentFontFamily
                         font.pixelSize: Style.font.body
                         font.bold: modelData.today
@@ -724,7 +724,7 @@ Panel {
                 width: Style.space(130)
                 horizontalAlignment: Text.AlignHCenter
                 text: Qt.formatDate(root.viewDate, "MMMM yyyy").toUpperCase()
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.contentFontFamily
                 font.pixelSize: Style.font.body
                 font.letterSpacing: 1
@@ -738,7 +738,7 @@ Panel {
                 anchors.verticalCenter: parent.verticalCenter
                 iconText: "󰅁"
                 tooltipText: "Previous month"
-                foreground: Color.accent
+                foreground: Color.foreground
                 fontFamily: root.contentFontFamily
                 onClicked: root.moveMonth(-1)
               }
@@ -749,7 +749,7 @@ Panel {
                 anchors.verticalCenter: parent.verticalCenter
                 iconText: "󰅂"
                 tooltipText: "Next month"
-                foreground: Color.accent
+                foreground: Color.foreground
                 fontFamily: root.contentFontFamily
                 onClicked: root.moveMonth(1)
               }
