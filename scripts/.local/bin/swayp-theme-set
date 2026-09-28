@@ -244,7 +244,7 @@ write("fastfetch.jsonc", f'''{{
     "type": "kitty",
     "source": "{fastfetch_logo}",
     "width": 32,
-    "height": 27,
+    "height": 14,
     "color": {{
       "1": "{logo_colors[0]}",
       "2": "{logo_colors[1]}",
