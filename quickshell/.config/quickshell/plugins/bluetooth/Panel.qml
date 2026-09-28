@@ -105,10 +105,10 @@ Panel {
   readonly property string toggleHint: root.adapter && root.adapter.enabled ? "Turn Bluetooth off" : "Turn Bluetooth on"
 
   readonly property color hoverFill: bar
-    ? Style.hoverFillFor(bar.foreground, Color.accent)
+    ? Style.hoverFillFor(bar.foreground, Color.foreground)
     : "transparent"
   readonly property color selectedFill: bar
-    ? Style.selectedFillFor(bar.foreground, Color.accent)
+    ? Style.selectedFillFor(bar.foreground, Color.foreground)
     : "transparent"
 
   function sectionCount(section) {
@@ -749,7 +749,7 @@ Panel {
               id: heroStatus
               textFormat: Text.PlainText
               text: root.heroStatusText.toUpperCase()
-              color: Color.muted
+              color: Color.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
@@ -868,7 +868,7 @@ Panel {
           text: !root.adapter ? "No Bluetooth adapter"
               : !root.adapter.enabled ? "Turn Bluetooth on to scan"
               : "Scanning for devices…"
-          color: Color.muted
+          color: Color.foreground
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.bodySmall
           wrapMode: Text.WordWrap
@@ -923,7 +923,7 @@ Panel {
     readonly property color statusColor: {
       if (isConnected) return root.bar.foreground
       if (action !== "" || devState === 3 || dev.pairing === true) return root.bar.foreground
-      return Color.muted
+      return Color.foreground
     }
 
     implicitHeight: rowContent.implicitHeight + Style.spacing.rowPaddingX
