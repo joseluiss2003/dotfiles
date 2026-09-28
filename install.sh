@@ -83,6 +83,7 @@ PACKAGES=(
   pipewire-alsa
   pipewire-jack
   pipewire-pulse
+  pinta
   playerctl
   plocate
   polkit-gnome
