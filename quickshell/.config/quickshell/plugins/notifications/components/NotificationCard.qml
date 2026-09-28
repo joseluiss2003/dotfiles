@@ -35,8 +35,12 @@ BorderSurface {
   property int originalId: 0
 
   signal imagePersisted(string path)
+  // Emitted when a removal/archive request has finished preparing the image.
+  // The popup container waits for this before moving the entry to history.
+  signal imagePersistenceCompleted()
 
   property bool imagePersistencePending: false
+  property bool archivePersistenceRequested: false
   readonly property string persistedImagePath:
     imagePersistenceDir.length > 0 && originalId !== 0 && timestamp !== 0
       ? imagePersistenceDir + String(timestamp) + "-" + String(originalId) + "-image.png"
@@ -142,8 +146,20 @@ BorderSurface {
 
           function persistTransientImage() {
             if (root.imagePersistencePending) return
-            if (root.imagePersistenceDir.length === 0 || root.persistedImagePath.length === 0) return
-            if (root.smallIconSource.indexOf("image://") !== 0) return
+            if (root.imagePersistenceDir.length === 0 || root.persistedImagePath.length === 0) {
+              if (root.archivePersistenceRequested) {
+                root.archivePersistenceRequested = false
+                root.imagePersistenceCompleted()
+              }
+              return
+            }
+            if (root.smallIconSource.indexOf("image://") !== 0) {
+              if (root.archivePersistenceRequested) {
+                root.archivePersistenceRequested = false
+                root.imagePersistenceCompleted()
+              }
+              return
+            }
             if (smallIconImage.status !== Image.Ready) return
 
             root.imagePersistencePending = true
@@ -157,11 +173,48 @@ BorderSurface {
               }
               root.imagePersistencePending = false
               if (saved) root.imagePersisted(target)
+              if (root.archivePersistenceRequested) {
+                root.archivePersistenceRequested = false
+                root.imagePersistenceCompleted()
+              }
             })
-            if (!started) root.imagePersistencePending = false
+            if (!started) {
+              root.imagePersistencePending = false
+              if (root.archivePersistenceRequested) {
+                root.archivePersistenceRequested = false
+                root.imagePersistenceCompleted()
+              }
+            }
           }
 
-          onStatusChanged: if (status === Image.Ready) persistTransientImage()
+          // Called immediately before a popup is archived/dismissed. A
+          // transient image:// provider may disappear as soon as the sender
+          // closes the notification, so give the rendered Image a chance to
+          // become a durable file before the popup row is removed.
+          function prepareForPersistence() {
+            if (root.smallIconSource.indexOf("image://") !== 0) {
+              root.imagePersistenceCompleted()
+              return
+            }
+
+            root.archivePersistenceRequested = true
+            if (smallIconImage.status === Image.Ready) {
+              persistTransientImage()
+            } else if (smallIconImage.status === Image.Error) {
+              root.archivePersistenceRequested = false
+              root.imagePersistenceCompleted()
+            }
+          }
+
+          onStatusChanged: {
+            if (status === Image.Ready) {
+              persistTransientImage()
+            } else if (status === Image.Error && root.archivePersistenceRequested) {
+              root.archivePersistenceRequested = false
+              root.imagePersistenceCompleted()
+            }
+          }
+
           onSourceChanged: root.imagePersistencePending = false
 
           visible: !root.hasGlyph || smallIconImage.status === Image.Ready
@@ -259,6 +312,20 @@ BorderSurface {
       hoverEnabled: true
       cursorShape: Qt.PointingHandCursor
       onClicked: root.closeRequested()
+    }
+  }
+
+  // Bound the archive wait. If an image provider never becomes ready, the
+  // notification must still leave the popup; the existing history patcher can
+  // fill the image later if the grab callback completes after archival.
+  Timer {
+    id: archivePersistenceTimeout
+    interval: 1000
+    repeat: false
+    onTriggered: {
+      if (!root.archivePersistenceRequested) return
+      root.archivePersistenceRequested = false
+      root.imagePersistenceCompleted()
     }
   }
 
