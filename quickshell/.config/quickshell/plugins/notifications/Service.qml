@@ -335,8 +335,10 @@ Item {
     // rendered image into imagesDir. The card has a bounded timeout, so a
     // broken provider can never keep a toast on screen forever.
     var fileName = NotificationLogic.popupFileName(entry)
+    var transientImage = String(entry.image || "")
+    if (!transientImage) transientImage = String(entry.appIcon || "")
     if (card && typeof card.prepareForPersistence === "function" &&
-        String(entry.image || "").indexOf("image://") === 0 &&
+        transientImage.indexOf("image://") === 0 &&
         !pendingPopupRemovals[fileName]) {
       var nextPending = ({})
       for (var key in pendingPopupRemovals) nextPending[key] = pendingPopupRemovals[key]
