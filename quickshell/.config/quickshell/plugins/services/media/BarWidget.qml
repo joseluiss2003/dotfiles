@@ -236,8 +236,8 @@ BarWidget {
             anchors.left: parent.left
             anchors.leftMargin: Style.space(14)
             anchors.verticalCenter: parent.verticalCenter
-            color: Util.alpha(Color.text, 0.045)
-            borderSpec: Border.controlSpec("normal", Color.text, Color.foreground)
+            color: Color.controls.background
+            borderSpec: Border.controlSpec("normal", Color.controls.border, Color.controls.text)
             radius: 0
             clip: true
 
@@ -402,12 +402,11 @@ BarWidget {
                 x: Style.space(10)
                 height: Style.space(38)
                 radius: 0
-                color: selected
-                  ? Util.alpha(Color.text, 0.075)
-                  : Util.alpha(Color.text, 0.025)
-                borderSpec: selected
-                  ? Border.flat(Util.alpha(Color.text, 0.16), Math.max(1, Style.space(1)))
-                  : Border.flat(Util.alpha(Color.popups.border, 0.18), Math.max(1, Style.space(1)))
+                color: selected ? Color.controls.activeBackground : Color.controls.background
+                borderSpec: Border.flat(
+                  selected ? Color.controls.selectedBorder : Color.controls.border,
+                  Math.max(1, Style.space(1))
+                )
 
                 Row {
                   anchors.fill: parent
@@ -461,7 +460,7 @@ BarWidget {
                   Rectangle {
                     anchors.fill: parent
                     z: -1
-                    color: Util.alpha(Color.text, 0.055)
+                    color: Color.controls.hoverBackground
                     visible: parent.containsMouse && !sourceRow.selected
                   }
 
@@ -486,17 +485,18 @@ BarWidget {
     height: Style.space(38)
     radius: 0
     color: controlMouse.containsMouse
-      ? Util.alpha(Color.text, 0.075)
-      : Util.alpha(Color.text, 0.025)
-    borderSpec: controlMouse.containsMouse
-      ? Border.flat(Util.alpha(Color.text, 0.16), Math.max(1, Style.space(1)))
-      : Border.flat(Util.alpha(Color.popups.border, 0.18), Math.max(1, Style.space(1)))
+      ? Color.controls.hoverBackground
+      : Color.controls.background
+    borderSpec: Border.flat(
+      controlMouse.containsMouse ? Color.controls.selectedBorder : Color.controls.border,
+      Math.max(1, Style.space(1))
+    )
     opacity: enabled ? 1.0 : 0.35
 
     Text {
       anchors.centerIn: parent
       text: control.iconText
-      color: Color.text
+      color: Color.controls.text
       font.family: root.bar.fontFamily
       font.pixelSize: control.emphasized ? Style.font.display : Style.font.iconLarge
     }
