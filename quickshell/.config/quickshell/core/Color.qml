@@ -124,9 +124,10 @@ QtObject {
   readonly property color themeSurfaceAltTinted: themeLighterBackground
   readonly property color themeElevatedTinted: themeLighterBackground
 
-  // The bar keeps the same surface as Sway's tabs. Normal applets use the
+  // Keep the bar on the same base background as Sway and Kitty so the
+  // whole desktop shares one continuous surface. Normal applets use the
   // same foreground as the clock; accent is reserved for active/hover states.
-  readonly property color themeBarBackground: themeLighterBackground
+  readonly property color themeBarBackground: themeBackground
   readonly property color themeBarForeground: themeForeground
   readonly property color themeBarPassive: themeForeground
 
