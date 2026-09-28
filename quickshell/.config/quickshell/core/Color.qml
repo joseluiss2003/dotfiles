@@ -88,12 +88,12 @@ QtObject {
   readonly property color themeSurfaceAltTinted: themeLighterBackground
   readonly property color themeElevatedTinted: themeLighterBackground
 
-  // Bar-specific roles: lift the bar slightly from the base background.
-  // The bar keeps the theme foreground as its base text color; individual
-  // applets apply a restrained tint toward the theme's own accent.
-  readonly property color themeBarBackground: mix(themeBackground, themeLighterBackground, 0.24)
-  readonly property color themeBarForeground: themeForeground
-  readonly property color themeBarPassive: mix(themeForeground, themeAccent, 0.18)
+  // Bar-specific roles: use the theme's own dark/light layers directly.
+  // The bar background comes from the theme's dark background and its text
+  // uses the lighter foreground, so every theme keeps its native contrast.
+  readonly property color themeBarBackground: themeDarkBackground
+  readonly property color themeBarForeground: themeLightForeground
+  readonly property color themeBarPassive: themeBarForeground
 
   readonly property real shellOpacity: 0.97
 
