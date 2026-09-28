@@ -152,7 +152,7 @@ Item {
 
     root.applying = true
     root.close()
-    applyProc.command = ["swayp-theme-set", root.selectedTheme]
+    applyProc.command = [root.home + "/.local/bin/swayp-theme-set", root.selectedTheme]
     applyProc.running = true
   }
 
