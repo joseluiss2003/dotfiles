@@ -62,5 +62,5 @@ exec fastfetch \
   --config "$HOME/.config/swayp/generated/fastfetch.jsonc" \
   --logo "$LOGO" \
   --logo-type kitty \
-  --logo-width 28 \
+  --logo-width 34 \
   "$@"
