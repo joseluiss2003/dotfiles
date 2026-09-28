@@ -404,6 +404,8 @@ Panel {
                 body: row.body
                 image: row.image
                 glyph: row.glyph
+                originalId: row.originalId
+                imagePersistenceDir: root.notificationService ? root.notificationService.imagesDir : ""
                 urgency: row.urgency
                 timestamp: row.timestamp
                 cornerRadius: 0
