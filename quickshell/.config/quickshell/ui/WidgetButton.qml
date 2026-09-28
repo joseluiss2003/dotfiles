@@ -12,8 +12,9 @@ Item {
   property color foreground: bar ? bar.barForeground : Color.foreground
   property color activeColor: Color.accent
   property color hoverColor: Color.accent
-  // Passive widgets use the bar foreground tint; active/hover states retain the full accent.
-  property color passiveColor: Color.bar.text
+  // Passive widgets get a restrained tint of the theme's own accent.
+  // Active and hover states use the full accent for a clear hierarchy.
+  property color passiveColor: Color.themeBarPassive
   property bool active: false
   property real horizontalMargin: 8.5
   property real verticalPadding: 6
