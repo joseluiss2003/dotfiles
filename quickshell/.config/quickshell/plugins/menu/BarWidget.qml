@@ -67,7 +67,7 @@ BarWidget {
       id: card
       anchors.fill: parent
       color: Color.popups.background
-      borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Style.popup.borderWidth)
+      borderSpec: Border.surfaceSpec("popups", "border", Util.alpha(Color.popups.border, 0.42), Style.popup.borderWidth)
       radius: 0
       clip: true
 
@@ -92,20 +92,12 @@ BarWidget {
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.popup.sectionGap
 
-            Rectangle {
-              width: Style.space(46)
-              height: width
-              color: Util.alpha(Color.brand.accent, 0.12)
-              border.width: Style.normalBorderWidth
-              border.color: Util.alpha(Color.brand.accent, 0.35)
+            Text {
+              text: "⏻"
+              color: Color.brand.accent
+              font.family: root.bar.fontFamily
+              font.pixelSize: Style.font.iconLarge
               anchors.verticalCenter: parent.verticalCenter
-
-              SwayPMark {
-                anchors.centerIn: parent
-                width: Style.space(30)
-                height: Style.space(30)
-                color: Color.brand.accent
-              }
             }
 
             Column {
