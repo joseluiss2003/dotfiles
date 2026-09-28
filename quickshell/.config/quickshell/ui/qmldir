@@ -29,6 +29,7 @@ PointerMoveGate 1.0 PointerMoveGate.qml
 ScreenMoveRemap 1.0 ScreenMoveRemap.qml
 SwayPMark 1.0 SwayPMark.qml
 SwayPWordmark 1.0 SwayPWordmark.qml
+PowerSessionMark 1.0 PowerSessionMark.qml
 PopupCard 1.0 PopupCard.qml
 SearchableDropdown 1.0 SearchableDropdown.qml
 SpeedTestOverlay 1.0 SpeedTestOverlay.qml
