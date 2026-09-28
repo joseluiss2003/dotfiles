@@ -685,7 +685,7 @@ Panel {
         Column {
           id: panelColumn
           width: scrollArea.availableWidth
-          spacing: Style.space(14)
+          spacing: Style.spacing.panelGap
 
           // ---------- Hero: speaker icon · title/status ----------
           Item {
@@ -729,7 +729,7 @@ Panel {
             Column {
               id: heroLabels
               anchors.left: heroIcon.right
-              anchors.leftMargin: Style.space(14)
+              anchors.leftMargin: Style.spacing.panelGap
               anchors.right: parent.right
               anchors.rightMargin: powerSwitch.width + Style.space(12)
               anchors.verticalCenter: parent.verticalCenter
