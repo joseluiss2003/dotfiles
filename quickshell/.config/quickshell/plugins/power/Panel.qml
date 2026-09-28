@@ -426,7 +426,7 @@ Panel {
         Row {
           visible: root.batteryInfo.percentage !== undefined
           width: parent.width
-          spacing: Style.space(20)
+          spacing: Style.spacing.wideGap
 
           Column {
             width: (parent.width - parent.spacing) / 2
