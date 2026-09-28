@@ -248,6 +248,7 @@ QtObject {
     readonly property int switchDelay: 150
     readonly property int contentFadeOutDuration: 180
     readonly property int contentFadeInDuration: 260
+    readonly property int hoverDuration: 140
   }
 
   // Shared motion for fullscreen selectors (theme/wallpaper). These surfaces
