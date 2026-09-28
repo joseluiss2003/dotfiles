@@ -47,22 +47,12 @@ PanelWindow {
   property var borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Math.max(1, Style.space(2)))
   property bool centerOnBar: false
   property bool open: false
-  // Panels that provide their own card surface can disable the wrapper fill.
   property bool drawBackground: true
-  // Override the wrapper surface alpha for panels that need visible translucency.
-  // The RGB remains the shared themed popup surface.
   property color backgroundColor: Color.popups.background
-  property int gap: Style.gapsOut  // distance between bar edge and panel
+  property int gap: Style.gapsOut
   property bool popoutSwitching: false
   property bool popoutSwitchClosing: false
   property bool focusPrimed: false
-
-  // Item that should take keyboard focus once the panel maps. Typically a
-  // PanelKeyCatcher inside the panel content. Layer-shell grants focus to the
-  // surface during the Exclusive prime, but Qt still needs an active-focus
-  // target inside the surface for Keys.onPressed handlers to fire. Schedule
-  // the focus through Qt.callLater so it runs after the surface is fully
-  // mapped and child items have completed layout.
   property Item focusTarget: null
 
   default property alias contentItem: contentHolder.children
@@ -80,40 +70,20 @@ PanelWindow {
     if (open && backingWindowVisible) focusPrimeTimer.restart()
   }
 
-  // --- screen + lifetime ---------------------------------------------------
-
   screen: anchorWindow ? anchorWindow.screen : null
   visible: open || card.opacity > 0 || popoutSwitching
   color: "transparent"
-  // Popup cards use the shared themed surface with alpha; keep the layer surface composited
-  // so wallpaper can actually show through the 97% shell surface.
   surfaceFormat.opaque: false
   exclusionMode: ExclusionMode.Ignore
 
   WlrLayershell.namespace: "swayp-keyboard-panel"
   WlrLayershell.layer: WlrLayer.Overlay
-  // Keyboard focus follows `open` (NOT `visible`). The window remains
-  // mapped during the fade-out so the opacity animation has something to
-  // animate, but keyboard/click ownership must release the moment the
-  // logical close fires — otherwise the user is locked out for 140ms.
-  //
-  // Prime with Exclusive on every open, then settle on OnDemand.
-  // focuses OnDemand when a surface first maps, but not when an already-mapped
-  // fade-out surface changes from None back to OnDemand. Exclusive also takes
-  // focus when the previously focused application has constrained the pointer.
-  // The brief prime covers both cases; OnDemand then releases compositor-wide
-  // pointer hit-testing so clicks can reach the dismissal windows below.
   WlrLayershell.keyboardFocus: open
     ? (focusPrimed ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.Exclusive)
     : WlrKeyboardFocus.None
 
   onBackingWindowVisibleChanged: beginFocusPrime()
 
-  // Full-screen layer-shell. The visible card is positioned inside via
-  // `cardOrigin`. The `mask` below makes the bar area click-through (so
-  // the user can click another bar icon while the panel is open and the
-  // activePopout coordinator swaps to that popup); everywhere else, the
-  // overlay catches the click and dismisses via the MouseArea below.
   anchors {
     top: true
     bottom: true
@@ -121,9 +91,6 @@ PanelWindow {
     right: true
   }
 
-  // Clickable region is the whole screen. Clicks in the bar strip are
-  // forwarded to registered bar buttons so switching between panel icons
-  // works in one click even when the overlay surface is above the bar.
   readonly property real _barStripSize: {
     if (!bar) return 0
     var actual = (root.barPos === "top" || root.barPos === "bottom") ? root.barH : root.barW
@@ -134,23 +101,14 @@ PanelWindow {
     height: root.screenH
   }
 
-  // Track every layout change between the bar's contentItem and the
-  // anchor item. `transform` updates whenever any item in that chain
-  // moves/resizes, which is what makes the position binding below
-  // actually reactive — mapToItem on its own is a one-shot.
   TransformWatcher {
     id: anchorWatcher
     a: anchorWindow ? anchorWindow.contentItem : null
     b: anchorItem
   }
 
-  // Anchor item's position within the bar's content surface. For a
-  // full-width top bar, the content x maps directly to screen x; the y
-  // returned here has the bar's internal padding baked in (e.g. ~13px
-  // from vertical centering of the widget row), which is why `cardOrigin`
-  // below uses `barH` for the perpendicular axis instead of this y.
   readonly property point anchorScreenPos: {
-    anchorWatcher.transform  // reactive dependency
+    anchorWatcher.transform
     if (!anchorItem || !anchorWindow) return Qt.point(0, 0)
     return anchorItem.mapToItem(anchorWindow.contentItem, 0, 0)
   }
@@ -186,17 +144,6 @@ PanelWindow {
     return Math.round(Math.min(desired, maxHeight))
   }
 
-  // Desired top-left of the card in screen coordinates. For the
-  // perpendicular axis (away-from-bar) we anchor to the bar window's edge
-  // directly — not the anchor item's y/x — because mapToItem(barContent)
-  // returns coordinates in the bar's content space, which can be offset
-  // from the bar surface's screen-anchored corner by internal layout
-  // (centering wrappers, padding). The bar's surface IS aligned to its
-  // anchored screen edge, so using `barW`/`barH` gives the right edge
-  // regardless of how the bar's internal widgets are positioned. For the
-  // parallel axis (along the bar) the anchor item's reported position is
-  // still consistent with the bar content origin, so it's accurate for
-  // centering the card under the icon.
   readonly property real barW: anchorWindow ? anchorWindow.width : screenW
   readonly property real barH: anchorWindow ? anchorWindow.height : 0
   readonly property point cardOrigin: {
@@ -217,7 +164,7 @@ PanelWindow {
     } else if (barPos === "right") {
       x = screenW - barW - contentWidth - gap
       y = anchorScreenPos.y + anchorH / 2 - contentHeight / 2
-    } else { // "top" (default)
+    } else {
       x = anchorScreenPos.x + anchorW / 2 - contentWidth / 2
       y = barH + gap
     }
@@ -226,11 +173,6 @@ PanelWindow {
     return Qt.point(Math.round(x), Math.round(y))
   }
 
-
-  // --- popout coordination (same-bar single-popout model) -----------------
-
-  // Coordinate on `open`, not `visible`. `visible` lags into the fade-out
-  // animation, which made ownership transfer to a sibling popup race.
   onOpenChanged: {
     if (open) {
       focusPrimed = false
@@ -258,10 +200,6 @@ PanelWindow {
 
   Timer {
     id: focusPrimeTimer
-    // Leave enough time for multiple Qt/Wayland commit cycles after the
-    // backing window becomes visible while keeping the compositor-wide
-    // Exclusive phase imperceptibly short. This interval is covered by the
-    // immediate hide/re-summon acceptance case.
     interval: 75
     onTriggered: if (root.open) root.focusPrimed = true
   }
@@ -278,13 +216,6 @@ PanelWindow {
     onTriggered: root.popoutSwitchClosing = false
   }
 
-  // --- outside-click dismissal --------------------------------------------
-
-  // Catches clicks anywhere in the clickable region (i.e. everywhere on
-  // screen except the bar strip, which is masked out). The card has its
-  // own MouseArea below so clicks on it don't bubble up here. Disabled
-  // during the fade-out so the dying overlay doesn't swallow clicks that
-  // were meant for the apps behind it.
   MouseArea {
     id: dismissArea
     anchors.fill: parent
@@ -332,22 +263,11 @@ PanelWindow {
     onPositionChanged: function(mouse) { hoveringBar = inBarRegion(mouse.x, mouse.y) }
     onExited: hoveringBar = false
     onClicked: function(mouse) {
-      // While Exclusive is priming, the compositor may route a click from another
-      // output here with translated coordinates. Never interpret that as a
-      // click on this output's bar.
       if (root.focusPrimed && inBarRegion(mouse.x, mouse.y) && forwardBarClick(mouse.x, mouse.y, mouse.button)) return
       root.close()
     }
   }
 
-  // The panel surface only spans the anchor's screen, and the compositor
-  // hit-tests pointer input per output, so `dismissArea` above can never see
-  // a click on another monitor. Give every other output a transparent twin
-  // whose only job is to catch that click. They exist only while the panel is
-  // logically open (not during the fade-out, matching `dismissArea.enabled`).
-  //
-  // Keyboard focus is None: these must catch the pointer without taking focus
-  // from the panel when the cursor merely crosses onto their output.
   Variants {
     model: root.open ? Quickshell.screens : []
 
@@ -356,8 +276,6 @@ PanelWindow {
         required property var modelData
 
         screen: modelData
-        // Compare by output name: the anchor screen must be known before any
-        // twin maps, or a twin would cover the panel's own output.
         visible: root.open && !!root.screen && modelData.name !== root.screen.name
         color: "transparent"
         exclusionMode: ExclusionMode.Ignore
@@ -382,14 +300,10 @@ PanelWindow {
     }
   }
 
-  // --- card ----------------------------------------------------------------
-
-  // Small directional motion makes every first-party bar panel feel like it
-  // grows naturally out of its trigger instead of simply appearing. Keep the
-  // offset tiny so the motion stays crisp at normal desktop scale.
-  // Keep the travel short and use a softer ease-out so the panel settles
-  // naturally instead of feeling like it snaps into place.
-  readonly property real animationDistance: Style.space(6)
+  // The motion should feel like the panel is gently released from the bar:
+  // short travel, a soft ease-out and a tiny amount of scale-up. The scale
+  // is intentionally subtle so it reads as polish rather than a zoom effect.
+  readonly property real animationDistance: Style.space(4)
   readonly property real animationOffsetX: {
     if (barPos === "left") return animationDistance
     if (barPos === "right") return -animationDistance
@@ -412,33 +326,41 @@ PanelWindow {
     padding: root.padding
     radius: Style.cornerRadius
     opacity: root.open || root.popoutSwitching ? 1.0 : 0
+    scale: root.open || root.popoutSwitching ? 1.0 : 0.985
+    transformOrigin: Item.Center
 
     Behavior on x {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 230 : 170
-        easing.type: root.open ? Easing.OutQuint : Easing.InCubic
+        duration: root.open ? 260 : 190
+        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
 
     Behavior on y {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 230 : 170
-        easing.type: root.open ? Easing.OutQuint : Easing.InCubic
+        duration: root.open ? 260 : 190
+        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
 
     Behavior on opacity {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 230 : 170
-        easing.type: root.open ? Easing.OutQuint : Easing.InCubic
+        duration: root.open ? 220 : 180
+        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
 
-    // Swallow clicks on the card so they don't bubble to the dismissal
-    // MouseArea behind us.
+    Behavior on scale {
+      enabled: !root.popoutSwitching && !root.popoutSwitchClosing
+      NumberAnimation {
+        duration: root.open ? 280 : 200
+        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
+      }
+    }
+
     MouseArea {
       anchors.fill: parent
       acceptedButtons: Qt.AllButtons
@@ -455,7 +377,7 @@ PanelWindow {
 
       Behavior on opacity {
         enabled: root.popoutSwitching
-        NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
       }
     }
   }
