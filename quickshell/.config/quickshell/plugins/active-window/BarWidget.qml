@@ -42,7 +42,7 @@ BarWidget {
       anchors.verticalCenter: parent.verticalCenter
       width: Math.max(0, parent.width - focusMark.width - parent.spacing)
       text: root.title
-      color: Color.accent
+      color: Color.foreground
       font.family: root.bar ? root.bar.fontFamily : Style.font.family
       font.pixelSize: Style.font.body
       font.weight: Font.Bold
