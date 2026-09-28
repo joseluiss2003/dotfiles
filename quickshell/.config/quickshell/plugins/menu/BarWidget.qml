@@ -65,7 +65,7 @@ BarWidget {
       // Use the same shell surface as every other popup; Color.background is
       // the deeper base surface and made this session card look opaque.
       color: Color.popups.background
-      borderSpec: Border.surfaceSpec("power-session", "card", Color.popups.border, Style.normalBorderWidth)
+      borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Style.popup.borderWidth)
       radius: 0
       clip: true
 
