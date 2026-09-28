@@ -9,9 +9,8 @@ import qs.core
 // Cursor and focus styling match the rest of the kit: hasCursor / mouse
 // hover and activeFocus share the hover-cursor defaults.
 //
-// `rounded` is forwarded to the switch, which auto-detects from
-// Style.cornerRadius controls the default shape; callers can override it per instance.
-// sharp. Callers can override per-instance.
+// `rounded` follows Style.cornerRadius by default; callers can override it
+// per instance when a specific control needs a different shape.
 BorderSurface {
   id: root
 
@@ -24,8 +23,7 @@ BorderSurface {
   // separately from activeFocus. Visuals use the same hover-cursor tokens.
   property bool hasCursor: false
 
-  // Switch shape follows the theme by default: pill on round, square on sharp.
-  // Override per-instance if a caller wants the opposite.
+  // Switch shape follows the theme's corner radius by default.
   property bool rounded: Style.cornerRadius > 0
 
   property color foreground: Color.foreground
