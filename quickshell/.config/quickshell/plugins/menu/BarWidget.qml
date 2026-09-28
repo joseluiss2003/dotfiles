@@ -67,7 +67,7 @@ BarWidget {
       id: card
       anchors.fill: parent
       color: Color.popups.background
-      borderSpec: Border.surfaceSpec("popups", "border", Util.alpha(Color.popups.border, 0.42), Style.popup.borderWidth)
+      borderSpec: Border.surfaceSpec("popups", "border", Util.alpha(Color.muted, 0.34), Style.popup.borderWidth)
       radius: 0
       clip: true
 
@@ -92,11 +92,10 @@ BarWidget {
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.popup.sectionGap
 
-            Text {
-              text: "⏻"
+            SwayPMark {
+              width: Style.space(28)
+              height: Style.space(28)
               color: Color.brand.accent
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.iconLarge
               anchors.verticalCenter: parent.verticalCenter
             }
 
@@ -169,7 +168,7 @@ BarWidget {
             borderSpec: Border.surfaceSpec(
               "power-session",
               action.hot ? "selected" : "action",
-              action.hot ? Color.controls.selectedBorder : Color.controls.border,
+              action.hot ? Color.brand.accent : Util.alpha(Color.muted, 0.28),
               Style.normalBorderWidth
             )
 
