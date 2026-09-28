@@ -281,8 +281,8 @@ Panel {
   // `selectedIndex`). Mouse hover and keyboard nav both mutate this state
   // at the root; items never read containsMouse for visuals. See
   // CursorSurface for the shared chrome shared by rows and pills.
-  readonly property color hoverFill: bar ? Style.hoverFillFor(bar.foreground, Color.accent) : "transparent"
-  readonly property color selectedFill: bar ? Style.selectedFillFor(bar.foreground, Color.accent) : "transparent"
+  readonly property color hoverFill: bar ? Style.hoverFillFor(bar.foreground, Color.foreground) : "transparent"
+  readonly property color selectedFill: bar ? Style.selectedFillFor(bar.foreground, Color.foreground) : "transparent"
 
   // scannerEnabled lives on the shared WifiDevice, which has no reference
   // counting, and a bar widget is instantiated once per monitor. Tracking the
@@ -1224,7 +1224,7 @@ Panel {
               return ""
             }
             visible: text !== ""
-            color: root.restricted ? root.bar.urgent : Color.muted
+            color: root.restricted ? root.bar.urgent : Color.foreground
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.caption
             font.bold: true
@@ -1633,7 +1633,7 @@ Panel {
       if (isBusy) return root.bar.foreground
       if (isConnected && root.kind === "wifi" && root.hasCaptivePortal) return root.bar.urgent
       if (isConnected) return root.bar.foreground
-      return Color.muted
+      return Color.foreground
     }
 
     implicitHeight: rowBody.implicitHeight + (isPasswordOpen ? passwordPanel.implicitHeight + Style.spacing.md : 0)
@@ -1714,7 +1714,7 @@ Panel {
           anchors.verticalCenter: parent.verticalCenter
           horizontalAlignment: Text.AlignHCenter
           text: row.forgetVisible ? "󰅙" : "󰌾"
-          color: row.forgetVisible ? root.bar.urgent : Color.muted
+          color: row.forgetVisible ? root.bar.urgent : Color.foreground
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.subtitle
         }
@@ -1868,7 +1868,7 @@ Panel {
         anchors.verticalCenter: parent.verticalCenter
         height: Style.spacing.controlHeight
         color: Style.normalFillFor(root.bar.foreground)
-        borderSpec: Border.controlSpec("normal", root.bar.foreground, Color.accent)
+        borderSpec: Border.controlSpec("normal", root.bar.foreground, Color.foreground)
         radius: Style.cornerRadius
 
         Text {
