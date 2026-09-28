@@ -242,6 +242,9 @@ ln -sfn "$GENERATED_DIR/fastfetch.jsonc" "$HOME/.config/fastfetch/config.jsonc"
 ln -sfn "$THEME_DIR" "$STATE_DIR/theme"
 printf '%s\n' "$THEME" > "$PERSISTENT_THEME_FILE"
 
+# Remove state files from pre-static-theme versions.
+rm -f "$STATE_DIR/theme.name" "$STATE_DIR/palette-source"
+
 if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
     makoctl reload >/dev/null 2>&1 || true
 fi
