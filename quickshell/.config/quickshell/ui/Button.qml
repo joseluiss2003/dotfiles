@@ -125,8 +125,10 @@ BorderSurface {
   // default for plain buttons; explicitly bordered buttons keep their
   // normal border when selected unless selected-border-width opts in to a
   // dedicated selected border.
-  borderSpec: selectionBorderOnly && hot
-    ? Border.withWidth(Border.flat(root.accent, 0), Style.space(3))
+  borderSpec: selectionBorderOnly
+    ? (hot
+      ? Border.flat(root.accent, Style.space(2))
+      : Border.flat(Util.alpha(root.foreground, 0.45), Style.normalBorderWidth))
     : _borderSpec
 
   Behavior on color { ColorAnimation { duration: 120 } }
