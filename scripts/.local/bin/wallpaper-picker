@@ -83,7 +83,7 @@ SELECTED_FILE="$(sed -n '1p' "$SELECTION_FILE")"
 
 if ! awww img \
     --transition-type center \
-    --transition-duration 0.9 \
+    --transition-duration 1.2 \
     --transition-step 1 \
     --transition-fps 60 \
     "$SELECTED_FILE"; then
