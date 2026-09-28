@@ -178,7 +178,7 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.brand.accent
-            selected: root.cursorActive && root.selectedIndex === 0
+            hasCursor: root.cursorActive && root.selectedIndex === 0
             onClicked: root.lock()
             onHovered: function(h) {
               if (h) {
@@ -200,7 +200,7 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.brand.accent
-            selected: root.cursorActive && root.selectedIndex === 1
+            hasCursor: root.cursorActive && root.selectedIndex === 1
             onClicked: root.suspend()
             onHovered: function(h) {
               if (h) {
@@ -222,7 +222,7 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.brand.accent
-            selected: root.cursorActive && root.selectedIndex === 2
+            hasCursor: root.cursorActive && root.selectedIndex === 2
             onClicked: root.logout()
             onHovered: function(h) {
               if (h) {
@@ -244,7 +244,7 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.brand.accent
-            selected: root.cursorActive && root.selectedIndex === 3
+            hasCursor: root.cursorActive && root.selectedIndex === 3
             onClicked: root.reboot()
             onHovered: function(h) {
               if (h) {
@@ -266,7 +266,7 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.error
-            selected: root.cursorActive && root.selectedIndex === 4
+            hasCursor: root.cursorActive && root.selectedIndex === 4
             onClicked: root.poweroff()
             onHovered: function(h) {
               if (h) {
