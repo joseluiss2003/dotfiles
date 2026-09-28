@@ -25,7 +25,7 @@ Item {
   property color foreground: Color.popups.text
   property color background: Color.popups.background
   property color popupBorder: Color.popups.border
-  property color accent: Color.accent
+  property color accent: Color.foreground
   readonly property var popupBorderSpec: Border.localOrSurfaceSpec("popups", "border", popupBorder, Color.popups.border, Style.normalBorderWidth)
   property string fontFamily: Style.font.family
   property int rowHeight: Style.spacing.controlHeight
