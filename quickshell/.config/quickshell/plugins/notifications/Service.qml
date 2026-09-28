@@ -1206,10 +1206,13 @@ Item {
               image: cardSlot.image
               urgency: cardSlot.urgency
               timestamp: cardSlot.timestamp
+              originalId: cardSlot.originalId
+              imagePersistenceDir: service.imagesDir
               cornerRadius: service.cornerRadius
               fontFamily: service.shell && service.shell.bar ? service.shell.bar.fontFamily : ""
               glyph: cardSlot.glyph
 
+              onImagePersisted: service.persistCapturedImage(cardSlot.originalId, cardSlot.timestamp, path)
               onCloseRequested: service.dismissPopup(cardSlot.index)
               onCardClicked: service.invokePopupDefault(cardSlot.index)
             }
