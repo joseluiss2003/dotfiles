@@ -891,7 +891,7 @@ Panel {
 
           Item {
             width: parent.width
-            height: Style.space(4)
+            height: Style.spacing.sm
           }
         }
       }
