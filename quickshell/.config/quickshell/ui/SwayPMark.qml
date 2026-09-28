@@ -4,7 +4,7 @@ import qs.core
 Item {
   id: root
 
-  property color color: Color.foreground
+  property color color: Color.brand.accent
 
   implicitWidth: 42
   implicitHeight: 42
