@@ -137,7 +137,7 @@ BorderSurface {
         Image {
           id: smallIconImage
           anchors.fill: parent
-          source: root.smallIconSource
+          source: String(root.smallIconSource || "")
           sourceSize.width: smallIconSlot.width * Screen.devicePixelRatio
           sourceSize.height: smallIconSlot.height * Screen.devicePixelRatio
           fillMode: Image.PreserveAspectFit
