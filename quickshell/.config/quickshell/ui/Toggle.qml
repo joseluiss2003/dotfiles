@@ -29,7 +29,7 @@ BorderSurface {
   property bool rounded: Style.cornerRadius > 0
 
   property color foreground: Color.foreground
-  property color accent: Color.accent
+  property color accent: Color.foreground
   property string fontFamily: Style.font.family
   property real titleSize: Style.font.subtitle
   property real descriptionSize: Style.font.caption
