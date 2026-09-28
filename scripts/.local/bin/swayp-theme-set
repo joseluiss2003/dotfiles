@@ -280,6 +280,16 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
 
     if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
         mv -f "$PALETTE_STAGED_OUTPUT" "$PALETTE_OUTPUT"
+
+        # Push the exact new palette directly into the running Quickshell
+        # instead of waiting for FileView's filesystem watcher. The watcher
+        # is intentionally kept as a persistence/fallback path, but it must
+        # not decide when the visual transition starts.
+        if command -v qs >/dev/null 2>&1; then
+            PALETTE_B64="$(base64 -w0 "$PALETTE_OUTPUT")"
+            SHELL_B64="$(base64 -w0 "$THEME_DIR/shell.toml")"
+            qs ipc call shell applyTheme "$PALETTE_B64" "$SHELL_B64" >/dev/null 2>&1 || true
+        fi
     fi
 fi
 
