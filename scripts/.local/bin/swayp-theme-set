@@ -290,6 +290,12 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
         # instead of waiting for FileView's filesystem watcher. The watcher
         # is intentionally kept as a persistence/fallback path, but it must
         # not decide when the visual transition starts.
+        # Reload Sway at the same visual handoff point so generated border
+        # colors switch with the Quickshell palette instead of lagging behind.
+        if command -v swaymsg >/dev/null 2>&1; then
+            swaymsg reload >/dev/null 2>&1 &
+        fi
+
         if command -v qs >/dev/null 2>&1; then
             PALETTE_B64="$(base64 -w0 "$PALETTE_OUTPUT")"
             SHELL_B64="$(base64 -w0 "$THEME_DIR/shell.toml")"
@@ -298,9 +304,8 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     fi
 fi
 
-# Let the wallpaper reveal get established, then reload Sway while the
-# expanding image is still covering most of the visible change. The reload
-# itself is instantaneous, so keep it inside the existing visual transition.
+# Give Sway's reload a moment to settle without introducing a second visual
+# transition. Runtime palette changes are already in flight by this point.
 sleep 0.15
 
 if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
@@ -309,13 +314,6 @@ fi
 if command -v kitty >/dev/null 2>&1 && pgrep -x kitty >/dev/null 2>&1; then
     pkill -USR1 -x kitty >/dev/null 2>&1 || true
 fi
-# TEMP TEST: keep Sway untouched so we can isolate any hitch in the
-# wallpaper/Quickshell transition itself. Sway reload will be restored after
-# this timing test.
-# if command -v swaymsg >/dev/null 2>&1; then
-#     swaymsg reload >/dev/null 2>&1 || true
-# fi
-
 # The compositor is already inside the wallpaper reveal, so no extra
 # settling delay is needed here.
 
