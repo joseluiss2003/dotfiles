@@ -35,6 +35,13 @@ Item {
     font.family: root.fontFamily
     font.pixelSize: root.renderedFontSize
     renderType: Text.NativeRendering
+
+    Behavior on color {
+      ColorAnimation {
+        duration: 120
+        easing.type: Easing.OutCubic
+      }
+    }
   }
 
   Rectangle {
