@@ -52,7 +52,7 @@ BorderSurface {
   signal cardClicked()
   // Prefer per-notification media/avatar data, then fall back to the app icon.
   // The `check` flag avoids Qt's missing-texture placeholder for unknown names.
-  readonly property string smallIconSource: image.length > 0 ? image : iconSource(appIcon)
+  // Notification image-path values can be either file/image URIs or themed icon names.\n  // Resolve them through the same guarded path as app icons so bare names do not\n  // become broken Image sources.\n  readonly property string smallIconSource: image.length > 0 ? iconSource(image) : iconSource(appIcon)
   readonly property bool hasGlyph: glyph.length > 0
   readonly property bool compactGlyph: NotificationLogic.shouldRenderCompactGlyph(glyph, smallIconSource, singleLineToast)
   readonly property bool hasSmallIcon: smallIconSource.length > 0
