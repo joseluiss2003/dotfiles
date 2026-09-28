@@ -241,7 +241,7 @@ Panel {
     id: phraseSwap
     PropertyAnimation {
       target: heroStatus; property: "opacity"
-      to: 0.0; duration: 180; easing.type: Easing.OutQuad
+      to: 0.0; duration: Style.popup.contentFadeOutDuration; easing.type: Easing.OutQuad
     }
     ScriptAction {
       script: {
@@ -251,7 +251,7 @@ Panel {
     }
     PropertyAnimation {
       target: heroStatus; property: "opacity"
-      to: 1.0; duration: 260; easing.type: Easing.InQuad
+      to: 1.0; duration: Style.popup.contentFadeInDuration; easing.type: Easing.InQuad
     }
   }
 
@@ -314,7 +314,7 @@ Panel {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        spacing: Style.space(14)
+        spacing: Style.spacing.panelGap
 
         // ---------- Hero: battery icon · title/status · percentage ----------
         Item {
@@ -337,7 +337,7 @@ Panel {
           Column {
             id: heroLabels
             anchors.left: heroIcon.right
-            anchors.leftMargin: Style.space(14)
+            anchors.leftMargin: Style.spacing.panelGap
             anchors.right: heroPercent.left
             anchors.rightMargin: Style.space(10)
             anchors.verticalCenter: parent.verticalCenter
