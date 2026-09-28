@@ -272,7 +272,7 @@ Item {
 
       Behavior on opacity {
         NumberAnimation {
-          duration: 100
+          duration: Style.fullscreen.scrimDuration
           easing.type: Easing.OutCubic
         }
       }
@@ -332,14 +332,14 @@ Item {
 
       Behavior on opacity {
         NumberAnimation {
-          duration: 145
+          duration: Style.fullscreen.itemDuration
           easing.type: Easing.OutQuint
         }
       }
 
       Behavior on scale {
         NumberAnimation {
-          duration: 165
+          duration: Style.fullscreen.settleDuration
           easing.type: Easing.OutQuint
         }
       }
@@ -382,7 +382,7 @@ Item {
           Behavior on x {
             enabled: root.layoutSettled
             NumberAnimation {
-              duration: 145
+              duration: Style.fullscreen.itemDuration
               easing.type: Easing.OutQuint
             }
           }
@@ -390,7 +390,7 @@ Item {
           Behavior on y {
             enabled: root.layoutSettled
             NumberAnimation {
-              duration: 145
+              duration: Style.fullscreen.itemDuration
               easing.type: Easing.OutQuint
             }
           }
@@ -398,7 +398,7 @@ Item {
           Behavior on width {
             enabled: root.layoutSettled
             NumberAnimation {
-              duration: 145
+              duration: Style.fullscreen.itemDuration
               easing.type: Easing.OutQuint
             }
           }
@@ -406,7 +406,7 @@ Item {
           Behavior on height {
             enabled: root.layoutSettled
             NumberAnimation {
-              duration: 145
+              duration: Style.fullscreen.itemDuration
               easing.type: Easing.OutQuint
             }
           }
@@ -414,7 +414,7 @@ Item {
           Behavior on opacity {
             enabled: root.layoutSettled
             NumberAnimation {
-              duration: 145
+              duration: Style.fullscreen.itemDuration
               easing.type: Easing.OutQuint
             }
           }
@@ -422,7 +422,7 @@ Item {
           Behavior on scale {
             enabled: root.layoutSettled
             NumberAnimation {
-              duration: 145
+              duration: Style.fullscreen.itemDuration
               easing.type: Easing.OutQuint
             }
           }
