@@ -32,8 +32,8 @@ Item {
   readonly property real fontSize: Math.max(
     4,
     Math.min(
-      rowHeight * 0.92,
-      (width - 8) / 58
+      rowHeight * 1.18,
+      (width - 8) / 52
     )
   )
 
