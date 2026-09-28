@@ -118,11 +118,11 @@ BorderSurface {
     // Text content.
     RowLayout {
       Layout.fillWidth: true
-      Layout.leftMargin: Style.space(12)
-      Layout.rightMargin: Style.space(12)
+      Layout.leftMargin: Style.spacing.xxl
+      Layout.rightMargin: Style.spacing.xxl
       Layout.topMargin: root.singleLineToast ? Style.space(7) : Style.spacing.controlInset
       Layout.bottomMargin: root.singleLineToast ? Style.space(7) : Style.spacing.controlInset
-      spacing: root.collapseRedundantIcon ? 0 : (root.compactGlyph ? Style.spacing.controlGap : Style.space(12))
+      spacing: root.collapseRedundantIcon ? 0 : (root.compactGlyph ? Style.spacing.controlGap : Style.spacing.xxl)
 
       Item {
         id: smallIconSlot
