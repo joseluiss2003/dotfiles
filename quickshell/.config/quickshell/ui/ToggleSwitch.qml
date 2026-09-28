@@ -7,7 +7,7 @@ import qs.core
 //
 // The caller owns the value: bind `checked` to real state and flip it in
 // response to `toggled()`. Services that already track a desired state
-// optimistically (see the Tailscale service's `_desired`) get an instant knob
+// optimistically can get an instant knob
 // throw for free, because `checked` is already the optimistic value.
 //
 // `busy` marks an operation in flight and swallows further clicks, but leaves
@@ -23,7 +23,7 @@ import qs.core
 // cursor too.
 //
 // `rounded` auto-detects from Style.cornerRadius so the switch follows the
-// theme: pill shape when Hyprland corners are rounded, square on sharp.
+// theme shape from Style.cornerRadius by default.
 Item {
   id: root
 
