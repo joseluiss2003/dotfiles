@@ -69,8 +69,8 @@ QtObject {
   readonly property color themeLighterBackground: paletteValid ? colorFromValue(semanticValue("lighter_background", paletteColors[0]), themeBackground) : themeBackground
   readonly property color themeLightForeground: paletteValid ? colorFromValue(semanticValue("light_foreground", paletteColors[7]), themeForeground) : themeForeground
 
-  // Keep normal UI chrome monochromatic: the theme foreground is the accent.
-  readonly property color themeAccent: themeForeground
+  // The theme's own accent remains authoritative; do not derive or replace it.
+  readonly property color themeAccent: paletteValid ? colorFromValue(semanticValue("accent", themeBlue), themeBlue) : themeBlue
   readonly property color themeSelection: paletteValid ? colorFromValue(semanticValue("selection", paletteColors[4]), themeBlue) : themeBlue
 
   function mix(first, second, amount) {
@@ -88,11 +88,12 @@ QtObject {
   readonly property color themeSurfaceAltTinted: themeLighterBackground
   readonly property color themeElevatedTinted: themeLighterBackground
 
-  // Bar-specific roles: lift the bar slightly from the base background and
-  // give passive applets a restrained tint of the theme accent. Active
-  // controls still use the full accent, so hierarchy remains clear.
+  // Bar-specific roles: lift the bar slightly from the base background.
+  // The bar keeps the theme foreground as its base text color; individual
+  // applets apply a restrained tint toward the theme's own accent.
   readonly property color themeBarBackground: mix(themeBackground, themeLighterBackground, 0.24)
-  readonly property color themeBarForeground: mix(themeForeground, themeAccent, 0.28)
+  readonly property color themeBarForeground: themeForeground
+  readonly property color themeBarPassive: mix(themeForeground, themeAccent, 0.18)
 
   readonly property real shellOpacity: 0.97
 
