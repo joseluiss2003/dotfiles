@@ -224,6 +224,25 @@ QtObject {
     return (isFinite(n) && n >= 0) ? Math.round(n) : space(fallback)
   }
 
+  // Shared popup geometry and motion. Individual panels own their layout;
+  // these tokens keep the shell-wide popup language consistent.
+  readonly property QtObject popup: QtObject {
+    readonly property int radius: root.cornerRadius
+    readonly property int borderWidth: Math.max(1, root.space(2))
+    readonly property int gap: root.gapsOut
+    readonly property int margin: root.gapsOut
+    readonly property int padding: root.spacing.popupPadding
+    readonly property real animationDistance: root.spaceReal(2)
+    readonly property int enterXDuration: 115
+    readonly property int exitXDuration: 85
+    readonly property int enterYDuration: 145
+    readonly property int exitYDuration: 105
+    readonly property int enterFadeDuration: 130
+    readonly property int exitFadeDuration: 90
+    readonly property int switchDuration: 160
+    readonly property int switchDelay: 150
+  }
+
   readonly property QtObject spacing: QtObject {
     readonly property real scale: root.effectiveSpacingScale
 
