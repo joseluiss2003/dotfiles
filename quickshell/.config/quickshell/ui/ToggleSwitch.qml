@@ -40,7 +40,7 @@ Item {
   property bool cursorRing: interactive
   property int cursorPad: Style.space(6)
   property bool rounded: Style.cornerRadius > 0
-  property color foreground: Color.foreground
+  property color foreground: Color.bar.text
   property color accent: Color.accent
 
   signal toggled()
