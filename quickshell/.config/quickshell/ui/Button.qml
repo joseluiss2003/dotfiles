@@ -34,7 +34,7 @@ BorderSurface {
   // Colors. Defaults track the theme; per-instance overrides are honored.
   property color foreground: Color.foreground
   property color background: "transparent"
-  property color accent: Color.accent
+  property color accent: Color.foreground
 
   // Sizing.
   property string fontFamily: Style.font.family
