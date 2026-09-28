@@ -224,7 +224,7 @@ QtObject {
     readonly property color border: root.outline
     readonly property color borderActive: root.foreground
     readonly property color borderError: root.error
-    readonly property color selection: root.selection
+    readonly property color selection: root.foreground
   }
 
   readonly property QtObject imagePicker: QtObject {
