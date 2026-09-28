@@ -28,6 +28,12 @@ Item {
   property color border: Color.foreground
   property color muted: Color.foreground
 
+  readonly property int previewWidth: Style.space(760)
+  readonly property int previewHeight: Style.space(470)
+  readonly property int sideWidth: Style.space(250)
+  readonly property int sideHeight: Style.space(350)
+  readonly property int sideGap: Style.space(18)
+
   readonly property int themeCardHeight: Style.space(132)
   readonly property int themeCardWidth: Style.space(218)
   readonly property int themeSectionHeight: themeCardHeight
