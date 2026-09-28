@@ -539,7 +539,7 @@ Panel {
               id: heroIcon
               textFormat: Text.PlainText
               text: root.displays.length > 1 ? "󰍺" : "󰍹"
-              color: Color.accent
+              color: root.bar.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.display
               anchors.left: parent.left
