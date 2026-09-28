@@ -153,6 +153,7 @@ BarWidget {
         bar: root.bar
         text: focused ? "\uDB85\uDCFB" : (modelData === 10 ? "0" : String(modelData))
         active: focused
+        useActiveColor: true
         passiveColor: Color.bar.text
         activeColor: Color.accent
         opacity: focused ? 1.0 : (urgent ? 0.95 : (occupied ? 0.82 : 0.45))
