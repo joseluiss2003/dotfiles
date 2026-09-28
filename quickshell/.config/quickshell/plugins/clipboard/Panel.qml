@@ -636,7 +636,7 @@ Item {
             Text {
               text: "Clipboard is empty"
               color: root.foreground
-              opacity: 0.62
+              opacity: Style.opacity.mutedText
               font.family: root.fontFamily
               font.pixelSize: Style.font.body
               horizontalAlignment: Text.AlignHCenter
