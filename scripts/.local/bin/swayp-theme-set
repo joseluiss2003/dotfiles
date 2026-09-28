@@ -305,15 +305,31 @@ sleep 0.55
 if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
     makoctl reload >/dev/null 2>&1 || true
 fi
-if command -v kitty >/dev/null 2>&1 && pgrep -x kitty >/dev/null 2>&1; then
-    pkill -USR1 -x kitty >/dev/null 2>&1 || true
+
+# Kitty: reload the generated include directly. SIGUSR1 is the native
+# configuration-reload path and works without enabling remote control.
+if command -v kitty >/dev/null 2>&1; then
+    kitty_pids="$(pgrep -x kitty 2>/dev/null || true)"
+    if [ -n "$kitty_pids" ]; then
+        for pid in $kitty_pids; do
+            kill -USR1 "$pid" 2>/dev/null || true
+        done
+    fi
 fi
 
-# Sway has no color interpolation, so apply its generated colors only after
-# the 500 ms wallpaper/Quickshell transition has finished. This avoids the
-# hard color snap at the beginning of a theme change.
+# Sway: do not reload the whole compositor just to update theme colors.
+# Apply the generated client palettes directly over IPC. This avoids
+# re-reading the entire config and makes the theme update deterministic.
 if command -v swaymsg >/dev/null 2>&1; then
-    swaymsg reload >/dev/null 2>&1 || true
+    SWAY_COLORS="$GENERATED_DIR/sway-colors.conf"
+    if [ -f "$SWAY_COLORS" ]; then
+        # shellcheck disable=SC1090
+        . "$SWAY_COLORS"
+        swaymsg "client.focused $color_primary $color_primary_container $color_fg $color_primary $color_primary" >/dev/null 2>&1 || true
+        swaymsg "client.focused_inactive $color_outline $color_surface $color_fg $color_outline $color_outline" >/dev/null 2>&1 || true
+        swaymsg "client.unfocused $color_outline $color_bg $color_fg $color_outline $color_outline" >/dev/null 2>&1 || true
+        swaymsg "client.urgent $color_error $color_error $color_fg $color_error $color_error" >/dev/null 2>&1 || true
+    fi
 fi
 
 # The compositor is already inside the wallpaper reveal, so no extra
