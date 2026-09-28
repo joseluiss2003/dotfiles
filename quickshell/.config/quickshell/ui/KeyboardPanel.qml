@@ -387,7 +387,9 @@ PanelWindow {
   // Small directional motion makes every first-party bar panel feel like it
   // grows naturally out of its trigger instead of simply appearing. Keep the
   // offset tiny so the motion stays crisp at normal desktop scale.
-  readonly property real animationDistance: Style.space(8)
+  // Keep the travel short and use a softer ease-out so the panel settles
+  // naturally instead of feeling like it snaps into place.
+  readonly property real animationDistance: Style.space(6)
   readonly property real animationOffsetX: {
     if (barPos === "left") return animationDistance
     if (barPos === "right") return -animationDistance
@@ -414,24 +416,24 @@ PanelWindow {
     Behavior on x {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 180 : 140
-        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
+        duration: root.open ? 230 : 170
+        easing.type: root.open ? Easing.OutQuint : Easing.InCubic
       }
     }
 
     Behavior on y {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 180 : 140
-        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
+        duration: root.open ? 230 : 170
+        easing.type: root.open ? Easing.OutQuint : Easing.InCubic
       }
     }
 
     Behavior on opacity {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 180 : 140
-        easing.type: root.open ? Easing.OutCubic : Easing.InCubic
+        duration: root.open ? 230 : 170
+        easing.type: root.open ? Easing.OutQuint : Easing.InCubic
       }
     }
 
