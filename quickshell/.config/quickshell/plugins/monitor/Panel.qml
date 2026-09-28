@@ -578,7 +578,7 @@ Panel {
 
                   return "FIXED BRIGHTNESS"
                 }
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -624,7 +624,7 @@ Panel {
                     ? brightnessSlider.liveValue
                     : root.brightnessPercent
                 ) + "%"
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -721,7 +721,7 @@ Panel {
                     : root.displayedTextPx()
                 ) + "px"
 
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -815,7 +815,7 @@ Panel {
                   root.focusedMonitor !== "" &&
                   root.enabledDisplayCount > 1
 
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -930,8 +930,8 @@ Panel {
     onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(monitorRow)
     current: isFocused
     foreground: root.bar.foreground
-    fill: Style.hoverFillFor(root.bar.foreground, Color.accent)
-    currentFill: Style.selectedFillFor(root.bar.foreground, Color.accent)
+    fill: Style.hoverFillFor(root.bar.foreground, Color.foreground)
+    currentFill: Style.selectedFillFor(root.bar.foreground, Color.foreground)
     implicitHeight: monitorInner.implicitHeight + Style.spacing.xl
     opacity: canToggle ? 1.0 : 0.45
 
