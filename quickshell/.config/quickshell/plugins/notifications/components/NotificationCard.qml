@@ -29,6 +29,18 @@ BorderSurface {
 
   // System monospace font injected by the container.
   property string fontFamily: ""
+  // Directory used to materialize transient image:// notification images so
+  // history can keep the same avatar/media after the sender releases it.
+  property string imagePersistenceDir: ""
+  property int originalId: 0
+
+  signal imagePersisted(string path)
+
+  property bool imagePersistencePending: false
+  readonly property string persistedImagePath:
+    imagePersistenceDir.length > 0 && originalId !== 0 && timestamp !== 0
+      ? imagePersistenceDir + String(timestamp) + "-" + String(originalId) + "-image.png"
+      : ""
 
   readonly property bool hovered: hoverTracker.hovered
 
@@ -127,6 +139,31 @@ BorderSurface {
           fillMode: Image.PreserveAspectFit
           asynchronous: true
           smooth: true
+
+          function persistTransientImage() {
+            if (root.imagePersistencePending) return
+            if (root.imagePersistenceDir.length === 0 || root.persistedImagePath.length === 0) return
+            if (root.smallIconSource.indexOf("image://") !== 0) return
+            if (smallIconImage.status !== Image.Ready) return
+
+            root.imagePersistencePending = true
+            var target = root.persistedImagePath
+            var started = smallIconImage.grabToImage(function(result) {
+              var saved = false
+              try {
+                saved = result && result.saveToFile(target)
+              } catch (e) {
+                console.warn("notifications: failed to persist image:", e)
+              }
+              root.imagePersistencePending = false
+              if (saved) root.imagePersisted(target)
+            })
+            if (!started) root.imagePersistencePending = false
+          }
+
+          onStatusChanged: if (status === Image.Ready) persistTransientImage()
+          onSourceChanged: root.imagePersistencePending = false
+
           visible: !root.hasGlyph || smallIconImage.status === Image.Ready
         }
 
