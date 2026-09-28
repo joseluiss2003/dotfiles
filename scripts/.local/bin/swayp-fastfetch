@@ -7,12 +7,20 @@ LOGO="$HOME/.config/swayp/branding/swayp-fastfetch.txt"
 accent=""
 foreground=""
 bright_foreground=""
+light_foreground=""
+lighter_background=""
+green=""
+cyan=""
 muted=""
 
 if [[ -r "$PALETTE" ]] && command -v jq >/dev/null 2>&1; then
   accent="$(jq -r '.semantic.accent // .colors[4] // empty' "$PALETTE" 2>/dev/null || true)"
   foreground="$(jq -r '.semantic.foreground // .colors[7] // empty' "$PALETTE" 2>/dev/null || true)"
   bright_foreground="$(jq -r '.semantic.bright_foreground // .colors[15] // empty' "$PALETTE" 2>/dev/null || true)"
+  light_foreground="$(jq -r '.semantic.light_foreground // empty' "$PALETTE" 2>/dev/null || true)"
+  lighter_background="$(jq -r '.semantic.lighter_background // empty' "$PALETTE" 2>/dev/null || true)"
+  green="$(jq -r '.colors[2] // empty' "$PALETTE" 2>/dev/null || true)"
+  cyan="$(jq -r '.colors[6] // empty' "$PALETTE" 2>/dev/null || true)"
   muted="$(jq -r '.semantic.muted // .colors[8] // empty' "$PALETTE" 2>/dev/null || true)"
   muted="$(jq -r '.semantic.muted // .colors[8] // empty' "$PALETTE" 2>/dev/null || true)"
 fi
@@ -21,13 +29,19 @@ accent="${accent:-#7aa2f7}"
 foreground="${foreground:-#d8dee9}"
 bright_foreground="${bright_foreground:-$foreground}"
 muted="${muted:-#7f849c}"
-muted="${muted:-#6b7280}"
+light_foreground="${light_foreground:-$foreground}"
+lighter_background="${lighter_background:-$muted}"
+green="${green:-$accent}"
+cyan="${cyan:-$accent}"
 
 exec fastfetch \
   --config "$HOME/.config/swayp/generated/fastfetch.jsonc" \
   --logo "$LOGO" \
   --logo-type file \
   --logo-color-1 "$accent" \
-  --logo-color-2 "$foreground" \
-  --logo-color-3 "$muted" \
+  --logo-color-2 "$bright_foreground" \
+  --logo-color-3 "$foreground" \
+  --logo-color-4 "$lighter_background" \
+  --logo-color-5 "$green" \
+  --logo-color-6 "$cyan" \
   "$@"
