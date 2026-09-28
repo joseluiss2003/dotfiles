@@ -56,7 +56,7 @@ The theme files are the source of truth. Quickshell consumes the generated seman
 ## Installation
 ~~~bash
 git clone https://github.com/joseluiss2003/swayp.git
-cdswayp
+cd swayp
 ./install.sh
 ~~~
 
