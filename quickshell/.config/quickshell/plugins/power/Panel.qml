@@ -357,7 +357,7 @@ Panel {
               id: heroStatus
               textFormat: Text.PlainText
               text: root.heroStatusText.toUpperCase()
-              color: Color.muted
+              color: Color.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
