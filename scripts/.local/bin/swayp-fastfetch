@@ -16,7 +16,7 @@ accent="${accent:-#7aa2f7}"
 foreground="${foreground:-#d8dee9}"
 
 exec fastfetch \
-  --config "$HOME/.config/fastfetch/config.jsonc" \
+  --config "$HOME/.config/swayp/generated/fastfetch.jsonc" \
   --logo "$LOGO" \
   --logo-type file \
   --logo-color-1 "$foreground" \
