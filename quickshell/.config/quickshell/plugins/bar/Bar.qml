@@ -80,9 +80,9 @@ Item {
   property color background: Color.bar.background
   property color urgent: Color.urgent
 
-  Behavior on barForeground { enabled: root.foregroundAnimationEnabled; ColorAnimation { duration: 420; easing.type: Easing.InOutCubic } }
-  Behavior on background { ColorAnimation { duration: 420; easing.type: Easing.InOutCubic } }
-  Behavior on urgent { ColorAnimation { duration: 420; easing.type: Easing.InOutCubic } }
+  Behavior on barForeground { enabled: root.foregroundAnimationEnabled; ColorAnimation { duration: 300; easing.type: Easing.InOutCubic } }
+  Behavior on background { ColorAnimation { duration: 300; easing.type: Easing.InOutCubic } }
+  Behavior on urgent { ColorAnimation { duration: 300; easing.type: Easing.InOutCubic } }
   property var tooltipTarget: null
   property var pendingTooltipTarget: null
   property string tooltipText: ""
