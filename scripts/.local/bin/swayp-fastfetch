@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PALETTE="$HOME/.local/state/swayp/current/palette.json"
-LOGO="$HOME/.config/swayp/generated/swayp-fastfetch.svg"
+LOGO="$HOME/.config/swayp/generated/swayp-fastfetch.png"
 LOGO_TEMPLATE="$HOME/.config/swayp/branding/swayp-fastfetch.svg"
 
 accent=""
@@ -51,13 +51,17 @@ cyan="${cyan:-$accent}"
 
 # Keep the SVG logo in lock-screen style: one solid color from the active theme.
 # Regenerate it on demand so a fastfetch run never uses a stale theme color.
-if [[ -r "$LOGO_TEMPLATE" ]]; then
+if [[ -r "$LOGO_TEMPLATE" ]] && command -v magick >/dev/null 2>&1; then
   mkdir -p "$(dirname "$LOGO")"
-  sed "s/__SWAYP_COLOR__/$accent/g" "$LOGO_TEMPLATE" > "$LOGO"
+  sed "s/__SWAYP_COLOR__/$accent/g" "$LOGO_TEMPLATE" > "$LOGO_TEMPLATE.tmp"
+  magick -background none "$LOGO_TEMPLATE.tmp" -alpha on "$LOGO"
+  rm -f "$LOGO_TEMPLATE.tmp"
 fi
 
 exec fastfetch \
   --config "$HOME/.config/swayp/generated/fastfetch.jsonc" \
   --logo "$LOGO" \
   --logo-type kitty \
+  --logo-width 32 \
+  --logo-height 27 \
   "$@"
