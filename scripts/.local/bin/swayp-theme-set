@@ -69,8 +69,8 @@ h, l, s = colorsys.rgb_to_hls(r, g, b)
 logo_lightness = (0.18, 0.28, 0.40, 0.50, 0.62, 0.74)
 logo_colors = []
 for lightness in logo_lightness:
-    rr, gg, bb = colorsys.hls_to_rgb(h, lightness, s)
-    logo_colors.append("#{:02X}{:02X}{:02X}".format(round(rr * 255), round(gg * 255), round(bb * 255)))
+    logo_r, logo_g, logo_b = colorsys.hls_to_rgb(h, lightness, s)
+    logo_colors.append("#{:02X}{:02X}{:02X}".format(round(logo_r * 255), round(logo_g * 255), round(logo_b * 255)))
 
 semantic = {
     "accent": c["accent"],
