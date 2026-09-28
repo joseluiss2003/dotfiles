@@ -555,7 +555,7 @@ Panel {
               anchors.leftMargin: Style.spacing.panelGap
               anchors.right: parent.right
               anchors.verticalCenter: parent.verticalCenter
-              spacing: Style.space(2)
+              spacing: Style.spacing.compactGap
 
               Text {
                 text: "Display"
@@ -601,7 +601,7 @@ Panel {
           Column {
             visible: root.brightnessAvailable
             width: parent.width
-            spacing: Style.space(6)
+            spacing: Style.spacing.inset
 
             Item {
               width: parent.width
@@ -632,7 +632,7 @@ Panel {
                 font.pixelSize: Style.font.caption
                 font.bold: true
                 anchors.right: parent.right
-                anchors.rightMargin: Style.space(6)
+                anchors.rightMargin: Style.spacing.inset
                 anchors.verticalCenter: parent.verticalCenter
               }
             }
@@ -658,8 +658,8 @@ Panel {
                 id: brightnessSlider
                 bar: root.bar
                 anchors.fill: parent
-                anchors.leftMargin: Style.space(6)
-                anchors.rightMargin: Style.space(6)
+                anchors.leftMargin: Style.spacing.inset
+                anchors.rightMargin: Style.spacing.inset
                 minimum: 1
                 maximum: 100
                 step: 1
@@ -695,7 +695,7 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.space(6)
+            spacing: Style.spacing.inset
 
             Item {
               width: parent.width
@@ -730,7 +730,7 @@ Panel {
                 font.bold: true
 
                 anchors.right: parent.right
-                anchors.rightMargin: Style.space(6)
+                anchors.rightMargin: Style.spacing.inset
                 anchors.verticalCenter: parent.verticalCenter
               }
             }
@@ -757,8 +757,8 @@ Panel {
                 id: textSizeSlider
                 bar: root.bar
                 anchors.fill: parent
-                anchors.leftMargin: Style.space(6)
-                anchors.rightMargin: Style.space(6)
+                anchors.leftMargin: Style.spacing.inset
+                anchors.rightMargin: Style.spacing.inset
                 minimum: 0
                 maximum: root.textSizeStops.length - 1
                 step: 1
@@ -792,7 +792,7 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.space(10)
+            spacing: Style.spacing.sectionGap
 
             Item {
               width: parent.width
@@ -824,7 +824,7 @@ Panel {
                 font.bold: true
 
                 anchors.right: parent.right
-                anchors.rightMargin: Style.space(6)
+                anchors.rightMargin: Style.spacing.inset
                 anchors.verticalCenter: parent.verticalCenter
               }
             }
@@ -866,7 +866,7 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.space(10)
+            spacing: Style.spacing.sectionGap
             visible: root.displays.length > 1
 
             PanelSectionHeader {
@@ -943,9 +943,9 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: Style.space(6)
-      anchors.rightMargin: Style.space(6)
-      spacing: Style.space(8)
+      anchors.leftMargin: Style.spacing.inset
+      anchors.rightMargin: Style.spacing.inset
+      spacing: Style.spacing.controlGap
 
       Text {
         text: "󰍹"
