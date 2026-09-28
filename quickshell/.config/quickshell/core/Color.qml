@@ -181,7 +181,7 @@ QtObject {
   readonly property QtObject popups: QtObject {
     readonly property color background: root.surface
     readonly property color text: root.themeBarPassive
-    readonly property color border: root.outline
+    readonly property color border: root.themeBarPassive
   }
 
   readonly property QtObject tooltip: QtObject {
