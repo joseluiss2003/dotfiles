@@ -216,10 +216,11 @@ write("fastfetch.jsonc", f'''{{
     "type": "file",
     "source": "{fastfetch_logo}",
     "color": {{
-      "1": "{fg}",
-      "2": "{fg}"
+      "1": "{accent}",
+      "2": "{fg}",
+      "3": "{muted}"
     }},
-    "padding": {{ "top": 1, "right": 6, "left": 1 }}
+    "padding": {{ "top": 1, "right": 3, "left": 4 }}
   }},
   "display": {{
     "disableLinewrap": true,
