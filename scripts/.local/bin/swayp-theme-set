@@ -317,13 +317,11 @@ fi
 
 # Kitty: reload the generated include directly. SIGUSR1 is the native
 # configuration-reload path and works without enabling remote control.
-if command -v kitty >/dev/null 2>&1; then
-    # Kitty documents SIGUSR1 as its native config reload mechanism. Target
-    # the oldest kitty process, which is the parent instance.
-    kitty_pid="$(pgrep -xo kitty 2>/dev/null || true)"
-    if [ -n "$kitty_pid" ]; then
-        kill -USR1 "$kitty_pid" 2>/dev/null || true
-    fi
+if command -v kitty >/dev/null 2>&1 && [ -f "$GENERATED_DIR/kitty-colors.conf" ]; then
+    # Apply the generated palette directly to every running Kitty window.
+    # This avoids relying on config-reload timing and updates already-open
+    # terminals immediately.
+    kitty @ set-colors --all "$GENERATED_DIR/kitty-colors.conf" >/dev/null 2>&1 || true
 fi
 
 # Sway: do not reload the whole compositor just to update theme colors.
