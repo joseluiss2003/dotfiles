@@ -92,9 +92,7 @@ QtObject {
   // give passive applets a restrained tint of the theme accent. Active
   // controls still use the full accent, so hierarchy remains clear.
   readonly property color themeBarBackground: mix(themeBackground, themeLighterBackground, 0.24)
-  // Keep passive applets on the theme's green family. Blend a little
-  // foreground back in so darker themes retain enough contrast.
-  readonly property color themeBarForeground: mix(themeGreen, themeForeground, 0.22)
+  readonly property color themeBarForeground: mix(themeForeground, themeAccent, 0.28)
 
   readonly property real shellOpacity: 0.97
 
