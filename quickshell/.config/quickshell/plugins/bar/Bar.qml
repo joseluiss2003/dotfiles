@@ -80,9 +80,11 @@ Item {
   property color background: Color.bar.background
   property color urgent: Color.urgent
 
-  Behavior on barForeground { enabled: root.foregroundAnimationEnabled; ColorAnimation { duration: 1200; easing.type: Easing.InOutCubic } }
-  Behavior on background { ColorAnimation { duration: 1200; easing.type: Easing.InOutCubic } }
-  Behavior on urgent { ColorAnimation { duration: 1200; easing.type: Easing.InOutCubic } }
+  // Color.qml owns the theme transition clock. Do not stack a second
+  // per-property animation on top of its frame-synchronous interpolation.
+  Behavior on barForeground { enabled: root.foregroundAnimationEnabled && !Color.themeTransitionActive; ColorAnimation { duration: 160; easing.type: Easing.OutCubic } }
+  Behavior on background { enabled: !Color.themeTransitionActive; ColorAnimation { duration: 160; easing.type: Easing.OutCubic } }
+  Behavior on urgent { enabled: !Color.themeTransitionActive; ColorAnimation { duration: 160; easing.type: Easing.OutCubic } }
   property var tooltipTarget: null
   property var pendingTooltipTarget: null
   property string tooltipText: ""
