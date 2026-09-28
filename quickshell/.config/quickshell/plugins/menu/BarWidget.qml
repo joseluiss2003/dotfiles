@@ -55,7 +55,7 @@ BarWidget {
     bar: root.bar
     text: ""
     iconComponent: Component {
-      SwayPMark {
+      PowerSessionMark {
         anchors.fill: parent
         color: root.bar.foreground
       }
@@ -110,7 +110,7 @@ BarWidget {
           width: parent.width
           implicitHeight: Style.space(52)
 
-          SwayPMark {
+          PowerSessionMark {
             id: heroMark
             width: Style.space(34)
             height: Style.space(34)
