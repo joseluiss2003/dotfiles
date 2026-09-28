@@ -178,7 +178,7 @@ Item {
           Rectangle {
             height: parent.height
             width: parent.width * (root.hasProgress ? root.value / root.maxValue : 0)
-            color: Color.accent
+            color: Color.foreground
 
             Behavior on width {
               enabled: root.opened
