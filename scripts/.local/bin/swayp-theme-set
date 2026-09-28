@@ -284,7 +284,7 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
         # Give awww a tiny head start so its compositor-side fade begins just
         # before Quickshell repaints the shell palette. 10 ms is the midpoint
         # between the previous leading/lagging timings.
-        sleep 0.017
+        sleep 0.019
 
         # Push the exact new palette directly into the running Quickshell
         # instead of waiting for FileView's filesystem watcher. The watcher
