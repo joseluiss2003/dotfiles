@@ -22,7 +22,7 @@ BorderSurface {
   property color foreground: Color.bar.text
   property color accent: Color.accent
   property color fill: Style.hoverFillFor(foreground, accent)
-  property color currentFill: Style.selectedFillFor(foreground, accent)
+  property color currentFill: Style.selectedAccentFill
 
   radius: Style.cornerRadius
 
