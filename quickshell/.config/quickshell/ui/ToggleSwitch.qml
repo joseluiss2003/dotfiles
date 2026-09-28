@@ -92,7 +92,7 @@ Item {
       radius: root.rounded ? height / 2 : 0
       x: root.checked ? track.width - width - root.knobInset : root.knobInset
       anchors.verticalCenter: parent.verticalCenter
-      color: root.checked ? root.accent : Color.muted
+      color: root.checked ? root.accent : Color.foreground
 
       Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
       Behavior on color { ColorAnimation { duration: 120 } }
