@@ -1749,7 +1749,7 @@ Component.onCompleted: {
       shell.wallpaperTransitionNext = String(nextWallpaper || "")
       shell.wallpaperTransitionActive = true
       shell.wallpaperTransitionSerial += 1
-      shell.wallpaperTransitionFinishTimer.restart()
+      wallpaperTransitionFinishTimer.restart()
       return "ok"
     }
 
