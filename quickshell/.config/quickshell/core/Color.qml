@@ -193,7 +193,7 @@ QtObject {
     readonly property color background: root.popups.background
     readonly property color text: root.foreground
     readonly property color border: root.foreground
-    readonly property color countdown: root.accent
+    readonly property color countdown: root.foreground
   }
 
   readonly property QtObject menu: QtObject {
@@ -202,8 +202,8 @@ QtObject {
     readonly property color border: root.foreground
     readonly property color scrim: Util.alpha(root.backgroundDeep, 0.38)
     readonly property color selectedBackground: root.accent
-    readonly property color selectedText: root.accentText
-    readonly property color selectedBorder: root.accent
+    readonly property color selectedText: root.foreground
+    readonly property color selectedBorder: root.foreground
   }
 
   readonly property QtObject polkit: QtObject {
@@ -222,7 +222,7 @@ QtObject {
     readonly property color placeholder: root.textMuted
     readonly property color textError: root.error
     readonly property color border: root.outline
-    readonly property color borderActive: root.accent
+    readonly property color borderActive: root.foreground
     readonly property color borderError: root.error
     readonly property color selection: root.selection
   }
@@ -230,7 +230,7 @@ QtObject {
   readonly property QtObject imagePicker: QtObject {
     readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
     readonly property color text: root.foreground
-    readonly property color selectedBorder: root.accent
+    readonly property color selectedBorder: root.foreground
     readonly property color unselectedBorder: Util.alpha(root.foreground, 0.45)
   }
 
