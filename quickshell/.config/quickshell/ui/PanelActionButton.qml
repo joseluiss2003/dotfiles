@@ -29,7 +29,7 @@ BorderSurface {
 
   property string iconText: ""
   property string tooltipText: ""
-  property color foreground: Color.foreground
+  property color foreground: Color.bar.text
   property color hoverColor: foreground
   property string fontFamily: Style.font.family
   property real fontSize: Style.font.icon
