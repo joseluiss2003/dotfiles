@@ -327,7 +327,7 @@ Item {
     bar: root.bar
     owner: root
     open: root.opened && !!root.anchorItem
-    focusTarget: keyCatcher
+    keyboardEnabled: false
 
     padding: 0
     drawBackground: false
