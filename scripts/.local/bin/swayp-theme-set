@@ -271,8 +271,8 @@ fi
 if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     if awww img \
         --transition-type center \
-        --transition-duration 0.8 \
-        --transition-step 2 \
+        --transition-duration 0.9 \
+        --transition-step 1 \
         --transition-fps 60 \
         "$DEFAULT_WALLPAPER" >/dev/null 2>&1; then
         ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
