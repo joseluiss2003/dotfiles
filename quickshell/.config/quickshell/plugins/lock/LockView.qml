@@ -154,7 +154,7 @@ Item {
     Column {
       anchors.horizontalCenter: parent.horizontalCenter
       anchors.verticalCenter: parent.verticalCenter
-      spacing: 28
+      spacing: 34
 
       SwayPWordmark {
         width: 330
