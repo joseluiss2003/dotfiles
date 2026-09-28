@@ -909,14 +909,14 @@ Panel {
     id: connectionPhraseSwap
     PropertyAnimation {
       target: heroMeta; property: "opacity"
-      to: 0.0; duration: 180; easing.type: Easing.OutQuad
+      to: 0.0; duration: Style.popup.contentFadeOutDuration; easing.type: Easing.OutQuad
     }
     ScriptAction {
       script: root.connectionPhraseIndex = (root.connectionPhraseIndex + 1) % root.connectionPhrases.length
     }
     PropertyAnimation {
       target: heroMeta; property: "opacity"
-      to: 1.0; duration: 260; easing.type: Easing.InQuad
+      to: 1.0; duration: Style.popup.contentFadeInDuration; easing.type: Easing.InQuad
     }
   }
 
@@ -1176,7 +1176,7 @@ Panel {
         Column {
           id: heroLabels
           anchors.left: heroIcon.right
-          anchors.leftMargin: Style.space(14)
+          anchors.leftMargin: Style.spacing.panelGap
           anchors.right: parent.right
           anchors.rightMargin: heroActions.width > 0 ? heroActions.width + Style.space(12) : 0
           anchors.verticalCenter: parent.verticalCenter
