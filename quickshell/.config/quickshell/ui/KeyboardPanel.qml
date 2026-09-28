@@ -13,7 +13,7 @@ import qs.core
 // click/hover routes focus through their parent surface — so keyboard-summoned
 // popups fell flat without it.
 //
-// Exclusive would also grant map-time focus, but it makes Hyprland route
+// Exclusive would also grant map-time focus, but it makes the layer surface
 // *every* pointer event to the exclusive surface no matter which output
 // the cursor is over, which leaves clicks on any other monitor unable to
 // reach the dismissal surfaces below.
@@ -50,7 +50,7 @@ PanelWindow {
   // Panels that provide their own card surface can disable the wrapper fill.
   property bool drawBackground: true
   // Override the wrapper surface alpha for panels that need visible translucency.
-  // The RGB remains the shared Aether-derived popup surface.
+  // The RGB remains the shared themed popup surface.
   property color backgroundColor: Color.popups.background
   property int gap: Style.gapsOut  // distance between bar edge and panel
   property bool popoutSwitching: false
@@ -85,7 +85,7 @@ PanelWindow {
   screen: anchorWindow ? anchorWindow.screen : null
   visible: open || card.opacity > 0 || popoutSwitching
   color: "transparent"
-  // Popup cards use Aether colors with alpha; keep the layer surface composited
+  // Popup cards use the shared themed surface with alpha; keep the layer surface composited
   // so wallpaper can actually show through the 97% shell surface.
   surfaceFormat.opaque: false
   exclusionMode: ExclusionMode.Ignore
@@ -97,7 +97,7 @@ PanelWindow {
   // animate, but keyboard/click ownership must release the moment the
   // logical close fires — otherwise the user is locked out for 140ms.
   //
-  // Prime with Exclusive on every open, then settle on OnDemand. Hyprland
+  // Prime with Exclusive on every open, then settle on OnDemand.
   // focuses OnDemand when a surface first maps, but not when an already-mapped
   // fade-out surface changes from None back to OnDemand. Exclusive also takes
   // focus when the previously focused application has constrained the pointer.
@@ -332,7 +332,7 @@ PanelWindow {
     onPositionChanged: function(mouse) { hoveringBar = inBarRegion(mouse.x, mouse.y) }
     onExited: hoveringBar = false
     onClicked: function(mouse) {
-      // While Exclusive is priming, Hyprland may route a click from another
+      // While Exclusive is priming, the compositor may route a click from another
       // output here with translated coordinates. Never interpret that as a
       // click on this output's bar.
       if (root.focusPrimed && inBarRegion(mouse.x, mouse.y) && forwardBarClick(mouse.x, mouse.y, mouse.button)) return
