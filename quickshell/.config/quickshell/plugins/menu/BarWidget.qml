@@ -38,7 +38,7 @@ BarWidget {
     iconComponent: Component {
       SwayPMark {
         anchors.fill: parent
-        color: Color.accent
+        color: Color.brand.accent
       }
     }
     opticalSize: Style.bar.iconCanvas
@@ -99,7 +99,7 @@ BarWidget {
             SwayPMark {
               width: 34
               height: 34
-              color: Color.accent
+              color: Color.brand.accent
               anchors.verticalCenter: parent.verticalCenter
             }
 
