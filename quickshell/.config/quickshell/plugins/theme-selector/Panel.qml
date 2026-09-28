@@ -333,7 +333,28 @@ Item {
 
           Behavior on scale {
             NumberAnimation {
-              duration: 150
+              duration: 180
+              easing.type: Easing.OutCubic
+            }
+          }
+
+          Behavior on width {
+            NumberAnimation {
+              duration: 180
+              easing.type: Easing.OutCubic
+            }
+          }
+
+          Behavior on height {
+            NumberAnimation {
+              duration: 180
+              easing.type: Easing.OutCubic
+            }
+          }
+
+          Behavior on y {
+            NumberAnimation {
+              duration: 180
               easing.type: Easing.OutCubic
             }
           }
