@@ -69,14 +69,16 @@ Item {
   property string fontFamily: Style.font.family
   // Bound to the central Color singleton so the bar tracks shell.toml's
   // [bar] section. Property names kept for the rest of this file's bindings.
-  property color themeForeground: Color.bar.text
+  // Keep normal bar content aligned with Sway's foreground text.
+  // Accent is reserved for active/hover states and explicit indicators.
+  property color themeForeground: Color.foreground
   property color themeContrastForeground: Color.background
-  property color transparentForeground: Color.bar.text
+  property color transparentForeground: Color.foreground
   property color foreground: themeForeground
   property color barForeground: useTransparentForeground ? transparentForeground : themeForeground
   property bool foregroundAnimationEnabled: true
   property color background: Color.bar.background
-  property color urgent: Color.bar.active
+  property color urgent: Color.urgent
 
   Behavior on barForeground { enabled: root.foregroundAnimationEnabled; ColorAnimation { duration: 420; easing.type: Easing.InOutCubic } }
   Behavior on background { ColorAnimation { duration: 420; easing.type: Easing.InOutCubic } }
