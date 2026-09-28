@@ -80,7 +80,7 @@ Item {
     anchors.centerIn: parent
     radius: root.rounded ? height / 2 : 0
     color: root.checked
-      ? Style.selectedFillFor(root.foreground, root.accent)
+      ? Style.selectedAccentFill
       : Style.normalFillFor(root.foreground, root.accent)
     borderSpec: Border.controlSpec(root.checked ? "selected" : "normal", root.foreground, root.accent)
 
