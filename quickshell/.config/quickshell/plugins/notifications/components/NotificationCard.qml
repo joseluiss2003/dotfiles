@@ -62,9 +62,9 @@ BorderSurface {
   readonly property string sanitizedBody: root.sanitizeBody(String(root.body || ""))
   readonly property string styledBody: NotificationLogic.styledBody(String(root.body || ""), String(root.app || ""), String(root.appIcon || ""))
 
-  readonly property color dimColor: Qt.darker(Color.notifications.text, 1.4)
-  readonly property color bodyColor: Qt.darker(Color.notifications.text, 1.15)
-  readonly property color accentColor: urgency === 2 ? Color.urgent : (urgency === 0 ? dimColor : Color.notifications.countdown)
+  readonly property color dimColor: Color.textMuted
+  readonly property color bodyColor: Util.alpha(Color.controls.text, 0.86)
+  readonly property color accentColor: urgency === 2 ? Color.controls.danger : (urgency === 0 ? dimColor : Color.controls.text)
   readonly property var cardBorderSpec: Border.surfaceSpec("notifications", "border", Color.notifications.border, Math.max(1, Style.space(2)))
 
   function sanitizeBody(s) {
