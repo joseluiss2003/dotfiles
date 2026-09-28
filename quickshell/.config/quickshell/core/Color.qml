@@ -88,12 +88,12 @@ QtObject {
   readonly property color themeSurfaceAltTinted: themeLighterBackground
   readonly property color themeElevatedTinted: themeLighterBackground
 
-  // Match Sway's tab surface while keeping the bar's applets visibly
-  // tinted by the theme accent. The foreground remains the tab text color;
-  // passive applets use a restrained accent tint and active states use full accent.
+  // The bar keeps the same surface as Sway's tabs. All normal applets use
+  // the theme's own accent directly; active/hover states may reuse the same
+  // accent through the component state system.
   readonly property color themeBarBackground: themeLighterBackground
-  readonly property color themeBarForeground: themeForeground
-  readonly property color themeBarPassive: mix(themeForeground, themeAccent, 0.18)
+  readonly property color themeBarForeground: themeAccent
+  readonly property color themeBarPassive: themeAccent
 
   readonly property real shellOpacity: 0.97
 
@@ -180,38 +180,38 @@ QtObject {
 
   readonly property QtObject popups: QtObject {
     readonly property color background: root.surface
-    readonly property color text: root.themeBarPassive
-    readonly property color border: root.themeBarPassive
+    readonly property color text: root.accent
+    readonly property color border: root.accent
   }
 
   readonly property QtObject tooltip: QtObject {
     readonly property color background: root.popups.background
-    readonly property color text: root.themeBarPassive
-    readonly property color border: root.outline
+    readonly property color text: root.accent
+    readonly property color border: root.accent
   }
 
   readonly property QtObject notifications: QtObject {
     readonly property color background: root.popups.background
-    readonly property color text: root.text
-    readonly property color border: root.outline
+    readonly property color text: root.accent
+    readonly property color border: root.accent
     readonly property color countdown: root.accent
   }
 
   readonly property QtObject menu: QtObject {
     readonly property color background: root.popups.background
-    readonly property color text: root.text
-    readonly property color border: root.outline
+    readonly property color text: root.accent
+    readonly property color border: root.accent
     readonly property color scrim: Util.alpha(root.backgroundDeep, 0.38)
-    readonly property color selectedBackground: root.selection
-    readonly property color selectedText: root.text
+    readonly property color selectedBackground: root.accent
+    readonly property color selectedText: root.accentText
     readonly property color selectedBorder: root.accent
   }
 
   readonly property QtObject polkit: QtObject {
     readonly property color background: root.popups.background
-    readonly property color text: root.text
+    readonly property color text: root.accent
     readonly property color textError: root.error
-    readonly property color border: root.outline
+    readonly property color border: root.accent
     readonly property color borderError: root.error
     readonly property color accent: root.accent
     readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
@@ -230,9 +230,9 @@ QtObject {
 
   readonly property QtObject imagePicker: QtObject {
     readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
-    readonly property color text: root.text
+    readonly property color text: root.accent
     readonly property color selectedBorder: root.accent
-    readonly property color unselectedBorder: Util.alpha(root.outline, 0.45)
+    readonly property color unselectedBorder: Util.alpha(root.accent, 0.45)
   }
 
   function loadColors(raw) {
