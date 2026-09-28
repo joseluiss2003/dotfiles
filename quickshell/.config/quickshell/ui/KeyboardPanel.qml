@@ -54,6 +54,7 @@ PanelWindow {
   property bool popoutSwitchClosing: false
   property bool focusPrimed: false
   property Item focusTarget: null
+  property bool keyboardEnabled: true
 
   default property alias contentItem: contentHolder.children
 
@@ -67,7 +68,7 @@ PanelWindow {
   }
 
   function beginFocusPrime() {
-    if (open && backingWindowVisible) focusPrimeTimer.restart()
+    if (open && keyboardEnabled && backingWindowVisible) focusPrimeTimer.restart()
   }
 
   screen: anchorWindow ? anchorWindow.screen : null
@@ -78,7 +79,7 @@ PanelWindow {
 
   WlrLayershell.namespace: "swayp-keyboard-panel"
   WlrLayershell.layer: WlrLayer.Overlay
-  WlrLayershell.keyboardFocus: open
+  WlrLayershell.keyboardFocus: open && keyboardEnabled
     ? (focusPrimed ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.Exclusive)
     : WlrKeyboardFocus.None
 
@@ -177,7 +178,7 @@ PanelWindow {
     if (open) {
       focusPrimed = false
       beginFocusPrime()
-      if (focusTarget) Qt.callLater(function() {
+      if (keyboardEnabled && focusTarget) Qt.callLater(function() {
         if (root.open && root.focusTarget) root.focusTarget.forceActiveFocus()
       })
     } else {
