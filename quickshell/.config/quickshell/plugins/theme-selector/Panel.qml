@@ -19,6 +19,7 @@ Item {
   property string preferredScreenName: ""
   property int themeIndex: 0
   property bool applying: false
+  property bool layoutSettled: false
 
   property color foreground: Color.bar.text
   property color muted: Color.foreground
@@ -43,6 +44,7 @@ Item {
   }
 
   function open(payloadJson) {
+    root.layoutSettled = false
     root.opened = true
     root.loadCurrentTheme()
     root.loadThemes()
@@ -51,6 +53,7 @@ Item {
   }
 
   function close() {
+    root.layoutSettled = false
     root.opened = false
   }
 
@@ -96,6 +99,11 @@ Item {
 
     root.themeIndex = found >= 0 ? found : 0
     root.selectedTheme = themeModel.get(root.themeIndex).id
+
+    Qt.callLater(function() {
+      if (root.opened && themeModel.count > 0)
+        root.layoutSettled = true
+    })
   }
 
   function selectTheme(index) {
@@ -266,7 +274,7 @@ Item {
 
       Behavior on opacity {
         NumberAnimation {
-          duration: 120
+          duration: 100
           easing.type: Easing.OutCubic
         }
       }
@@ -321,12 +329,20 @@ Item {
         root.previewWidth + root.sideWidth * 2 + root.sideGap * 2
       )
       height: root.previewHeight + Style.space(110)
-      opacity: root.applying ? 0 : 1
+      opacity: root.layoutSettled && !root.applying ? 1 : 0
+      scale: root.layoutSettled && !root.applying ? 1 : 0.985
 
       Behavior on opacity {
         NumberAnimation {
-          duration: 220
-          easing.type: Easing.InOutCubic
+          duration: 145
+          easing.type: Easing.OutQuint
+        }
+      }
+
+      Behavior on scale {
+        NumberAnimation {
+          duration: 165
+          easing.type: Easing.OutQuint
         }
       }
 
@@ -366,44 +382,50 @@ Item {
           scale: selected ? 1 : 0.96
 
           Behavior on x {
+            enabled: root.layoutSettled
             NumberAnimation {
-              duration: 180
-              easing.type: Easing.OutCubic
+              duration: 145
+              easing.type: Easing.OutQuint
             }
           }
 
           Behavior on y {
+            enabled: root.layoutSettled
             NumberAnimation {
-              duration: 180
-              easing.type: Easing.OutCubic
+              duration: 145
+              easing.type: Easing.OutQuint
             }
           }
 
           Behavior on width {
+            enabled: root.layoutSettled
             NumberAnimation {
-              duration: 180
-              easing.type: Easing.OutCubic
+              duration: 145
+              easing.type: Easing.OutQuint
             }
           }
 
           Behavior on height {
+            enabled: root.layoutSettled
             NumberAnimation {
-              duration: 180
-              easing.type: Easing.OutCubic
+              duration: 145
+              easing.type: Easing.OutQuint
             }
           }
 
           Behavior on opacity {
+            enabled: root.layoutSettled
             NumberAnimation {
-              duration: 180
-              easing.type: Easing.OutCubic
+              duration: 145
+              easing.type: Easing.OutQuint
             }
           }
 
           Behavior on scale {
+            enabled: root.layoutSettled
             NumberAnimation {
-              duration: 180
-              easing.type: Easing.OutCubic
+              duration: 145
+              easing.type: Easing.OutQuint
             }
           }
 
