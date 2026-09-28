@@ -279,14 +279,7 @@ QtObject {
     mergeShell()
   }
 
-  Timer {
-    id: themeTransitionTimer
-    interval: 1200
-    repeat: false
-    onTriggered: root.themeTransitionActive = false
-  }
-
-  property FileView paletteFile: FileView {
+  Timer {\n    id: themeTransitionTimer\n    interval: 1200\n    repeat: false\n    onTriggered: root.themeTransitionActive = false\n  }\n\n  property FileView paletteFile: FileView {
     path: root.palettePath
     watchChanges: true
     printErrors: false
