@@ -5,38 +5,40 @@
     "source": "~/.config/swayp/branding/swayp-fastfetch.txt",
     "color": {
       "1": "cyan",
-      "2": "blue",
-      "3": "green",
-      "4": "yellow",
-      "5": "magenta",
-      "6": "white"
+      "2": "cyan",
+      "3": "cyan",
+      "4": "cyan",
+      "5": "cyan",
+      "6": "cyan"
     },
-    "padding": { "top": 1, "right": 3, "left": 2 }
+    "padding": { "top": 1, "right": 6, "left": 1 }
   },
   "display": {
     "disableLinewrap": true,
-    "color": { "keys": "cyan", "output": "white", "separator": "bright_black" },
+    "color": {
+      "keys": "white",
+      "output": "white",
+      "separator": "bright_black"
+    },
     "key": { "width": 14, "type": "string" }
   },
   "modules": [
     "break",
-    { "type": "custom", "outputColor": "bright_black", "format": "┌──────────────────────Hardware────────────────────┐" },
+    { "type": "custom", "outputColor": "bright_black", "format": "┌────────────────────── Hardware ───────────────────┐" },
     { "type": "host", "key": " PC", "keyColor": "cyan" },
-    { "type": "cpu", "key": " CPU", "keyColor": "yellow" },
-    { "type": "gpu", "key": " GPU", "keyColor": "blue" },
-    { "type": "memory", "key": " Memoria", "keyColor": "green" },
+    { "type": "cpu", "key": " CPU", "keyColor": "cyan" },
+    { "type": "gpu", "key": " GPU", "keyColor": "cyan" },
+    { "type": "memory", "key": " Memoria", "keyColor": "cyan" },
     { "type": "disk", "key": " Disco", "keyColor": "cyan", "folders": ["/"] },
     { "type": "custom", "outputColor": "bright_black", "format": "└──────────────────────────────────────────────────┘" },
     "break",
-    { "type": "custom", "outputColor": "bright_black", "format": "┌──────────────────────Software────────────────────┐" },
+    { "type": "custom", "outputColor": "bright_black", "format": "┌────────────────────── Software ───────────────────┐" },
     { "type": "os", "key": " OS", "keyColor": "cyan" },
-    { "type": "kernel", "key": " Kernel", "keyColor": "magenta" },
-    { "type": "de", "key": " Entorno", "keyColor": "blue" },
-    { "type": "shell", "key": " Shell", "keyColor": "green" },
+    { "type": "kernel", "key": " Kernel", "keyColor": "cyan" },
+    { "type": "de", "key": " Entorno", "keyColor": "cyan" },
+    { "type": "shell", "key": " Shell", "keyColor": "cyan" },
     { "type": "terminal", "key": " Terminal", "keyColor": "cyan" },
-    { "type": "packages", "key": " Paquetes", "keyColor": "yellow" },
-    { "type": "custom", "outputColor": "bright_black", "format": "└──────────────────────────────────────────────────┘" },
-    "break",
-    { "type": "colors", "symbol": "block", "block": { "width": 3, "range": [0, 15] } }
+    { "type": "packages", "key": " Paquetes", "keyColor": "cyan" },
+    { "type": "custom", "outputColor": "bright_black", "format": "└──────────────────────────────────────────────────┘" }
   ]
 }
