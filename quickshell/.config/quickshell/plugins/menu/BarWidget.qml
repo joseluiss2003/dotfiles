@@ -178,7 +178,8 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.brand.accent
-            hasCursor: root.cursorActive && root.selectedIndex === 0
+            selected: root.cursorActive && root.selectedIndex === 0
+            bordered: root.cursorActive && root.selectedIndex === 0
             onClicked: root.lock()
             onHovered: function(h) {
               if (h) {
@@ -200,7 +201,8 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.brand.accent
-            hasCursor: root.cursorActive && root.selectedIndex === 1
+            selected: root.cursorActive && root.selectedIndex === 1
+            bordered: root.cursorActive && root.selectedIndex === 1
             onClicked: root.suspend()
             onHovered: function(h) {
               if (h) {
@@ -222,7 +224,8 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.brand.accent
-            hasCursor: root.cursorActive && root.selectedIndex === 2
+            selected: root.cursorActive && root.selectedIndex === 2
+            bordered: root.cursorActive && root.selectedIndex === 2
             onClicked: root.logout()
             onHovered: function(h) {
               if (h) {
@@ -244,7 +247,8 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.brand.accent
-            hasCursor: root.cursorActive && root.selectedIndex === 3
+            selected: root.cursorActive && root.selectedIndex === 3
+            bordered: root.cursorActive && root.selectedIndex === 3
             onClicked: root.reboot()
             onHovered: function(h) {
               if (h) {
@@ -266,7 +270,8 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.error
-            hasCursor: root.cursorActive && root.selectedIndex === 4
+            selected: root.cursorActive && root.selectedIndex === 4
+            bordered: root.cursorActive && root.selectedIndex === 4
             onClicked: root.poweroff()
             onHovered: function(h) {
               if (h) {
