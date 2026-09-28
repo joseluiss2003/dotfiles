@@ -36,7 +36,7 @@ GENERATED_DIR="${HOME}/.config/swayp/generated"
 mkdir -p "$STATE_DIR" "$GENERATED_DIR" "$(dirname "$PERSISTENT_THEME_FILE")"
 
 python3 - "$THEME_DIR/colors.toml" "$PALETTE_STAGED_OUTPUT" "$GENERATED_DIR" "$THEME" <<'PY'
-import json, os, sys, tomllib, colorsys
+import json, os, sys, tomllib, colorsys, shutil, subprocess
 
 colors_path, palette_path, generated_dir, theme = sys.argv[1:]
 with open(colors_path, "rb") as f:
@@ -221,18 +221,30 @@ vimcmd_symbol = "[❮](bold fg:primary)"
 ''')
 
 fastfetch_logo_template = os.path.join(os.environ["HOME"], ".config", "swayp", "branding", "swayp-fastfetch.svg")
-fastfetch_logo = os.path.join(generated_dir, "swayp-fastfetch.svg")
+fastfetch_svg = os.path.join(generated_dir, "swayp-fastfetch.svg")
+fastfetch_logo = os.path.join(generated_dir, "swayp-fastfetch.png")
 if os.path.isfile(fastfetch_logo_template):
     with open(fastfetch_logo_template, "r") as f:
-        fastfetch_svg = f.read().replace("__SWAYP_COLOR__", accent)
-    with open(fastfetch_logo, "w") as f:
-        f.write(fastfetch_svg)
+        fastfetch_svg_content = f.read().replace("__SWAYP_COLOR__", accent)
+    with open(fastfetch_svg, "w") as f:
+        f.write(fastfetch_svg_content)
+
+    # Rasterize explicitly with a transparent background. Some SVG delegates
+    # otherwise default the canvas to white when Fastfetch/Kitty decodes it.
+    magick = shutil.which("magick")
+    if magick:
+        subprocess.run(
+            [magick, "-background", "none", fastfetch_svg, "-alpha", "on", fastfetch_logo],
+            check=True,
+        )
 
 write("fastfetch.jsonc", f'''{{
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {{
     "type": "kitty",
     "source": "{fastfetch_logo}",
+    "width": 32,
+    "height": 27,
     "color": {{
       "1": "{logo_colors[0]}",
       "2": "{logo_colors[1]}",
