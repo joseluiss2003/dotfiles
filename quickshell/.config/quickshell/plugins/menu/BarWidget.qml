@@ -92,7 +92,7 @@ BarWidget {
 
             Text {
               text: "󰯙"
-              color: Color.accent
+              color: Color.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.display
               anchors.verticalCenter: parent.verticalCenter
@@ -112,7 +112,7 @@ BarWidget {
 
               Text {
                 text: "SESSION"
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -125,7 +125,7 @@ BarWidget {
         PanelSeparator {
           width: parent.width - Style.space(20)
           x: Style.space(10)
-          foreground: Color.outline
+          foreground: Color.foreground
         }
 
         Column {
@@ -153,7 +153,7 @@ BarWidget {
               border.width: Style.normalBorderWidth
               border.color: action.hot
                 ? Util.alpha(Color.text, 0.16)
-                : Util.alpha(Color.outline, 0.18)
+                : Util.alpha(Color.foreground, 0.18)
             }
 
             Rectangle {
