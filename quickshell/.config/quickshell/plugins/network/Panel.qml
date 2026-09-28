@@ -1095,7 +1095,7 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: parent.top
-      spacing: Style.space(12)
+      spacing: Style.spacing.xxl
 
       // ---------- Hero: network icon · SSID + state · actions ----------
       Item {
@@ -1178,7 +1178,7 @@ Panel {
           anchors.left: heroIcon.right
           anchors.leftMargin: Style.spacing.panelGap
           anchors.right: parent.right
-          anchors.rightMargin: heroActions.width > 0 ? heroActions.width + Style.space(12) : 0
+          anchors.rightMargin: heroActions.width > 0 ? heroActions.width + Style.spacing.xxl : 0
           anchors.verticalCenter: parent.verticalCenter
           spacing: Style.spacing.compactGap
 
@@ -1281,7 +1281,7 @@ Panel {
         GridLayout {
           width: parent.width
           columns: 4
-          columnSpacing: Style.space(20)
+          columnSpacing: Style.spacing.wideGap
           rowSpacing: Style.spacing.labelGap
 
           // Always mounted: these two used to appear a beat after the panel
@@ -1478,7 +1478,7 @@ Panel {
         visible: root.wifiStationAvailable
         width: parent.width
         height: Math.min(contentHeight, Style.space(240))
-        spacing: Style.space(4)
+        spacing: Style.spacing.sm
         clip: true
         boundsBehavior: Flickable.StopAtBounds
         interactive: contentHeight > height
@@ -1502,7 +1502,7 @@ Panel {
           Column {
             id: delegateColumn
             width: parent.width
-            spacing: Style.space(4)
+            spacing: Style.spacing.sm
 
             PanelSectionHeader {
               visible: sectionTitle !== ""
@@ -1806,8 +1806,8 @@ Panel {
       anchors.top: rowMouse.bottom
       anchors.leftMargin: Style.spacing.sectionGap
       anchors.rightMargin: Style.spacing.sectionGap
-      anchors.topMargin: Style.space(4)
-      implicitHeight: (idField.visible ? idField.implicitHeight + Style.space(4) : 0) + pwField.implicitHeight + Style.spacing.rowGap
+      anchors.topMargin: Style.spacing.sm
+      implicitHeight: (idField.visible ? idField.implicitHeight + Style.spacing.sm : 0) + pwField.implicitHeight + Style.spacing.rowGap
       height: implicitHeight
 
       TextField {
