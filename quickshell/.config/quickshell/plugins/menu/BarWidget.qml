@@ -177,9 +177,9 @@ BarWidget {
             iconSize: Style.font.icon
             fontSize: Style.font.body
             foreground: root.bar.foreground
-            accent: Color.brand.accent
-            selected: root.cursorActive && root.selectedIndex === 0
-            bordered: root.cursorActive && root.selectedIndex === 0
+            accent: root.bar.foreground
+            hasCursor: root.cursorActive && root.selectedIndex === 0
+            selectionBorderOnly: true
             onClicked: root.lock()
             onHovered: function(h) {
               if (h) {
@@ -200,9 +200,9 @@ BarWidget {
             iconSize: Style.font.icon
             fontSize: Style.font.body
             foreground: root.bar.foreground
-            accent: Color.brand.accent
-            selected: root.cursorActive && root.selectedIndex === 1
-            bordered: root.cursorActive && root.selectedIndex === 1
+            accent: root.bar.foreground
+            hasCursor: root.cursorActive && root.selectedIndex === 1
+            selectionBorderOnly: true
             onClicked: root.suspend()
             onHovered: function(h) {
               if (h) {
@@ -223,9 +223,9 @@ BarWidget {
             iconSize: Style.font.icon
             fontSize: Style.font.body
             foreground: root.bar.foreground
-            accent: Color.brand.accent
-            selected: root.cursorActive && root.selectedIndex === 2
-            bordered: root.cursorActive && root.selectedIndex === 2
+            accent: root.bar.foreground
+            hasCursor: root.cursorActive && root.selectedIndex === 2
+            selectionBorderOnly: true
             onClicked: root.logout()
             onHovered: function(h) {
               if (h) {
@@ -246,9 +246,9 @@ BarWidget {
             iconSize: Style.font.icon
             fontSize: Style.font.body
             foreground: root.bar.foreground
-            accent: Color.brand.accent
-            selected: root.cursorActive && root.selectedIndex === 3
-            bordered: root.cursorActive && root.selectedIndex === 3
+            accent: root.bar.foreground
+            hasCursor: root.cursorActive && root.selectedIndex === 3
+            selectionBorderOnly: true
             onClicked: root.reboot()
             onHovered: function(h) {
               if (h) {
@@ -270,8 +270,8 @@ BarWidget {
             fontSize: Style.font.body
             foreground: root.bar.foreground
             accent: Color.error
-            selected: root.cursorActive && root.selectedIndex === 4
-            bordered: root.cursorActive && root.selectedIndex === 4
+            hasCursor: root.cursorActive && root.selectedIndex === 4
+            selectionBorderOnly: true
             onClicked: root.poweroff()
             onHovered: function(h) {
               if (h) {
