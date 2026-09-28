@@ -305,7 +305,7 @@ Panel {
             id: headerIcon
             textFormat: Text.PlainText
             text: root.dnd ? "󰂛" : "󰂚"
-            color: root.dnd ? Color.urgent : Color.accent
+            color: root.dnd ? Color.urgent : Color.foreground
             font.family: root.fontFamily
             font.pixelSize: Style.font.display
             anchors.left: parent.left
@@ -329,7 +329,7 @@ Panel {
     
             Text {
               text: root.dnd ? "DO NOT DISTURB" : root.notificationPhrase.toUpperCase()
-              color: Color.muted
+              color: Color.foreground
               font.family: root.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
@@ -450,7 +450,7 @@ Panel {
             Text {
               width: parent.width
               text: "󰂚"
-              color: Color.accent
+              color: Color.foreground
               opacity: 0.75
               font.family: root.fontFamily
               font.pixelSize: Style.font.displayLarge
