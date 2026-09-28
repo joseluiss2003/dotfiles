@@ -311,12 +311,13 @@ fi
 # transition. Kitty and Sway must move with the wallpaper and Quickshell,
 # not after the 500 ms reveal has already finished.
 
-if command -v kitty >/dev/null 2>&1 && [ -f "$GENERATED_DIR/kitty-colors.conf" ]; then
-    KITTY_SOCKET="$(kitty @ ls 2>/dev/null         | jq -r '.[] | select(.is_focused == true) | .tabs[].windows[] | select(.is_focused == true) | .env.KITTY_LISTEN_ON'         | head -n1)"
-
-    if [ -n "$KITTY_SOCKET" ]; then
-        kitty @ --to "$KITTY_SOCKET" set-colors --all "$GENERATED_DIR/kitty-colors.conf" >/dev/null 2>&1 || true
-    fi
+if command -v kitty >/dev/null 2>&1 && [ -f "$GENERATED_DIR/kitty-colors.conf" ] && command -v jq >/dev/null 2>&1; then
+    # Kitty creates one control socket per running instance. Apply the palette
+    # to every instance, not only the currently focused one.
+    kitty @ ls 2>/dev/null         | jq -r '.[].tabs[].windows[].env.KITTY_LISTEN_ON // empty'         | sort -u         | while IFS= read -r KITTY_SOCKET; do
+            [ -n "$KITTY_SOCKET" ] || continue
+            kitty @ --to "$KITTY_SOCKET" set-colors --all "$GENERATED_DIR/kitty-colors.conf" >/dev/null 2>&1 || true
+        done
 fi
 
 if command -v swaymsg >/dev/null 2>&1; then
