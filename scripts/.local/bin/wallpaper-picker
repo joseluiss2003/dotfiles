@@ -81,15 +81,11 @@ SELECTED_FILE="$(sed -n '1p' "$SELECTION_FILE")"
 [ -n "$SELECTED_FILE" ] || exit 0
 [ -f "$SELECTED_FILE" ] || exit 1
 
-# Quickshell owns the visual transition. awww only swaps the compositor
-# wallpaper immediately underneath it, so there is no second animation to
-# drift out of sync or produce a visible midpoint cut.
-if [ -n "$CURRENT_WALLPAPER" ] && [ "$CURRENT_WALLPAPER" != "$SELECTED_FILE" ] && command -v qs >/dev/null 2>&1; then
-    qs ipc call shell beginWallpaperTransition "$CURRENT_WALLPAPER" "$SELECTED_FILE" >/dev/null 2>&1 || true
-fi
-
 if ! awww img \
-    --transition-type none \
+    --transition-type center \
+    --transition-duration 0.8 \
+    --transition-step 2 \
+    --transition-fps 60 \
     "$SELECTED_FILE"; then
     notify-send "Wallpaper" "No se pudo aplicar $(basename "$SELECTED_FILE")"
     exit 1
