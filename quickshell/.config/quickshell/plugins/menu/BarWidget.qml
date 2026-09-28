@@ -112,8 +112,8 @@ BarWidget {
 
           PowerSessionMark {
             id: heroMark
-            width: Style.space(34)
-            height: Style.space(34)
+            width: Style.space(26)
+            height: Style.space(26)
             color: root.bar.foreground
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
