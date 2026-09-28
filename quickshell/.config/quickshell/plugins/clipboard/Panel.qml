@@ -38,9 +38,11 @@ Item {
   property int contentMargin: Style.popup.contentInset
   property int headerHeight: Style.popup.headerHeight
   property int contentSpacing: 0
-  property int cardWidth: Style.space(440)
-  property int cardHeight: Style.space(390)
+  property int cardWidth: Style.space(520)
+  property int cardHeight: Style.space(500)
+  property int previewHeight: Style.space(94)
   property int rowHeight: Style.space(46)
+  readonly property var selectedEntry: displayModel.count > 0 && selectedIndex >= 0 && selectedIndex < displayModel.count ? displayModel.get(selectedIndex) : null
   property int historyLimit: 500
 
   function open(payloadJson) {
@@ -477,12 +479,116 @@ Item {
           foreground: Color.outline
         }
 
+        // Preview — the selected fragment gets a proper visual stage instead
+        // of being just another line in the list. This is the part that makes
+        // clipboard feel like a first-class SwayP surface rather than a menu.
+        Item {
+          width: parent.width
+          height: root.previewHeight
+          visible: root.selectedEntry !== null
+
+          BorderSurface {
+            anchors.fill: parent
+            color: Util.alpha(root.foreground, 0.028)
+            borderSpec: Border.surfaceSpec("clipboard", "preview", root.border, Style.normalBorderWidth)
+            radius: root.cornerRadius
+            clip: true
+
+            Item {
+              anchors.fill: parent
+              anchors.leftMargin: Style.popup.contentInset
+              anchors.rightMargin: Style.popup.contentInset
+              anchors.topMargin: Style.spacing.sm
+              anchors.bottomMargin: Style.spacing.sm
+
+              Row {
+                anchors.fill: parent
+                spacing: Style.popup.sectionGap
+
+                Item {
+                  width: Style.space(64)
+                  height: parent.height
+
+                  Rectangle {
+                    anchors.centerIn: parent
+                    width: Style.space(56)
+                    height: Style.space(56)
+                    color: Util.alpha(Color.controls.text, 0.045)
+                    border.width: Style.normalBorderWidth
+                    border.color: Util.alpha(root.border, 0.32)
+
+                    Image {
+                      visible: root.selectedEntry && root.selectedEntry.previewImage.length > 0
+                      anchors.fill: parent
+                      anchors.margins: Style.space(6)
+                      source: root.selectedEntry ? root.selectedEntry.previewImage : ""
+                      fillMode: Image.PreserveAspectFit
+                      asynchronous: true
+                      smooth: true
+                    }
+
+                    Text {
+                      visible: root.selectedEntry && root.selectedEntry.previewImage.length === 0
+                      anchors.centerIn: parent
+                      text: root.selectedEntry && root.selectedEntry.entryType === "image" ? "󰋩" : root.selectedEntry && root.selectedEntry.entryType === "file" ? "󰈔" : "󰅌"
+                      color: Color.controls.text
+                      font.family: root.fontFamily
+                      font.pixelSize: Style.font.display
+                    }
+                  }
+                }
+
+                Column {
+                  anchors.verticalCenter: parent.verticalCenter
+                  width: parent.width - Style.space(76)
+                  spacing: Style.spacing.compactGap
+
+                  Text {
+                    text: root.selectedEntry ? (root.selectedEntry.entryType === "image" ? "IMAGE" : root.selectedEntry.entryType === "file" ? "FILE" : "TEXT") : ""
+                    color: Color.muted
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.caption
+                    font.bold: true
+                    font.letterSpacing: 1.1
+                  }
+
+                  Text {
+                    width: parent.width
+                    text: root.selectedEntry ? root.selectedEntry.previewText : ""
+                    color: root.foreground
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.body
+                    font.weight: Font.Medium
+                    wrapMode: Text.Wrap
+                    elide: Text.ElideRight
+                    maximumLineCount: 2
+                  }
+
+                  Text {
+                    text: root.selectedEntry ? (root.selectedIndex + 1) + " / " + displayModel.count : ""
+                    color: Color.muted
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.caption
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        PanelSeparator {
+          visible: root.selectedEntry !== null
+          width: parent.width - (Style.popup.contentInset * 2)
+          x: Style.popup.contentInset
+          foreground: Color.outline
+        }
+
         // History — deliberately quiet until an item is selected.
         Item {
           width: parent.width
           height: Math.max(
-            Style.space(150),
-            parent.height - Style.popup.headerHeight - Style.normalBorderWidth - Style.popup.footerHeight
+            Style.space(120),
+            parent.height - Style.popup.headerHeight - root.previewHeight - Style.popup.footerHeight - Style.space(3)
           )
           clip: true
 
@@ -655,6 +761,18 @@ Item {
         Item {
           width: parent.width
           height: Style.popup.footerHeight
+
+          Text {
+            anchors.left: parent.left
+            anchors.leftMargin: Style.popup.contentInset
+            anchors.verticalCenter: parent.verticalCenter
+            text: "ENTER  COPY   ·   SHIFT+ENTER  PASTE"
+            color: Color.muted
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            font.letterSpacing: 0.4
+          }
 
           Button {
             id: clearButton
