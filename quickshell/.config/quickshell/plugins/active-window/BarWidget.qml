@@ -30,7 +30,7 @@ BarWidget {
       id: focusMark
       anchors.verticalCenter: parent.verticalCenter
       text: "•"
-      color: Color.accent
+      color: Color.foreground
       font.family: root.bar ? root.bar.fontFamily : Style.font.family
       font.pixelSize: Style.font.body
       font.bold: true
