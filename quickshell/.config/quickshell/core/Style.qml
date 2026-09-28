@@ -240,6 +240,7 @@ QtObject {
     readonly property int headerHeight: root.space(50)
     readonly property int rowHeight: root.space(32)
     readonly property int actionHeight: root.space(32)
+    readonly property int footerHeight: root.space(48)
     readonly property int sectionGap: root.spacing.sectionGap
     readonly property int contentInset: root.spacing.controlInset
     readonly property real animationDistance: root.spaceReal(2)
