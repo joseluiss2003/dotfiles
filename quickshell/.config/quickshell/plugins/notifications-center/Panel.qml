@@ -315,7 +315,7 @@ Panel {
     
           Column {
             anchors.left: headerIcon.right
-            anchors.leftMargin: Style.space(12)
+            anchors.leftMargin: Style.spacing.xxl
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.spacing.compactGap
     
@@ -483,7 +483,7 @@ Panel {
             anchors.leftMargin: Style.spacing.controlInset
             anchors.rightMargin: Style.spacing.controlInset
             anchors.bottomMargin: Style.spacing.controlGap
-            spacing: Style.space(6)
+            spacing: Style.spacing.inset
     
             Button {
               width: (parent.width - parent.spacing) / 2
