@@ -267,7 +267,7 @@ Item {
 
     Rectangle {
       anchors.fill: parent
-      color: Util.alpha(Color.background, 0.82)
+      color: Util.alpha(Color.fullscreen.scrim, 0.82)
       opacity: root.opened ? (root.applying ? 0.34 : 1) : 0
 
       Behavior on opacity {
@@ -467,7 +467,7 @@ Item {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             height: Style.space(52)
-            color: Util.alpha(Color.background, 0.88)
+            color: Util.alpha(Color.fullscreen.background, 0.88)
 
             Text {
               anchors.left: parent.left
