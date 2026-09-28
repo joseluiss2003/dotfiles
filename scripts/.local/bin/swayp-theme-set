@@ -307,25 +307,14 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     fi
 fi
 
-# Give Sway's reload a moment to settle without introducing a second visual
-# transition. Runtime palette changes are already in flight by this point.
-sleep 0.55
+# Apply all runtime application colors at the beginning of the visual
+# transition. Kitty and Sway must move with the wallpaper and Quickshell,
+# not after the 500 ms reveal has already finished.
 
-if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
-    makoctl reload >/dev/null 2>&1 || true
-fi
-
-# Kitty: reload the generated include directly. SIGUSR1 is the native
-# configuration-reload path and works without enabling remote control.
 if command -v kitty >/dev/null 2>&1 && [ -f "$GENERATED_DIR/kitty-colors.conf" ]; then
-    # Apply the generated palette directly to every running Kitty window.
-    # This avoids relying on config-reload timing and updates already-open
-    # terminals immediately.
     kitty @ set-colors --all "$GENERATED_DIR/kitty-colors.conf" >/dev/null 2>&1 || true
 fi
 
-# Sway: do not reload the whole compositor just to update theme colors.
-# Use a shell-compatible runtime file rather than sourcing sway syntax.
 if command -v swaymsg >/dev/null 2>&1; then
     SWAY_RUNTIME_COLORS="$GENERATED_DIR/sway-runtime-colors.sh"
     if [ -f "$SWAY_RUNTIME_COLORS" ]; then
@@ -338,7 +327,8 @@ if command -v swaymsg >/dev/null 2>&1; then
     fi
 fi
 
-# The compositor is already inside the wallpaper reveal, so no extra
-# settling delay is needed here.
+if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
+    makoctl reload >/dev/null 2>&1 || true
+fi
 
 printf 'SwayP theme applied: %s\n' "$THEME"
