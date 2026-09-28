@@ -6,8 +6,6 @@ Item {
   id: root
 
   property color color: Color.brand.accent
-  // Kept for compatibility with the existing LockView API.
-  // The rendered asset now contains its own finished face/depth masks.
   property color highlightColor: Color.brand.highlight
   property color shadowColor: Color.brand.depth
 
@@ -16,9 +14,8 @@ Item {
   readonly property real logoHeight: logoWidth / aspectRatio
   readonly property real logoX: (width - logoWidth) / 2
   readonly property real logoY: (height - logoHeight) / 2
+  readonly property real depthBleed: 1.5
 
-  // Rendered lockscreen wordmark, split into two masks so each part can
-  // follow SwayP's semantic theme colors without altering the artwork.
   Image {
     id: depthSource
     x: root.logoX
@@ -34,10 +31,10 @@ Item {
 
   MultiEffect {
     id: depth
-    x: root.logoX
-    y: root.logoY
-    width: root.logoWidth
-    height: root.logoHeight
+    x: root.logoX - root.depthBleed
+    y: root.logoY - root.depthBleed
+    width: root.logoWidth + root.depthBleed * 2
+    height: root.logoHeight + root.depthBleed * 2
     source: depthSource
     colorizationColor: root.shadowColor
     colorization: 1.0
