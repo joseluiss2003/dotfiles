@@ -176,10 +176,10 @@ Panel {
   readonly property string toggleHint: anyAudible ? "Mute" : "Unmute"
 
   readonly property color hoverFill: bar
-    ? Style.hoverFillFor(bar.foreground, Color.accent)
+    ? Style.hoverFillFor(bar.foreground, Color.foreground)
     : "transparent"
   readonly property color selectedFill: bar
-    ? Style.selectedFillFor(bar.foreground, Color.accent)
+    ? Style.selectedFillFor(bar.foreground, Color.foreground)
     : "transparent"
 
   function sectionCount(section) {
@@ -752,7 +752,7 @@ Panel {
                   outputSlider.dragging ? outputSlider.liveValue : root.outputVolume,
                   root.outputMuted
                 ).toUpperCase()
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -789,7 +789,7 @@ Panel {
                 id: outputPercent
                 textFormat: Text.PlainText
                 text: Math.round((outputSlider.dragging ? outputSlider.liveValue : root.outputVolume) * 100) + "%"
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -876,7 +876,7 @@ Panel {
                 id: microphonePercent
                 textFormat: Text.PlainText
                 text: Math.round((inputSlider.dragging ? inputSlider.liveValue : root.inputVolume) * 100) + "%"
-                color: Color.muted
+                color: Color.foreground
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -1188,7 +1188,7 @@ Panel {
           id: streamPct
           textFormat: Text.PlainText
           text: Math.round(streamRow.streamVolume * 100) + "%"
-          color: Color.muted
+          color: Color.foreground
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.caption
           font.bold: true
