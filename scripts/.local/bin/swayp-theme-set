@@ -22,6 +22,7 @@ BASE="${HOME}/.config/swayp/themes"
 THEME_DIR="${BASE}/${THEME}"
 STATE_DIR="${HOME}/.local/state/swayp/current"
 PALETTE_OUTPUT="${STATE_DIR}/palette.json"
+PALETTE_STAGED_OUTPUT="${STATE_DIR}/palette.json.next"
 
 # Wallpaper transition is the only geometric reveal during a theme change.
 # Keep Quickshell out of the wallpaper transition path to avoid overlapping
@@ -35,7 +36,7 @@ GENERATED_DIR="${HOME}/.config/swayp/generated"
 mkdir -p "$STATE_DIR" "$GENERATED_DIR" "$(dirname "$PERSISTENT_THEME_FILE")"
 mkdir -p "$HOME/.config/fastfetch"
 
-python3 - "$THEME_DIR/colors.toml" "$PALETTE_OUTPUT" "$GENERATED_DIR" "$THEME" <<'PY'
+python3 - "$THEME_DIR/colors.toml" "$PALETTE_STAGED_OUTPUT" "$GENERATED_DIR" "$THEME" <<'PY'
 import json, os, sys, tomllib
 
 colors_path, palette_path, generated_dir, theme = sys.argv[1:]
@@ -259,6 +260,12 @@ if [ -d "$THEME_WALLPAPER_DIR" ]; then
             \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \) \
             -print 2>/dev/null | sort | head -n 1
     )"
+fi
+
+# Activate the new Quickshell palette at the exact start of the wallpaper reveal.
+# This keeps the palette transition and wallpaper transition visually in sync.
+if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
+    mv -f "$PALETTE_STAGED_OUTPUT" "$PALETTE_OUTPUT"
 fi
 
 if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
