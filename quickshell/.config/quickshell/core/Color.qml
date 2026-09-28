@@ -56,7 +56,7 @@ QtObject {
 
   readonly property color themeBackground: paletteValid ? colorFromValue(semanticValue("background", paletteColors[0]), Qt.rgba(0.07, 0.07, 0.07, 1)) : Qt.rgba(0.07, 0.07, 0.07, 1)
   readonly property color themeForeground: paletteValid ? colorFromValue(semanticValue("foreground", paletteColors[7]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
-  readonly property color themeMuted: paletteValid ? colorFromValue(semanticValue("muted", paletteColors[8]), Qt.rgba(0.62, 0.62, 0.62, 1)) : Qt.rgba(0.62, 0.62, 0.62, 1)
+  readonly property color themeMuted: themeForeground
   readonly property color themeRed: paletteValid ? colorFromValue(paletteColors[1], Qt.rgba(1, 0.33, 0.33, 1)) : Qt.rgba(1, 0.33, 0.33, 1)
   readonly property color themeGreen: paletteValid ? colorFromValue(paletteColors[2], Qt.rgba(0.31, 0.98, 0.48, 1)) : Qt.rgba(0.31, 0.98, 0.48, 1)
   readonly property color themeYellow: paletteValid ? colorFromValue(paletteColors[3], Qt.rgba(0.95, 0.85, 0.30, 1)) : Qt.rgba(0.95, 0.85, 0.30, 1)
@@ -67,7 +67,7 @@ QtObject {
   readonly property color themeDarkBackground: paletteValid ? colorFromValue(semanticValue("dark_background", paletteColors[0]), themeBackground) : themeBackground
   readonly property color themeDarkerBackground: paletteValid ? colorFromValue(semanticValue("darker_background", paletteColors[0]), themeBackground) : themeBackground
   readonly property color themeLighterBackground: paletteValid ? colorFromValue(semanticValue("lighter_background", paletteColors[0]), themeBackground) : themeBackground
-  readonly property color themeLightForeground: paletteValid ? colorFromValue(semanticValue("light_foreground", paletteColors[7]), themeForeground) : themeForeground
+  readonly property color themeLightForeground: themeForeground
 
   // The theme's own accent remains authoritative; do not derive or replace it.
   readonly property color themeAccent: paletteValid ? colorFromValue(semanticValue("accent", themeBlue), themeBlue) : themeBlue
