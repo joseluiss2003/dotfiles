@@ -55,7 +55,7 @@ BarWidget {
         id: labelText
         textFormat: Text.PlainText
         text: root.artist ? root.title + "-" + root.artist : root.title
-        color: Color.accent
+        color: Color.foreground
         font.family: root.bar.fontFamily
         font.pixelSize: Style.font.body
         font.bold: true
@@ -180,7 +180,7 @@ BarWidget {
           Text {
             id: heroIcon
             text: "󰝚"
-            color: Color.accent
+            color: Color.foreground
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.display
             anchors.left: parent.left
@@ -257,7 +257,7 @@ BarWidget {
               anchors.centerIn: parent
               visible: !root.activePlayer || !root.activePlayer.trackArtUrl
               text: "󰝚"
-              color: Color.muted
+              color: Color.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.display
             }
@@ -296,7 +296,7 @@ BarWidget {
 
             Text {
               text: root.album
-              color: Color.muted
+              color: Color.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               width: parent.width
@@ -368,7 +368,7 @@ BarWidget {
               anchors.leftMargin: Style.space(14)
               anchors.verticalCenter: parent.verticalCenter
               text: "PLAYERS"
-              color: Color.muted
+              color: Color.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
@@ -443,7 +443,7 @@ BarWidget {
 
                     Text {
                       text: sourceRow.sourceDetail
-                      color: Color.muted
+                      color: Color.foreground
                       font.family: root.bar.fontFamily
                       font.pixelSize: Style.font.caption
                       elide: Text.ElideRight
