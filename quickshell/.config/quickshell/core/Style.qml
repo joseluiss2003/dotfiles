@@ -237,6 +237,11 @@ QtObject {
     readonly property int gap: root.gapsOut
     readonly property int margin: root.gapsOut
     readonly property int padding: root.spacing.popupPadding
+    readonly property int headerHeight: root.space(50)
+    readonly property int rowHeight: root.space(32)
+    readonly property int actionHeight: root.space(32)
+    readonly property int sectionGap: root.spacing.sectionGap
+    readonly property int contentInset: root.spacing.controlInset
     readonly property real animationDistance: root.spaceReal(2)
     readonly property int enterXDuration: 115
     readonly property int exitXDuration: 85
