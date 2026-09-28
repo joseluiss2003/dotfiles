@@ -262,21 +262,24 @@ if [ -d "$THEME_WALLPAPER_DIR" ]; then
     )"
 fi
 
-# Start the wallpaper reveal first. awww hands the transition to its daemon,
-# then we immediately activate the staged palette so Quickshell follows the
-# wallpaper instead of leading it.
+# Start the wallpaper reveal and palette transition together.
+# Do not wait for awww: its CLI may remain attached to the transition request,
+# which would make the palette update visibly lag behind the wallpaper.
+#
+# Fork awww first, then swap the staged palette immediately. Both transitions
+# therefore begin from the same shell turn and both run for exactly 1.2s.
 if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
-    if awww img \
+    awww img \
         --transition-type center \
         --transition-duration 1.2 \
         --transition-step 1 \
         --transition-fps 60 \
-        "$DEFAULT_WALLPAPER" >/dev/null 2>&1; then
-        ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
+        "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
 
-        if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
-            mv -f "$PALETTE_STAGED_OUTPUT" "$PALETTE_OUTPUT"
-        fi
+    ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
+
+    if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
+        mv -f "$PALETTE_STAGED_OUTPUT" "$PALETTE_OUTPUT"
     fi
 fi
 
