@@ -10,9 +10,11 @@ set -eu
 # ============================================================
 
 THEME_NAME=""
-THEME_FILE="${HOME}/.local/state/swayp/current/theme.name"
+THEME_FILE="${HOME}/.config/swayp/current-theme"
 if [ -f "$THEME_FILE" ]; then
-    THEME_NAME=$(cat "$THEME_FILE")
+    THEME_NAME=$(sed -n '1p' "$THEME_FILE")
+elif [ -L "${HOME}/.local/state/swayp/current/theme" ]; then
+    THEME_NAME=$(basename "$(readlink "${HOME}/.local/state/swayp/current/theme")")
 fi
 
 THEME_WALLPAPER_DIR="${HOME}/.config/swayp/wallpapers/${THEME_NAME}"
