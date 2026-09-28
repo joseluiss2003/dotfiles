@@ -278,7 +278,7 @@ Item {
         text: "\udb80\ude37"
         fontFamily: root.fontFamily
         fontSize: Math.round(root.fieldHeight * 0.7)
-        color: root.errorFlash ? Color.polkit.textError : root.accent
+        color: root.errorFlash ? Color.polkit.textError : root.foreground
       }
 
       Row {
