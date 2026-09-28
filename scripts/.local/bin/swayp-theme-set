@@ -290,12 +290,6 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
         # instead of waiting for FileView's filesystem watcher. The watcher
         # is intentionally kept as a persistence/fallback path, but it must
         # not decide when the visual transition starts.
-        # Reload Sway at the same visual handoff point so generated border
-        # colors switch with the Quickshell palette instead of lagging behind.
-        if command -v swaymsg >/dev/null 2>&1; then
-            swaymsg reload >/dev/null 2>&1 &
-        fi
-
         if command -v qs >/dev/null 2>&1; then
             PALETTE_B64="$(base64 -w0 "$PALETTE_OUTPUT")"
             SHELL_B64="$(base64 -w0 "$THEME_DIR/shell.toml")"
@@ -306,7 +300,7 @@ fi
 
 # Give Sway's reload a moment to settle without introducing a second visual
 # transition. Runtime palette changes are already in flight by this point.
-sleep 0.15
+sleep 0.55
 
 if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
     makoctl reload >/dev/null 2>&1 || true
@@ -314,6 +308,14 @@ fi
 if command -v kitty >/dev/null 2>&1 && pgrep -x kitty >/dev/null 2>&1; then
     pkill -USR1 -x kitty >/dev/null 2>&1 || true
 fi
+
+# Sway has no color interpolation, so apply its generated colors only after
+# the 500 ms wallpaper/Quickshell transition has finished. This avoids the
+# hard color snap at the beginning of a theme change.
+if command -v swaymsg >/dev/null 2>&1; then
+    swaymsg reload >/dev/null 2>&1 || true
+fi
+
 # The compositor is already inside the wallpaper reveal, so no extra
 # settling delay is needed here.
 
