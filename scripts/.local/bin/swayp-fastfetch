@@ -19,6 +19,6 @@ exec fastfetch \
   --config "$HOME/.config/fastfetch/config.jsonc" \
   --logo "$LOGO" \
   --logo-type file \
-  --logo-color-1 "$accent" \
+  --logo-color-1 "$foreground" \
   --logo-color-2 "$foreground" \
   "$@"
