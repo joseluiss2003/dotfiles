@@ -697,19 +697,25 @@ Item {
 
   function archivePopupFileFor(row) {
     if (!row) return
-    // A history replay or the empty-history placeholder has no file to move;
-    // the failed mv leaves the history untouched, trimming included. Image
-    // copies stay put — live and archived entries share imagesDir.
+    // Prefer moving the already-persisted live file. If a shell restart or a
+    // queued replacement won the race and the live file is missing, fall back
+    // to writing the row directly into history so a toast can never disappear
+    // from the notification center just because its live state vanished.
+    var persistable = NotificationLogic.persistablePopup(row, imagesDir)
+    var json = NotificationLogic.serializePopup(persistable.entry, NotificationUrgency.Normal)
     enqueuePopupFileJob(["bash", "-c",
       "mkdir -p \"$1\" || exit 0\n" +
-      "hist=\"$1\" limit=\"$2\" imgs=\"$5\"\n" +
-      "mv -f \"$4/$3\" \"$1/$3\" 2>/dev/null || exit 0\n" +
+      "hist=\"$1\" limit=\"$2\" imgs=\"$5\" src=\"$4/$3\" dst=\"$1/$3\" json=\"$6\"\n" +
+      "if ! mv -f \"$src\" \"$dst\" 2>/dev/null; then\n" +
+      "  printf '%s\\n' \"$json\" > \"$dst\"\n" +
+      "fi\n" +
       trimHistoryScript, "--",
       historyDir,
       String(historyLimit),
       NotificationLogic.popupFileName(row),
       popupStateDir,
-      imagesDir],
+      imagesDir,
+      json],
       function() { service.historyChanged() })
   }
 
