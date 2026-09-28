@@ -4,17 +4,20 @@ import Quickshell
 import qs.ui
 import qs.core
 
-// Small square power/session launcher for the left side of the Sway bar.
-// Uses the built-in swayp.menu id so it participates in the normal plugin registry without
-// special menu dependencies. It deliberately uses direct system commands instead of external Omarchy
-// menu helper, which is Hyprland-oriented and was the broken leftmost applet.
+// SwayP session launcher. This is intentionally a first-class popup:
+// shared KeyboardPanel surface, shared Button controls and shared keyboard
+// navigation, with no private card/border system.
 BarWidget {
   id: root
   moduleName: "swayp.menu"
 
   property bool popupOpen: false
+  property int selectedIndex: 0
+  property bool cursorActive: false
 
-  function close() { popupOpen = false }
+  function close() {
+    popupOpen = false
+  }
 
   function runAction(command) {
     root.popupOpen = false
@@ -26,6 +29,22 @@ BarWidget {
   function logout() { root.runAction(["swaymsg", "exit"]) }
   function reboot() { root.runAction(["systemctl", "reboot"]) }
   function poweroff() { root.runAction(["systemctl", "poweroff"]) }
+
+  function activateAction(index) {
+    if (index === 0) root.lock()
+    else if (index === 1) root.suspend()
+    else if (index === 2) root.logout()
+    else if (index === 3) root.reboot()
+    else if (index === 4) root.poweroff()
+  }
+
+  function moveAction(delta) {
+    var next = selectedIndex + delta
+    if (next < 0) next = 0
+    if (next > 4) next = 4
+    selectedIndex = next
+    cursorActive = true
+  }
 
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
@@ -51,83 +70,86 @@ BarWidget {
 
   KeyboardPanel {
     id: panel
-    anchorItem: root
-    bar: root.bar
+    anchorItem: button
     owner: root
+    bar: root.bar
     open: root.popupOpen
     focusTarget: keyCatcher
-    padding: 0
-    borderSpec: Border.surfaceSpec("power-session", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.space(430), panel.availableCardWidth)
-    contentHeight: Math.min(Style.space(400), panel.availableCardHeight)
-    gap: 0
-    drawBackground: false
+    backgroundColor: Color.popups.background
+    contentWidth: panel.fittedContentWidth(Style.space(350))
+    contentHeight: panel.fittedContentHeight(column.implicitHeight)
 
-    BorderSurface {
-      id: card
+    PanelKeyCatcher {
+      id: keyCatcher
       anchors.fill: parent
-      color: Color.popups.background
-      borderSpec: Border.surfaceSpec("popups", "border", Util.alpha(Color.muted, 0.34), Style.popup.borderWidth)
-      radius: 0
-      clip: true
 
-      Item {
-        id: keyCatcher
-        anchors.fill: parent
-        focus: true
-        Keys.onEscapePressed: root.close()
+      onMoveRequested: function(dx, dy) {
+        if (!root.cursorActive) {
+          root.cursorActive = true
+          return
+        }
+        if (dy !== 0) root.moveAction(dy > 0 ? 1 : -1)
       }
 
+      onActivateRequested: {
+        if (root.cursorActive) root.activateAction(root.selectedIndex)
+        else root.cursorActive = true
+      }
+
+      onCloseRequested: root.close()
+      onTabRequested: function(direction) { root.switchPanel(direction) }
+
       Column {
-        anchors.fill: parent
-        spacing: 0
+        id: column
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        spacing: Style.spacing.panelGap
 
         Item {
           width: parent.width
-          height: Style.space(74)
+          implicitHeight: Style.space(52)
 
-          Row {
+          SwayPMark {
+            id: heroMark
+            width: Style.space(34)
+            height: Style.space(34)
+            color: Color.brand.accent
             anchors.left: parent.left
-            anchors.leftMargin: Style.popup.contentInset
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.popup.sectionGap
+          }
 
-            SwayPMark {
-              width: Style.space(28)
-              height: Style.space(28)
-              color: Color.brand.accent
-              anchors.verticalCenter: parent.verticalCenter
+          Column {
+            anchors.left: heroMark.right
+            anchors.leftMargin: Style.spacing.panelGap
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: Style.spacing.compactGap
+
+            Text {
+              text: "Session"
+              color: root.bar.foreground
+              font.family: root.bar.fontFamily
+              font.pixelSize: Style.font.title
+              font.bold: true
             }
 
-            Column {
-              anchors.verticalCenter: parent.verticalCenter
-              spacing: Style.spacing.compactGap
-
-              Text {
-                text: "Session"
-                color: Color.text
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.title
-                font.bold: true
-              }
-
-              Text {
-                text: "POWER & SESSION"
-                color: Color.muted
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.caption
-                font.bold: true
-                font.letterSpacing: 1.1
-              }
+            Text {
+              text: "POWER & SESSION"
+              color: root.bar.foreground
+              opacity: 0.62
+              font.family: root.bar.fontFamily
+              font.pixelSize: Style.font.caption
+              font.bold: true
+              font.letterSpacing: 1.1
             }
           }
 
           Text {
             anchors.right: parent.right
-            anchors.rightMargin: Style.popup.contentInset
             anchors.verticalCenter: parent.verticalCenter
             text: "ESC"
-            color: Color.muted
+            color: root.bar.foreground
+            opacity: 0.55
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.caption
             font.bold: true
@@ -136,137 +158,144 @@ BarWidget {
         }
 
         PanelSeparator {
-          width: parent.width - (Style.popup.contentInset * 2)
-          x: Style.popup.contentInset
-          foreground: Color.outline
+          foreground: root.bar.foreground
+          opacity: 0.28
         }
 
-        Grid {
-          width: parent.width - (Style.popup.contentInset * 2)
-          x: Style.popup.contentInset
-          topPadding: Style.spacing.sm
-          bottomPadding: Style.spacing.sm
-          columns: 2
-          columnSpacing: Style.spacing.sm
-          rowSpacing: Style.spacing.sm
-
-          component Action: BorderSurface {
-            id: action
-            required property string iconText
-            required property string labelText
-            required property string descriptionText
-            required property var callback
-            property bool hot: false
-            property bool destructive: labelText === "Power off" || labelText === "Log out"
-
-            width: (parent.width - parent.columnSpacing) / 2
-            height: Style.space(78)
-            radius: 0
-            color: action.hot
-              ? Color.controls.hoverBackground
-              : Util.alpha(Color.controls.background, 0.20)
-            borderSpec: Border.surfaceSpec(
-              "power-session",
-              action.hot ? "selected" : "action",
-              action.hot ? Color.brand.accent : Util.alpha(Color.muted, 0.28),
-              Style.normalBorderWidth
-            )
-
-            Behavior on color {
-              ColorAnimation { duration: 140; easing.type: Easing.OutCubic }
-            }
-
-            Behavior on scale {
-              NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
-            }
-            scale: action.hot ? 1.015 : 1.0
-
-            Rectangle {
-              visible: action.hot
-              anchors.left: parent.left
-              anchors.top: parent.top
-              anchors.bottom: parent.bottom
-              width: Style.space(2)
-              color: action.destructive ? Color.controls.danger : Color.controls.selectedBorder
-            }
-
-            Column {
-              anchors.left: parent.left
-              anchors.right: parent.right
-              anchors.verticalCenter: parent.verticalCenter
-              anchors.leftMargin: Style.popup.contentInset
-              anchors.rightMargin: Style.popup.contentInset
-              spacing: Style.spacing.compactGap
-
-              Row {
-                width: parent.width
-                spacing: Style.spacing.controlGap
-
-                Text {
-                  text: action.iconText
-                  color: action.destructive
-                    ? Color.controls.danger
-                    : (action.hot ? Color.controls.selectedText : Color.controls.text)
-                  font.family: root.bar.fontFamily
-                  font.pixelSize: Style.font.iconLarge
-                  anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Text {
-                  text: action.labelText
-                  color: action.destructive
-                    ? Color.controls.danger
-                    : (action.hot ? Color.controls.selectedText : Color.controls.text)
-                  font.family: root.bar.fontFamily
-                  font.pixelSize: Style.font.heading
-                  font.bold: action.hot
-                  anchors.verticalCenter: parent.verticalCenter
-                  elide: Text.ElideRight
-                }
-              }
-
-              Text {
-                width: parent.width
-                text: action.descriptionText
-                color: action.hot ? Color.controls.selectedText : Color.muted
-                opacity: action.hot ? 0.82 : 0.72
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.caption
-                elide: Text.ElideRight
-              }
-            }
-
-            MouseArea {
-              anchors.fill: parent
-              hoverEnabled: true
-              cursorShape: Qt.PointingHandCursor
-              onEntered: action.hot = true
-              onExited: action.hot = false
-              onClicked: action.callback()
-            }
-          }
-
-          Action { iconText: "󰌾"; labelText: "Lock"; descriptionText: "Secure your session"; callback: root.lock }
-          Action { iconText: "󰒲"; labelText: "Suspend"; descriptionText: "Sleep the computer"; callback: root.suspend }
-          Action { iconText: "󰍃"; labelText: "Log out"; descriptionText: "End the current session"; callback: root.logout }
-          Action { iconText: "󰜉"; labelText: "Reboot"; descriptionText: "Restart the system"; callback: root.reboot }
-          Action { iconText: "⏻"; labelText: "Power off"; descriptionText: "Shut down the computer"; callback: root.poweroff }
-        }
-
-        Item {
+        Column {
           width: parent.width
-          height: Style.space(28)
+          spacing: Style.spacing.controlGap
 
-          Text {
-            anchors.centerIn: parent
-            text: "Select an action"
-            color: Color.muted
-            opacity: 0.65
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.caption
+          Button {
+            width: parent.width
+            height: Style.space(44)
+            leftAlign: true
+            horizontalPadding: Style.spacing.controlPaddingX
+            verticalPadding: Style.spacing.compactGap
+            iconText: "󰌾"
+            text: "Lock"
+            iconSize: Style.font.icon
+            fontSize: Style.font.body
+            foreground: root.bar.foreground
+            accent: Color.brand.accent
+            selected: root.cursorActive && root.selectedIndex === 0
+            onClicked: root.lock()
+            onHovered: function(h) {
+              if (h) {
+                root.cursorActive = true
+                root.selectedIndex = 0
+              }
+            }
           }
+
+          Button {
+            width: parent.width
+            height: Style.space(44)
+            leftAlign: true
+            horizontalPadding: Style.spacing.controlPaddingX
+            verticalPadding: Style.spacing.compactGap
+            iconText: "󰒲"
+            text: "Suspend"
+            iconSize: Style.font.icon
+            fontSize: Style.font.body
+            foreground: root.bar.foreground
+            accent: Color.brand.accent
+            selected: root.cursorActive && root.selectedIndex === 1
+            onClicked: root.suspend()
+            onHovered: function(h) {
+              if (h) {
+                root.cursorActive = true
+                root.selectedIndex = 1
+              }
+            }
+          }
+
+          Button {
+            width: parent.width
+            height: Style.space(44)
+            leftAlign: true
+            horizontalPadding: Style.spacing.controlPaddingX
+            verticalPadding: Style.spacing.compactGap
+            iconText: "󰍃"
+            text: "Log out"
+            iconSize: Style.font.icon
+            fontSize: Style.font.body
+            foreground: root.bar.foreground
+            accent: Color.error
+            selected: root.cursorActive && root.selectedIndex === 2
+            onClicked: root.logout()
+            onHovered: function(h) {
+              if (h) {
+                root.cursorActive = true
+                root.selectedIndex = 2
+              }
+            }
+          }
+
+          Button {
+            width: parent.width
+            height: Style.space(44)
+            leftAlign: true
+            horizontalPadding: Style.spacing.controlPaddingX
+            verticalPadding: Style.spacing.compactGap
+            iconText: "󰜉"
+            text: "Reboot"
+            iconSize: Style.font.icon
+            fontSize: Style.font.body
+            foreground: root.bar.foreground
+            accent: Color.brand.accent
+            selected: root.cursorActive && root.selectedIndex === 3
+            onClicked: root.reboot()
+            onHovered: function(h) {
+              if (h) {
+                root.cursorActive = true
+                root.selectedIndex = 3
+              }
+            }
+          }
+
+          Button {
+            width: parent.width
+            height: Style.space(44)
+            leftAlign: true
+            horizontalPadding: Style.spacing.controlPaddingX
+            verticalPadding: Style.spacing.compactGap
+            iconText: "⏻"
+            text: "Power off"
+            iconSize: Style.font.icon
+            fontSize: Style.font.body
+            foreground: root.bar.foreground
+            accent: Color.error
+            selected: root.cursorActive && root.selectedIndex === 4
+            onClicked: root.poweroff()
+            onHovered: function(h) {
+              if (h) {
+                root.cursorActive = true
+                root.selectedIndex = 4
+              }
+            }
+          }
+        }
+
+        Text {
+          width: parent.width
+          text: "Select an action"
+          horizontalAlignment: Text.AlignHCenter
+          color: root.bar.foreground
+          opacity: 0.42
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.caption
         }
       }
+    }
+  }
+
+  onPopupOpenChanged: {
+    if (popupOpen) {
+      selectedIndex = 0
+      cursorActive = false
+    } else {
+      cursorActive = false
     }
   }
 }
