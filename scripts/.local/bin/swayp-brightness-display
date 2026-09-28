@@ -2,8 +2,6 @@
 
 set -eu
 
-DEVICE="intel_backlight"
-
 usage() {
     printf '%s\n' \
         "Usage:" \
@@ -12,11 +10,11 @@ usage() {
 }
 
 get_brightness() {
-    brightnessctl --device="$DEVICE" get
+    brightnessctl get
 }
 
 get_max() {
-    brightnessctl --device="$DEVICE" max
+    brightnessctl max
 }
 
 if [ "${1:-}" = "--get" ]; then
