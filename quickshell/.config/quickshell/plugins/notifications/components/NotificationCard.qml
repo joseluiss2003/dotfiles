@@ -149,6 +149,7 @@ BorderSurface {
             if (root.imagePersistenceDir.length === 0 || root.persistedImagePath.length === 0) {
               if (root.archivePersistenceRequested) {
                 root.archivePersistenceRequested = false
+                archivePersistenceTimeout.stop()
                 root.imagePersistenceCompleted()
               }
               return
@@ -198,10 +199,12 @@ BorderSurface {
             }
 
             root.archivePersistenceRequested = true
+            archivePersistenceTimeout.restart()
             if (smallIconImage.status === Image.Ready) {
               persistTransientImage()
             } else if (smallIconImage.status === Image.Error) {
               root.archivePersistenceRequested = false
+              archivePersistenceTimeout.stop()
               root.imagePersistenceCompleted()
             }
           }
@@ -325,6 +328,7 @@ BorderSurface {
     onTriggered: {
       if (!root.archivePersistenceRequested) return
       root.archivePersistenceRequested = false
+      archivePersistenceTimeout.stop()
       root.imagePersistenceCompleted()
     }
   }
