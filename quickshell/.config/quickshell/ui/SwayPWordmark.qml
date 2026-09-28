@@ -8,98 +8,72 @@ Item {
   property color highlightColor: Color.brand.highlight
   property color shadowColor: Color.brand.depth
 
-  // Large, compact block wordmark inspired by the approved reference:
-  // heavy geometric letters, stepped corners and a deep offset extrusion.
-  readonly property var letters: [
+  // Geometric SWAYP built from the approved reference.  The letters are
+  // deliberately chunky, wide and stepped instead of using a font.
+  readonly property var shapes: [
+    // S
     [
-      "11111",
-      "10000",
-      "10000",
-      "11110",
-      "00001",
-      "00001",
-      "11111"
+      [8,0],[92,0],[92,16],[24,16],[24,28],[78,28],
+      [78,42],[24,42],[24,54],[92,54],[92,70],[8,70],
+      [8,58],[0,58],[0,42],[8,42],[8,28],[0,28],[0,12],[8,12]
     ],
+    // W
     [
-      "10001",
-      "10001",
-      "10001",
-      "10101",
-      "10101",
-      "11011",
-      "10001"
+      [0,0],[18,0],[18,54],[27,54],[27,18],[45,18],
+      [45,54],[54,54],[54,0],[72,0],[72,70],[43,70],
+      [36,62],[29,70],[0,70]
     ],
+    // A
     [
-      "10001",
-      "10001",
-      "10101",
-      "10101",
-      "10101",
-      "11011",
-      "10001"
+      [8,70],[8,16],[18,16],[18,0],[82,0],[82,16],[92,16],
+      [92,70],[72,70],[72,48],[28,48],[28,70],
+      [28,34],[72,34],[72,16],[28,16],[28,34],[18,34],[18,70]
     ],
+    // Y
     [
-      "01110",
-      "10001",
-      "10001",
-      "11111",
-      "10001",
-      "10001",
-      "10001"
+      [0,0],[20,0],[20,16],[30,16],[30,28],[42,28],
+      [42,16],[52,16],[52,0],[72,0],[72,36],[60,36],
+      [60,70],[42,70],[42,36],[30,36],[30,70],[12,70],
+      [12,36],[0,36]
     ],
+    // P
     [
-      "10001",
-      "10001",
-      "01010",
-      "00100",
-      "00100",
-      "00100",
-      "00100"
-    ],
-    [
-      "11110",
-      "10001",
-      "10001",
-      "11110",
-      "10000",
-      "10000",
-      "10000"
+      [0,0],[72,0],[72,12],[82,12],[82,42],[72,42],
+      [72,54],[18,54],[18,70],[0,70],
+      [0,16],[18,16],[18,38],[62,38],[62,16],[18,16],[18,0]
     ]
   ]
 
-  readonly property int cols: 5
-  readonly property int rows: 7
-  readonly property real gap: 0.9
-  readonly property real letterGap: 1.35
+  readonly property var widths: [92, 72, 92, 72, 82]
+  readonly property real designHeight: 70
+  readonly property real letterGap: 7
 
-  // Keep the same wide proportion as the reference while fitting the
-  // existing 330x92 LockView slot without touching LockView.qml.
-  readonly property real unit: Math.min(
-    (width - 10) / (5 * 5 + 4 * letterGap),
-    (height - 8) / (7 + 2.2)
+  readonly property real scale: Math.min(
+    (width - 8) / root.designWidth,
+    (height - 4) / root.designHeight
   )
-  readonly property real glyphWidth: 5 * unit
-  readonly property real glyphHeight: 7 * unit
-  readonly property real wordWidth: 5 * glyphWidth + 4 * letterGap * unit
-  readonly property real wordHeight: 7 * unit
-  readonly property real logoLeft: (width - wordWidth) / 2
-  readonly property real logoTop: (height - wordHeight) / 2
+  readonly property real designWidth:
+    root.widths[0] + root.widths[1] + root.widths[2] +
+    root.widths[3] + root.widths[4] + root.letterGap * 4
 
-  function paintLetter(ctx, letter, x, y, size, color) {
-    ctx.fillStyle = color
+  readonly property real logoWidth: root.designWidth * root.scale
+  readonly property real logoHeight: root.designHeight * root.scale
+  readonly property real logoLeft: (width - root.logoWidth) / 2
+  readonly property real logoTop: (height - root.logoHeight) / 2
 
-    for (var r = 0; r < root.rows; r++) {
-      var row = letter[r]
-      for (var c = 0; c < root.cols; c++) {
-        if (row.charAt(c) === "1")
-          ctx.fillRect(
-            x + c * size,
-            y + r * size,
-            size + 0.25,
-            size + 0.25
-          )
-      }
-    }
+  function drawShape(ctx, points, x, y, scale, fill) {
+    ctx.fillStyle = fill
+    ctx.beginPath()
+    ctx.moveTo(x + points[0][0] * scale, y + points[0][1] * scale)
+
+    for (var i = 1; i < points.length; i++)
+      ctx.lineTo(
+        x + points[i][0] * scale,
+        y + points[i][1] * scale
+      )
+
+    ctx.closePath()
+    ctx.fill()
   }
 
   Canvas {
@@ -111,89 +85,67 @@ Item {
       var ctx = getContext("2d")
       ctx.clearRect(0, 0, width, height)
 
-      // Deep offset extrusion — the part that gives the mark the Omarchy-like
-      // physical weight without adding a separate object to the lock screen.
-      var extrusion = root.unit * 0.72
-      var x = root.logoLeft
-      var y = root.logoTop
+      var s = root.scale
+      var extrusionX = 4.5 * s
+      var extrusionY = 5.5 * s
 
-      for (var i = 0; i < root.letters.length; i++) {
-        root.paintLetter(
+      // Deep block extrusion.
+      var x = root.logoLeft
+      for (var i = 0; i < root.shapes.length; i++) {
+        root.drawShape(
           ctx,
-          root.letters[i],
-          x + extrusion,
-          y + extrusion,
-          root.unit,
+          root.shapes[i],
+          x + extrusionX,
+          root.logoTop + extrusionY,
+          s,
           root.shadowColor
         )
-        x += root.glyphWidth + root.letterGap * root.unit
+        x += (root.widths[i] + root.letterGap) * s
       }
 
-      // Main face: same accent as the clock.
+      // Main face — exactly the same accent as the clock.
       x = root.logoLeft
-      ctx.fillStyle = root.color
-
-      for (var j = 0; j < root.letters.length; j++) {
-        root.paintLetter(
+      for (var j = 0; j < root.shapes.length; j++) {
+        root.drawShape(
           ctx,
-          root.letters[j],
+          root.shapes[j],
           x,
-          y,
-          root.unit,
+          root.logoTop,
+          s,
           root.color
         )
-        x += root.glyphWidth + root.letterGap * root.unit
+        x += (root.widths[j] + root.letterGap) * s
       }
 
-      // Strong top cap, following the reference's light upper plane.
-      // It remains the theme's highlight, while the clock stays pure accent.
+      // Thin bright top/outer edge, echoing the reference without creating
+      // another color layer across the whole face.
+      var edge = Math.max(1.0, 1.25 * s)
+      ctx.fillStyle = root.highlightColor
+
       x = root.logoLeft
-      var cap = Math.max(1.2, root.unit * 0.18)
+      for (var k = 0; k < root.shapes.length; k++) {
+        var pts = root.shapes[k]
 
-      for (var k = 0; k < root.letters.length; k++) {
-        var letter = root.letters[k]
-        ctx.fillStyle = root.highlightColor
+        // Highlight only the top-facing horizontal segments.
+        for (var p = 0; p < pts.length; p++) {
+          var a = pts[p]
+          var b = pts[(p + 1) % pts.length]
 
-        for (var cr = 0; cr < root.rows; cr++) {
-          var crow = letter[cr]
-          for (var cc = 0; cc < root.cols; cc++) {
-            if (crow.charAt(cc) === "1" && (cr === 0 || letter[cr - 1].charAt(cc) === "0")) {
+          if (Math.abs(a[1] - b[1]) < 0.01 && a[1] <= 18) {
+            var hx = x + Math.min(a[0], b[0]) * s
+            var hw = Math.abs(b[0] - a[0]) * s
+            if (hw > 1)
               ctx.fillRect(
-                x + cc * root.unit,
-                y + cr * root.unit,
-                root.unit + 0.25,
-                cap
+                hx,
+                root.logoTop + a[1] * s,
+                hw,
+                edge
               )
-            }
           }
         }
 
-        x += root.glyphWidth + root.letterGap * root.unit
+        x += (root.widths[k] + root.letterGap) * s
       }
-
-      // A restrained lower shadow line makes the logo read clearly over any
-      // lock-screen wallpaper.
-      ctx.fillStyle = root.shadowColor
-      ctx.globalAlpha = 0.72
-      x = root.logoLeft
-      for (var s = 0; s < root.letters.length; s++) {
-        var sLetter = root.letters[s]
-        for (var sr = 0; sr < root.rows; sr++) {
-          var srow = sLetter[sr]
-          for (var sc = 0; sc < root.cols; sc++) {
-            if (srow.charAt(sc) === "1" && (sr === root.rows - 1 || sLetter[sr + 1].charAt(sc) === "0")) {
-              ctx.fillRect(
-                x + sc * root.unit,
-                y + sr * root.unit + root.unit * 0.78,
-                root.unit + 0.25,
-                root.unit * 0.18
-              )
-            }
-          }
-        }
-        x += root.glyphWidth + root.letterGap * root.unit
-      }
-      ctx.globalAlpha = 1.0
     }
 
     Connections {
