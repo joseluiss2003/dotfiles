@@ -41,7 +41,7 @@ Item {
   property int cursorPad: Style.space(6)
   property bool rounded: Style.cornerRadius > 0
   property color foreground: Color.bar.text
-  property color accent: Color.accent
+  property color accent: Color.foreground
 
   signal toggled()
   signal hovered(bool isHovered)
