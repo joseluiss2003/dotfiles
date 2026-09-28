@@ -495,7 +495,7 @@ Item {
             anchors.bottomMargin: Style.spacing.sectionGap
             model: displayModel
             clip: true
-            spacing: Style.space(5)
+            spacing: Style.spacing.sm
             boundsBehavior: Flickable.StopAtBounds
             interactive: contentHeight > height
 
@@ -515,11 +515,11 @@ Item {
               Rectangle {
                 anchors.fill: parent
                 color: row.hasCursor
-                  ? Util.alpha(Color.text, 0.075)
+                  ? Color.controls.hoverBackground
                   : Util.alpha(root.foreground, 0.025)
                 border.width: Style.normalBorderWidth
                 border.color: row.hasCursor
-                  ? Util.alpha(Color.text, 0.16)
+                  ? Color.controls.selectedBorder
                   : Util.alpha(root.border, 0.22)
               }
 
@@ -529,7 +529,7 @@ Item {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: Style.space(1)
-                color: Util.alpha(Color.text, 0.18)
+                color: Color.controls.border
               }
 
               Row {
@@ -620,7 +620,7 @@ Item {
 
           Column {
             anchors.centerIn: parent
-            spacing: Style.space(7)
+            spacing: Style.spacing.sm
             visible: displayModel.count === 0
 
             Text {
