@@ -241,6 +241,8 @@ QtObject {
     readonly property int exitFadeDuration: 90
     readonly property int switchDuration: 160
     readonly property int switchDelay: 150
+    readonly property int contentFadeOutDuration: 180
+    readonly property int contentFadeInDuration: 260
   }
 
   readonly property QtObject spacing: QtObject {
