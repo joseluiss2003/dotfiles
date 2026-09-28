@@ -232,7 +232,6 @@ write("fastfetch.jsonc", f'''{{
     "type": "file",
     "source": "{fastfetch_logo}",
     "width": 42,
-    "cache": false,
     "color": {{
       "1": "{accent}",
       "2": "{logo_colors[1]}",
