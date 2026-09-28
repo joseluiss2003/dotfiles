@@ -18,8 +18,8 @@ QtObject {
   property var paletteColors: []
   property var semanticColors: ({})
   property bool paletteValid: false
-  // Shared timing signal for theme palette changes. Consumers use this only
-  // for theme-driven color interpolation, keeping hover/interaction motion fast.
+  // Shared timing signal for theme palette changes. The palette duration is kept
+  // identical to the wallpaper fade so both visual layers finish together.
   property bool themeTransitionActive: false
   property real themeTransitionProgress: 1
   property var transitionFrom: ({})
@@ -318,7 +318,7 @@ QtObject {
     property: "themeTransitionProgress"
     from: 0
     to: 1
-    duration: 900
+    duration: 500
     easing.type: Easing.InOutCubic
     onFinished: {
       root.themeTransitionProgress = 1
