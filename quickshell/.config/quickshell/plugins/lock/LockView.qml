@@ -160,9 +160,9 @@ Item {
         width: 330
         height: 92
         anchors.horizontalCenter: parent.horizontalCenter
-        color: Color.accent
-        highlightColor: Color.foreground
-        shadowColor: Color.active
+        color: Color.brand.accent
+        highlightColor: Color.brand.highlight
+        shadowColor: Color.brand.depth
       }
 
       Text {
