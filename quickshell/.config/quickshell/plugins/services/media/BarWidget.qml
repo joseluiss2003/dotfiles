@@ -27,7 +27,7 @@ BarWidget {
   function close() { popupOpen = false }
 
   visible: hasMedia
-  implicitWidth: hasMedia ? row.implicitWidth + Style.space(12) : 0
+  implicitWidth: hasMedia ? row.implicitWidth + Style.spacing.xxl : 0
   implicitHeight: barSize
 
   // Quiet now-playing strip: accent is reserved for the music glyph.
@@ -184,7 +184,7 @@ BarWidget {
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.display
             anchors.left: parent.left
-            anchors.leftMargin: Style.space(14)
+            anchors.leftMargin: Style.spacing.xxxl
             anchors.verticalCenter: parent.verticalCenter
           }
 
@@ -219,7 +219,7 @@ BarWidget {
         }
 
         PanelSeparator {
-          width: parent.width - Style.space(20)
+          width: parent.width - Style.spacing.wideGap
           x: Style.spacing.sectionGap
           foreground: Color.popups.border
         }
@@ -234,7 +234,7 @@ BarWidget {
             width: Style.space(84)
             height: Style.space(84)
             anchors.left: parent.left
-            anchors.leftMargin: Style.space(14)
+            anchors.leftMargin: Style.spacing.xxxl
             anchors.verticalCenter: parent.verticalCenter
             color: Color.controls.background
             borderSpec: Border.controlSpec("normal", Color.controls.border, Color.controls.text)
@@ -265,9 +265,9 @@ BarWidget {
 
           Column {
             anchors.left: artwork.right
-            anchors.leftMargin: Style.space(14)
+            anchors.leftMargin: Style.spacing.xxxl
             anchors.right: parent.right
-            anchors.rightMargin: Style.space(14)
+            anchors.rightMargin: Style.spacing.xxxl
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.spacing.sm
 
@@ -307,7 +307,7 @@ BarWidget {
         }
 
         PanelSeparator {
-          width: parent.width - Style.space(20)
+          width: parent.width - Style.spacing.wideGap
           x: Style.spacing.sectionGap
           foreground: Color.popups.border
         }
@@ -354,7 +354,7 @@ BarWidget {
           visible: root.sourcePlayers.length > 1
 
           PanelSeparator {
-            width: parent.width - Style.space(20)
+            width: parent.width - Style.spacing.wideGap
             x: Style.spacing.sectionGap
             foreground: Color.popups.border
           }
@@ -365,7 +365,7 @@ BarWidget {
 
             Text {
               anchors.left: parent.left
-              anchors.leftMargin: Style.space(14)
+              anchors.leftMargin: Style.spacing.xxxl
               anchors.verticalCenter: parent.verticalCenter
               text: "PLAYERS"
               color: Color.foreground
@@ -398,21 +398,21 @@ BarWidget {
                   ? player.trackArtist
                   : (player && player.identity ? player.identity : "")
 
-                width: parent.width - Style.space(20)
+                width: parent.width - Style.spacing.wideGap
                 x: Style.spacing.sectionGap
                 height: Style.space(38)
                 radius: 0
                 color: selected ? Color.controls.activeBackground : Color.controls.background
                 borderSpec: Border.flat(
                   selected ? Color.controls.selectedBorder : Color.controls.border,
-                  Math.max(1, Style.space(1))
+                  Math.max(1, Style.spacing.compactGap)
                 )
 
                 Row {
                   anchors.fill: parent
-                  anchors.leftMargin: Style.space(9)
-                  anchors.rightMargin: Style.space(9)
-                  spacing: Style.space(7)
+                  anchors.leftMargin: Style.spacing.sm
+                  anchors.rightMargin: Style.spacing.sm
+                  spacing: Style.spacing.sm
 
                   Text {
                     text: player && player.isPlaying ? "󰏤" : "󰐊"
@@ -428,7 +428,7 @@ BarWidget {
                   Column {
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width - Style.space(25)
-                    spacing: Style.space(1)
+                    spacing: Style.spacing.compactGap
 
                     Text {
                       text: sourceRow.sourceTitle
@@ -489,7 +489,7 @@ BarWidget {
       : Color.controls.background
     borderSpec: Border.flat(
       controlMouse.containsMouse ? Color.controls.selectedBorder : Color.controls.border,
-      Math.max(1, Style.space(1))
+      Math.max(1, Style.spacing.compactGap)
     )
     opacity: enabled ? 1.0 : 0.35
 
