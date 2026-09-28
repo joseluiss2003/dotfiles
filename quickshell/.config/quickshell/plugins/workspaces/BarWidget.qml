@@ -142,7 +142,11 @@ BarWidget {
       WidgetButton {
         required property int modelData
         readonly property var workspace: root.workspaceByNumber(modelData)
-        readonly property bool focused: !!workspace && !!workspace.focused
+        readonly property bool focused: {
+          var current = I3.focusedWorkspace
+          if (!current || !workspace) return false
+          return Number(current.number) === Number(modelData)
+        }
         readonly property bool occupied: root.occupiedNumbers.indexOf(modelData) !== -1 || focused
         readonly property bool urgent: !!workspace && !!workspace.urgent
 
