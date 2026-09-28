@@ -239,7 +239,7 @@ QtObject {
   }
 
   readonly property QtObject popups: QtObject {
-    readonly property color background: root.surface
+    readonly property color background: Util.alpha(root.themeBackground, root.shellOpacity)
     readonly property color text: root.foreground
     readonly property color border: root.foreground
   }
