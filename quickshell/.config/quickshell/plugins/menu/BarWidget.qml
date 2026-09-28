@@ -57,7 +57,7 @@ BarWidget {
     iconComponent: Component {
       SwayPMark {
         anchors.fill: parent
-        color: Color.brand.foreground
+        color: root.bar.foreground
       }
     }
     opticalSize: Style.bar.iconCanvas
@@ -114,7 +114,7 @@ BarWidget {
             id: heroMark
             width: Style.space(34)
             height: Style.space(34)
-            color: Color.brand.accent
+            color: root.bar.foreground
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
           }
@@ -221,7 +221,7 @@ BarWidget {
             iconSize: Style.font.icon
             fontSize: Style.font.body
             foreground: root.bar.foreground
-            accent: Color.error
+            accent: Color.brand.accent
             selected: root.cursorActive && root.selectedIndex === 2
             onClicked: root.logout()
             onHovered: function(h) {
