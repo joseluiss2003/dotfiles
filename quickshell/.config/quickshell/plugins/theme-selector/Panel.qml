@@ -151,6 +151,7 @@ Item {
     if (!root.selectedTheme || applyProc.running) return
 
     root.applying = true
+    root.close()
     applyProc.command = ["swayp-theme-set", root.selectedTheme]
     applyProc.running = true
   }
@@ -214,24 +215,14 @@ Item {
       onStreamFinished: root.parseThemes(this.text)
     }
   }
-  Timer {
-    id: closeAfterApply
-    interval: 260
-    repeat: false
-    onTriggered: {
-      root.applying = false
-      root.close()
-      notifyProc.running = true
-    }
-  }
-
   Process {
     id: applyProc
     running: false
 
     onExited: function(exitCode) {
       if (exitCode === 0) {
-        closeAfterApply.restart()
+        root.applying = false
+        notifyProc.running = true
       } else {
         root.applying = false
       }
