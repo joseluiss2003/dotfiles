@@ -56,6 +56,10 @@ Item {
   // map only holds a wrapper, which degrades to a catchable error instead.
   property var liveRefs: ({})
 
+  // Popup rows whose removal is waiting for a transient image:// resource
+  // to be copied to disk. Keyed by the persistent timestamp-originalId name.
+  property var pendingPopupRemovals: ({})
+
   // Emitted after an archived notification is actually on disk.
   // Consumers such as the notification center can refresh their history model
   // without coupling themselves to the popup lifecycle. 
@@ -313,15 +317,67 @@ Item {
     }
   }
 
-  function dismissPopup(index) {
-    removePopup(index, "dismiss")
+  function dismissPopup(index, card) {
+    removePopup(index, "dismiss", card)
   }
 
-  function expirePopup(index) {
-    removePopup(index, "expire")
+  function expirePopup(index, card) {
+    removePopup(index, "expire", card)
   }
 
-  function removePopup(index, reason) {
+  function removePopup(index, reason, card) {
+    if (index < 0 || index >= popupModel.count) return
+    var entry = popupModel.get(index)
+    if (!entry) return
+
+    // image:// notification resources belong to the live notification
+    // provider. Before removing the row, let its card capture the already
+    // rendered image into imagesDir. The card has a bounded timeout, so a
+    // broken provider can never keep a toast on screen forever.
+    var fileName = NotificationLogic.popupFileName(entry)
+    if (card && typeof card.prepareForPersistence === "function" &&
+        String(entry.image || "").indexOf("image://") === 0 &&
+        !pendingPopupRemovals[fileName]) {
+      var nextPending = ({})
+      for (var key in pendingPopupRemovals) nextPending[key] = pendingPopupRemovals[key]
+      nextPending[fileName] = true
+      pendingPopupRemovals = nextPending
+
+      var completed = false
+      function finishAfterImage() {
+        if (completed) return
+        completed = true
+        try {
+          card.imagePersistenceCompleted.disconnect(finishAfterImage)
+        } catch (e) {
+        }
+
+        var cleared = ({})
+        for (var key in pendingPopupRemovals) {
+          if (key !== fileName) cleared[key] = pendingPopupRemovals[key]
+        }
+        pendingPopupRemovals = cleared
+
+        // The row may have moved or been updated while the image was being
+        // captured. Resolve it again by its persistent file identity.
+        for (var i = 0; i < popupModel.count; i++) {
+          var current = popupModel.get(i)
+          if (current && NotificationLogic.popupFileName(current) === fileName) {
+            service.removePopupNow(i, reason)
+            return
+          }
+        }
+      }
+
+      card.imagePersistenceCompleted.connect(finishAfterImage)
+      card.prepareForPersistence()
+      return
+    }
+
+    removePopupNow(index, reason)
+  }
+
+  function removePopupNow(index, reason) {
     if (index < 0 || index >= popupModel.count) return
     var entry = popupModel.get(index)
     var originalId = entry ? entry.originalId : -1
@@ -360,7 +416,7 @@ Item {
   // which the persistence files preserve, so restored toasts stay clickable.
   // Third-party clients register a libnotify action under the canonical
   // identifier "default" instead; that one only works while the sender is live.
-  function invokePopupDefault(index) {
+  function invokePopupDefault(index, card) {
     if (index < 0 || index >= popupModel.count) return
     var entry = popupModel.get(index)
 
@@ -369,7 +425,7 @@ Item {
     var argv = NotificationLogic.parseExecArgv(entry ? entry.execArgv : "")
     if (argv) {
       Util.execArgv(argv)
-      dismissPopup(index)
+      dismissPopup(index, card)
       return
     }
     // Restored rows have no live actions, and looking up liveRefs by their
@@ -396,7 +452,7 @@ Item {
     // focus their window. Fall back to focusing the sending app by class so
     // that click-to-jump actually works.
     if (!invoked) focusApp(entry)
-    dismissPopup(index)
+    dismissPopup(index, card)
   }
 
   // Try to focus an existing Sway window matching the notification's
@@ -1191,7 +1247,7 @@ Item {
                 cardSlot.remainingLifetime -= 50.0 / cardSlot.lifetime
                 if (cardSlot.remainingLifetime <= 0) {
                   cardSlot.remainingLifetime = 0
-                  service.expirePopup(cardSlot.index)
+                  service.expirePopup(cardSlot.index, card)
                 }
               }
             }
@@ -1213,8 +1269,8 @@ Item {
               glyph: cardSlot.glyph
 
               onImagePersisted: service.persistCapturedImage(cardSlot.originalId, cardSlot.timestamp, path)
-              onCloseRequested: service.dismissPopup(cardSlot.index)
-              onCardClicked: service.invokePopupDefault(cardSlot.index)
+              onCloseRequested: service.dismissPopup(cardSlot.index, card)
+              onCardClicked: service.invokePopupDefault(cardSlot.index, card)
             }
           }
         }
