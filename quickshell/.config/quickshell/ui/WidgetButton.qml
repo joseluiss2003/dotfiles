@@ -12,8 +12,8 @@ Item {
   property color foreground: bar ? bar.barForeground : Color.foreground
   property color activeColor: Color.accent
   property color hoverColor: Color.accent
-  // Passive bar widgets use the same foreground as Sway's tab text.
-  property color passiveColor: Color.foreground
+  // All passive bar widgets share one themed applet color.
+  property color passiveColor: Color.bar.text
   property bool active: false
   property real horizontalMargin: 8.5
   property real verticalPadding: 6
