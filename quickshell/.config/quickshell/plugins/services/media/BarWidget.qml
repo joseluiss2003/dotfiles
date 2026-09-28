@@ -207,7 +207,8 @@ BarWidget {
 
             Text {
               text: root.identity ? root.identity.toUpperCase() : "MEDIA"
-              color: Color.foreground
+              color: Color.textMuted
+              opacity: Style.opacity.mutedText
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
@@ -286,7 +287,7 @@ BarWidget {
             Text {
               text: root.artist || "Unknown artist"
               color: Color.text
-              opacity: 0.68
+              opacity: Style.opacity.secondaryText
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.body
               width: parent.width
