@@ -15,9 +15,6 @@ Item {
   property int failedAttempts: 0
   property bool inputEnabled: true
   property bool loadBackground: true
-  // A locked session blanks the displays after a few seconds. Nothing is
-  // visible from then until the user wakes it, so a video must not keep
-  // decoding through what is usually the longest part of a lock.
   property bool displaysBlank: false
   property bool powerSaverActive: false
   property string passwordText: ""
@@ -33,14 +30,10 @@ Item {
   readonly property int passwordDotFontSize: Math.round(Style.font.heading * 1.33)
   readonly property int passwordDotLetterSpacing: Math.round(Style.font.heading * 0.19)
 
-  // Space to keep clear on each side of the field for the fingerprint icon
-  // (icon width plus a gap) so the centered dots never run under it.
   readonly property real fingerprintReserve: fingerprintConfigured
     ? Math.round(fingerprintIcon.implicitWidth + 12)
     : 0
 
-  // Shrink the dots to fit once the password outgrows the field, so every
-  // keystroke stays visible — otherwise long passwords clip with no feedback.
   readonly property real passwordDotScale: dotMetrics.advanceWidth > 0
     ? Math.min(1, (passwordInput.width - 4) / dotMetrics.advanceWidth)
     : 1
@@ -59,14 +52,14 @@ Item {
           "lock",
           "border-error",
           Color.lock.borderError,
-          root.outlineThickness,
+          outlineThickness,
           "border-alpha"
         )
       : Border.surfaceSpec(
           "lock",
           "border-active",
           Color.lock.borderActive,
-          root.outlineThickness,
+          outlineThickness,
           "border-alpha"
         )
 
@@ -84,20 +77,12 @@ Item {
   signal clearFailureRequested()
   signal wakeRequested()
 
-  /*
-   * ============================================================
-   * CLOCK
-   * ============================================================
-   */
-
   Timer {
     interval: 1000
     repeat: true
     running: true
     triggeredOnStart: true
-
-    onTriggered:
-      root.currentTime = new Date()
+    onTriggered: root.currentTime = new Date()
   }
 
   function forcePasswordFocus() {
@@ -110,7 +95,6 @@ Item {
 
   function syncPasswordText() {
     if (passwordInput.text === passwordText) return
-
     syncingPasswordText = true
     passwordInput.text = passwordText
     syncingPasswordText = false
@@ -126,29 +110,20 @@ Item {
 
   Component.onCompleted: {
     syncPasswordText()
-
     if (inputEnabled)
       Qt.callLater(forcePasswordFocus)
   }
 
-  // Measures the masked password at full size; passwordDotScale compares this
-  // against the field width to decide how far the dots must shrink to fit.
   TextMetrics {
     id: dotMetrics
-
     font.family: Style.font.family
     font.pixelSize: root.passwordDotFontSize
     font.letterSpacing: root.passwordDotLetterSpacing
-
-    text:
-      "●".repeat(passwordInput.text.length)
+    text: "●".repeat(passwordInput.text.length)
   }
 
   Rectangle {
     anchors.fill: parent
-
-    // The lock is intentionally independent from the desktop wallpaper.
-    // It uses the active SwayP theme as a solid visual surface.
     color: Color.bar.background
 
     Column {
@@ -157,8 +132,8 @@ Item {
       spacing: 40
 
       SwayPWordmark {
-        width: 520
-        height: 155
+        width: 620
+        height: 184
         anchors.horizontalCenter: parent.horizontalCenter
         color: Color.brand.accent
         highlightColor: Color.brand.highlight
@@ -195,32 +170,22 @@ Item {
             horizontalAlignment: TextInput.AlignHCenter
             activeFocusOnPress: true
             clip: true
-
             enabled: root.inputEnabled && !root.authenticatingPassword
             readOnly: root.authenticatingPassword
             echoMode: TextInput.Password
             passwordCharacter: "\u25CF"
             passwordMaskDelay: 0
-
             color: Color.lock.text
             selectionColor: Color.lock.selection
             selectedTextColor: Color.lock.text
-
             font.family: Style.font.family
-            font.pixelSize:
-              text.length > 0
-                ? Math.max(1, Math.floor(root.passwordDotFontSize * root.passwordDotScale))
-                : root.fieldFontSize
-
-            font.letterSpacing:
-              text.length > 0
-                ? root.passwordDotLetterSpacing * root.passwordDotScale
-                : 0
-
-            cursorVisible:
-              activeFocus &&
-              root.showPasswordCursor &&
-              text.length > 0
+            font.pixelSize: text.length > 0
+              ? Math.max(1, Math.floor(root.passwordDotFontSize * root.passwordDotScale))
+              : root.fieldFontSize
+            font.letterSpacing: text.length > 0
+              ? root.passwordDotLetterSpacing * root.passwordDotScale
+              : 0
+            cursorVisible: activeFocus && root.showPasswordCursor && text.length > 0
 
             cursorDelegate: Rectangle {
               width: 2
@@ -231,10 +196,8 @@ Item {
             onTextChanged: {
               if (!root.syncingPasswordText)
                 root.passwordTextEdited(text)
-
               if (text.length > 0)
                 root.wakeRequested()
-
               if (text.length > 0 && root.failureMessage.length > 0)
                 root.clearFailureRequested()
             }
@@ -242,14 +205,12 @@ Item {
             onAccepted: {
               var submitted = root.passwordText
               root.passwordTextEdited("")
-
               if (submitted.length > 0)
                 root.submitPassword(submitted)
             }
 
             Keys.onPressed: function(event) {
               root.wakeRequested()
-
               if (
                 event.key === Qt.Key_Escape ||
                 (
@@ -266,27 +227,21 @@ Item {
 
           Text {
             anchors.fill: passwordInput
-
-            text:
-              root.authenticatingPassword
-                ? "Checking…"
-                : (
-                    root.failureMessage.length > 0
-                      ? root.failureMessage
-                      : root.placeholderText
-                  )
-
+            text: root.authenticatingPassword
+              ? "Checking…"
+              : (
+                  root.failureMessage.length > 0
+                    ? root.failureMessage
+                    : root.placeholderText
+                )
             visible: passwordInput.text.length === 0
-
-            color:
-              root.authenticatingPassword
-                ? Color.lock.text
-                : (
-                    root.failureMessage.length > 0
-                      ? Color.lock.textError
-                      : Color.lock.placeholder
-                  )
-
+            color: root.authenticatingPassword
+              ? Color.lock.text
+              : (
+                  root.failureMessage.length > 0
+                    ? Color.lock.textError
+                    : Color.lock.placeholder
+                )
             font.family: Style.font.family
             font.pixelSize: root.fieldFontSize
             font.italic: !root.authenticatingPassword && root.failureMessage.length > 0
@@ -299,20 +254,16 @@ Item {
         Item {
           width: 48
           height: 68
-
           anchors.left: inputField.right
           anchors.leftMargin: 12
           anchors.verticalCenter: inputField.verticalCenter
 
           Text {
             anchors.fill: parent
-
             text: root.authenticatingPassword ? "󰦪" : "󰌾"
-
             color: root.failureMessage.length > 0
               ? Color.lock.textError
               : Color.lock.text
-
             font.family: Style.font.family
             font.pixelSize: 30
             horizontalAlignment: Text.AlignHCenter
