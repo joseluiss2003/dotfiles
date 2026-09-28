@@ -291,13 +291,6 @@ QtObject {
     readonly property color unselectedBorder: root.foreground
   }
 
-  readonly property QtObject imagePicker: QtObject {
-    readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
-    readonly property color text: root.foreground
-    readonly property color selectedBorder: root.controls.selectedBorder
-    readonly property color unselectedBorder: Util.alpha(root.controls.text, 0.45)
-  }
-
   function loadColors(raw) {
     root.parsePalette(raw)
   }
