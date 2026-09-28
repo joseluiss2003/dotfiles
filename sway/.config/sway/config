@@ -117,7 +117,7 @@ bindsym $mod+l exec qs ipc call lock lock
 ### =========================
 
 for_window [app_id="pavucontrol"] floating enable, sticky enable, border pixel 1
-for_window [app_id="^Pinta$"] floating enable, focus, resize set width 1100 px height 800 px, move position center
+for_window [app_id="^com\\.github\\.PintaProject\\.Pinta$"] floating enable, focus, resize set width 1100 px height 800 px, move position center
 for_window [class="^Pinta$"] floating enable, focus, resize set width 1100 px height 800 px, move position center
 
 ### =========================
