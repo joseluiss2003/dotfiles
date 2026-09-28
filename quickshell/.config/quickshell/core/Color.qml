@@ -18,6 +18,7 @@ QtObject {
   property var paletteColors: []
   property var semanticColors: ({})
   property bool paletteValid: false
+  // Shared timing signal for theme palette changes. Consumers use this only\n  // for theme-driven color interpolation, keeping hover/interaction motion fast.\n  property bool themeTransitionActive: false
 
   function colorFromValue(value, fallback) {
     if (typeof value !== "string" || !/^#[0-9A-Fa-f]{6}$/.test(value))
@@ -275,12 +276,12 @@ QtObject {
     mergeShell()
   }
 
-  property FileView paletteFile: FileView {
+  Timer {\n    id: themeTransitionTimer\n    interval: 1200\n    repeat: false\n    onTriggered: root.themeTransitionActive = false\n  }\n\n  property FileView paletteFile: FileView {
     path: root.palettePath
     watchChanges: true
     printErrors: false
     onLoaded: root.parsePalette(text())
-    onFileChanged: reload()
+    onFileChanged: {\n      root.themeTransitionActive = true\n      themeTransitionTimer.restart()\n      reload()\n    }
     onLoadFailed: root.paletteValid = false
   }
 
