@@ -83,4 +83,5 @@ exec /usr/bin/fastfetch \
   --logo "$LOGO" \
   --logo-type kitty \
   --logo-width 46 \
+  --logo-cache false \
   "$@"
