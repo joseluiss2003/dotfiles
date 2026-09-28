@@ -11,13 +11,19 @@ Item {
 
   readonly property var glyphs: ({
     "S": ["11111","10000","10000","11110","00001","00001","11110"],
-    "W": ["1000001","1000001","1000001","1010101","1010101","0101010","0100010"],
-    "A": ["01110","10001","10001","11111","10001","10001","10001"],
-    "Y": ["10001","10001","01010","00100","00100","00100","00100"],
     "P": ["11110","10001","10001","11110","10000","10000","10000"]
   })
 
-  readonly property string word: "SWAYP"
+  readonly property string word: "SP"
+  readonly property var logoPalette: Color.semanticColors && Array.isArray(Color.semanticColors.logo)
+    ? Color.semanticColors.logo
+    : []
+
+  function logoColor(index, fallback) {
+    if (index >= 0 && index < logoPalette.length)
+      return Color.colorFromValue(logoPalette[index], fallback)
+    return fallback
+  }
 
   Canvas {
     id: canvas
@@ -42,50 +48,30 @@ Item {
       var x = (width - totalWidth) / 2
       var y = (height - 7 * cell) / 2
 
-      function drawLayer(color, offsetX, offsetY) {
-        ctx.fillStyle = color
-        var cursorX = x
+      // Reuse the exact six-color logo ramp generated for Fastfetch.
+      // Fastfetch renders $6 at the top and $1 at the bottom, so the lock
+      // wordmark follows the same light -> dark vertical order.
+      for (var row = 0; row < 7; row++) {
+        var paletteIndex = Math.max(0, Math.min(5, 6 - row))
+        var fallback = row < 2 ? root.highlightColor : root.color
+        ctx.fillStyle = root.logoColor(paletteIndex, fallback)
 
+        var cursorX = x
         for (var gi = 0; gi < root.word.length; gi++) {
           var rows = root.glyphs[root.word.charAt(gi)]
 
-          for (var row = 0; row < rows.length; row++) {
-            for (var col = 0; col < rows[row].length; col++) {
-              if (rows[row].charAt(col) !== "1") continue
-              ctx.fillRect(
-                cursorX + col * cell + offsetX,
-                y + row * cell + offsetY,
-                cell - gap,
-                cell - gap
-              )
-            }
-          }
-
-          cursorX += rows[0].length * cell + cell
-        }
-      }
-
-      drawLayer(root.shadowColor, 0, shadowOffset)
-      drawLayer(root.color, 0, 0)
-
-      // A flat highlight band keeps the Omarchy-inspired pixel depth without
-      // introducing a gradient: the top two rows are a second theme color.
-      ctx.fillStyle = root.highlightColor
-      var cursor = x
-      for (var li = 0; li < root.word.length; li++) {
-        var rows2 = root.glyphs[root.word.charAt(li)]
-        for (var rr = 0; rr < 2; rr++) {
-          for (var cc = 0; cc < rows2[rr].length; cc++) {
-            if (rows2[rr].charAt(cc) !== "1") continue
+          for (var col = 0; col < rows[row].length; col++) {
+            if (rows[row].charAt(col) !== "1") continue
             ctx.fillRect(
-              cursor + cc * cell,
-              y + rr * cell,
+              cursorX + col * cell,
+              y + row * cell,
               cell - gap,
               cell - gap
             )
           }
+
+          cursorX += rows[0].length * cell + cell
         }
-        cursor += rows2[0].length * cell + cell
       }
     }
 
@@ -95,6 +81,12 @@ Item {
       function onHighlightColorChanged() { canvas.requestPaint() }
       function onShadowColorChanged() { canvas.requestPaint() }
       function onPixelSizeChanged() { canvas.requestPaint() }
+      function onLogoPaletteChanged() { canvas.requestPaint() }
+    }
+
+    Connections {
+      target: Color
+      function onSemanticColorsChanged() { canvas.requestPaint() }
     }
 
     Component.onCompleted: requestPaint()
