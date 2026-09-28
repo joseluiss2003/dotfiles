@@ -4,11 +4,13 @@
     "type": "file",
     "source": "~/.config/swayp/branding/swayp-fastfetch.txt",
     "color": {
-      "1": "white",
-      "2": "white"
+      "1": "cyan",
+      "2": "white",
+      "3": "bright_black"
     },
     "padding": {
-      "right": 4
+      "left": 4,
+      "right": 3
     }
   },
   "modules": [
