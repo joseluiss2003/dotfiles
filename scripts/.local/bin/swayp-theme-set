@@ -282,4 +282,8 @@ if command -v swaymsg >/dev/null 2>&1; then
     swaymsg reload >/dev/null 2>&1 || true
 fi
 
+# Give Sway a short settling window before awww starts its
+# wallpaper animation, avoiding a reload/first-frame hitch.
+sleep 0.1
+
 printf 'SwayP theme applied: %s\n' "$THEME"
