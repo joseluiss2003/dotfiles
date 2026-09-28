@@ -300,7 +300,7 @@ BorderSurface {
     visible: opacity > 0
     opacity: root.hovered ? 1 : 0
 
-    Behavior on opacity { NumberAnimation { duration: 100 } }
+    Behavior on opacity { NumberAnimation { duration: Style.popup.hoverDuration } }
 
     Text {
       anchors.centerIn: parent
