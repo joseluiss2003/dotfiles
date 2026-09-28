@@ -93,11 +93,14 @@ Item {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
 
+    // During a theme change the shared Color clock updates this value every
+    // frame. A second ColorAnimation here would restart on every frame and
+    // create the exact staggered/jumping feeling we are avoiding.
     Behavior on color {
-      enabled: !root.bar || root.bar.foregroundAnimationEnabled
+      enabled: !root.bar || (root.bar.foregroundAnimationEnabled && !Color.themeTransitionActive)
       ColorAnimation {
-        duration: root.bar && Color.themeTransitionActive ? 1200 : 160
-        easing.type: root.bar && Color.themeTransitionActive ? Easing.InOutCubic : Easing.OutCubic
+        duration: 160
+        easing.type: Easing.OutCubic
       }
     }
   }
