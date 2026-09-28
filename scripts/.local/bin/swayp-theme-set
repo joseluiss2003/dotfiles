@@ -301,7 +301,7 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
         # not decide when the visual transition starts.
         if command -v qs >/dev/null 2>&1; then
             PALETTE_B64="$(base64 -w0 "$PALETTE_OUTPUT")"
-            SHELL_B64="$(base64 -w0 "$THEME_DIR/shell.toml")"
+            SHELL_B64="$(base64 -w0 "$THEME_DIR/theme.toml")"
             qs ipc call shell applyTheme "$PALETTE_B64" "$SHELL_B64" >/dev/null 2>&1 || true
         fi
     fi
