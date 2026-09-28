@@ -1266,7 +1266,7 @@ Panel {
           textFormat: Text.PlainText
           wrapMode: Text.WordWrap
           color: root.bar.foreground
-          opacity: 0.7
+          opacity: Style.opacity.secondaryText
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.bodySmall
         }
@@ -1928,7 +1928,7 @@ Panel {
   component InfoLabel: Text {
     textFormat: Text.PlainText
     color: root.bar.foreground
-    opacity: 0.6
+    opacity: Style.opacity.mutedText
     font.family: root.bar.fontFamily
     font.pixelSize: Style.font.bodySmall
   }
