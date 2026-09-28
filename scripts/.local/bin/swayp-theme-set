@@ -220,12 +220,18 @@ error_symbol = "[❯](bold fg:error)"
 vimcmd_symbol = "[❮](bold fg:primary)"
 ''')
 
-fastfetch_logo = os.path.join(os.environ["HOME"], ".config", "swayp", "branding", "swayp-fastfetch.txt")
+fastfetch_logo_template = os.path.join(os.environ["HOME"], ".config", "swayp", "branding", "swayp-fastfetch.svg")
+fastfetch_logo = os.path.join(generated_dir, "swayp-fastfetch.svg")
+if os.path.isfile(fastfetch_logo_template):
+    with open(fastfetch_logo_template, "r") as f:
+        fastfetch_svg = f.read().replace("__SWAYP_COLOR__", accent)
+    with open(fastfetch_logo, "w") as f:
+        f.write(fastfetch_svg)
 
 write("fastfetch.jsonc", f'''{{
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {{
-    "type": "file",
+    "type": "kitty",
     "source": "{fastfetch_logo}",
     "color": {{
       "1": "{logo_colors[0]}",
