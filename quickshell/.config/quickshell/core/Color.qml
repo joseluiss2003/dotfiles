@@ -90,24 +90,24 @@ QtObject {
     return typeof value === "string" && /^#[0-9A-Fa-f]{6}$/.test(value) ? value : fallback
   }
 
-  readonly property color themeBackground: animatedColor("background", paletteValid ? colorFromValue(semanticValue("background", paletteColors[0]), Qt.rgba(0.07, 0.07, 0.07, 1)) : Qt.rgba(0.07, 0.07, 0.07, 1)
-  readonly property color themeForeground: animatedColor("foreground", paletteValid ? colorFromValue(semanticValue("foreground", paletteColors[7]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
+  readonly property color themeBackground: animatedColor("background", paletteValid ? colorFromValue(semanticValue("background", paletteColors[0]), Qt.rgba(0.07, 0.07, 0.07, 1)) : Qt.rgba(0.07, 0.07, 0.07, 1))
+  readonly property color themeForeground: animatedColor("foreground", paletteValid ? colorFromValue(semanticValue("foreground", paletteColors[7]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1))
   readonly property color themeMuted: themeForeground
-  readonly property color themeRed: animatedColor("red", paletteValid ? colorFromValue(paletteColors[1], Qt.rgba(1, 0.33, 0.33, 1)) : Qt.rgba(1, 0.33, 0.33, 1)
-  readonly property color themeGreen: animatedColor("green", paletteValid ? colorFromValue(paletteColors[2], Qt.rgba(0.31, 0.98, 0.48, 1)) : Qt.rgba(0.31, 0.98, 0.48, 1)
-  readonly property color themeYellow: animatedColor("yellow", paletteValid ? colorFromValue(paletteColors[3], Qt.rgba(0.95, 0.85, 0.30, 1)) : Qt.rgba(0.95, 0.85, 0.30, 1)
-  readonly property color themeBlue: animatedColor("blue", paletteValid ? colorFromValue(paletteColors[4], Qt.rgba(0.35, 0.65, 1, 1)) : Qt.rgba(0.35, 0.65, 1, 1)
-  readonly property color themeMagenta: animatedColor("magenta", paletteValid ? colorFromValue(paletteColors[5], Qt.rgba(0.9, 0.45, 0.9, 1)) : Qt.rgba(0.9, 0.45, 0.9, 1)
-  readonly property color themeCyan: animatedColor("cyan", paletteValid ? colorFromValue(paletteColors[6], Qt.rgba(0.2, 0.85, 0.75, 1)) : Qt.rgba(0.2, 0.85, 0.75, 1)
-  readonly property color themeBrightForeground: animatedColor("brightForeground", paletteValid ? colorFromValue(semanticValue("bright_foreground", paletteColors[15]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1)
-  readonly property color themeDarkBackground: animatedColor("darkBackground", paletteValid ? colorFromValue(semanticValue("dark_background", paletteColors[0]), themeBackground) : themeBackground
-  readonly property color themeDarkerBackground: animatedColor("darkerBackground", paletteValid ? colorFromValue(semanticValue("darker_background", paletteColors[0]), themeBackground) : themeBackground
-  readonly property color themeLighterBackground: animatedColor("lighterBackground", paletteValid ? colorFromValue(semanticValue("lighter_background", paletteColors[0]), themeBackground) : themeBackground
+  readonly property color themeRed: animatedColor("red", paletteValid ? colorFromValue(paletteColors[1], Qt.rgba(1, 0.33, 0.33, 1)) : Qt.rgba(1, 0.33, 0.33, 1))
+  readonly property color themeGreen: animatedColor("green", paletteValid ? colorFromValue(paletteColors[2], Qt.rgba(0.31, 0.98, 0.48, 1)) : Qt.rgba(0.31, 0.98, 0.48, 1))
+  readonly property color themeYellow: animatedColor("yellow", paletteValid ? colorFromValue(paletteColors[3], Qt.rgba(0.95, 0.85, 0.30, 1)) : Qt.rgba(0.95, 0.85, 0.30, 1))
+  readonly property color themeBlue: animatedColor("blue", paletteValid ? colorFromValue(paletteColors[4], Qt.rgba(0.35, 0.65, 1, 1)) : Qt.rgba(0.35, 0.65, 1, 1))
+  readonly property color themeMagenta: animatedColor("magenta", paletteValid ? colorFromValue(paletteColors[5], Qt.rgba(0.9, 0.45, 0.9, 1)) : Qt.rgba(0.9, 0.45, 0.9, 1))
+  readonly property color themeCyan: animatedColor("cyan", paletteValid ? colorFromValue(paletteColors[6], Qt.rgba(0.2, 0.85, 0.75, 1)) : Qt.rgba(0.2, 0.85, 0.75, 1))
+  readonly property color themeBrightForeground: animatedColor("brightForeground", paletteValid ? colorFromValue(semanticValue("bright_foreground", paletteColors[15]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1))
+  readonly property color themeDarkBackground: animatedColor("darkBackground", paletteValid ? colorFromValue(semanticValue("dark_background", paletteColors[0]), themeBackground) : themeBackground)
+  readonly property color themeDarkerBackground: animatedColor("darkerBackground", paletteValid ? colorFromValue(semanticValue("darker_background", paletteColors[0]), themeBackground) : themeBackground)
+  readonly property color themeLighterBackground: animatedColor("lighterBackground", paletteValid ? colorFromValue(semanticValue("lighter_background", paletteColors[0]), themeBackground) : themeBackground)
   readonly property color themeLightForeground: themeForeground
 
   // The theme's own accent remains authoritative; do not derive or replace it.
-  readonly property color themeAccent: animatedColor("accent", paletteValid ? colorFromValue(semanticValue("accent", themeBlue), themeBlue) : themeBlue
-  readonly property color themeSelection: animatedColor("selection", paletteValid ? colorFromValue(semanticValue("selection", paletteColors[4]), themeBlue) : themeBlue
+  readonly property color themeAccent: animatedColor("accent", paletteValid ? colorFromValue(semanticValue("accent", themeBlue), themeBlue) : themeBlue)
+  readonly property color themeSelection: animatedColor("selection", paletteValid ? colorFromValue(semanticValue("selection", paletteColors[4]), themeBlue) : themeBlue)
 
   function mix(first, second, amount) {
     var t = Math.max(0, Math.min(1, Number(amount)))
