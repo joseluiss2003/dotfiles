@@ -283,6 +283,11 @@ QtObject {
     readonly property int panelGap: root.spacingToken("panel-gap", 14)
     readonly property int panelPadding: root.spacingToken("panel-padding", 18)
     readonly property int popupPadding: root.spacingToken("popup-padding", 14)
+    readonly property int inset: root.spacingToken("inset", 6)
+    readonly property int sectionGap: root.spacingToken("section-gap", 10)
+    readonly property int compactGap: root.spacingToken("compact-gap", 2)
+    readonly property int controlInset: root.spacingToken("control-inset", 10)
+    readonly property int wideGap: root.spacingToken("wide-gap", 20)
   }
 
   // ---------------------------------------------------------- typography
