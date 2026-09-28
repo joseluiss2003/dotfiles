@@ -733,7 +733,7 @@ Panel {
               anchors.right: parent.right
               anchors.rightMargin: powerSwitch.width + Style.space(12)
               anchors.verticalCenter: parent.verticalCenter
-              spacing: Style.space(2)
+              spacing: Style.spacing.compactGap
 
               Text {
                 text: "Audio"
@@ -770,7 +770,7 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.space(6)
+            spacing: Style.spacing.inset
 
             Item {
               width: parent.width
@@ -794,7 +794,7 @@ Panel {
                 font.pixelSize: Style.font.caption
                 font.bold: true
                 anchors.right: parent.right
-                anchors.rightMargin: Style.space(6)
+                anchors.rightMargin: Style.spacing.inset
                 anchors.verticalCenter: parent.verticalCenter
                 opacity: root.outputMuted ? 0.5 : 1.0
               }
@@ -813,8 +813,8 @@ Panel {
                 id: outputSlider
                 bar: root.bar
                 anchors.fill: parent
-                anchors.leftMargin: Style.space(6)
-                anchors.rightMargin: Style.space(6)
+                anchors.leftMargin: Style.spacing.inset
+                anchors.rightMargin: Style.spacing.inset
                 minimum: 0
                 maximum: 1
                 step: 0.05
@@ -856,7 +856,7 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.space(6)
+            spacing: Style.spacing.inset
             visible: root.displayAudioSources.length > 0 || !!root.source
 
             Item {
@@ -881,7 +881,7 @@ Panel {
                 font.pixelSize: Style.font.caption
                 font.bold: true
                 anchors.right: parent.right
-                anchors.rightMargin: Style.space(6)
+                anchors.rightMargin: Style.spacing.inset
                 anchors.verticalCenter: parent.verticalCenter
                 opacity: root.inputMuted ? 0.5 : 1.0
               }
@@ -900,8 +900,8 @@ Panel {
               Column {
                 id: inputControls
                 anchors.fill: parent
-                anchors.leftMargin: Style.space(6)
-                anchors.rightMargin: Style.space(6)
+                anchors.leftMargin: Style.spacing.inset
+                anchors.rightMargin: Style.spacing.inset
                 spacing: Style.space(5)
 
                 PanelSlider {
@@ -964,7 +964,7 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.space(10)
+            spacing: Style.spacing.sectionGap
             visible: root.displayAudioStreams.length > 0
 
             PanelSectionHeader {
@@ -1014,9 +1014,9 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: Style.space(6)
-      anchors.rightMargin: Style.space(6)
-      spacing: Style.space(8)
+      anchors.leftMargin: Style.spacing.inset
+      anchors.rightMargin: Style.spacing.inset
+      spacing: Style.spacing.controlGap
 
       Text {
         textFormat: Text.PlainText
@@ -1037,7 +1037,7 @@ Panel {
         font.pixelSize: Style.font.body
         font.bold: sinkRow.isActive
         elide: Text.ElideRight
-        width: parent.width - Style.space(22) - Style.space(8)
+        width: parent.width - Style.space(22) - Style.spacing.controlGap
         anchors.verticalCenter: parent.verticalCenter
       }
     }
@@ -1075,9 +1075,9 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: Style.space(6)
-      anchors.rightMargin: Style.space(6)
-      spacing: Style.space(8)
+      anchors.leftMargin: Style.spacing.inset
+      anchors.rightMargin: Style.spacing.inset
+      spacing: Style.spacing.controlGap
 
       Text {
         textFormat: Text.PlainText
@@ -1098,7 +1098,7 @@ Panel {
         font.pixelSize: Style.font.body
         font.bold: sourceRow.isActive
         elide: Text.ElideRight
-        width: parent.width - Style.space(22) - Style.space(8)
+        width: parent.width - Style.space(22) - Style.spacing.controlGap
         anchors.verticalCenter: parent.verticalCenter
       }
     }
@@ -1142,13 +1142,13 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: Style.space(6)
-      anchors.rightMargin: Style.space(6)
-      spacing: Style.space(2)
+      anchors.leftMargin: Style.spacing.inset
+      anchors.rightMargin: Style.spacing.inset
+      spacing: Style.spacing.compactGap
 
       Row {
         width: parent.width
-        spacing: Style.space(8)
+        spacing: Style.spacing.controlGap
 
         Text {
           id: streamMuteIcon
