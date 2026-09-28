@@ -4,9 +4,9 @@ import qs.core
 Item {
   id: root
 
-  property color color: Color.accent
-  property color highlightColor: Color.foreground
-  property color shadowColor: Color.active
+  property color color: Color.brand.accent
+  property color highlightColor: Color.brand.highlight
+  property color shadowColor: Color.brand.depth
   property real pixelSize: Math.max(4, Math.min(width, height) / 9)
 
   readonly property var glyphs: ({
