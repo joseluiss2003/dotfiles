@@ -86,7 +86,7 @@ BarWidget {
 
           Row {
             anchors.left: parent.left
-            anchors.leftMargin: Style.spacing.controlInset
+            anchors.leftMargin: Style.popup.contentInset
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.spacing.controlGap
 
@@ -124,7 +124,7 @@ BarWidget {
 
         PanelSeparator {
           width: parent.width - Style.spacing.wideGap
-          x: Style.spacing.controlInset
+          x: Style.popup.contentInset
           foreground: Color.foreground
         }
 
@@ -143,7 +143,7 @@ BarWidget {
 
             width: parent.width - Style.spacing.wideGap
             height: Style.popup.actionHeight
-            x: Style.spacing.controlInset
+            x: Style.popup.contentInset
 
             Rectangle {
               anchors.fill: parent
@@ -167,8 +167,8 @@ BarWidget {
 
             Row {
               anchors.fill: parent
-              anchors.leftMargin: Style.spacing.controlInset
-              anchors.rightMargin: Style.spacing.controlInset
+              anchors.leftMargin: Style.popup.contentInset
+              anchors.rightMargin: Style.popup.contentInset
               spacing: Style.spacing.controlGap
 
               Text {
