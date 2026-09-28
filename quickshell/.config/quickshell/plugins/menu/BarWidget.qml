@@ -38,9 +38,7 @@ BarWidget {
     iconComponent: Component {
       SwayPMark {
         anchors.fill: parent
-        color: button.active && button.useActiveColor
-          ? button.activeColor
-          : (button.hot ? button.hoverColor : button.passiveColor)
+        color: Color.accent
       }
     }
     opticalSize: Style.bar.iconCanvas
