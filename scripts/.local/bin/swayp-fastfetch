@@ -51,7 +51,7 @@ cyan="${cyan:-$accent}"
 
 # Keep the SVG logo in lock-screen style: one solid color from the active theme.
 # Regenerate it on demand so a fastfetch run never uses a stale theme color.
-if [[ -r "$LOGO_TEMPLATE" ]] && command -v magick >/dev/null 2>&1; then
+if [[ -r "$LOGO_TEMPLATE" ]]; then
   mkdir -p "$(dirname "$LOGO")"
   sed "s/__SWAYP_COLOR__/$accent/g" "$LOGO_TEMPLATE" > "$LOGO_TEMPLATE.tmp"
   magick -background none "$LOGO_TEMPLATE.tmp" -alpha on "$LOGO"
@@ -62,5 +62,5 @@ exec fastfetch \
   --config "$HOME/.config/swayp/generated/fastfetch.jsonc" \
   --logo "$LOGO" \
   --logo-type kitty \
-  --logo-width 34 \
+  --logo-width 42 \
   "$@"
