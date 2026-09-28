@@ -10,7 +10,7 @@ import qs.core
 // hover and activeFocus share the hover-cursor defaults.
 //
 // `rounded` is forwarded to the switch, which auto-detects from
-// Style.cornerRadius: pill shape when Hyprland corners are rounded, square on
+// Style.cornerRadius controls the default shape; callers can override it per instance.
 // sharp. Callers can override per-instance.
 BorderSurface {
   id: root
