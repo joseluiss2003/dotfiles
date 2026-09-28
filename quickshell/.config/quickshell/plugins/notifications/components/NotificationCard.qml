@@ -65,7 +65,7 @@ BorderSurface {
   readonly property color dimColor: Color.textMuted
   readonly property color bodyColor: Util.alpha(Color.controls.text, 0.86)
   readonly property color accentColor: urgency === 2 ? Color.controls.danger : (urgency === 0 ? dimColor : Color.controls.text)
-  readonly property var cardBorderSpec: Border.surfaceSpec("notifications", "border", Color.notifications.border, Math.max(1, Style.space(2)))
+  readonly property var cardBorderSpec: Border.surfaceSpec("notifications", "border", Color.notifications.border, Math.max(1, Style.spacing.compactGap))
 
   function sanitizeBody(s) {
     return NotificationLogic.sanitizeBody(s, app, appIcon)
@@ -120,9 +120,9 @@ BorderSurface {
       Layout.fillWidth: true
       Layout.leftMargin: Style.space(12)
       Layout.rightMargin: Style.space(12)
-      Layout.topMargin: root.singleLineToast ? Style.space(7) : Style.space(10)
-      Layout.bottomMargin: root.singleLineToast ? Style.space(7) : Style.space(10)
-      spacing: root.collapseRedundantIcon ? 0 : (root.compactGlyph ? Style.space(8) : Style.space(12))
+      Layout.topMargin: root.singleLineToast ? Style.space(7) : Style.spacing.controlInset
+      Layout.bottomMargin: root.singleLineToast ? Style.space(7) : Style.spacing.controlInset
+      spacing: root.collapseRedundantIcon ? 0 : (root.compactGlyph ? Style.spacing.controlGap : Style.space(12))
 
       Item {
         id: smallIconSlot
@@ -250,8 +250,8 @@ BorderSurface {
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignVCenter
         // Keep the first line clear of the hover-revealed close button.
-        Layout.rightMargin: Style.space(10)
-        spacing: Style.space(2)
+        Layout.rightMargin: Style.spacing.controlInset
+        spacing: Style.spacing.compactGap
 
         Text {
           // The spec defines the summary as a single line of plain text, so
@@ -273,7 +273,7 @@ BorderSurface {
 
         Text {
           Layout.fillWidth: true
-          Layout.topMargin: Style.space(2)
+          Layout.topMargin: Style.spacing.compactGap
           visible: root.sanitizedBody.length > 0
           text: root.styledBody
           textFormat: Text.StyledText
