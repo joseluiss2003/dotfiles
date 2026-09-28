@@ -132,8 +132,8 @@ Item {
       spacing: 40
 
       SwayPWordmark {
-        width: 620
-        height: 184
+        width: 720
+        height: 171
         anchors.horizontalCenter: parent.horizontalCenter
         color: Color.brand.accent
         highlightColor: Color.brand.highlight
