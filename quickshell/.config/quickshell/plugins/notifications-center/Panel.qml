@@ -239,12 +239,12 @@ Panel {
     contentHeight: Math.min(
       popup.availableCardHeight,
       card.headerHeight
-        + Style.space(8)
+        + Style.spacing.controlGap
         + Math.min(
           card.maxListHeight,
           Math.max(notificationList.contentHeight + Style.space(16), Style.space(72))
         )
-        + Style.space(8)
+        + Style.spacing.controlGap
         + Style.space(48)
         + card.borderTop + card.borderBottom
     )
@@ -284,7 +284,7 @@ Panel {
         "notifications",
         "border",
         Color.notifications.border,
-        Math.max(1, Style.space(2))
+        Math.max(1, Style.spacing.compactGap)
       )
       radius: 0
       clip: true
@@ -309,7 +309,7 @@ Panel {
             font.family: root.fontFamily
             font.pixelSize: Style.font.display
             anchors.left: parent.left
-            anchors.leftMargin: Style.space(14)
+            anchors.leftMargin: Style.spacing.panelGap
             anchors.verticalCenter: parent.verticalCenter
           }
     
@@ -317,7 +317,7 @@ Panel {
             anchors.left: headerIcon.right
             anchors.leftMargin: Style.space(12)
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(2)
+            spacing: Style.spacing.compactGap
     
             Text {
               text: "Notifications"
@@ -339,7 +339,7 @@ Panel {
     
           Text {
             anchors.right: parent.right
-            anchors.rightMargin: Style.space(14)
+            anchors.rightMargin: Style.spacing.panelGap
             anchors.verticalCenter: parent.verticalCenter
             text: root.notificationCount + (root.notificationCount === 1 ? " ALERT" : " ALERTS")
             color: Color.notifications.countdown
@@ -351,8 +351,8 @@ Panel {
     
         PanelSeparator {
           Layout.fillWidth: true
-          Layout.leftMargin: Style.space(10)
-          Layout.rightMargin: Style.space(10)
+          Layout.leftMargin: Style.spacing.controlInset
+          Layout.rightMargin: Style.spacing.controlInset
           foreground: Color.notifications.border
         }
     
@@ -367,13 +367,13 @@ Panel {
             id: notificationList
     
             anchors.fill: parent
-            anchors.leftMargin: Style.space(10)
-            anchors.rightMargin: Style.space(10)
-            anchors.topMargin: Style.space(8)
-            anchors.bottomMargin: Style.space(8)
+            anchors.leftMargin: Style.spacing.controlInset
+            anchors.rightMargin: Style.spacing.controlInset
+            anchors.topMargin: Style.spacing.controlGap
+            anchors.bottomMargin: Style.spacing.controlGap
     
             model: centerModel
-            spacing: Style.space(8)
+            spacing: Style.spacing.controlGap
             clip: true
             boundsBehavior: Flickable.StopAtBounds
     
@@ -447,7 +447,7 @@ Panel {
           Column {
             anchors.centerIn: parent
             visible: root.notificationCount === 0
-            spacing: Style.space(8)
+            spacing: Style.spacing.controlGap
     
             Text {
               width: parent.width
@@ -480,9 +480,9 @@ Panel {
     
           Row {
             anchors.fill: parent
-            anchors.leftMargin: Style.space(10)
-            anchors.rightMargin: Style.space(10)
-            anchors.bottomMargin: Style.space(8)
+            anchors.leftMargin: Style.spacing.controlInset
+            anchors.rightMargin: Style.spacing.controlInset
+            anchors.bottomMargin: Style.spacing.controlGap
             spacing: Style.space(6)
     
             Button {
