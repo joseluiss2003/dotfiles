@@ -226,48 +226,48 @@ fastfetch_logo = fastfetch_logo_template
 # The Fastfetch mark is plain ASCII. Its $1 token is resolved by Fastfetch
 # against the active theme accent, so the exact same artwork follows themes
 # without rasterization or image-cache issues.
-write("fastfetch.jsonc", f'''{
+write("fastfetch.jsonc", f'''{{
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
-  "logo": {
+  "logo": {{
     "type": "file",
     "source": "{fastfetch_logo}",
-    "color": {
+    "color": {{
       "1": "{accent}",
       "2": "{accent}",
       "3": "{accent}",
       "4": "{accent}",
       "5": "{accent}",
       "6": "{accent}"
-    },
-    "padding": { "top": 1, "right": 6, "left": 1 }
-  },
-  "display": {
+    }},
+    "padding": {{ "top": 1, "right": 6, "left": 1 }}
+  }},
+  "display": {{
     "disableLinewrap": true,
-    "color": {
+    "color": {{
       "keys": "{fg}",
       "output": "{fg}",
       "separator": "{muted}"
-    },
-    "key": { "width": 14, "type": "string" }
-  },
+    }},
+    "key": {{ "width": 14, "type": "string" }}
+  }},
   "modules": [
     "break",
-    { "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Hardware ───────────────────┐" },
-    { "type": "host", "key": " PC", "keyColor": "{accent}" },
-    { "type": "cpu", "key": " CPU", "keyColor": "{accent}" },
-    { "type": "gpu", "key": " GPU", "keyColor": "{accent}" },
-    { "type": "memory", "key": " Memoria", "keyColor": "{accent}" },
-    { "type": "disk", "key": " Disco", "keyColor": "{accent}", "folders": ["/"] },
-    { "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" },
+    {{ "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Hardware ───────────────────┐" }},
+    {{ "type": "host", "key": " PC", "keyColor": "{accent}" }},
+    {{ "type": "cpu", "key": " CPU", "keyColor": "{accent}" }},
+    {{ "type": "gpu", "key": " GPU", "keyColor": "{accent}" }},
+    {{ "type": "memory", "key": " Memoria", "keyColor": "{accent}" }},
+    {{ "type": "disk", "key": " Disco", "keyColor": "{accent}", "folders": ["/"] }},
+    {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }},
     "break",
-    { "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Software ───────────────────┐" },
-    { "type": "os", "key": " OS", "keyColor": "{accent}" },
-    { "type": "kernel", "key": " Kernel", "keyColor": "{accent}" },
-    { "type": "de", "key": " Entorno", "keyColor": "{accent}" },
-    { "type": "shell", "key": " Shell", "keyColor": "{accent}" },
-    { "type": "terminal", "key": " Terminal", "keyColor": "{accent}" },
-    { "type": "packages", "key": " Paquetes", "keyColor": "{accent}" },
-    { "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }
+    {{ "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Software ───────────────────┐" }},
+    {{ "type": "os", "key": " OS", "keyColor": "{accent}" }},
+    {{ "type": "kernel", "key": " Kernel", "keyColor": "{accent}" }},
+    {{ "type": "de", "key": " Entorno", "keyColor": "{accent}" }},
+    {{ "type": "shell", "key": " Shell", "keyColor": "{accent}" }},
+    {{ "type": "terminal", "key": " Terminal", "keyColor": "{accent}" }},
+    {{ "type": "packages", "key": " Paquetes", "keyColor": "{accent}" }},
+    {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }}
   ]
 }}''')
 PY
