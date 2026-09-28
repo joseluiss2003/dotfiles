@@ -245,6 +245,15 @@ QtObject {
     readonly property int contentFadeInDuration: 260
   }
 
+  // Shared motion for fullscreen selectors (theme/wallpaper). These surfaces
+  // keep their own layout, but the choreography stays part of the same SwayP family.
+  readonly property QtObject fullscreen: QtObject {
+    readonly property int settleDuration: 165
+    readonly property int itemDuration: 145
+    readonly property int scrimDuration: 100
+  }
+  }
+
   readonly property QtObject spacing: QtObject {
     readonly property real scale: root.effectiveSpacingScale
 
