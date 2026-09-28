@@ -303,7 +303,7 @@ PanelWindow {
   // The motion should feel like the panel is gently released from the bar:
   // short travel, a soft ease-out and a tiny amount of scale-up. The scale
   // is intentionally subtle so it reads as polish rather than a zoom effect.
-  readonly property real animationDistance: Style.space(4)
+  readonly property real animationDistance: Style.space(3)
   readonly property real animationOffsetX: {
     if (barPos === "left") return animationDistance
     if (barPos === "right") return -animationDistance
@@ -326,13 +326,13 @@ PanelWindow {
     padding: root.padding
     radius: Style.cornerRadius
     opacity: root.open || root.popoutSwitching ? 1.0 : 0
-    scale: root.open || root.popoutSwitching ? 1.0 : 0.985
+    scale: root.open || root.popoutSwitching ? 1.0 : 0.99
     transformOrigin: Item.Center
 
     Behavior on x {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 260 : 190
+        duration: root.open ? 250 : 175
         easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
@@ -348,7 +348,7 @@ PanelWindow {
     Behavior on opacity {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 220 : 180
+        duration: root.open ? 250 : 175
         easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
@@ -356,7 +356,7 @@ PanelWindow {
     Behavior on scale {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 280 : 200
+        duration: root.open ? 250 : 175
         easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
