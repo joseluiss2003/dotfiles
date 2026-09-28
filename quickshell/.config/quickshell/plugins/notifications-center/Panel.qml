@@ -245,7 +245,7 @@ Panel {
           Math.max(notificationList.contentHeight + Style.space(16), Style.space(72))
         )
         + Style.spacing.controlGap
-        + Style.space(48)
+        + Style.popup.footerHeight
         + card.borderTop + card.borderBottom
     )
 
@@ -275,7 +275,7 @@ Panel {
     
       readonly property int widthLimit: Style.space(440)
       readonly property int maxListHeight: Style.space(480)
-      readonly property int headerHeight: Style.space(58)
+      readonly property int headerHeight: Style.popup.headerHeight
     
       anchors.fill: parent
     
@@ -476,7 +476,7 @@ Panel {
         Item {
           id: footer
           Layout.fillWidth: true
-          implicitHeight: Style.space(48)
+          implicitHeight: Style.popup.footerHeight
     
           Row {
             anchors.fill: parent
