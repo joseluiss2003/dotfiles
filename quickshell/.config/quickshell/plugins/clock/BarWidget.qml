@@ -151,8 +151,8 @@ BarWidget {
     foreground: Color.foreground
     passiveColor: Color.foreground
     fontWeight: Font.Bold
-    activeColor: Color.accent
-    hoverColor: Color.accent
+    activeColor: Color.foreground
+    hoverColor: Color.foreground
     useActiveColor: false
     text: root.vertical ? "" : root.displayText
     labelVisible: !root.vertical
