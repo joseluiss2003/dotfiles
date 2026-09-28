@@ -1468,7 +1468,7 @@ Item {
               textFormat: Text.PlainText
               text: root.filterText ? "No matches for “" + root.filterText + "”" : "Nothing here yet"
               color: root.foreground
-              opacity: 0.7
+              opacity: Style.opacity.secondaryText
               font.family: root.fontFamily
               font.pixelSize: Style.font.title
               horizontalAlignment: Text.AlignHCenter
