@@ -26,12 +26,6 @@ PALETTE_OUTPUT="${STATE_DIR}/palette.json"
 # Tell the running shell to hold the previous palette briefly while the new
 # theme is written. The shell then reveals the new theme from the center out.
 OLD_BACKGROUND=""
-OLD_WALLPAPER=""
-if [ -L "$HOME/.local/state/swayp/current/background" ]; then
-    OLD_WALLPAPER="$(readlink -f "$HOME/.local/state/swayp/current/background" 2>/dev/null || true)"
-elif [ -f "$HOME/.local/state/wallpaper/current" ]; then
-    OLD_WALLPAPER="$(sed -n '1p' "$HOME/.local/state/wallpaper/current")"
-fi
 if [ -f "$PALETTE_OUTPUT" ] && command -v jq >/dev/null 2>&1; then
     OLD_BACKGROUND="$(jq -r '.semantic.background // .colors[0] // empty' "$PALETTE_OUTPUT" 2>/dev/null || true)"
 fi
@@ -275,12 +269,11 @@ if [ -d "$THEME_WALLPAPER_DIR" ]; then
 fi
 
 if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
-    if [ -n "$OLD_WALLPAPER" ] && [ "$OLD_WALLPAPER" != "$DEFAULT_WALLPAPER" ] && command -v qs >/dev/null 2>&1; then
-        qs ipc call shell beginWallpaperTransition "$OLD_WALLPAPER" "$DEFAULT_WALLPAPER" >/dev/null 2>&1 || true
-    fi
-
     if awww img \
-        --transition-type none \
+        --transition-type center \
+        --transition-duration 0.8 \
+        --transition-step 2 \
+        --transition-fps 60 \
         "$DEFAULT_WALLPAPER" >/dev/null 2>&1; then
         ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
     fi
