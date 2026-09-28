@@ -1,6 +1,6 @@
 import QtQuick
 
-// Hyprland leaves an already-mapped layer surface at its old global position
+// A layer surface can retain its previous global position when its monitor moves within the layout.
 // when its monitor moves within the layout: undocking disables the internal
 // panel, the external monitor shifts to x=0, and long-lived surfaces such as
 // the bar and background keep rendering at the old offset — or entirely
