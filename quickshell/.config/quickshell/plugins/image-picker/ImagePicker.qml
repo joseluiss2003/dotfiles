@@ -392,14 +392,14 @@ Item {
 
       Behavior on opacity {
         NumberAnimation {
-          duration: 145
+          duration: Style.fullscreen.itemDuration
           easing.type: Easing.OutQuint
         }
       }
 
       Behavior on scale {
         NumberAnimation {
-          duration: 165
+          duration: Style.fullscreen.settleDuration
           easing.type: Easing.OutQuint
         }
       }
@@ -482,42 +482,42 @@ Item {
 
               Behavior on opacity {
                 NumberAnimation {
-                  duration: 145
+                  duration: Style.fullscreen.itemDuration
                   easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on scale {
                 NumberAnimation {
-                  duration: 145
+                  duration: Style.fullscreen.itemDuration
                   easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on x {
                 NumberAnimation {
-                  duration: 145
+                  duration: Style.fullscreen.itemDuration
                   easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on y {
                 NumberAnimation {
-                  duration: 145
+                  duration: Style.fullscreen.itemDuration
                   easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on width {
                 NumberAnimation {
-                  duration: 145
+                  duration: Style.fullscreen.itemDuration
                   easing.type: Easing.OutQuint
                 }
               }
 
               Behavior on height {
                 NumberAnimation {
-                  duration: 145
+                  duration: Style.fullscreen.itemDuration
                   easing.type: Easing.OutQuint
                 }
               }
