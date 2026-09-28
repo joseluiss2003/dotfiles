@@ -58,18 +58,14 @@ BarWidget {
     focusTarget: keyCatcher
     padding: 0
     borderSpec: Border.surfaceSpec("power-session", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.popup.compactPopupWidth, panel.availableCardWidth)
-    contentHeight: Math.min(Style.popup.compactPopupHeight, panel.availableCardHeight)
-    gap: Style.popup.gap
-    // This plugin owns its own card surface below. Do not let KeyboardPanel
-    // draw a second copy of the popup background underneath it.
+    contentWidth: Math.min(Style.space(430), panel.availableCardWidth)
+    contentHeight: Math.min(Style.space(350), panel.availableCardHeight)
+    gap: 0
     drawBackground: false
 
     BorderSurface {
       id: card
       anchors.fill: parent
-      // Use the same shell surface as every other popup; Color.background is
-      // the deeper base surface and made this session card look opaque.
       color: Color.popups.background
       borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Style.popup.borderWidth)
       radius: 0
@@ -88,27 +84,36 @@ BarWidget {
 
         Item {
           width: parent.width
-          height: Style.popup.headerHeight
+          height: Style.space(74)
 
           Row {
             anchors.left: parent.left
             anchors.leftMargin: Style.popup.contentInset
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.controlGap
+            spacing: Style.popup.sectionGap
 
-            SwayPMark {
-              width: 34
-              height: 34
-              color: Color.brand.foreground
+            Rectangle {
+              width: Style.space(46)
+              height: width
+              color: Util.alpha(Color.brand.accent, 0.12)
+              border.width: Style.normalBorderWidth
+              border.color: Util.alpha(Color.brand.accent, 0.35)
               anchors.verticalCenter: parent.verticalCenter
+
+              SwayPMark {
+                anchors.centerIn: parent
+                width: Style.space(30)
+                height: Style.space(30)
+                color: Color.brand.accent
+              }
             }
 
             Column {
-              spacing: Style.spacing.compactGap
               anchors.verticalCenter: parent.verticalCenter
+              spacing: Style.spacing.compactGap
 
               Text {
-                text: "Power"
+                text: "Session"
                 color: Color.text
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.title
@@ -116,8 +121,8 @@ BarWidget {
               }
 
               Text {
-                text: "SESSION"
-                color: Color.foreground
+                text: "POWER & SESSION"
+                color: Color.muted
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
@@ -125,79 +130,117 @@ BarWidget {
               }
             }
           }
+
+          Text {
+            anchors.right: parent.right
+            anchors.rightMargin: Style.popup.contentInset
+            anchors.verticalCenter: parent.verticalCenter
+            text: "ESC"
+            color: Color.muted
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            font.letterSpacing: 0.8
+          }
         }
 
         PanelSeparator {
-          width: parent.width - Style.spacing.wideGap
+          width: parent.width - (Style.popup.contentInset * 2)
           x: Style.popup.contentInset
-          foreground: Color.foreground
+          foreground: Color.outline
         }
 
-        Column {
-          width: parent.width
-          spacing: Style.spacing.sm
+        Grid {
+          width: parent.width - (Style.popup.contentInset * 2)
+          x: Style.popup.contentInset
           topPadding: Style.spacing.sm
           bottomPadding: Style.spacing.sm
+          columns: 2
+          columnSpacing: Style.spacing.sm
+          rowSpacing: Style.spacing.sm
 
-          component Action: Item {
+          component Action: BorderSurface {
             id: action
             required property string iconText
             required property string labelText
+            required property string descriptionText
             required property var callback
             property bool hot: false
+            property bool destructive: labelText === "Power off" || labelText === "Log out"
 
-            width: parent.width - Style.spacing.wideGap
-            height: Style.popup.actionHeight
-            x: Style.popup.contentInset
+            width: (parent.width - parent.columnSpacing) / 2
+            height: Style.space(88)
+            radius: 0
+            color: action.hot
+              ? Color.controls.hoverBackground
+              : Util.alpha(Color.controls.background, 0.20)
+            borderSpec: Border.surfaceSpec(
+              "power-session",
+              action.hot ? "selected" : "action",
+              action.hot ? Color.controls.selectedBorder : Color.controls.border,
+              Style.normalBorderWidth
+            )
 
-            Rectangle {
-              anchors.fill: parent
-              color: action.hot
-                ? Color.controls.hoverBackground
-                : Util.alpha(Color.controls.background, 0.35)
-              border.width: Style.normalBorderWidth
-              border.color: action.hot
-                ? Color.controls.selectedBorder
-                : Color.controls.border
+            Behavior on color {
+              ColorAnimation { duration: 140; easing.type: Easing.OutCubic }
             }
+
+            Behavior on scale {
+              NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+            }
+            scale: action.hot ? 1.015 : 1.0
 
             Rectangle {
               visible: action.hot
               anchors.left: parent.left
               anchors.top: parent.top
               anchors.bottom: parent.bottom
-              width: Style.space(1)
-              color: Color.controls.selectedBorder
+              width: Style.space(2)
+              color: action.destructive ? Color.controls.danger : Color.controls.selectedBorder
             }
 
-            Row {
-              anchors.fill: parent
+            Column {
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
               anchors.leftMargin: Style.popup.contentInset
               anchors.rightMargin: Style.popup.contentInset
-              spacing: Style.spacing.controlGap
+              spacing: Style.spacing.compactGap
 
-              Text {
-                width: Style.spacing.wideGap
-                text: action.iconText
-                color: action.labelText === "Power off"
-                  ? Color.controls.danger
-                  : Color.controls.text
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.icon
-                horizontalAlignment: Text.AlignHCenter
-                anchors.verticalCenter: parent.verticalCenter
+              Row {
+                width: parent.width
+                spacing: Style.spacing.controlGap
+
+                Text {
+                  text: action.iconText
+                  color: action.destructive
+                    ? Color.controls.danger
+                    : (action.hot ? Color.controls.selectedText : Color.controls.text)
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.iconLarge
+                  anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Text {
+                  text: action.labelText
+                  color: action.destructive
+                    ? Color.controls.danger
+                    : (action.hot ? Color.controls.selectedText : Color.controls.text)
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.heading
+                  font.bold: action.hot
+                  anchors.verticalCenter: parent.verticalCenter
+                  elide: Text.ElideRight
+                }
               }
 
               Text {
-                width: parent.width - Style.space(28)
-                text: action.labelText
-                color: action.labelText === "Power off"
-                  ? Color.controls.danger
-                  : Color.controls.text
+                width: parent.width
+                text: action.descriptionText
+                color: action.hot ? Color.controls.selectedText : Color.muted
+                opacity: action.hot ? 0.82 : 0.72
                 font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.bodySmall
-                font.bold: false
-                anchors.verticalCenter: parent.verticalCenter
+                font.pixelSize: Style.font.caption
                 elide: Text.ElideRight
               }
             }
@@ -212,13 +255,28 @@ BarWidget {
             }
           }
 
-          Action { iconText: "󰌾"; labelText: "Lock"; callback: root.lock }
-          Action { iconText: "󰒲"; labelText: "Suspend"; callback: root.suspend }
-          Action { iconText: "󰍃"; labelText: "Log out"; callback: root.logout }
-          Action { iconText: "󰜉"; labelText: "Reboot"; callback: root.reboot }
-          Action { iconText: "⏻"; labelText: "Power off"; callback: root.poweroff }
+          Action { iconText: "󰌾"; labelText: "Lock"; descriptionText: "Secure your session"; callback: root.lock }
+          Action { iconText: "󰒲"; labelText: "Suspend"; descriptionText: "Sleep the computer"; callback: root.suspend }
+          Action { iconText: "󰍃"; labelText: "Log out"; descriptionText: "End the current session"; callback: root.logout }
+          Action { iconText: "󰜉"; labelText: "Reboot"; descriptionText: "Restart the system"; callback: root.reboot }
+          Action { iconText: "⏻"; labelText: "Power off"; descriptionText: "Shut down the computer"; callback: root.poweroff }
+        }
+
+        Item {
+          width: parent.width
+          height: Style.space(28)
+
+          Text {
+            anchors.centerIn: parent
+            text: "Select an action"
+            color: Color.muted
+            opacity: 0.65
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+          }
         }
       }
     }
+  }
   }
 }
