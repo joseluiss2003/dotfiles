@@ -351,8 +351,8 @@ Panel {
     
         PanelSeparator {
           Layout.fillWidth: true
-          Layout.leftMargin: Style.spacing.controlInset
-          Layout.rightMargin: Style.spacing.controlInset
+          Layout.leftMargin: Style.popup.contentInset
+          Layout.rightMargin: Style.popup.contentInset
           foreground: Color.notifications.border
         }
     
@@ -367,8 +367,8 @@ Panel {
             id: notificationList
     
             anchors.fill: parent
-            anchors.leftMargin: Style.spacing.controlInset
-            anchors.rightMargin: Style.spacing.controlInset
+            anchors.leftMargin: Style.popup.contentInset
+            anchors.rightMargin: Style.popup.contentInset
             anchors.topMargin: Style.spacing.controlGap
             anchors.bottomMargin: Style.spacing.controlGap
     
@@ -480,8 +480,8 @@ Panel {
     
           Row {
             anchors.fill: parent
-            anchors.leftMargin: Style.spacing.controlInset
-            anchors.rightMargin: Style.spacing.controlInset
+            anchors.leftMargin: Style.popup.contentInset
+            anchors.rightMargin: Style.popup.contentInset
             anchors.bottomMargin: Style.spacing.controlGap
             spacing: Style.spacing.inset
     
