@@ -100,10 +100,6 @@ if command -v starship >/dev/null 2>&1; then
     eval "$(starship init zsh)"
 fi
 
-# SwayP Fastfetch: use the current theme palette for the custom ASCII mark.
-if command -v fastfetch >/dev/null 2>&1 && [[ -x "$HOME/.local/bin/swayp-fastfetch" || -f "$HOME/.local/bin/swayp-fastfetch" ]]; then
-    alias fastfetch='bash "$HOME/.local/bin/swayp-fastfetch"'
-fi
 
 # Fastfetch on interactive Kitty shells
 if [[ -n "$KITTY_WINDOW_ID" ]] && command -v fastfetch >/dev/null 2>&1; then
