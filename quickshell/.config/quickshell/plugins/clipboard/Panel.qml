@@ -29,7 +29,7 @@ Item {
   property color background: Color.popups.background
   property color foreground: Color.popups.text
   property color border: Color.popups.border
-  property var borderSpec: Border.surfaceSpec("clipboard", "border", border, Math.max(1, Style.space(2)))
+  property var borderSpec: Border.surfaceSpec("clipboard", "border", border, Math.max(1, Style.spacing.compactGap))
   property color scrim: Color.menu.scrim
   property color selectedBackground: Color.controls.selectedBackground
   property color selectedText: Color.controls.selectedText
@@ -426,7 +426,7 @@ Item {
             anchors.left: parent.left
             anchors.leftMargin: Style.space(16)
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(10)
+            spacing: Style.spacing.sectionGap
 
             Text {
               text: "󰅌"
@@ -437,7 +437,7 @@ Item {
             }
 
             Column {
-              spacing: Style.space(2)
+              spacing: Style.spacing.compactGap
               anchors.verticalCenter: parent.verticalCenter
 
               Text {
@@ -472,8 +472,8 @@ Item {
         }
 
         PanelSeparator {
-          width: parent.width - Style.space(20)
-          x: Style.space(10)
+          width: parent.width - Style.spacing.wideGap
+          x: Style.spacing.sectionGap
           foreground: Color.outline
         }
 
@@ -491,8 +491,8 @@ Item {
             anchors.fill: parent
             anchors.leftMargin: Style.space(12)
             anchors.rightMargin: Style.space(12)
-            anchors.topMargin: Style.space(10)
-            anchors.bottomMargin: Style.space(10)
+            anchors.topMargin: Style.spacing.sectionGap
+            anchors.bottomMargin: Style.spacing.sectionGap
             model: displayModel
             clip: true
             spacing: Style.space(5)
@@ -536,7 +536,7 @@ Item {
                 anchors.fill: parent
                 anchors.leftMargin: Style.space(12)
                 anchors.rightMargin: Style.space(12)
-                spacing: Style.space(10)
+                spacing: Style.spacing.sectionGap
 
                 Item {
                   width: Style.space(30)
@@ -571,7 +571,7 @@ Item {
                 Column {
                   anchors.verticalCenter: parent.verticalCenter
                   width: parent.width - Style.space(40)
-                  spacing: Style.space(2)
+                  spacing: Style.spacing.compactGap
 
                   Text {
                     width: parent.width
@@ -646,8 +646,8 @@ Item {
         }
 
         PanelSeparator {
-          width: parent.width - Style.space(20)
-          x: Style.space(10)
+          width: parent.width - Style.spacing.wideGap
+          x: Style.spacing.sectionGap
           foreground: Color.outline
         }
 
