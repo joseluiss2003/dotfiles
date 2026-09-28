@@ -31,14 +31,6 @@ ShellRoot {
   property color themeTransitionColor: "#000000"
   property int themeTransitionSerial: 0
 
-  // Wallpaper transitions are rendered by Quickshell itself. awww only
-  // performs the instantaneous background swap underneath this overlay, which
-  // keeps the animation and the compositor background on the same timeline.
-  property bool wallpaperTransitionActive: false
-  property string wallpaperTransitionPrevious: ""
-  property string wallpaperTransitionNext: ""
-  property int wallpaperTransitionSerial: 0
-
   function beginThemeTransition(previousBackground) {
     var value = String(previousBackground || "").trim()
     if (!/^#[0-9A-Fa-f]{6}$/.test(value))
@@ -49,17 +41,6 @@ ShellRoot {
     themeTransitionSerial += 1
     themeTransitionFinishTimer.restart()
     return "ok"
-  }
-
-  Timer {
-    id: wallpaperTransitionFinishTimer
-    interval: 760
-    repeat: false
-    onTriggered: {
-      shell.wallpaperTransitionActive = false
-      shell.wallpaperTransitionPrevious = ""
-      shell.wallpaperTransitionNext = ""
-    }
   }
 
   Timer {
@@ -1615,8 +1596,9 @@ Component.onCompleted: {
     }
   }
 
-  // ------------------------------------------------------- visual transitions
-  // Theme and wallpaper transitions use the same center-out visual language.
+  // ------------------------------------------------------- theme transition
+  // One overlay instance per monitor. PanelWindow + Variants is the supported
+  // Quickshell pattern for reusing a shell surface across all connected screens.
   Variants {
     model: Quickshell.screens
 
@@ -1624,12 +1606,15 @@ Component.onCompleted: {
       PanelWindow {
         required property var modelData
         screen: modelData
-        visible: shell.themeTransitionActive || shell.wallpaperTransitionActive
-        anchors {
-          top: true
-          bottom: true
-          left: true
-          right: true
+        visible: shell.themeTransitionActive
+
+        Connections {
+          target: shell
+
+          function onThemeTransitionSerialChanged() {
+            themeTransitionScale.xScale = 1
+            themeTransitionAnimation.restart()
+          }
         }
 
         color: "transparent"
@@ -1642,7 +1627,6 @@ Component.onCompleted: {
         Rectangle {
           id: themeTransitionCover
           anchors.fill: parent
-          visible: shell.themeTransitionActive
           color: shell.themeTransitionColor
           transform: Scale {
             id: themeTransitionScale
@@ -1661,75 +1645,6 @@ Component.onCompleted: {
             duration: 460
             easing.type: Easing.OutCubic
           }
-
-          Connections {
-            target: shell
-            function onThemeTransitionSerialChanged() {
-              themeTransitionScale.xScale = 1
-              themeTransitionAnimation.restart()
-            }
-          }
-
-        }
-
-        Item {
-          id: wallpaperTransitionOverlay
-          anchors.fill: parent
-          visible: shell.wallpaperTransitionActive
-          clip: true
-
-          Image {
-            anchors.fill: parent
-            source: shell.wallpaperTransitionPrevious ? Util.fileUrl(shell.wallpaperTransitionPrevious) : ""
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: false
-            cache: true
-            smooth: true
-          }
-
-          Item {
-            id: wallpaperReveal
-            property real revealWidth: 0
-            width: revealWidth
-            height: parent.height
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            clip: true
-
-            Item {
-              width: wallpaperTransitionOverlay.width
-              height: wallpaperTransitionOverlay.height
-              x: -wallpaperReveal.x
-              y: 0
-
-              Image {
-                anchors.fill: parent
-                source: shell.wallpaperTransitionNext ? Util.fileUrl(shell.wallpaperTransitionNext) : ""
-                fillMode: Image.PreserveAspectCrop
-                asynchronous: false
-                cache: true
-                smooth: true
-              }
-            }
-
-            NumberAnimation {
-              id: wallpaperRevealAnimation
-              target: wallpaperReveal
-              property: "revealWidth"
-              from: 0
-              to: wallpaperTransitionOverlay.width
-              duration: 760
-              easing.type: Easing.OutCubic
-            }
-          }
-
-          Connections {
-            target: shell
-            function onWallpaperTransitionSerialChanged() {
-              wallpaperReveal.revealWidth = 0
-              wallpaperRevealAnimation.restart()
-            }
-          }
         }
       }
     }
@@ -1742,15 +1657,6 @@ Component.onCompleted: {
 
     function beginThemeTransition(previousBackground: color): string {
       return shell.beginThemeTransition(previousBackground)
-    }
-
-    function beginWallpaperTransition(previousWallpaper: string, nextWallpaper: string): string {
-      shell.wallpaperTransitionPrevious = String(previousWallpaper || "")
-      shell.wallpaperTransitionNext = String(nextWallpaper || "")
-      shell.wallpaperTransitionActive = true
-      shell.wallpaperTransitionSerial += 1
-      wallpaperTransitionFinishTimer.restart()
-      return "ok"
     }
 
     function ping(): string {
