@@ -247,7 +247,7 @@ Panel {
     }
 
     root.brightnessSetQueued = false
-    setBrightnessProc.command = ["swayp-brightness-display", "--no-osd", "--monitor", root.focusedMonitor, percent + "%"]
+    setBrightnessProc.command = ["swayp-brightness-display", "--no-osd", percent + "%"]
     setBrightnessProc.running = true
   }
 
