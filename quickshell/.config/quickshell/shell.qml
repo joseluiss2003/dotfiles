@@ -1625,6 +1625,12 @@ Component.onCompleted: {
         required property var modelData
         screen: modelData
         visible: shell.themeTransitionActive || shell.wallpaperTransitionActive
+        anchors {
+          top: true
+          bottom: true
+          left: true
+          right: true
+        }
 
         color: "transparent"
         aboveWindows: true
@@ -1676,7 +1682,7 @@ Component.onCompleted: {
             anchors.fill: parent
             source: shell.wallpaperTransitionPrevious ? Util.fileUrl(shell.wallpaperTransitionPrevious) : ""
             fillMode: Image.PreserveAspectCrop
-            asynchronous: true
+            asynchronous: false
             cache: true
             smooth: true
           }
@@ -1700,7 +1706,7 @@ Component.onCompleted: {
                 anchors.fill: parent
                 source: shell.wallpaperTransitionNext ? Util.fileUrl(shell.wallpaperTransitionNext) : ""
                 fillMode: Image.PreserveAspectCrop
-                asynchronous: true
+                asynchronous: false
                 cache: true
                 smooth: true
               }
