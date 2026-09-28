@@ -268,12 +268,12 @@ fi
 #
 # Fork awww first, then swap the staged palette immediately. Both transitions
 # therefore begin from the same shell turn; the wallpaper fade is intentionally
-# very short so the new wallpaper opens almost immediately.
+# matches the Quickshell palette transition duration exactly.
 if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     awww img \
         --transition-type fade \
         --transition-fps 240 \
-        --transition-duration 0.15 \
+        --transition-duration 0.50 \
         "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
 
     ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
