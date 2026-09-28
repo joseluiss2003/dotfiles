@@ -173,7 +173,8 @@ QtObject {
 
   readonly property QtObject bar: QtObject {
     readonly property color background: Util.alpha(root.themeBarBackground, root.shellOpacity)
-    readonly property color text: root.themeBarForeground
+    // One shared passive color for every normal bar element.
+    readonly property color text: root.themeBarPassive
     readonly property color active: root.accent
   }
 
