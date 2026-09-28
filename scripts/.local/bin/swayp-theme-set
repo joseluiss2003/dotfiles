@@ -58,6 +58,20 @@ p = [c["background"], c["red"], c["green"], c["yellow"], c["blue"],
      c["bright_blue"], c["bright_magenta"], c["bright_cyan"],
      c["bright_foreground"]]
 
+bg, red, green, yellow, blue, magenta, cyan, fg, muted, br, bg_, by, bb, bm, bc, bfg = p
+accent = c["accent"]
+
+# Fastfetch logo palette: intentionally independent from the terminal/module palette.
+# Keep one hue (the theme accent) and vary only luminance so the mark reads as
+# one coherent colour family, like Omarchy's layered branding.
+r, g, b = (int(accent[i:i+2], 16) / 255 for i in (1, 3, 5))
+h, l, s = colorsys.rgb_to_hls(r, g, b)
+logo_lightness = (0.18, 0.28, 0.40, 0.50, 0.62, 0.74)
+logo_colors = []
+for lightness in logo_lightness:
+    rr, gg, bb = colorsys.hls_to_rgb(h, lightness, s)
+    logo_colors.append("#{:02X}{:02X}{:02X}".format(round(rr * 255), round(gg * 255), round(bb * 255)))
+
 semantic = {
     "accent": c["accent"],
     "selection": c["selection"],
@@ -76,20 +90,6 @@ semantic = {
 with open(palette_path, "w") as f:
     json.dump({"colors": p, "semantic": semantic}, f, indent=2)
     f.write("\n")
-
-bg, red, green, yellow, blue, magenta, cyan, fg, muted, br, bg_, by, bb, bm, bc, bfg = p
-accent = c["accent"]
-
-# Fastfetch logo palette: intentionally independent from the terminal/module palette.
-# Keep one hue (the theme accent) and vary only luminance so the mark reads as
-# one coherent colour family, like Omarchy's layered branding.
-r, g, b = (int(accent[i:i+2], 16) / 255 for i in (1, 3, 5))
-h, l, s = colorsys.rgb_to_hls(r, g, b)
-logo_lightness = (0.18, 0.28, 0.40, 0.50, 0.62, 0.74)
-logo_colors = []
-for lightness in logo_lightness:
-    rr, gg, bb = colorsys.hls_to_rgb(h, lightness, s)
-    logo_colors.append("#{:02X}{:02X}{:02X}".format(round(rr * 255), round(gg * 255), round(bb * 255)))
 
 surface = bg
 
