@@ -1,86 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PALETTE="$HOME/.local/state/swayp/current/palette.json"
-LOGO="$HOME/.config/swayp/generated/swayp-fastfetch.png"
-LOGO_TEMPLATE="$HOME/.config/swayp/branding/swayp-fastfetch.svg"
-
-accent=""
-foreground=""
-bright_foreground=""
-logo1=""
-logo2=""
-logo3=""
-logo4=""
-logo5=""
-logo6=""
-lighter_background=""
-green=""
-cyan=""
-muted=""
-
-# Match the lock screen exactly: read the accent from the active theme's
-# colors.toml, which is the same source used to build Color.brand.accent.
-CURRENT_THEME_FILE="$HOME/.config/swayp/current-theme"
-CURRENT_THEME=""
-if [[ -r "$CURRENT_THEME_FILE" ]]; then
-  CURRENT_THEME="$(sed -n '1p' "$CURRENT_THEME_FILE" | tr -d '[:space:]')"
-fi
-
-if [[ -n "$CURRENT_THEME" ]] && [[ -r "$HOME/.config/swayp/themes/$CURRENT_THEME/colors.toml" ]] && command -v python3 >/dev/null 2>&1; then
-  accent="$(python3 - "$HOME/.config/swayp/themes/$CURRENT_THEME/colors.toml" <<'PY'
-import sys, tomllib
-with open(sys.argv[1], "rb") as f:
-    print(tomllib.load(f).get("accent", ""))
-PY
-)"
-fi
-
-if [[ -z "$accent" ]] && [[ -r "$PALETTE" ]] && command -v jq >/dev/null 2>&1; then
-  accent="$(jq -r '.semantic.accent // .colors[4] // empty' "$PALETTE" 2>/dev/null || true)"
-fi
-
-if [[ -r "$PALETTE" ]] && command -v jq >/dev/null 2>&1; then
-  foreground="$(jq -r '.semantic.foreground // .colors[7] // empty' "$PALETTE" 2>/dev/null || true)"
-  bright_foreground="$(jq -r '.semantic.bright_foreground // .colors[15] // empty' "$PALETTE" 2>/dev/null || true)"
-  logo1="$(jq -r '.semantic.logo[0] // empty' "$PALETTE" 2>/dev/null || true)"
-  logo2="$(jq -r '.semantic.logo[1] // empty' "$PALETTE" 2>/dev/null || true)"
-  logo3="$(jq -r '.semantic.logo[2] // empty' "$PALETTE" 2>/dev/null || true)"
-  logo4="$(jq -r '.semantic.logo[3] // empty' "$PALETTE" 2>/dev/null || true)"
-  logo5="$(jq -r '.semantic.logo[4] // empty' "$PALETTE" 2>/dev/null || true)"
-  logo6="$(jq -r '.semantic.logo[5] // empty' "$PALETTE" 2>/dev/null || true)"
-  lighter_background="$(jq -r '.semantic.lighter_background // empty' "$PALETTE" 2>/dev/null || true)"
-  green="$(jq -r '.colors[2] // empty' "$PALETTE" 2>/dev/null || true)"
-  cyan="$(jq -r '.colors[6] // empty' "$PALETTE" 2>/dev/null || true)"
-  muted="$(jq -r '.semantic.muted // .colors[8] // empty' "$PALETTE" 2>/dev/null || true)"
-fi
-
-accent="${accent:-#7aa2f7}"
-foreground="${foreground:-#d8dee9}"
-bright_foreground="${bright_foreground:-$foreground}"
-logo1="${logo1:-$accent}"
-logo2="${logo2:-$accent}"
-logo3="${logo3:-$accent}"
-logo4="${logo4:-$accent}"
-logo5="${logo5:-$accent}"
-logo6="${logo6:-$accent}"
-muted="${muted:-#7f849c}"
-lighter_background="${lighter_background:-$muted}"
-green="${green:-$accent}"
-cyan="${cyan:-$accent}"
-
-# Keep the SVG logo in lock-screen style: one solid color from the active theme.
-# Regenerate it on demand so a fastfetch run never uses a stale theme color.
-if [[ -r "$LOGO_TEMPLATE" ]]; then
-  mkdir -p "$(dirname "$LOGO")"
-  sed "s/__SWAYP_COLOR__/$accent/g" "$LOGO_TEMPLATE" > "$LOGO_TEMPLATE.tmp"
-  magick -background none "$LOGO_TEMPLATE.tmp" -alpha on "$LOGO"
-  rm -f "$LOGO_TEMPLATE.tmp"
-fi
+CONFIG="$HOME/.config/swayp/generated/fastfetch.jsonc"
+LOGO="$HOME/.config/swayp/branding/swayp-fastfetch.txt"
 
 exec /usr/bin/fastfetch \
-  --config "$HOME/.config/swayp/generated/fastfetch.jsonc" \
+  --config "$CONFIG" \
   --logo "$LOGO" \
-  --logo-type kitty \
+  --logo-type file \
   --logo-width 46 \
   "$@"
