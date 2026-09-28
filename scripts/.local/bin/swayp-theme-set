@@ -22,6 +22,17 @@ BASE="${HOME}/.config/swayp/themes"
 THEME_DIR="${BASE}/${THEME}"
 STATE_DIR="${HOME}/.local/state/swayp/current"
 PALETTE_OUTPUT="${STATE_DIR}/palette.json"
+
+# Tell the running shell to hold the previous palette briefly while the new
+# theme is written. The shell then reveals the new theme from the center out.
+OLD_BACKGROUND=""
+if [ -f "$PALETTE_OUTPUT" ] && command -v jq >/dev/null 2>&1; then
+    OLD_BACKGROUND="$(jq -r '.semantic.background // .colors[0] // empty' "$PALETTE_OUTPUT" 2>/dev/null || true)"
+fi
+if [ -n "$OLD_BACKGROUND" ] && command -v qs >/dev/null 2>&1; then
+    qs ipc call shell beginThemeTransition "$OLD_BACKGROUND" >/dev/null 2>&1 || true
+fi
+
 GENERATED_DIR="${HOME}/.config/swayp/generated"
 
 [ -n "$THEME" ] || { printf '%s\n' "usage: swayp-theme-set <theme>" >&2; exit 2; }
