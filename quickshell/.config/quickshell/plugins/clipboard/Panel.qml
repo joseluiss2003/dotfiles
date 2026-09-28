@@ -26,13 +26,13 @@ Item {
   // Shares the [menu] surface tokens — themes that style the menu also
   // style the clipboard. Selected-row colors composed in the
   // singleton so consumers drop them straight into Rectangle bindings.
-  property color background: Color.menu.background
-  property color foreground: Color.menu.text
-  property color border: Color.menu.border
-  property var borderSpec: Border.surfaceSpec("menu", "border", border, Math.max(1, Style.space(2)))
+  property color background: Color.popups.background
+  property color foreground: Color.popups.text
+  property color border: Color.popups.border
+  property var borderSpec: Border.surfaceSpec("clipboard", "border", border, Math.max(1, Style.space(2)))
   property color scrim: Color.menu.scrim
-  property color selectedBackground: Color.menu.selectedBackground
-  property color selectedText: Color.text
+  property color selectedBackground: Color.controls.selectedBackground
+  property color selectedText: Color.controls.selectedText
   readonly property int cornerRadius: 0
   property string fontFamily: Style.font.menuFamily
   property int contentMargin: Style.space(12)
