@@ -105,13 +105,19 @@ Item {
   property int rowPeek: Math.round(baseRowHeight * 0.55)
   property int rowSpacing: Style.spacing.xs
   property int dividerHeight: Style.space(17)
+  property int systemCardWidth: Style.space(560)
+  property int systemGridHeight: Style.space(218)
+  readonly property bool systemMenuActive: !root.dmenuActive && root.activeMenu === "system"
   property bool searchDivider: false
   property int layoutSerial: 0
-  property int cardWidth: Math.min(root.dmenuActive ? Style.space(root.dmenuWidth) : ((root.activeMenu === "trigger.capture.screenrecord" || root.activeMenu === "style.font") ? Style.space(520) : Style.space(300)), panel.width - Style.gapsOut * 2)
+  readonly property bool systemMenuActive: !root.dmenuActive && root.activeMenu === "system"
+  property int systemCardWidth: Style.space(560)
+  property int systemGridHeight: Style.space(218)
+  property int cardWidth: Math.min(root.dmenuActive ? Style.space(root.dmenuWidth) : (root.systemMenuActive ? root.systemCardWidth : ((root.activeMenu === "trigger.capture.screenrecord" || root.activeMenu === "style.font") ? Style.space(520) : Style.space(300))), panel.width - Style.gapsOut * 2)
   property int visibleRowsHeight: root.dmenuActive ? dmenuRowListHeight(layoutSerial, displayModel.count, filterText) : rowListHeight(layoutSerial, displayModel.count, filterText, searchDivider)
   property int cardHeight: root.dmenuActive
     ? Math.min(contentMargin * 2 + headerHeight + (mode === "input" ? 0 : contentSpacing + visibleRowsHeight), panel.height - Style.gapsOut * 2)
-    : Math.min(contentMargin * 2 + headerHeight + contentSpacing + visibleRowsHeight, panel.height - Style.gapsOut * 2)
+    : Math.min(root.systemMenuActive ? (contentMargin * 2 + headerHeight + contentSpacing + root.systemGridHeight) : (contentMargin * 2 + headerHeight + contentSpacing + visibleRowsHeight), panel.height - Style.gapsOut * 2)
 
   function finishRequest(selection) {
     if (!root.requestActive || !root.doneFile) {
@@ -1205,24 +1211,64 @@ Item {
           radius: root.cornerRadius
           color: "transparent"
 
-          Text {
-            textFormat: Text.PlainText
+          Row {
             anchors.left: parent.left
-            anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            text: root.filterText || (root.dmenuActive ? (root.dmenuPrompt + "…") : ((root.item(root.activeMenu) ? (root.item(root.activeMenu).title || root.item(root.activeMenu).label) : "Go") + "…"))
-            color: root.foreground
-            opacity: root.filterText ? 1 : 0.58
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.heading
-            elide: Text.ElideRight
+            spacing: Style.popup.sectionGap
+
+            Text {
+              visible: root.systemMenuActive
+              text: ""
+              color: Color.controls.text
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.display
+              anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Column {
+              anchors.verticalCenter: parent.verticalCenter
+              spacing: Style.spacing.compactGap
+
+              Text {
+                textFormat: Text.PlainText
+                text: root.filterText || (root.dmenuActive ? (root.dmenuPrompt + "…") : ((root.item(root.activeMenu) ? (root.item(root.activeMenu).title || root.item(root.activeMenu).label) : "Go") + "…"))
+                color: root.foreground
+                opacity: root.filterText ? 1 : 0.92
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.heading
+                font.bold: root.systemMenuActive
+                elide: Text.ElideRight
+              }
+
+              Text {
+                visible: root.systemMenuActive
+                text: "SESSION & POWER"
+                color: Color.muted
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.caption
+                font.bold: true
+                font.letterSpacing: 1.1
+              }
+            }
           }
 
+          Text {
+            visible: root.systemMenuActive
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            text: "ESC  CLOSE"
+            color: Color.muted
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            font.letterSpacing: 0.8
+          }
         }
 
         Item {
           width: parent.width
-          height: root.visibleRowsHeight
+          height: root.systemMenuActive ? 0 : root.visibleRowsHeight
+          visible: !root.systemMenuActive
 
           ListView {
             id: resultList
@@ -1473,6 +1519,112 @@ Item {
               font.pixelSize: Style.font.title
               horizontalAlignment: Text.AlignHCenter
               width: Style.space(320)
+            }
+          }
+        }
+
+        Item {
+          width: parent.width
+          height: root.systemGridHeight
+          visible: root.systemMenuActive
+
+          Grid {
+            anchors.fill: parent
+            columns: 2
+            columnSpacing: Style.spacing.sm
+            rowSpacing: Style.spacing.sm
+
+            Repeater {
+              model: displayModel
+
+              delegate: BorderSurface {
+                id: powerTile
+                required property int index
+                required property string itemId
+                required property string label
+                required property string icon
+                required property string action
+                required property bool disabled
+
+                readonly property bool selected: root.cursorActive && root.selectedIndex === index
+                readonly property bool destructive: itemId === "system.logout" || itemId === "system.reboot" || itemId === "system.shutdown"
+
+                width: (parent.width - Style.spacing.sm) / 2
+                height: (root.systemGridHeight - Style.spacing.sm * 2) / 3
+                radius: root.cornerRadius
+                color: selected ? root.selectedBackground : Util.alpha(root.foreground, 0.025)
+                borderSpec: selected ? root.selectedBorderSpec : Border.surfaceSpec("menu", "power-tile", root.border, Style.normalBorderWidth)
+                opacity: disabled ? 0.4 : 1
+
+                Behavior on color { ColorAnimation { duration: Style.popup.hoverDuration } }
+
+                Row {
+                  anchors.fill: parent
+                  anchors.leftMargin: Style.popup.contentInset
+                  anchors.rightMargin: Style.popup.contentInset
+                  spacing: Style.popup.sectionGap
+
+                  Text {
+                    width: Style.space(34)
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: powerTile.icon
+                    color: powerTile.selected ? root.selectedText : (powerTile.destructive ? Color.controls.danger : root.foreground)
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.iconLarge
+                    horizontalAlignment: Text.AlignHCenter
+                  }
+
+                  Column {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: Style.spacing.compactGap
+
+                    Text {
+                      text: powerTile.label
+                      color: powerTile.selected ? root.selectedText : root.foreground
+                      font.family: root.fontFamily
+                      font.pixelSize: Style.font.heading
+                      font.bold: powerTile.selected
+                    }
+
+                    Text {
+                      text: powerTile.itemId === "system.lock" ? "Secure session" : powerTile.itemId === "system.suspend" ? "Sleep the machine" : powerTile.itemId === "system.logout" ? "End this session" : powerTile.itemId === "system.reboot" ? "Restart the system" : "Power off the system"
+                      color: powerTile.selected ? root.selectedText : Color.muted
+                      opacity: powerTile.selected ? 0.8 : 0.7
+                      font.family: root.fontFamily
+                      font.pixelSize: Style.font.caption
+                    }
+                  }
+                }
+
+                Text {
+                  anchors.right: parent.right
+                  anchors.rightMargin: Style.popup.contentInset
+                  anchors.verticalCenter: parent.verticalCenter
+                  text: powerTile.itemId === "system.lock" ? "↵" : ""
+                  color: powerTile.selected ? root.selectedText : Color.muted
+                  font.family: root.fontFamily
+                  font.pixelSize: Style.font.heading
+                  opacity: 0.65
+                }
+
+                MouseArea {
+                  anchors.fill: parent
+                  hoverEnabled: true
+                  cursorShape: Qt.PointingHandCursor
+                  onEntered: {
+                    if (!powerTile.disabled) {
+                      root.cursorActive = true
+                      root.selectedIndex = powerTile.index
+                    }
+                  }
+                  onClicked: {
+                    if (powerTile.disabled) return
+                    root.cursorActive = true
+                    root.selectedIndex = powerTile.index
+                    root.activateIndex(powerTile.index, true)
+                  }
+                }
+              }
             }
           }
         }
