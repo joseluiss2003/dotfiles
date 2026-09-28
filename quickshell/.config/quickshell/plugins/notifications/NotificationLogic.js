@@ -138,7 +138,7 @@ function stringHint(hints, name) {
 }
 
 function glyphFromHints(hints) {
-  return stringHint(hints, "swayp-glyph")
+  return stringHint(hints, "swayp-glyph") || stringHint(hints, "omarchy-glyph")
 }
 
 // The click action: a JSON argv string from swayp-notification-send
@@ -147,7 +147,7 @@ function glyphFromHints(hints) {
 // Util.execArgv as bash positional parameters, never a shell string, so
 // attacker-controlled values (a title, a filename) can't become commands.
 function execArgvFromHints(hints) {
-  return stringHint(hints, "swayp-exec-argv")
+  return stringHint(hints, "swayp-exec-argv") || stringHint(hints, "omarchy-exec-argv")
 }
 
 // Validate a persisted swayp-exec-argv into a runnable argv, or null. This is
