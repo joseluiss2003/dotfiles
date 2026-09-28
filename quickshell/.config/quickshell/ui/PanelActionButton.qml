@@ -57,7 +57,7 @@ BorderSurface {
     ? Border.controlSpec("focus", hoverColor, hoverColor)
     : (_hot && bordered
       ? Border.controlSpec("hover-cursor", hoverColor, hoverColor)
-      : (bordered ? Border.controlSpec("normal", foreground, Color.accent) : Border.none()))
+      : (bordered ? Border.controlSpec("normal", foreground, Color.foreground) : Border.none()))
 
   color: _showFocusRing
     ? Style.focusFillFor(hoverColor, hoverColor)
@@ -74,7 +74,7 @@ BorderSurface {
     text: root.iconText
     color: root.enabled
       ? (root._hot ? root.hoverColor : root.foreground)
-      : Color.muted
+      : Color.foreground
     font.family: root.fontFamily
     font.pixelSize: root.fontSize
   }
