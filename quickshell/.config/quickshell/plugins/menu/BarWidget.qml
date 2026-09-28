@@ -148,12 +148,12 @@ BarWidget {
             Rectangle {
               anchors.fill: parent
               color: action.hot
-                ? Util.alpha(Color.text, 0.075)
-                : Util.alpha(Color.surfaceAlt, 0.055)
+                ? Color.controls.hoverBackground
+                : Util.alpha(Color.controls.background, 0.35)
               border.width: Style.normalBorderWidth
               border.color: action.hot
-                ? Util.alpha(Color.text, 0.16)
-                : Util.alpha(Color.foreground, 0.18)
+                ? Color.controls.selectedBorder
+                : Color.controls.border
             }
 
             Rectangle {
@@ -162,7 +162,7 @@ BarWidget {
               anchors.top: parent.top
               anchors.bottom: parent.bottom
               width: Style.space(1)
-              color: Util.alpha(Color.text, 0.18)
+              color: Color.controls.selectedBorder
             }
 
             Row {
@@ -175,8 +175,8 @@ BarWidget {
                 width: Style.space(20)
                 text: action.iconText
                 color: action.labelText === "Power off"
-                  ? Color.error
-                  : (action.hot ? Color.text : Color.text)
+                  ? Color.controls.danger
+                  : Color.controls.text
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.icon
                 horizontalAlignment: Text.AlignHCenter
@@ -187,8 +187,8 @@ BarWidget {
                 width: parent.width - Style.space(28)
                 text: action.labelText
                 color: action.labelText === "Power off"
-                  ? Color.error
-                  : Color.text
+                  ? Color.controls.danger
+                  : Color.controls.text
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.bodySmall
                 font.bold: false
