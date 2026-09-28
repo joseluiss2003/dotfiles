@@ -8,173 +8,183 @@ Item {
   property color highlightColor: Color.brand.highlight
   property color shadowColor: Color.brand.depth
 
-  readonly property var rows: [
-    "███████╗ ██╗    ██╗  █████╗  ██╗   ██╗ ██████╗",
-    "██╔════╝ ██║    ██║ ██╔══██╗ ╚██╗ ██╔╝ ██╔══██╗",
-    "███████╗ ██║ █╗ ██║ ███████║  ╚████╔╝  ██████╔╝",
-    "╚════██║ ██║███╗██║ ██╔══██║   ╚██╔╝   ██╔═══╝",
-    "███████║ ╚███╔███╔╝ ██║  ██║    ██║    ██║",
-    "╚══════╝  ╚══╝╚══╝  ╚═╝  ╚═╝    ╚═╝    ╚═╝"
+  // Large, compact block wordmark inspired by the approved reference:
+  // heavy geometric letters, stepped corners and a deep offset extrusion.
+  readonly property var letters: [
+    [
+      "11111",
+      "10000",
+      "10000",
+      "11110",
+      "00001",
+      "00001",
+      "11111"
+    ],
+    [
+      "10001",
+      "10001",
+      "10001",
+      "10101",
+      "10101",
+      "11011",
+      "10001"
+    ],
+    [
+      "10001",
+      "11011",
+      "10101",
+      "10101",
+      "10101",
+      "10001",
+      "10001"
+    ],
+    [
+      "10001",
+      "11001",
+      "10101",
+      "10011",
+      "10001",
+      "10001",
+      "10001"
+    ],
+    [
+      "11111",
+      "10000",
+      "10000",
+      "11110",
+      "10000",
+      "10000",
+      "11111"
+    ]
   ]
 
-  readonly property var glyphs: ({
-    "█": "F",
-    "═": "H",
-    "║": "V",
-    "╔": "TL",
-    "╗": "TR",
-    "╚": "BL",
-    "╝": "BR",
-    " ": "S"
-  })
+  readonly property int cols: 5
+  readonly property int rows: 7
+  readonly property real gap: 0.9
+  readonly property real letterGap: 1.35
 
-  function drawGlyph(ctx, glyph, x, y, w, h, thickness, layer) {
-    var kind = glyphs[glyph] || "S"
-    if (kind === "S") return
+  // Keep the same wide proportion as the reference while fitting the
+  // existing 330x92 LockView slot without touching LockView.qml.
+  readonly property real unit: Math.min(
+    (width - 10) / (5 * 5 + 4 * letterGap),
+    (height - 8) / (7 + 2.2)
+  )
+  readonly property real glyphWidth: 5 * unit
+  readonly property real glyphHeight: 7 * unit
+  readonly property real wordWidth: 5 * glyphWidth + 4 * letterGap * unit
+  readonly property real wordHeight: 7 * unit
+  readonly property real left: (width - wordWidth) / 2
+  readonly property real top: (height - wordHeight) / 2
 
-    var t = thickness
-    var midY = y + (h - t) / 2
-    var midX = x + (w - t) / 2
+  function paintLetter(ctx, letter, x, y, size, color) {
+    ctx.fillStyle = color
 
-    if (kind === "F") {
-      ctx.fillRect(x, y, w, h)
-    } else if (kind === "H") {
-      ctx.fillRect(x, midY, w, t)
-    } else if (kind === "V") {
-      ctx.fillRect(midX, y, t, h)
-    } else if (kind === "TL") {
-      ctx.fillRect(x, y, w, t)
-      ctx.fillRect(x, y, t, h)
-    } else if (kind === "TR") {
-      ctx.fillRect(x, y, w, t)
-      ctx.fillRect(x + w - t, y, t, h)
-    } else if (kind === "BL") {
-      ctx.fillRect(x, y + h - t, w, t)
-      ctx.fillRect(x, y, t, h)
-    } else if (kind === "BR") {
-      ctx.fillRect(x, y + h - t, w, t)
-      ctx.fillRect(x + w - t, y, t, h)
+    for (var r = 0; r < root.rows; r++) {
+      var row = letter[r]
+      for (var c = 0; c < root.cols; c++) {
+        if (row.charAt(c) === "1")
+          ctx.fillRect(
+            x + c * size,
+            y + r * size,
+            size + 0.25,
+            size + 0.25
+          )
+      }
     }
   }
 
-  readonly property int columns: {
-    var max = 0
-    for (var i = 0; i < root.rows.length; i++)
-      max = Math.max(max, root.rows[i].length)
-    return max
-  }
-
-  // Large enough to make the wordmark a real lock-screen focal point.
-  readonly property real cellWidth: Math.min(
-    (width - 16) / root.columns,
-    (height - 8) / 6
-  )
-  readonly property real cellHeight: root.cellWidth
-  readonly property real markWidth: root.columns * root.cellWidth
-  readonly property real markHeight: 6 * root.cellHeight
-
   Canvas {
     id: canvas
-    anchors.centerIn: parent
-    width: root.markWidth
-    height: root.markHeight
+    anchors.fill: parent
     antialiasing: false
 
     onPaint: {
       var ctx = getContext("2d")
       ctx.clearRect(0, 0, width, height)
 
-      var thickness = Math.max(2.2, root.cellWidth * 0.36)
+      // Deep offset extrusion — the part that gives the mark the Omarchy-like
+      // physical weight without adding a separate object to the lock screen.
+      var extrusion = root.unit * 0.72
+      var x = root.left
+      var y = root.top
 
-      // Omarchy-inspired depth: a compact dark extrusion behind the accent.
-      // It gives the Unicode wordmark the heavier, more physical silhouette
-      // the lock screen needs without changing the clock's accent color.
-      ctx.fillStyle = root.shadowColor
-      for (var shadowRow = 0; shadowRow < root.rows.length; shadowRow++) {
-        var shadowLine = root.rows[shadowRow]
-        for (var shadowCol = 0; shadowCol < root.columns; shadowCol++) {
-          var shadowGlyph = shadowCol < shadowLine.length
-            ? shadowLine.charAt(shadowCol)
-            : " "
-          root.drawGlyph(
-            ctx,
-            shadowGlyph,
-            shadowCol * root.cellWidth + 2.4,
-            shadowRow * root.cellHeight + 3.2,
-            root.cellWidth,
-            root.cellHeight,
-            thickness,
-            "shadow"
-          )
-        }
+      for (var i = 0; i < root.letters.length; i++) {
+        root.paintLetter(
+          ctx,
+          root.letters[i],
+          x + extrusion,
+          y + extrusion,
+          root.unit,
+          root.shadowColor
+        )
+        x += root.glyphWidth + root.letterGap * root.unit
       }
 
-      // Crisp outline immediately around the main mark. This is the part that
-      // keeps the old Unicode-border character while preserving a clean logo.
-      ctx.fillStyle = root.shadowColor
-      var outline = Math.max(1.4, root.cellWidth * 0.20)
-      for (var outlineRow = 0; outlineRow < root.rows.length; outlineRow++) {
-        var outlineLine = root.rows[outlineRow]
-        for (var outlineCol = 0; outlineCol < root.columns; outlineCol++) {
-          var outlineGlyph = outlineCol < outlineLine.length
-            ? outlineLine.charAt(outlineCol)
-            : " "
-          for (var oy = -1; oy <= 1; oy++) {
-            for (var ox = -1; ox <= 1; ox++) {
-              if (ox === 0 && oy === 0) continue
-              root.drawGlyph(
-                ctx,
-                outlineGlyph,
-                outlineCol * root.cellWidth + ox * outline,
-                outlineRow * root.cellHeight + oy * outline,
-                root.cellWidth,
-                root.cellHeight,
-                thickness,
-                "outline"
+      // Main face: same accent as the clock.
+      x = root.left
+      ctx.fillStyle = root.color
+
+      for (var j = 0; j < root.letters.length; j++) {
+        root.paintLetter(
+          ctx,
+          root.letters[j],
+          x,
+          y,
+          root.unit,
+          root.color
+        )
+        x += root.glyphWidth + root.letterGap * root.unit
+      }
+
+      // Strong top cap, following the reference's light upper plane.
+      // It remains the theme's highlight, while the clock stays pure accent.
+      x = root.left
+      var cap = Math.max(1.2, root.unit * 0.18)
+
+      for (var k = 0; k < root.letters.length; k++) {
+        var letter = root.letters[k]
+        ctx.fillStyle = root.highlightColor
+
+        for (var cr = 0; cr < root.rows; cr++) {
+          var crow = letter[cr]
+          for (var cc = 0; cc < root.cols; cc++) {
+            if (crow.charAt(cc) === "1" && (cr === 0 || letter[cr - 1].charAt(cc) === "0")) {
+              ctx.fillRect(
+                x + cc * root.unit,
+                y + cr * root.unit,
+                root.unit + 0.25,
+                cap
               )
             }
           }
         }
+
+        x += root.glyphWidth + root.letterGap * root.unit
       }
 
-      // Main face: exactly the same accent used by the clock.
-      ctx.fillStyle = root.color
-      for (var row = 0; row < root.rows.length; row++) {
-        var line = root.rows[row]
-        for (var col = 0; col < root.columns; col++) {
-          var glyph = col < line.length ? line.charAt(col) : " "
-          root.drawGlyph(
-            ctx,
-            glyph,
-            col * root.cellWidth,
-            row * root.cellHeight,
-            root.cellWidth,
-            root.cellHeight,
-            thickness,
-            "face"
-          )
-        }
-      }
-
-      // Small upper highlight, inspired by the light cap visible on Omarchy's
-      // wordmark. It is deliberately restrained so the face remains accent.
-      ctx.fillStyle = root.highlightColor
-      var highlight = Math.max(1.0, root.cellWidth * 0.12)
-      for (var hr = 0; hr < root.rows.length; hr++) {
-        var hline = root.rows[hr]
-        for (var hc = 0; hc < root.columns; hc++) {
-          var hg = hc < hline.length ? hline.charAt(hc) : " "
-          var hk = root.glyphs[hg] || "S"
-          if (hk === "F" || hk === "H" || hk === "TL" || hk === "TR") {
-            ctx.fillRect(
-              hc * root.cellWidth,
-              hr * root.cellHeight,
-              root.cellWidth,
-              highlight
-            )
+      // A restrained lower shadow line makes the logo read clearly over any
+      // lock-screen wallpaper.
+      ctx.fillStyle = root.shadowColor
+      ctx.globalAlpha = 0.72
+      x = root.left
+      for (var s = 0; s < root.letters.length; s++) {
+        var sLetter = root.letters[s]
+        for (var sr = 0; sr < root.rows; sr++) {
+          var srow = sLetter[sr]
+          for (var sc = 0; sc < root.cols; sc++) {
+            if (srow.charAt(sc) === "1" && (sr === root.rows - 1 || sLetter[sr + 1].charAt(sc) === "0")) {
+              ctx.fillRect(
+                x + sc * root.unit,
+                y + sr * root.unit + root.unit * 0.78,
+                root.unit + 0.25,
+                root.unit * 0.18
+              )
+            }
           }
         }
+        x += root.glyphWidth + root.letterGap * root.unit
       }
+      ctx.globalAlpha = 1.0
     }
 
     Connections {
@@ -182,6 +192,8 @@ Item {
       function onColorChanged() { canvas.requestPaint() }
       function onHighlightColorChanged() { canvas.requestPaint() }
       function onShadowColorChanged() { canvas.requestPaint() }
+      function onWidthChanged() { canvas.requestPaint() }
+      function onHeightChanged() { canvas.requestPaint() }
     }
 
     Component.onCompleted: requestPaint()
