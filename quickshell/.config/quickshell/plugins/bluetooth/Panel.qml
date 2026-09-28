@@ -731,7 +731,7 @@ Panel {
             anchors.left: heroIcon.right
             anchors.leftMargin: Style.spacing.panelGap
             anchors.right: parent.right
-            anchors.rightMargin: powerSwitch.visible ? powerSwitch.width + Style.space(12) : 0
+            anchors.rightMargin: powerSwitch.visible ? powerSwitch.width + Style.spacing.xxl : 0
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.spacing.compactGap
 
@@ -983,7 +983,7 @@ Panel {
 
       Column {
         id: info
-        spacing: Style.space(1)
+        spacing: Style.spacing.xs
         anchors.left: deviceIcon.right
         anchors.leftMargin: Style.spacing.sectionGap
         anchors.right: forgetBtn.visible ? forgetBtn.left : parent.right
