@@ -7,7 +7,7 @@ import qs.core
 Rectangle {
   id: root
 
-  property color foreground: Color.foreground
+  property color foreground: Color.bar.text
   property real strength: 0.12
 
   width: parent ? parent.width : implicitWidth
