@@ -461,6 +461,22 @@ Item {
               height: selected ? root.expandedHeight : root.sliceHeight
               y: selected ? 0 : (root.expandedHeight - root.sliceHeight) / 2
               z: selected ? 100 : 50 - Math.min(Math.abs(relativeIndex), 40)
+              opacity: selected ? 1 : (Math.abs(relativeIndex) === 1 ? 0.78 : 0.42)
+              scale: selected ? 1 : 0.97
+
+              Behavior on opacity {
+                NumberAnimation {
+                  duration: 180
+                  easing.type: Easing.OutCubic
+                }
+              }
+
+              Behavior on scale {
+                NumberAnimation {
+                  duration: 180
+                  easing.type: Easing.OutCubic
+                }
+              }
 
               Behavior on x {
                 NumberAnimation {
