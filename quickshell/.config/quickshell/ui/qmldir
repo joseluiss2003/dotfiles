@@ -27,6 +27,8 @@ PanelToolTip 1.0 PanelToolTip.qml
 PluginBarApi 1.0 PluginBarApi.qml
 PointerMoveGate 1.0 PointerMoveGate.qml
 ScreenMoveRemap 1.0 ScreenMoveRemap.qml
+SwayPMark 1.0 SwayPMark.qml
+SwayPWordmark 1.0 SwayPWordmark.qml
 PopupCard 1.0 PopupCard.qml
 SearchableDropdown 1.0 SearchableDropdown.qml
 SpeedTestOverlay 1.0 SpeedTestOverlay.qml
