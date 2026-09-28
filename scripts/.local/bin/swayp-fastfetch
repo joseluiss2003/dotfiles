@@ -7,6 +7,12 @@ LOGO="$HOME/.config/swayp/branding/swayp-fastfetch.txt"
 accent=""
 foreground=""
 bright_foreground=""
+logo1=""
+logo2=""
+logo3=""
+logo4=""
+logo5=""
+logo6=""
 lighter_background=""
 green=""
 cyan=""
@@ -16,6 +22,12 @@ if [[ -r "$PALETTE" ]] && command -v jq >/dev/null 2>&1; then
   accent="$(jq -r '.semantic.accent // .colors[4] // empty' "$PALETTE" 2>/dev/null || true)"
   foreground="$(jq -r '.semantic.foreground // .colors[7] // empty' "$PALETTE" 2>/dev/null || true)"
   bright_foreground="$(jq -r '.semantic.bright_foreground // .colors[15] // empty' "$PALETTE" 2>/dev/null || true)"
+  logo1="$(jq -r '.semantic.logo[0] // empty' "$PALETTE" 2>/dev/null || true)"
+  logo2="$(jq -r '.semantic.logo[1] // empty' "$PALETTE" 2>/dev/null || true)"
+  logo3="$(jq -r '.semantic.logo[2] // empty' "$PALETTE" 2>/dev/null || true)"
+  logo4="$(jq -r '.semantic.logo[3] // empty' "$PALETTE" 2>/dev/null || true)"
+  logo5="$(jq -r '.semantic.logo[4] // empty' "$PALETTE" 2>/dev/null || true)"
+  logo6="$(jq -r '.semantic.logo[5] // empty' "$PALETTE" 2>/dev/null || true)"
   lighter_background="$(jq -r '.semantic.lighter_background // empty' "$PALETTE" 2>/dev/null || true)"
   green="$(jq -r '.colors[2] // empty' "$PALETTE" 2>/dev/null || true)"
   cyan="$(jq -r '.colors[6] // empty' "$PALETTE" 2>/dev/null || true)"
@@ -25,6 +37,12 @@ fi
 accent="${accent:-#7aa2f7}"
 foreground="${foreground:-#d8dee9}"
 bright_foreground="${bright_foreground:-$foreground}"
+logo1="${logo1:-$accent}"
+logo2="${logo2:-$accent}"
+logo3="${logo3:-$accent}"
+logo4="${logo4:-$accent}"
+logo5="${logo5:-$accent}"
+logo6="${logo6:-$accent}"
 muted="${muted:-#7f849c}"
 lighter_background="${lighter_background:-$muted}"
 green="${green:-$accent}"
@@ -34,10 +52,10 @@ exec fastfetch \
   --config "$HOME/.config/swayp/generated/fastfetch.jsonc" \
   --logo "$LOGO" \
   --logo-type file \
-  --logo-color-1 "$accent" \
-  --logo-color-2 "$bright_foreground" \
-  --logo-color-3 "$foreground" \
-  --logo-color-4 "$lighter_background" \
-  --logo-color-5 "$green" \
-  --logo-color-6 "$cyan" \
+  --logo-color-1 "$logo1" \
+  --logo-color-2 "$logo2" \
+  --logo-color-3 "$logo3" \
+  --logo-color-4 "$logo4" \
+  --logo-color-5 "$logo5" \
+  --logo-color-6 "$logo6" \
   "$@"
