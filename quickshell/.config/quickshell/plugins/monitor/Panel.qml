@@ -308,7 +308,10 @@ Panel {
   }
 
   function setScale(scale) {
-    actionProc.command = ["swaymsg", "output", root.focusedMonitor, "scale", String(scale)]
+    // Scale is a display-wide preference in this panel. Sway accepts "*" as
+    // the output selector, so one action keeps every enabled output in sync
+    // instead of only changing whichever monitor currently has focus.
+    actionProc.command = ["swaymsg", "output", "*", "scale", String(scale)]
     if (!actionProc.running) actionProc.running = true
   }
 
