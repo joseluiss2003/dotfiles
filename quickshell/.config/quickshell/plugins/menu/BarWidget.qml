@@ -74,7 +74,7 @@ BarWidget {
     owner: root
     bar: root.bar
     open: root.popupOpen
-    focusTarget: keyCatcher
+    keyboardEnabled: false
     backgroundColor: Color.popups.background
     contentWidth: panel.fittedContentWidth(Style.space(350))
     contentHeight: panel.fittedContentHeight(column.implicitHeight)
@@ -144,17 +144,6 @@ BarWidget {
             }
           }
 
-          Text {
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            text: "ESC"
-            color: root.bar.foreground
-            opacity: 0.55
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-            font.letterSpacing: 0.8
-          }
         }
 
         PanelSeparator {
