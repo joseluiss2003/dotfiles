@@ -272,10 +272,10 @@ if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     fi
 fi
 
-# Reload Sway shortly after the wallpaper reveal starts, while the
-# expanding wallpaper masks the palette change. This keeps the wallpaper
-# transition smooth without leaving the rest of the UI frozen until the end.
-sleep 0.15
+# Let the wallpaper reveal get established, then reload Sway while the
+# expanding image is still covering most of the visible change. The reload
+# itself is instantaneous, so keep it inside the existing visual transition.
+sleep 0.18
 
 if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
     makoctl reload >/dev/null 2>&1 || true
