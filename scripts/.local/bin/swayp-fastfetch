@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PALETTE="$HOME/.local/state/swayp/current/palette.json"
+LOGO="$HOME/.config/swayp/branding/swayp-fastfetch.txt"
+
+accent=""
+foreground=""
+
+if [[ -r "$PALETTE" ]] && command -v jq >/dev/null 2>&1; then
+  accent="$(jq -r '.semantic.accent // .colors[4] // empty' "$PALETTE" 2>/dev/null || true)"
+  foreground="$(jq -r '.semantic.foreground // .colors[7] // empty' "$PALETTE" 2>/dev/null || true)"
+fi
+
+accent="${accent:-#7aa2f7}"
+foreground="${foreground:-#d8dee9}"
+
+exec fastfetch \
+  --config "$HOME/.config/fastfetch/config.jsonc" \
+  --logo "$LOGO" \
+  --logo-type file \
+  --logo-color-1 "$accent" \
+  --logo-color-2 "$foreground" \
+  "$@"
