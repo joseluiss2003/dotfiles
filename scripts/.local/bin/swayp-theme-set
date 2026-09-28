@@ -248,22 +248,24 @@ write("fastfetch.jsonc", f'''{{
   }},
   "modules": [
     "break",
-    {{ "type": "custom", "outputColor": "{muted}", "format": "┌──────────────────────Hardware────────────────────┐" }},
-    {{ "type": "host", "key": " PC" }},
-    {{ "type": "cpu", "key": " CPU" }},
-    {{ "type": "gpu", "key": " GPU" }},
-    {{ "type": "memory", "key": " Memoria" }},
-    {{ "type": "disk", "key": " Disco", "folders": ["/"] }},
+    {{ "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Hardware ───────────────────┐" }},
+    {{ "type": "host", "key": " PC", "keyColor": "{blue}" }},
+    {{ "type": "cpu", "key": " CPU", "keyColor": "{yellow}" }},
+    {{ "type": "gpu", "key": " GPU", "keyColor": "{blue}" }},
+    {{ "type": "memory", "key": " Memoria", "keyColor": "{green}" }},
+    {{ "type": "disk", "key": " Disco", "keyColor": "{cyan}" }},
     {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }},
     "break",
-    {{ "type": "custom", "outputColor": "{muted}", "format": "┌──────────────────────Software────────────────────┐" }},
-    {{ "type": "os", "key": " OS" }},
-    {{ "type": "kernel", "key": " Kernel" }},
-    {{ "type": "de", "key": " Entorno" }},
-    {{ "type": "shell", "key": " Shell" }},
-    {{ "type": "terminal", "key": " Terminal" }},
-    {{ "type": "packages", "key": " Paquetes" }},
-    {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }}
+    {{ "type": "custom", "outputColor": "{muted}", "format": "┌────────────────────── Software ───────────────────┐" }},
+    {{ "type": "os", "key": " OS", "keyColor": "{blue}" }},
+    {{ "type": "kernel", "key": " Kernel", "keyColor": "{magenta}" }},
+    {{ "type": "de", "key": " Entorno", "keyColor": "{blue}" }},
+    {{ "type": "shell", "key": " Shell", "keyColor": "{green}" }},
+    {{ "type": "terminal", "key": " Terminal", "keyColor": "{cyan}" }},
+    {{ "type": "packages", "key": " Paquetes", "keyColor": "{yellow}" }},
+    {{ "type": "custom", "outputColor": "{muted}", "format": "└──────────────────────────────────────────────────┘" }},
+    "break",
+    {{ "type": "colors", "symbol": "block", "block": {{ "width": 3, "range": [0, 15] }} }}
   ]
 }}''')
 PY
