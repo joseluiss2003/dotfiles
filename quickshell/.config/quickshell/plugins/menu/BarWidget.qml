@@ -86,9 +86,9 @@ BarWidget {
 
           Row {
             anchors.left: parent.left
-            anchors.leftMargin: Style.space(10)
+            anchors.leftMargin: Style.spacing.controlInset
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(8)
+            spacing: Style.spacing.controlGap
 
             Text {
               text: "󰯙"
@@ -99,7 +99,7 @@ BarWidget {
             }
 
             Column {
-              spacing: Style.space(2)
+              spacing: Style.spacing.compactGap
               anchors.verticalCenter: parent.verticalCenter
 
               Text {
@@ -123,14 +123,14 @@ BarWidget {
         }
 
         PanelSeparator {
-          width: parent.width - Style.space(20)
-          x: Style.space(10)
+          width: parent.width - Style.spacing.wideGap
+          x: Style.spacing.controlInset
           foreground: Color.foreground
         }
 
         Column {
           width: parent.width
-          spacing: Style.space(4)
+          spacing: Style.spacing.sm
           topPadding: Style.space(7)
           bottomPadding: Style.space(7)
 
@@ -141,9 +141,9 @@ BarWidget {
             required property var callback
             property bool hot: false
 
-            width: parent.width - Style.space(20)
+            width: parent.width - Style.spacing.wideGap
             height: Style.space(32)
-            x: Style.space(10)
+            x: Style.spacing.controlInset
 
             Rectangle {
               anchors.fill: parent
@@ -167,12 +167,12 @@ BarWidget {
 
             Row {
               anchors.fill: parent
-              anchors.leftMargin: Style.space(10)
-              anchors.rightMargin: Style.space(10)
-              spacing: Style.space(8)
+              anchors.leftMargin: Style.spacing.controlInset
+              anchors.rightMargin: Style.spacing.controlInset
+              spacing: Style.spacing.controlGap
 
               Text {
-                width: Style.space(20)
+                width: Style.spacing.wideGap
                 text: action.iconText
                 color: action.labelText === "Power off"
                   ? Color.controls.danger
