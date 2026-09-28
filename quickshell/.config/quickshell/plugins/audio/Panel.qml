@@ -731,7 +731,7 @@ Panel {
               anchors.left: heroIcon.right
               anchors.leftMargin: Style.spacing.panelGap
               anchors.right: parent.right
-              anchors.rightMargin: powerSwitch.width + Style.space(12)
+              anchors.rightMargin: powerSwitch.width + Style.spacing.xxl
               anchors.verticalCenter: parent.verticalCenter
               spacing: Style.spacing.compactGap
 
