@@ -272,7 +272,7 @@ fi
 if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     awww img \
         --transition-type fade \
-        --transition-fps 120 \
+        --transition-fps 240 \
         --transition-duration 0.15 \
         "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
 
