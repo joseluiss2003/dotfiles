@@ -151,9 +151,16 @@ Item {
     if (!root.selectedTheme || applyProc.running) return
 
     root.applying = true
-    root.close()
-    applyProc.command = [root.home + "/.local/bin/swayp-theme-set", root.selectedTheme]
+    applyProc.command = [
+      "bash",
+      "-lc",
+      "exec " + root.home + "/.local/bin/swayp-theme-set " + JSON.stringify(root.selectedTheme) +
+      " >> " + root.home + "/.cache/swayp-theme-selector.log 2>&1"
+    ]
     applyProc.running = true
+    // Start the process before closing the panel so the Process object remains
+    // owned by a live selector instance while the theme transition runs.
+    root.close()
   }
 
   ListModel { id: themeModel }
