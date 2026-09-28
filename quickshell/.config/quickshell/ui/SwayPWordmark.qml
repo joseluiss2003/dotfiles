@@ -6,6 +6,9 @@ Item {
   id: root
 
   property color color: Color.brand.accent
+  // Kept for compatibility with the existing LockView API.
+  // The rendered asset now contains its own finished face/depth masks.
+  property color highlightColor: Color.brand.highlight
   property color shadowColor: Color.brand.depth
 
   readonly property real aspectRatio: 1972 / 586
