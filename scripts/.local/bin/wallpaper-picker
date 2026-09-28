@@ -82,7 +82,9 @@ SELECTED_FILE="$(sed -n '1p' "$SELECTION_FILE")"
 [ -f "$SELECTED_FILE" ] || exit 1
 
 if ! awww img \
-    --transition-type none \
+    --transition-type fade \
+    --transition-fps 120 \
+    --transition-duration 0.24 \
         "$SELECTED_FILE"; then
     notify-send "Wallpaper" "No se pudo aplicar $(basename "$SELECTED_FILE")"
     exit 1
