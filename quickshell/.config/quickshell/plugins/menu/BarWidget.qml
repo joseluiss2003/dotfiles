@@ -91,8 +91,8 @@ BarWidget {
             spacing: Style.spacing.controlGap
 
             SwayPMark {
-              width: Style.font.display
-              height: Style.font.display
+              width: 34
+              height: 34
               color: Color.accent
               anchors.verticalCenter: parent.verticalCenter
             }
