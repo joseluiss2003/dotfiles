@@ -339,9 +339,9 @@ Panel {
             anchors.left: heroIcon.right
             anchors.leftMargin: Style.spacing.panelGap
             anchors.right: heroPercent.left
-            anchors.rightMargin: Style.space(10)
+            anchors.rightMargin: Style.spacing.sectionGap
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(2)
+            spacing: Style.spacing.compactGap
 
             Text {
               text: "Battery"
@@ -385,7 +385,7 @@ Panel {
         // ---------- Battery progress bar ----------
         Item {
           width: parent.width
-          implicitHeight: Style.space(8)
+          implicitHeight: Style.spacing.controlGap
 
           Rectangle {
             id: barTrack
@@ -456,7 +456,7 @@ Panel {
 
         Column {
           width: parent.width
-          spacing: Style.space(10)
+          spacing: Style.spacing.sectionGap
 
           PanelSectionHeader {
             text: "POWER PROFILE"
@@ -467,7 +467,7 @@ Panel {
           Row {
             id: profileRow
             width: parent.width
-            spacing: Style.space(6)
+            spacing: Style.spacing.inset
 
             readonly property real cellWidth: root.profiles.length > 0
               ? (width - spacing * (root.profiles.length - 1)) / root.profiles.length
@@ -486,7 +486,7 @@ Panel {
                 foreground: root.bar.foreground
                 fontFamily: root.bar.fontFamily
                 horizontalPadding: Style.spacing.controlPaddingX
-                verticalPadding: Style.spacing.controlPaddingY + Style.space(2)
+                verticalPadding: Style.spacing.controlPaddingY + Style.spacing.compactGap
                 bordered: true
                 active: root.activeProfile === modelData
                 hasCursor: root.cursorActive && root.profileIndex === index
@@ -510,7 +510,7 @@ Panel {
     property string value: ""
 
     width: parent.width
-    spacing: Style.space(8)
+    spacing: Style.spacing.controlGap
 
     InfoLabel { text: label }
     Item { width: Math.max(0, parent.width - parent.children[0].implicitWidth - parent.children[2].implicitWidth - parent.spacing * 2); height: 1 }
