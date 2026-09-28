@@ -27,7 +27,7 @@ Row {
   property string value: ""
   property color foreground: Color.foreground
   property color background: Color.background
-  property color accent: Color.accent
+  property color accent: Color.foreground
   property string fontFamily: Style.font.family
   property real fontSize: Style.font.body
   property bool focusable: true
