@@ -26,7 +26,7 @@ Item {
   // crossing the track shows). Purely visual — snapping is the caller's job via
   // `integer`/`step` or an index-based value. Default 0 leaves the track plain.
   property int tickCount: 0
-  property color tickColor: Util.alpha(Color.foreground, 0.28)
+  property color tickColor: Util.alpha(Color.bar.text, 0.28)
 
   onValueChanged: if (!dragging) liveValue = value
 
