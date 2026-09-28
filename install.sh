@@ -8,27 +8,19 @@ PACKAGES=(
   alsa-firmware
   alsa-plugins
   alsa-utils
-  amd-ucode
   awww
-  base
   base-devel
   bash-completion
   bluez
   bluez-utils
   brightnessctl
   btop
-  btrfs-progs
   cantarell-fonts
   cliphist
+  curl
   dialog
   diffutils
-  dmidecode
-  dosfstools
-  dracut
   duf
-  e2fsprogs
-  ethtool
-  exfatprogs
   ex-vi-compat
   fastfetch
   ffmpegthumbnailer
@@ -48,18 +40,16 @@ PACKAGES=(
   gtk4-layer-shell
   inetutils
   inotify-tools
+  iw
   imv
   inxi
-  iptables
   iwd
   jq
   kitty
   less
   libadwaita
   libnotify
-  linux
   linux-firmware
-  linux-headers
   logrotate
   lsb-release
   mako
@@ -67,7 +57,6 @@ PACKAGES=(
   man-pages
   mesa-utils
   mpv
-  mtools
   nano
   nano-syntax-highlighting
   nautilus
@@ -93,7 +82,7 @@ PACKAGES=(
   python-defusedxml
   python-jinja
   python-packaging
-  qemu-guest-agent
+  qrencode
   qt5-wayland
   qt6-wayland
   quickshell
@@ -101,7 +90,6 @@ PACKAGES=(
   rtkit
   slurp
   sof-firmware
-  spice-vdagent
   starship
   stow
   sudo
@@ -119,7 +107,6 @@ PACKAGES=(
   unzip
   upower
   usbutils
-  vulkan-virtio
   wget
   which
   wireless-regdb
