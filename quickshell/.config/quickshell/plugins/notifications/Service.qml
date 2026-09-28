@@ -577,6 +577,47 @@ Item {
     enqueuePopupFileJob(command)
   }
 
+  // A transient image:// provider belongs to the live notification server and
+  // disappears when the sender closes/releases the notification. The card can
+  // capture that already-rendered image into our persistent images directory.
+  // Once the file exists, rewrite either the live popup JSON or (if the toast
+  // raced its expiry) the history JSON so both paths reference the same copy.
+  function persistCapturedImage(originalId, timestamp, path) {
+    if (!path) return
+
+    var fileUrl = "file://" + path
+    for (var i = 0; i < popupModel.count; i++) {
+      var row = popupModel.get(i)
+      if (!row || row.originalId !== originalId || row.timestamp !== timestamp) continue
+      if (row.image === fileUrl) return
+      popupModel.setProperty(i, "image", fileUrl)
+      var updated = {}
+      var roles = NotificationLogic.popupRoles()
+      for (var r = 0; r < roles.length; r++) updated[roles[r]] = popupModel.get(i)[roles[r]]
+      persistPopupFile(updated)
+      return
+    }
+
+    // The toast may have been archived between the image grab and this
+    // callback. Patch the existing history file only; never recreate a popup
+    // that has already left the screen.
+    var stem = String(timestamp) + "-" + String(originalId)
+    enqueuePopupFileJob(["python3", "-c",
+      "import json, os, sys, tempfile\\n" +
+      "for directory in sys.argv[1:3]:\\n" +
+      "    path = os.path.join(directory, sys.argv[3] + '.json')\\n" +
+      "    if not os.path.isfile(path): continue\\n" +
+      "    try:\\n" +
+      "        with open(path, encoding='utf-8') as f: data = json.load(f)\\n" +
+      "        data['image'] = 'file://' + sys.argv[4]\\n" +
+      "        fd, tmp = tempfile.mkstemp(dir=directory, prefix='.notification-', suffix='.json')\\n" +
+      "        with os.fdopen(fd, 'w', encoding='utf-8') as f: json.dump(data, f, separators=(',', ':')); f.write('\\\\n')\\n" +
+      "        os.replace(tmp, path)\\n" +
+      "    except Exception: pass\\n" +
+      "    break\\n",
+      service.popupStateDir, service.historyDir, stem, path])
+  }
+
   function deletePopupFileFor(row) {
     if (!row) return
     // History replays and the "no recent notifications" placeholder never
