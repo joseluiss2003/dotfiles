@@ -218,7 +218,7 @@ write("fastfetch.jsonc", f'''{{
     "source": "{fastfetch_logo}",
     "color": {{
       "1": "{fg}",
-      "2": "{accent}"
+      "2": "{fg}"
     }},
     "padding": {{ "top": 1, "right": 6, "left": 1 }}
   }},
