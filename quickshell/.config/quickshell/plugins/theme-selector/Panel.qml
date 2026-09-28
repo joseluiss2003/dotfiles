@@ -15,7 +15,7 @@ Item {
   property string home: Quickshell.env("HOME")
   property string themesDir: home + "/.config/swayp/themes"
   property string wallpapersRoot: home + "/.config/swayp/wallpapers"
-  property string currentThemePath: home + "/.local/state/swayp/current/theme.name"
+  property string currentThemePath: home + "/.config/swayp/current-theme"
 
   property string selectedTheme: ""
   property string selectedWallpaper: ""
@@ -111,8 +111,6 @@ Item {
 
     root.themeIndex = found >= 0 ? found : 0
     root.selectedTheme = themeModel.get(root.themeIndex).id
-    root.selectedWallpaper = ""
-    root.loadWallpapers()
     Qt.callLater(function() {
       if (themeList)
         themeList.positionViewAtIndex(root.themeIndex, ListView.Contain)
@@ -198,22 +196,7 @@ Item {
   function applySelection() {
     if (!root.selectedTheme || applyProc.running) return
 
-    var wallpaper = root.selectedWallpaper
-
-    applyProc.command = [
-      "bash", "-c",
-      "set -eu; " +
-      "if [ -n \"$2\" ]; then " +
-      "  awww img --transition-type center \"$2\"; " +
-      "  mkdir -p \"$HOME/.local/state/swayp/current\"; " +
-      "  ln -sfn \"$2\" \"$HOME/.local/state/swayp/current/background\"; " +
-      "fi; " +
-      "swayp-theme-set \"$1\"",
-      "swayp-theme-selector",
-      root.selectedTheme,
-      wallpaper
-    ]
-
+    applyProc.command = ["swayp-theme-set", root.selectedTheme]
     applyProc.running = true
   }
 
@@ -326,7 +309,7 @@ Item {
 
     color: "transparent"
 
-    WlrLayershell.namespace: "swayp-appearance"
+    WlrLayershell.namespace: "swayp-theme-selector"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus:
       root.opened
@@ -335,15 +318,9 @@ Item {
 
     exclusionMode: ExclusionMode.Ignore
 
-    MouseArea {
-      anchors.fill: parent
-      enabled: root.opened
-      onClicked: root.close()
-    }
-
     Rectangle {
       anchors.fill: parent
-      color: Util.alpha(root.background, 0.82)
+      color: Util.alpha(Color.background, 0.82)
       opacity: root.opened ? 1 : 0
 
       Behavior on opacity {
@@ -354,9 +331,14 @@ Item {
       }
     }
 
+    MouseArea {
+      anchors.fill: parent
+      enabled: root.opened
+      onClicked: root.close()
+    }
+
     Item {
       id: focusCatcher
-
       anchors.fill: parent
       focus: root.opened
 
@@ -381,499 +363,191 @@ Item {
           return
         }
 
-        if (event.key === Qt.Key_Up) {
-          root.moveWallpaper(-1)
-          event.accepted = true
-          return
-        }
-
-        if (event.key === Qt.Key_Down) {
-          root.moveWallpaper(1)
-          event.accepted = true
-          return
-        }
-
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
           root.applySelection()
           event.accepted = true
         }
       }
 
-      Component.onCompleted: Qt.callLater(function() {
-        forceActiveFocus()
-      })
+      Component.onCompleted: Qt.callLater(function() { forceActiveFocus() })
     }
 
-    BorderSurface {
-      id: card
-
-      width: root.cardWidth
-      height: root.contentHeight
-
+    Item {
+      id: carousel
       anchors.centerIn: parent
-
-      color: root.background
-      borderSpec: Border.surfaceSpec(
-        "theme-selector",
-        "card",
-        root.border,
-        Math.max(1, Style.space(1))
+      width: Math.min(
+        parent.width - Style.space(48),
+        root.previewWidth + root.sideWidth * 2 + root.sideGap * 2
       )
-      radius: 0
-      clip: true
+      height: root.previewHeight + Style.space(110)
 
-      scale: root.opened ? 1 : 0.985
+      Repeater {
+        model: 5
 
-      Behavior on scale {
-        NumberAnimation {
-          duration: 140
-          easing.type: Easing.OutCubic
-        }
-      }
+        delegate: Item {
+          id: themeCard
 
-      ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: Style.space(20)
-        spacing: Style.space(12)
+          readonly property int offset: index - 2
+          readonly property int themeSlot: root.carouselIndex(offset)
+          readonly property bool selected: offset === 0
 
-        Item {
-          Layout.fillWidth: true
-          Layout.preferredHeight: Style.space(58)
+          width: selected ? root.previewWidth : root.sideWidth
+          height: selected ? root.previewHeight : root.sideHeight
+          visible: themeSlot >= 0
+          x: selected
+            ? (carousel.width - width) / 2
+            : (carousel.width - root.previewWidth) / 2
+                + (offset < 0
+                    ? offset * (root.sideWidth + root.sideGap) - root.sideGap
+                    : root.previewWidth + root.sideGap + (offset - 1) * (root.sideWidth + root.sideGap))
+          y: selected
+            ? 0
+            : (root.previewHeight - root.sideHeight) / 2
+          z: selected ? 100 : 50 - Math.abs(offset)
+          opacity: selected ? 1 : (Math.abs(offset) === 1 ? 0.72 : 0.34)
+          scale: selected ? 1 : 0.96
 
-          Text {
-            id: appearanceIcon
-
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-
-            text: "󰏘"
-            color: root.foreground
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.display
-          }
-
-          Column {
-            anchors.left: appearanceIcon.right
-            anchors.leftMargin: Style.space(12)
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(2)
-
-            Text {
-              text: "Appearance"
-              color: root.foreground
-              font.family: Style.font.resolvedFamily
-              font.pixelSize: Style.font.title
-              font.bold: true
-            }
-
-            Text {
-              text: "THEME + CURATED WALLPAPER"
-              color: root.muted
-              font.family: Style.font.resolvedFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-              font.letterSpacing: 1.1
+          Behavior on x {
+            NumberAnimation {
+              duration: 150
+              easing.type: Easing.OutCubic
             }
           }
 
-          Text {
-            anchors.right: closeHint.left
-            anchors.rightMargin: Style.space(14)
-            anchors.verticalCenter: parent.verticalCenter
-
-            text: root.selectedTheme
-              ? root.selectedTheme.toUpperCase()
-              : "SELECT A THEME"
-
-            color: root.foreground
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.bodySmall
-            font.bold: true
-            opacity: 0.9
-          }
-
-          Text {
-            id: closeHint
-
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-
-            text: "ESC"
-            color: root.muted
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-            font.letterSpacing: 1
-          }
-        }
-
-        PanelSeparator {
-          Layout.fillWidth: true
-          foreground: root.border
-        }
-
-        RowLayout {
-          Layout.fillWidth: true
-          Layout.preferredHeight: Style.space(24)
-
-          Text {
-            text: "THEMES"
-            color: root.muted
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-            font.letterSpacing: 1.2
-          }
-
-          Item { Layout.fillWidth: true }
-
-          Text {
-            text: themeModel.count > 0
-              ? root.themeIndex + 1 + " / " + themeModel.count
-              : "LOADING"
-
-            color: root.muted
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-          }
-        }
-
-        ListView {
-          id: themeList
-
-          Layout.fillWidth: true
-          Layout.preferredHeight: root.themeSectionHeight
-
-          orientation: ListView.Horizontal
-          spacing: Style.space(8)
-          clip: true
-          interactive: true
-          boundsBehavior: Flickable.StopAtBounds
-          snapMode: ListView.SnapToItem
-          currentIndex: root.themeIndex
-          model: themeModel
-
-          onCurrentIndexChanged: {
-            if (currentIndex >= 0 && currentIndex !== root.themeIndex)
-              root.selectTheme(currentIndex)
-          }
-
-          delegate: Item {
-              id: themeCard
-
-              width: root.themeCardWidth
-              height: root.themeCardHeight
-
-              property bool chosen: index === root.themeIndex
-              property bool hovered: false
-
-              scale: hovered ? 1.012 : 1
-
-              Behavior on scale {
-                NumberAnimation {
-                  duration: 100
-                  easing.type: Easing.OutCubic
-                }
-              }
-
-              Rectangle {
-                anchors.fill: parent
-                color: chosen
-                  ? Util.alpha(root.foreground, 0.10)
-                  : Util.alpha(root.foreground, 0.025)
-
-                border.width: chosen ? 2 : 1
-                border.color: chosen
-                  ? root.foreground
-                  : Util.alpha(root.foreground, hovered ? 0.36 : 0.14)
-              }
-
-              Image {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-
-                anchors.margins: 1
-                height: Style.space(88)
-
-                source: model.preview ? Util.fileUrl(model.preview) : ""
-                fillMode: Image.PreserveAspectCrop
-                asynchronous: true
-                cache: true
-                smooth: true
-
-                opacity: chosen ? 0.96 : 0.82
-              }
-
-              Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-
-                height: parent.height - Style.space(88)
-
-                color: chosen
-                  ? Util.alpha(root.background, 0.90)
-                  : Util.alpha(root.background, 0.96)
-
-                Text {
-                  anchors.left: parent.left
-                  anchors.right: parent.right
-                  anchors.top: parent.top
-                  anchors.margins: Style.space(9)
-
-                  text: model.name
-                  color: root.foreground
-                  font.family: Style.font.resolvedFamily
-                  font.pixelSize: Style.font.bodySmall
-                  font.bold: chosen
-                  elide: Text.ElideRight
-                }
-
-                Text {
-                  anchors.left: parent.left
-                  anchors.right: parent.right
-                  anchors.bottom: parent.bottom
-                  anchors.leftMargin: Style.space(9)
-                  anchors.rightMargin: Style.space(9)
-                  anchors.bottomMargin: Style.space(7)
-
-                  text: model.description || model.id
-                  color: root.muted
-                  font.family: Style.font.resolvedFamily
-                  font.pixelSize: Style.font.caption
-                  elide: Text.ElideRight
-                }
-              }
-
-              Rectangle {
-                visible: chosen
-                width: Style.space(6)
-                height: Style.space(6)
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.margins: Style.space(8)
-                color: root.foreground
-              }
-
-              MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-
-                onEntered: themeCard.hovered = true
-                onExited: themeCard.hovered = false
-                onClicked: root.selectTheme(index)
-              }
-            }
-          }
-        PanelSeparator {
-          Layout.fillWidth: true
-          foreground: root.border
-        }
-
-        RowLayout {
-          Layout.fillWidth: true
-          Layout.preferredHeight: Style.space(24)
-
-          Text {
-            text: "CURATED WALLPAPERS"
-            color: root.muted
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-            font.letterSpacing: 1.2
-          }
-
-          Item { Layout.fillWidth: true }
-
-          Text {
-            text: wallpaperModel.count > 0
-              ? wallpaperModel.count + " WALLPAPERS"
-              : "NO WALLPAPERS"
-
-            color: root.muted
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-          }
-        }
-
-        Item {
-          Layout.fillWidth: true
-          Layout.preferredHeight: root.wallpaperSectionHeight
-
-          ListView {
-            id: wallpaperList
-
-            anchors.fill: parent
-
-            orientation: ListView.Horizontal
-            spacing: Style.space(10)
-            clip: true
-            interactive: true
-            boundsBehavior: Flickable.StopAtBounds
-            snapMode: ListView.SnapToItem
-            currentIndex: root.wallpaperIndex
-
-            onCurrentIndexChanged: {
-              if (currentIndex >= 0 && currentIndex !== root.wallpaperIndex)
-                root.selectWallpaper(currentIndex)
-            }
-
-            model: wallpaperModel
-
-            delegate: Item {
-              id: wallpaperCard
-
-              width: root.wallpaperCardWidth
-              height: root.wallpaperCardHeight
-
-              property bool chosen: model.path === root.selectedWallpaper
-              property bool hovered: false
-
-              scale: hovered ? 1.012 : 1
-
-              Behavior on scale {
-                NumberAnimation {
-                  duration: 100
-                  easing.type: Easing.OutCubic
-                }
-              }
-
-              Rectangle {
-                anchors.fill: parent
-
-                color: chosen
-                  ? Util.alpha(root.foreground, 0.10)
-                  : Util.alpha(root.foreground, 0.025)
-
-                border.width: chosen ? 2 : 1
-                border.color: chosen
-                  ? root.foreground
-                  : Util.alpha(root.foreground, hovered ? 0.34 : 0.13)
-              }
-
-              Image {
-                anchors.fill: parent
-                anchors.margins: 2
-
-                source: model.url
-                fillMode: Image.PreserveAspectCrop
-                asynchronous: true
-                cache: true
-                smooth: true
-              }
-
-              Rectangle {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-
-                height: Style.space(34)
-                color: Util.alpha(root.background, 0.84)
-
-                Text {
-                  anchors.fill: parent
-                  anchors.leftMargin: Style.space(9)
-                  anchors.rightMargin: Style.space(9)
-
-                  text: model.name
-                  color: root.foreground
-                  font.family: Style.font.resolvedFamily
-                  font.pixelSize: Style.font.caption
-                  font.bold: chosen
-                  verticalAlignment: Text.AlignVCenter
-                  elide: Text.ElideMiddle
-                }
-              }
-
-              Rectangle {
-                visible: chosen
-                width: Style.space(7)
-                height: Style.space(7)
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.margins: Style.space(9)
-                color: root.foreground
-              }
-
-              MouseArea {
-                anchors.fill: parent
-                hoverEnabled: true
-
-                onEntered: wallpaperCard.hovered = true
-                onExited: wallpaperCard.hovered = false
-                onClicked: root.selectWallpaper(index)
-              }
+          Behavior on opacity {
+            NumberAnimation {
+              duration: 150
+              easing.type: Easing.OutCubic
             }
           }
 
-          Text {
-            anchors.centerIn: parent
-            visible: wallpaperModel.count === 0
-
-            text: "No curated wallpapers for this theme"
-            color: root.muted
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.body
-          }
-        }
-        RowLayout {
-          Layout.fillWidth: true
-          Layout.preferredHeight: Style.space(44)
-          spacing: Style.space(12)
-
-          Text {
-            Layout.fillWidth: true
-
-            text: root.selectedWallpaper
-              ? root.selectedWallpaper.split("/").pop()
-              : "Theme only"
-
-            color: root.muted
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.caption
-            elide: Text.ElideMiddle
-          }
-
-          Text {
-            text: "← → themes   ↑ ↓ wallpapers"
-            color: root.muted
-            font.family: Style.font.resolvedFamily
-            font.pixelSize: Style.font.caption
+          Behavior on scale {
+            NumberAnimation {
+              duration: 150
+              easing.type: Easing.OutCubic
+            }
           }
 
           Rectangle {
-            Layout.preferredWidth: Style.space(122)
-            Layout.preferredHeight: Style.space(36)
+            anchors.fill: parent
+            color: Color.background
+            border.width: selected ? 2 : 1
+            border.color: selected
+              ? root.foreground
+              : Util.alpha(root.foreground, 0.28)
+            clip: true
+          }
 
-            color: root.foreground
-            border.width: 1
-            border.color: root.foreground
+          Image {
+            anchors.fill: parent
+            anchors.margins: selected ? 2 : 1
+
+            source: {
+              if (themeSlot < 0 || themeSlot >= themeModel.count)
+                return ""
+              var path = String(themeModel.get(themeSlot).preview || "")
+              return path.length > 0 ? Util.fileUrl(path) : ""
+            }
+
+            fillMode: Image.PreserveAspectCrop
+            asynchronous: true
+            cache: true
+            smooth: true
+          }
+
+          Rectangle {
+            anchors.fill: parent
+            color: selected
+              ? "transparent"
+              : Util.alpha(Color.background, 0.40)
+          }
+
+          Rectangle {
+            visible: !selected
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: Style.space(52)
+            color: Util.alpha(Color.background, 0.88)
 
             Text {
-              anchors.fill: parent
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
+              anchors.leftMargin: Style.space(10)
+              anchors.rightMargin: Style.space(10)
 
-              text: applyProc.running ? "APPLYING…" : "APPLY"
+              text: themeSlot >= 0 && themeSlot < themeModel.count
+                ? themeModel.get(themeSlot).name
+                : ""
 
-              color: root.background
+              color: root.foreground
               font.family: Style.font.resolvedFamily
               font.pixelSize: Style.font.bodySmall
               font.bold: true
-
-              horizontalAlignment: Text.AlignHCenter
-              verticalAlignment: Text.AlignVCenter
-            }
-
-            MouseArea {
-              anchors.fill: parent
-              enabled: !!root.selectedTheme && !applyProc.running
-              onClicked: root.applySelection()
+              elide: Text.ElideRight
             }
           }
+
+          MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+
+            onClicked: {
+              if (themeSlot < 0) return
+              if (selected) root.applySelection()
+              else root.selectTheme(themeSlot)
+            }
+          }
+        }
+      }
+
+      Column {
+        anchors.top: carousel.bottom
+        anchors.topMargin: Style.space(18)
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: Style.space(4)
+
+        Text {
+          width: carousel.width
+          text: root.selectedTheme
+            ? themeModel.get(root.themeIndex).name
+            : "SELECT A THEME"
+
+          color: root.foreground
+          font.family: Style.font.resolvedFamily
+          font.pixelSize: Style.font.display
+          font.bold: true
+          horizontalAlignment: Text.AlignHCenter
+        }
+
+        Text {
+          width: carousel.width
+          text: root.selectedTheme
+            ? (themeModel.get(root.themeIndex).description || themeModel.get(root.themeIndex).id)
+            : ""
+
+          color: root.muted
+          font.family: Style.font.resolvedFamily
+          font.pixelSize: Style.font.bodySmall
+          horizontalAlignment: Text.AlignHCenter
+          elide: Text.ElideRight
+        }
+
+        Text {
+          width: carousel.width
+          text: applyProc.running
+            ? "APPLYING…"
+            : "← →  SELECT    ENTER  APPLY    ESC  CLOSE"
+
+          color: root.muted
+          font.family: Style.font.resolvedFamily
+          font.pixelSize: Style.font.caption
+          font.bold: true
+          horizontalAlignment: Text.AlignHCenter
         }
       }
     }
   }
+}
 }
