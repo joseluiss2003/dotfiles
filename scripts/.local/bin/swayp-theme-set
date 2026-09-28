@@ -36,7 +36,7 @@ GENERATED_DIR="${HOME}/.config/swayp/generated"
 mkdir -p "$STATE_DIR" "$GENERATED_DIR" "$(dirname "$PERSISTENT_THEME_FILE")"
 
 python3 - "$THEME_DIR/colors.toml" "$PALETTE_STAGED_OUTPUT" "$GENERATED_DIR" "$THEME" <<'PY'
-import json, os, sys, tomllib
+import json, os, sys, tomllib, colorsys
 
 colors_path, palette_path, generated_dir, theme = sys.argv[1:]
 with open(colors_path, "rb") as f:
@@ -70,6 +70,7 @@ semantic = {
     "dark_foreground": c["dark_foreground"],
     "light_foreground": c["light_foreground"],
     "bright_foreground": c["bright_foreground"],
+    "logo": logo_colors,
 }
 
 with open(palette_path, "w") as f:
@@ -78,6 +79,17 @@ with open(palette_path, "w") as f:
 
 bg, red, green, yellow, blue, magenta, cyan, fg, muted, br, bg_, by, bb, bm, bc, bfg = p
 accent = c["accent"]
+
+# Fastfetch logo palette: intentionally independent from the terminal/module palette.
+# Keep one hue (the theme accent) and vary only luminance so the mark reads as
+# one coherent colour family, like Omarchy's layered branding.
+r, g, b = (int(accent[i:i+2], 16) / 255 for i in (1, 3, 5))
+h, l, s = colorsys.rgb_to_hls(r, g, b)
+logo_lightness = (0.18, 0.28, 0.40, 0.50, 0.62, 0.74)
+logo_colors = []
+for lightness in logo_lightness:
+    rr, gg, bb = colorsys.hls_to_rgb(h, lightness, s)
+    logo_colors.append("#{:02X}{:02X}{:02X}".format(round(rr * 255), round(gg * 255), round(bb * 255)))
 
 surface = bg
 
@@ -216,12 +228,12 @@ write("fastfetch.jsonc", f'''{{
     "type": "file",
     "source": "{fastfetch_logo}",
     "color": {{
-      "1": "{accent}",
-      "2": "{bfg}",
-      "3": "{fg}",
-      "4": "{c["lighter_background"]}",
-      "5": "{green}",
-      "6": "{cyan}"
+      "1": "{logo_colors[0]}",
+      "2": "{logo_colors[1]}",
+      "3": "{logo_colors[2]}",
+      "4": "{logo_colors[3]}",
+      "5": "{logo_colors[4]}",
+      "6": "{logo_colors[5]}"
     }},
     "padding": {{ "top": 1, "right": 3, "left": 4 }}
   }},
