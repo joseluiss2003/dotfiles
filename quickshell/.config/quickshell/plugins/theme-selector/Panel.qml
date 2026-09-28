@@ -316,6 +316,8 @@ Item {
 
           required property int index
 
+          // Keep the legacy body bindings while each theme has its own delegate.
+          readonly property int themeSlot: index
           readonly property int relativeIndex: root.carouselOffset(index)
           readonly property bool nearby: Math.abs(relativeIndex) <= root.carouselCenter
           readonly property bool selected: index === root.themeIndex
