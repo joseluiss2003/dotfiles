@@ -27,8 +27,8 @@ Item {
     height: root.logoHeight
     source: "assets/swayp-wordmark-depth.svg"
     fillMode: Image.Stretch
-    smooth: true
-    mipmap: true
+    smooth: false
+    mipmap: false
     visible: false
   }
 
@@ -51,8 +51,8 @@ Item {
     height: root.logoHeight
     source: "assets/swayp-wordmark-face.svg"
     fillMode: Image.Stretch
-    smooth: true
-    mipmap: true
+    smooth: false
+    mipmap: false
     visible: false
   }
 
