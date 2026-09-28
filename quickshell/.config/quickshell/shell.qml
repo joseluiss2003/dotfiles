@@ -1634,6 +1634,7 @@ Component.onCompleted: {
         surfaceFormat.opaque: false
 
         Rectangle {
+          id: themeTransitionCover
           anchors.fill: parent
           visible: shell.themeTransitionActive
           color: shell.themeTransitionColor
@@ -1663,7 +1664,6 @@ Component.onCompleted: {
             }
           }
 
-          property alias themeTransitionCover: themeTransitionCover
         }
 
         Item {
