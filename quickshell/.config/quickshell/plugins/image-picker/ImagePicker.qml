@@ -39,10 +39,10 @@ Item {
   property color unselectedBorder: Color.imagePicker.unselectedBorder
   property int expandedWidth: 768
   property int expandedHeight: 475
-  property int sliceWidth: 108
-  property int sliceHeight: 432
-  property int sliceSpacing: -30
-  property int skewOffset: 28
+  property int sliceWidth: 250
+  property int sliceHeight: 350
+  property int sliceSpacing: 18
+  property int skewOffset: 0
   property int bottomChromeHeight: showLabels ? (filterable ? 104 : 74) : (filterable ? 60 : 30)
 
   onOpenedChanged: if (!opened) layoutSettled = false
@@ -384,7 +384,7 @@ Item {
     Item {
       id: card
       visible: root.opened && root.imagesLoaded && root.layoutSettled && root.imageArray.length > 0
-      width: Math.min(parent.width - 80, root.expandedWidth + 13 * (root.sliceWidth + root.sliceSpacing) + 40)
+      width: Math.min(parent.width - Style.space(48), root.expandedWidth + 2 * (root.sliceWidth + root.sliceSpacing) + 40)
       height: root.expandedHeight + Style.space(30) + root.bottomChromeHeight
       anchors.centerIn: parent
 
@@ -397,7 +397,7 @@ Item {
           anchors.bottom: parent.bottom
           anchors.bottomMargin: root.bottomChromeHeight
           anchors.horizontalCenter: parent.horizontalCenter
-          width: root.expandedWidth + 13 * (root.sliceWidth + root.sliceSpacing)
+          width: root.expandedWidth + 2 * (root.sliceWidth + root.sliceSpacing)
           clip: false
           focus: true
 
@@ -448,7 +448,7 @@ Item {
               readonly property bool matched: root.itemMatches(index)
               readonly property int relativeIndex: root.filteredPosition(index) - root.selectedFilteredPosition()
               readonly property bool selected: matched && index === root.selectedIndex
-              readonly property bool nearby: matched && Math.abs(relativeIndex) <= 16
+              readonly property bool nearby: matched && Math.abs(relativeIndex) <= 2
               property bool sourceActivated: nearby
               onNearbyChanged: if (nearby) sourceActivated = true
 
