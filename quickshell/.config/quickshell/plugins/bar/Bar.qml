@@ -1842,6 +1842,14 @@ Item {
       sourceComponent: slot.commandCustom ? customCommandModuleComponent : emptyModuleComponent
       anchors.fill: parent
       opacity: slot.dragSource ? 0.22 : 1.0
+
+      Behavior on opacity {
+        NumberAnimation {
+          duration: 140
+          easing.type: Easing.OutCubic
+        }
+      }
+
       onLoaded: {
         slot.injectProps()
         Qt.callLater(slot.injectProps)
@@ -1854,6 +1862,14 @@ Item {
       sourceComponent: slot.registered ? slot.registryComponent : null
       anchors.fill: parent
       opacity: slot.dragSource ? 0.22 : 1.0
+
+      Behavior on opacity {
+        NumberAnimation {
+          duration: 140
+          easing.type: Easing.OutCubic
+        }
+      }
+
       onLoaded: {
         slot.injectProps()
         Qt.callLater(slot.injectProps)
@@ -1866,6 +1882,14 @@ Item {
       source: slot.qmlCustom ? root.customModuleSource(slot.entry) : ""
       anchors.fill: parent
       opacity: slot.dragSource ? 0.22 : 1.0
+
+      Behavior on opacity {
+        NumberAnimation {
+          duration: 140
+          easing.type: Easing.OutCubic
+        }
+      }
+
       onLoaded: {
         slot.injectProps()
         Qt.callLater(slot.injectProps)
