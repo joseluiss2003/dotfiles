@@ -226,6 +226,11 @@ QtObject {
 
   // Shared popup geometry and motion. Individual panels own their layout;
   // these tokens keep the shell-wide popup language consistent.
+  readonly property QtObject opacity: QtObject {
+    readonly property real secondaryText: 0.70
+    readonly property real mutedText: 0.62
+  }
+
   readonly property QtObject popup: QtObject {
     readonly property int radius: root.cornerRadius
     readonly property int borderWidth: Math.max(1, root.space(2))
