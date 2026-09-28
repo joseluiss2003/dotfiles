@@ -105,9 +105,6 @@ Item {
   property int rowPeek: Math.round(baseRowHeight * 0.55)
   property int rowSpacing: Style.spacing.xs
   property int dividerHeight: Style.space(17)
-  property int systemCardWidth: Style.space(560)
-  property int systemGridHeight: Style.space(218)
-  readonly property bool systemMenuActive: !root.dmenuActive && root.activeMenu === "system"
   property bool searchDivider: false
   property int layoutSerial: 0
   readonly property bool systemMenuActive: !root.dmenuActive && root.activeMenu === "system"
