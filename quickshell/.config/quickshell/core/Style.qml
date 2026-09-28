@@ -242,7 +242,7 @@ QtObject {
     readonly property int actionHeight: root.space(36)
     readonly property int footerHeight: root.space(58)
     readonly property int compactPopupWidth: root.space(260)
-    readonly property int compactPopupHeight: root.space(266)
+    readonly property int compactPopupHeight: root.space(278)
     readonly property int sectionGap: root.spacing.panelGap
     readonly property int contentInset: root.spacing.xxl
     readonly property real animationDistance: root.spaceReal(2)
