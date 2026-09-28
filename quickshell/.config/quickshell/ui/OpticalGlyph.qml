@@ -36,9 +36,12 @@ Item {
     font.pixelSize: root.renderedFontSize
     renderType: Text.NativeRendering
 
+    // Theme changes are driven centrally by Color.qml so every glyph moves
+    // on the same animation frame.
     Behavior on color {
+      enabled: !Color.themeTransitionActive
       ColorAnimation {
-        duration: Color.themeTransitionActive ? 1200 : 120
+        duration: 120
         easing.type: Easing.OutCubic
       }
     }
