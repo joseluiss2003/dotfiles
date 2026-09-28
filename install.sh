@@ -398,11 +398,21 @@ command = "tuigreet --time --remember --remember-session --sessions /usr/share/w
 user = "greeter"
 EOF
 
-if [[ ! -f /etc/greetd/config.toml ]] || ! cmp -s "$GREETD_CONFIG" /etc/greetd/config.toml; then
+if [[ ! -f /etc/greetd/config.toml ]]; then
+    sudo install -Dm644 "$GREETD_CONFIG" /etc/greetd/config.toml
+    echo "    ✓ Configuración de greetd creada"
+elif cmp -s "$GREETD_CONFIG" /etc/greetd/config.toml; then
+    echo "    ✓ Configuración de greetd ya está al día"
+else
+    GREETD_BACKUP="/etc/greetd/config.toml.swayp-backup"
+    if [[ ! -e "$GREETD_BACKUP" ]]; then
+        sudo cp /etc/greetd/config.toml "$GREETD_BACKUP"
+        echo "    ✓ Configuración existente respaldada en $GREETD_BACKUP"
+    else
+        echo "    ✓ Respaldo existente conservado en $GREETD_BACKUP"
+    fi
     sudo install -Dm644 "$GREETD_CONFIG" /etc/greetd/config.toml
     echo "    ✓ Configuración de greetd actualizada"
-else
-    echo "    ✓ Configuración de greetd ya está al día"
 fi
 
 echo
