@@ -420,7 +420,7 @@ Item {
 
         Text {
           width: carousel.width
-          text: root.selectedTheme
+          text: themeModel.count > 0 && root.themeIndex >= 0 && root.themeIndex < themeModel.count
             ? themeModel.get(root.themeIndex).name
             : "SELECT A THEME"
 
@@ -433,7 +433,7 @@ Item {
 
         Text {
           width: carousel.width
-          text: root.selectedTheme
+          text: themeModel.count > 0 && root.themeIndex >= 0 && root.themeIndex < themeModel.count
             ? (themeModel.get(root.themeIndex).description || themeModel.get(root.themeIndex).id)
             : ""
 
