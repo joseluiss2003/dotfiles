@@ -332,15 +332,15 @@ PanelWindow {
     Behavior on x {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 70 : 55
-        easing.type: root.open ? Easing.OutQuint : Easing.InQuad
+        duration: root.open ? 115 : 85
+        easing.type: root.open ? Easing.OutCubic : Easing.InQuad
       }
     }
 
     Behavior on y {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 85 : 65
+        duration: root.open ? 145 : 105
         easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
@@ -348,7 +348,7 @@ PanelWindow {
     Behavior on opacity {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 80 : 60
+        duration: root.open ? 130 : 90
         easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
@@ -356,7 +356,7 @@ PanelWindow {
     Behavior on scale {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 80 : 60
+        duration: root.open ? 130 : 90
         easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
