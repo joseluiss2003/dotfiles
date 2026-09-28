@@ -270,8 +270,8 @@ fi
 
 if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     if awww img \
-        --transition-type center \
-        --transition-duration 0.9 \
+        --transition-type fade \
+        --transition-duration 0.6 \
         --transition-step 1 \
         --transition-fps 60 \
         "$DEFAULT_WALLPAPER" >/dev/null 2>&1; then
@@ -285,8 +285,8 @@ fi
 if command -v kitty >/dev/null 2>&1 && pgrep -x kitty >/dev/null 2>&1; then
     pkill -USR1 -x kitty >/dev/null 2>&1 || true
 fi
-# Keep the running Sway session untouched here. Theme colors are consumed
-# live by Quickshell/Waybar; reloading Sway at the same moment as awww can
-# introduce a visible frame hitch during the wallpaper transition.
+if command -v swaymsg >/dev/null 2>&1; then
+    swaymsg reload >/dev/null 2>&1 || true
+fi
 
 printf 'SwayP theme applied: %s\n' "$THEME"
