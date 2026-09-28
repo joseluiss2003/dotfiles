@@ -11,10 +11,6 @@ Item {
     ? Color.semanticColors.logo
     : []
 
-  // The exact six CLI rows, represented as terminal glyph geometry.
-  // Each row is kept as text data so the visual design remains identical
-  // to the approved Fastfetch wordmark, while rendering each glyph ourselves
-  // avoids QML font-metric differences.
   readonly property var rows: [
     "   ███████╗ ██╗    ██╗  █████╗  ██╗   ██╗ ██████╗",
     "   ██╔════╝ ██║    ██║ ██╔══██╗ ╚██╗ ██╔╝ ██╔══██╗",
@@ -24,15 +20,17 @@ Item {
     "   ╚══════╝  ╚══╝╚══╝  ╚═╝  ╚═╝    ╚═╝    ╚═╝"
   ]
 
+  // Terminal glyphs expressed as connected strokes. Keeping one cell per
+  // Unicode character makes the QML rendering visually match the CLI.
   readonly property var glyphs: ({
-    "█": "111",
-    "╗": "110",
-    "╔": "011",
-    "╝": "110",
-    "╚": "011",
-    "═": "111",
-    "║": "101",
-    " ": "000"
+    "█": "F",
+    "═": "H",
+    "║": "V",
+    "╔": "TL",
+    "╗": "TR",
+    "╚": "BL",
+    "╝": "BR",
+    " ": "S"
   })
 
   function logoColor(index, fallback) {
@@ -41,20 +39,48 @@ Item {
     return fallback
   }
 
-  // Each Unicode glyph is converted into a compact 3x3 block pattern.
-  // This preserves the block-character silhouette while guaranteeing that
-  // adjacent glyphs share the same cell metrics.
-  function glyphPattern(ch) {
-    var p = glyphs[ch]
-    if (p !== undefined) return p
-    return "000"
+  function drawGlyph(ctx, glyph, x, y, w, h, thickness) {
+    var kind = glyphs[glyph] || "S"
+    if (kind === "S") return
+
+    var t = thickness
+    var midY = y + (h - t) / 2
+    var midX = x + (w - t) / 2
+
+    ctx.fillStyle = root.logoColor(0, root.color)
+
+    if (kind === "F") {
+      ctx.fillRect(x, y, w, h)
+    } else if (kind === "H") {
+      ctx.fillRect(x, midY, w, t)
+    } else if (kind === "V") {
+      ctx.fillRect(midX, y, t, h)
+    } else if (kind === "TL") {
+      ctx.fillRect(x, y, w, t)
+      ctx.fillRect(x, y, t, h)
+    } else if (kind === "TR") {
+      ctx.fillRect(x, y, w, t)
+      ctx.fillRect(x + w - t, y, t, h)
+    } else if (kind === "BL") {
+      ctx.fillRect(x, y + h - t, w, t)
+      ctx.fillRect(x, y, t, h)
+    } else if (kind === "BR") {
+      ctx.fillRect(x, y + h - t, w, t)
+      ctx.fillRect(x + w - t, y, t, h)
+    }
   }
 
-  readonly property int columns: 58
-  readonly property real cellWidth: Math.min(width / columns, height / 8.0)
-  readonly property real cellHeight: cellWidth
-  readonly property real markWidth: columns * cellWidth
-  readonly property real markHeight: 6 * cellHeight
+  readonly property int columns: {
+    var max = 0
+    for (var i = 0; i < root.rows.length; i++)
+      max = Math.max(max, root.rows[i].length)
+    return max
+  }
+
+  readonly property real cellWidth: Math.min(width / root.columns, height / 7.0)
+  readonly property real cellHeight: root.cellWidth
+  readonly property real markWidth: root.columns * root.cellWidth
+  readonly property real markHeight: 6 * root.cellHeight
 
   Canvas {
     id: canvas
@@ -67,34 +93,20 @@ Item {
       var ctx = getContext("2d")
       ctx.clearRect(0, 0, width, height)
 
+      var thickness = Math.max(1.8, root.cellWidth * 0.34)
+
       for (var row = 0; row < root.rows.length; row++) {
+        var line = root.rows[row]
+        var y = row * root.cellHeight
+
         ctx.fillStyle = root.logoColor(
           5 - row,
           row < 2 ? root.highlightColor : root.color
         )
 
-        var line = root.rows[row]
-        var x = 0
-
-        for (var i = 0; i < line.length; i++) {
-          var pattern = root.glyphPattern(line.charAt(i))
-
-          for (var px = 0; px < 3; px++) {
-            if (pattern.charAt(px) !== "1") continue
-
-            // A terminal block glyph is treated as a filled cell. The
-            // horizontal/vertical strokes are deliberately kept tight so
-            // the result reads as the same Unicode artwork rather than a
-            // generic pixel font.
-            ctx.fillRect(
-              x + px * (root.cellWidth / 3),
-              row * root.cellHeight,
-              root.cellWidth / 3,
-              root.cellHeight
-            )
-          }
-
-          x += root.cellWidth
+        for (var col = 0; col < root.columns; col++) {
+          var glyph = col < line.length ? line.charAt(col) : " "
+          root.drawGlyph(ctx, glyph, col * root.cellWidth, y, root.cellWidth, root.cellHeight, thickness)
         }
       }
     }
