@@ -1415,10 +1415,10 @@ Panel {
           opacity: root.bandPillsVisible ? 1 : 0
 
           Behavior on height {
-            NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: Style.popup.hoverDuration; easing.type: Easing.OutCubic }
           }
           Behavior on opacity {
-            NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+            NumberAnimation { duration: Style.popup.hoverDuration; easing.type: Easing.OutCubic }
           }
 
           Row {
