@@ -101,8 +101,6 @@ Item {
 
     root.themeIndex = index
     root.selectedTheme = themeModel.get(index).id
-    root.wallpaperIndex = 0
-    root.loadWallpapers()
   }
 
   function moveTheme(delta) {
