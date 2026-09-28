@@ -2,114 +2,83 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+WITH_EXTRAS=false
 
+usage() {
+    cat <<'EOF'
+Usage: ./install.sh [--with-extras]
+
+Options:
+  --with-extras    Install personal desktop utilities and AUR applications
+  -h, --help       Show this help
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --with-extras)
+            WITH_EXTRAS=true
+            shift
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "ERROR: Opción desconocida: $1" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
+
+# Core dependencies: required by SwayP itself or by features wired into the
+# shipped Sway/Quickshell configuration.
 PACKAGES=(
-  accountsservice
-  alsa-firmware
-  alsa-plugins
-  alsa-utils
   awww
-  base-devel
-  bash-completion
   bluez
   bluez-utils
   brightnessctl
-  btop
-  cantarell-fonts
   cliphist
   curl
-  dialog
-  diffutils
-  duf
-  ex-vi-compat
   fastfetch
   ffmpegthumbnailer
-  firefox
-  fprintd
   fuzzel
-  git
-  github-cli
-  glances
   greetd
   greetd-tuigreet
   grim
-  gst-libav
-  gst-plugin-pipewire
-  gst-plugins-bad
-  gst-plugins-ugly
-  gtk4-layer-shell
-  inetutils
-  inotify-tools
   iw
-  imv
-  inxi
-  iwd
   jq
   kitty
-  less
-  libadwaita
   libnotify
-  linux-firmware
-  logrotate
-  lsb-release
   mako
-  man-db
-  man-pages
-  mesa-utils
-  mpv
-  nano
-  nano-syntax-highlighting
   nautilus
   networkmanager
   noto-fonts
   noto-fonts-cjk
   noto-fonts-emoji
   noto-fonts-extra
-  nss-mdns
-  openssh
-  pavucontrol
-  perl
-  pipewire-alsa
-  pipewire-jack
-  pipewire-pulse
   pinta
+  pipewire
+  pipewire-alsa
+  pipewire-pulse
   playerctl
-  plocate
-  polkit-gnome
-  poppler-glib
   power-profiles-daemon
   python
-  python-defusedxml
-  python-jinja
-  python-packaging
-  qrencode
-  qt5-wayland
   qt6-wayland
   quickshell
-  rsync
   rtkit
   slurp
-  sof-firmware
   starship
   stow
-  sudo
   sway
   swaybg
   swayidle
   swaylock
-  systemd-sysvcompat
-  tree
-  ttf-bitstream-vera
   ttf-dejavu
   ttf-jetbrains-mono-nerd
   ttf-liberation
-  ttf-opensans
-  unzip
   upower
-  usbutils
-  wget
-  which
-  wireless-regdb
   wireplumber
   wl-clipboard
   wlsunset
@@ -117,13 +86,69 @@ PACKAGES=(
   xdg-desktop-portal-wlr
   xdg-user-dirs
   xdg-utils
-  xf86-input-libinput
   xorg-xwayland
-  yazi
   zsh
   zsh-autosuggestions
   zsh-completions
   zsh-syntax-highlighting
+)
+
+# Convenience software kept separate from the SwayP runtime. This preserves
+# the previous "personal machine" setup without making those applications
+# mandatory on every SwayP installation.
+EXTRA_PACKAGES=(
+  alsa-firmware
+  alsa-plugins
+  alsa-utils
+  base-devel
+  bash-completion
+  btop
+  cantarell-fonts
+  dialog
+  diffutils
+  duf
+  ex-vi-compat
+  firefox
+  fprintd
+  git
+  github-cli
+  glances
+  gst-libav
+  gst-plugin-pipewire
+  gst-plugins-bad
+  gst-plugins-ugly
+  imv
+  inxi
+  iwd
+  less
+  linux-firmware
+  logrotate
+  lsb-release
+  man-db
+  man-pages
+  mesa-utils
+  mpv
+  nano
+  nano-syntax-highlighting
+  nss-mdns
+  openssh
+  pavucontrol
+  perl
+  pipewire-jack
+  plocate
+  poppler-glib
+  rsync
+  sof-firmware
+  sudo
+  tree
+  ttf-bitstream-vera
+  ttf-opensans
+  unzip
+  usbutils
+  wget
+  which
+  wireless-regdb
+  yazi
 )
 
 AUR_PACKAGES=(
@@ -138,26 +163,43 @@ if [[ ! -f /etc/arch-release ]]; then
     exit 1
 fi
 
-echo "==> Instalando paquetes del sistema..."
-
-sudo pacman -S --needed "${PACKAGES[@]}"
-echo
-echo "==> Instalando paquetes AUR..."
-
-AUR_HELPER=""
-if command -v yay >/dev/null 2>&1; then
-    AUR_HELPER="yay"
-elif command -v paru >/dev/null 2>&1; then
-    AUR_HELPER="paru"
-else
-    echo "ERROR: Se necesita yay o paru para instalar los paquetes AUR:"
-    printf '  - %s\n' "${AUR_PACKAGES[@]}"
-    echo
-    echo "Instala un helper AUR y vuelve a ejecutar el instalador."
+if [[ $EUID -eq 0 ]]; then
+    echo "ERROR: Ejecuta este instalador como tu usuario normal, no como root." >&2
     exit 1
 fi
 
-"$AUR_HELPER" -S --needed "${AUR_PACKAGES[@]}"
+for command in sudo stow; do
+    if ! command -v "$command" >/dev/null 2>&1; then
+        echo "ERROR: Falta el comando requerido: $command" >&2
+        exit 1
+    fi
+done
+
+echo "==> Instalando dependencias de SwayP..."
+sudo pacman -S --needed "${PACKAGES[@]}"
+
+if [[ "$WITH_EXTRAS" == true ]]; then
+    echo
+    echo "==> Instalando extras personales..."
+    sudo pacman -S --needed "${EXTRA_PACKAGES[@]}"
+
+    echo
+    echo "==> Instalando aplicaciones AUR..."
+    AUR_HELPER=""
+    if command -v yay >/dev/null 2>&1; then
+        AUR_HELPER="yay"
+    elif command -v paru >/dev/null 2>&1; then
+        AUR_HELPER="paru"
+    else
+        echo "ERROR: Se necesita yay o paru para instalar los extras AUR:"
+        printf '  - %s\n' "${AUR_PACKAGES[@]}"
+        echo
+        echo "Instala un helper AUR o ejecuta el instalador sin --with-extras."
+        exit 1
+    fi
+
+    "$AUR_HELPER" -S --needed "${AUR_PACKAGES[@]}"
+fi
 
 echo
 echo "==> Activando servicios..."
@@ -195,8 +237,6 @@ done
 echo
 echo "==> Detectando paquetes de Stow..."
 
-# Only these directories are actual Stow packages.
-# Repository-only directories such as docs/ must never be linked into $HOME.
 STOW_PACKAGES=(
   fuzzel
   kitty
@@ -252,8 +292,13 @@ echo "========================================"
 echo " Instalación completada correctamente"
 echo "========================================"
 echo
-echo "Paquetes del sistema instalados: ${#PACKAGES[@]}"
-echo "Paquetes AUR instalados: ${#AUR_PACKAGES[@]}"
+echo "Dependencias SwayP instaladas: ${#PACKAGES[@]}"
+if [[ "$WITH_EXTRAS" == true ]]; then
+    echo "Extras personales instalados: ${#EXTRA_PACKAGES[@]}"
+    echo "Aplicaciones AUR instaladas: ${#AUR_PACKAGES[@]}"
+else
+    echo "Extras personales: omitidos (usa --with-extras)"
+fi
 echo
 echo "Dotfiles instalados:"
 printf '  ✓ %s\n' "${STOW_PACKAGES[@]}"
