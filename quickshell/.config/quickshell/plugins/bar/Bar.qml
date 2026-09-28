@@ -1922,6 +1922,14 @@ Item {
       Behavior on opacity {
         NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
       }
+
+      Behavior on width {
+        NumberAnimation { duration: 155; easing.type: Easing.OutQuint }
+      }
+
+      Behavior on height {
+        NumberAnimation { duration: 155; easing.type: Easing.OutQuint }
+      }
     }
 
     MouseArea {
