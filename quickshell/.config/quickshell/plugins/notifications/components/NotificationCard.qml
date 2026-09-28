@@ -52,15 +52,15 @@ BorderSurface {
   signal cardClicked()
   // Prefer per-notification media/avatar data, then fall back to the app icon.
   // The `check` flag avoids Qt's missing-texture placeholder for unknown names.
-  // Notification image-path values can be either file/image URIs or themed icon names.\n  // Resolve them through the same guarded path as app icons so bare names do not\n  // become broken Image sources.\n  readonly property string smallIconSource: root.image.length > 0 ? root.iconSource(root.image) : root.iconSource(root.appIcon)
-  readonly property bool hasGlyph: root.glyph.length > 0
+  // Notification image-path values can be either file/image URIs or themed icon names.\n  // Resolve them through the same guarded path as app icons so bare names do not\n  // become broken Image sources.\n  readonly property string smallIconSource: root.iconSource(String(root.image || root.appIcon || ""))
+  readonly property bool hasGlyph: String(root.glyph || "").length > 0
   readonly property bool compactGlyph: NotificationLogic.shouldRenderCompactGlyph(root.glyph, root.smallIconSource, root.singleLineToast)
-  readonly property bool hasSmallIcon: root.smallIconSource.length > 0
-  readonly property bool summaryStartsWithGlyph: NotificationLogic.summaryStartsWithGlyph(root.summary)
+  readonly property bool hasSmallIcon: String(root.smallIconSource || "").length > 0
+  readonly property bool summaryStartsWithGlyph: NotificationLogic.summaryStartsWithGlyph(String(root.summary || ""))
   readonly property bool singleLineToast: root.sanitizedBody.length === 0
   readonly property bool collapseRedundantIcon: root.singleLineToast && !root.hasGlyph && root.summaryStartsWithGlyph
-  readonly property string sanitizedBody: root.sanitizeBody(root.body)
-  readonly property string styledBody: NotificationLogic.styledBody(root.body, root.app, root.appIcon)
+  readonly property string sanitizedBody: root.sanitizeBody(String(root.body || ""))
+  readonly property string styledBody: NotificationLogic.styledBody(String(root.body || ""), String(root.app || ""), String(root.appIcon || ""))
 
   readonly property color dimColor: Qt.darker(Color.notifications.text, 1.4)
   readonly property color bodyColor: Qt.darker(Color.notifications.text, 1.15)
