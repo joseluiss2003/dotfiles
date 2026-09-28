@@ -231,7 +231,7 @@ if os.path.isfile(fastfetch_logo_template):
 
     # Rasterize explicitly with a transparent background. Some SVG delegates
     # otherwise default the canvas to white when Fastfetch/Kitty decodes it.
-    magick = shutil.which("magick")
+    magick = shutil.which("magick") or shutil.which("convert")
     if magick:
         subprocess.run(
             [magick, "-background", "none", fastfetch_svg, "-alpha", "on", fastfetch_logo],
@@ -243,7 +243,7 @@ write("fastfetch.jsonc", f'''{{
   "logo": {{
     "type": "kitty",
     "source": "{fastfetch_logo}",
-    "width": 34,
+    "width": 42,
     "color": {{
       "1": "{logo_colors[0]}",
       "2": "{logo_colors[1]}",
