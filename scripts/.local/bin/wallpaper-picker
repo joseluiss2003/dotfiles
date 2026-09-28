@@ -1,226 +1,92 @@
 #!/bin/sh
 set -eu
 
-# ============================================================
-# Wallpaper picker
-# - Fuzzel selection with real image thumbnails
-# - The active SwayP theme is the single source of truth for the UI palette
-# - Never starts or restarts Quickshell
-# - Lock prevents double-launching the picker
-# ============================================================
+# SwayP wallpaper picker
+# Opens the shared Quickshell image selector using the active theme's pool.
+# The picker only chooses a file; this script owns applying and persisting it.
 
+THEME_FILE="$HOME/.config/swayp/current-theme"
 THEME_NAME=""
-THEME_FILE="${HOME}/.config/swayp/current-theme"
 if [ -f "$THEME_FILE" ]; then
-    THEME_NAME=$(sed -n '1p' "$THEME_FILE")
-elif [ -L "${HOME}/.local/state/swayp/current/theme" ]; then
-    THEME_NAME=$(basename "$(readlink "${HOME}/.local/state/swayp/current/theme")")
+    THEME_NAME="$(sed -n '1p' "$THEME_FILE")"
+elif [ -L "$HOME/.local/state/swayp/current/theme" ]; then
+    THEME_NAME="$(basename "$(readlink "$HOME/.local/state/swayp/current/theme")")"
 fi
 
-THEME_WALLPAPER_DIR="${HOME}/.config/swayp/wallpapers/${THEME_NAME}"
-GLOBAL_WALLPAPER_DIR="${HOME}/Pictures/wallpapers"
+THEME_WALLPAPER_DIR="$HOME/.config/swayp/wallpapers/$THEME_NAME"
+GLOBAL_WALLPAPER_DIR="$HOME/Pictures/wallpapers"
 
-# Prefer the active theme wallpaper pool; fall back to the global pool.
-if [ -n "$THEME_NAME" ] && [ -d "$THEME_WALLPAPER_DIR" ] && find "$THEME_WALLPAPER_DIR" -maxdepth 1 -type f -print -quit | grep -q .; then
+if [ -n "$THEME_NAME" ] && [ -d "$THEME_WALLPAPER_DIR" ] && \
+   find "$THEME_WALLPAPER_DIR" -maxdepth 1 -type f -print -quit 2>/dev/null | grep -q .; then
     WALLPAPER_DIR="$THEME_WALLPAPER_DIR"
 else
     WALLPAPER_DIR="$GLOBAL_WALLPAPER_DIR"
 fi
-
-STATE_DIR="${HOME}/.local/state/wallpaper"
-SWAYP_STATE_DIR="${HOME}/.local/state/swayp/current"
-CURRENT="${STATE_DIR}/current"
-THUMB_DIR="${STATE_DIR}/thumbnails"
-MENU_FILE="${STATE_DIR}/picker-menu"
-
-mkdir -p "$STATE_DIR" "$THUMB_DIR" "$SWAYP_STATE_DIR"
-
-# Prevent two picker windows from existing at the same time.
-LOCK_FILE="${STATE_DIR}/picker.lock"
-exec 9>"$LOCK_FILE"
-if command -v flock >/dev/null 2>&1; then
-    flock -n 9 || exit 0
-fi
-
-cleanup() {
-    rm -f "$MENU_FILE"
-}
-trap cleanup EXIT INT TERM
 
 [ -d "$WALLPAPER_DIR" ] || {
     notify-send "Wallpapers" "No existe $WALLPAPER_DIR"
     exit 1
 }
 
-# Keep the list simple/portable. Wallpaper filenames with newlines are
-# intentionally not supported by this picker.
-FILES=$(
-    find "$WALLPAPER_DIR" -maxdepth 1 -type f \
-        \( \
-            -iname '*.jpg' \
-            -o -iname '*.jpeg' \
-            -o -iname '*.png' \
-            -o -iname '*.webp' \
-            -o -iname '*.svg' \
-        \) \
-        -print |
-    sort
-)
+STATE_DIR="$HOME/.local/state/wallpaper"
+SWAYP_STATE_DIR="$HOME/.local/state/swayp/current"
+CURRENT="$STATE_DIR/current"
+mkdir -p "$STATE_DIR" "$SWAYP_STATE_DIR"
 
-[ -n "$FILES" ] || {
+# One picker at a time.
+LOCK_FILE="$STATE_DIR/picker.lock"
+exec 9>"$LOCK_FILE"
+if command -v flock >/dev/null 2>&1; then
+    flock -n 9 || exit 0
+fi
+
+TMP_DIR="$(mktemp -d "$STATE_DIR/picker.XXXXXX")"
+SELECTION_FILE="$TMP_DIR/selection"
+DONE_FILE="$TMP_DIR/done"
+trap 'rm -rf "$TMP_DIR"' EXIT INT TERM
+
+ROWS="$TMP_DIR/rows"
+"$HOME/.config/quickshell/plugins/image-picker/list.sh" "$WALLPAPER_DIR" >"$ROWS"
+
+[ -s "$ROWS" ] || {
     notify-send "Wallpapers" "No hay wallpapers en $WALLPAPER_DIR"
     exit 1
 }
 
-# ------------------------------------------------------------
-# Thumbnail backend
-# ------------------------------------------------------------
+ROWS_B64="$(base64 -w0 "$ROWS")"
 
-THUMB_TOOL=""
-
-if command -v magick >/dev/null 2>&1; then
-    THUMB_TOOL="magick"
-elif command -v convert >/dev/null 2>&1; then
-    THUMB_TOOL="convert"
+CURRENT_WALLPAPER=""
+if [ -f "$CURRENT" ]; then
+    CURRENT_WALLPAPER="$(sed -n '1p' "$CURRENT")"
 fi
 
-make_thumbnail() {
-    file="$1"
+# Quickshell owns the visual selector. This script waits for its explicit
+# completion marker, then applies the selected file with awww.
+qs ipc call image-selector open \
+    "$WALLPAPER_DIR" \
+    "$ROWS_B64" \
+    "$CURRENT_WALLPAPER" \
+    "$SELECTION_FILE" \
+    "$DONE_FILE" \
+    "true" \
+    "true" >/dev/null
 
-    # Fuzzel can use PNG/SVG image files directly as row icons.
-    case "${file##*.}" in
-        png|PNG|svg|SVG)
-            printf '%s\n' "$file"
-            return 0
-            ;;
-    esac
-
-    # JPEG/WebP thumbnails need to be converted to PNG for the picker.
-    [ -n "$THUMB_TOOL" ] || return 1
-
-    stamp=$(stat -c '%Y:%s' "$file" 2>/dev/null || printf '0:0')
-    key=$(
-        printf '%s:%s' "$file" "$stamp" |
-        sha256sum |
-        cut -d' ' -f1
-    )
-
-    thumb="${THUMB_DIR}/${key}.png"
-
-    if [ ! -s "$thumb" ]; then
-        if [ "$THUMB_TOOL" = "magick" ]; then
-            magick "$file" \
-                -auto-orient \
-                -thumbnail '420x240^' \
-                -gravity center \
-                -extent 420x240 \
-                "$thumb" 2>/dev/null || {
-                    rm -f "$thumb"
-                    return 1
-                }
-        else
-            convert "$file" \
-                -auto-orient \
-                -thumbnail '420x240^' \
-                -gravity center \
-                -extent 420x240 \
-                "$thumb" 2>/dev/null || {
-                    rm -f "$thumb"
-                    return 1
-                }
-        fi
-    fi
-
-    printf '%s\n' "$thumb"
-}
-
-# ------------------------------------------------------------
-# Build the Fuzzel dmenu stream.
-#
-# Fields:
-#   1 = numeric index
-#   2 = visible wallpaper name
-#   3 = absolute wallpaper path returned on selection
-#
-# The NUL metadata after each row gives Fuzzel a real image icon.
-# Fuzzel supports this extended dmenu icon protocol. 
-# ------------------------------------------------------------
-
-: > "$MENU_FILE"
-
-index=0
-printf '%s\n' "$FILES" |
-while IFS= read -r file; do
-    [ -n "$file" ] || continue
-
-    name=$(basename "$file")
-    thumb=""
-
-    if thumb=$(make_thumbnail "$file"); then
-        :
-    else
-        # No thumbnail backend: keep the row usable without a preview.
-        thumb=""
-    fi
-
-    printf '%s\t%s\t%s' "$index" "$name" "$file" >> "$MENU_FILE"
-
-    if [ -n "$thumb" ] && [ -f "$thumb" ]; then
-        # NUL + "icon" metadata + ASCII Unit Separator.
-        printf '\0icon\037%s\n' "$thumb" >> "$MENU_FILE"
-    else
-        printf '\n' >> "$MENU_FILE"
-    fi
-
-    index=$((index + 1))
+while [ ! -f "$DONE_FILE" ]; do
+    sleep 0.05
 done
 
-if ! command -v fuzzel >/dev/null 2>&1; then
-    notify-send "Wallpapers" "Fuzzel no está instalado"
+[ -f "$SELECTION_FILE" ] || exit 0
+SELECTED_FILE="$(sed -n '1p' "$SELECTION_FILE")"
+
+[ -n "$SELECTED_FILE" ] || exit 0
+[ -f "$SELECTED_FILE" ] || exit 1
+
+if ! awww img --transition-type center "$SELECTED_FILE"; then
+    notify-send "Wallpaper" "No se pudo aplicar $(basename "$SELECTED_FILE")"
     exit 1
 fi
 
-selected_file=$(
-    fuzzel \
-        --dmenu \
-        --prompt "󰸉  Wallpaper  " \
-        --lines 7 \
-        --minimal-lines \
-        --width 58 \
-        --line-height=52px \
-        --horizontal-pad 18 \
-        --vertical-pad 8 \
-        --with-nth 2 \
-        --accept-nth 3 \
-        --cache /dev/null \
-        --override border.width=1 \
-        --override border.radius=0 \
-        < "$MENU_FILE"
-)
+printf '%s\n' "$SELECTED_FILE" >"$CURRENT"
+ln -sfn "$SELECTED_FILE" "$SWAYP_STATE_DIR/background"
 
-[ -n "$selected_file" ] || exit 0
-[ -f "$selected_file" ] || exit 1
-
-# ------------------------------------------------------------
-# Apply wallpaper only.
-#
-# The active SwayP theme owns the palette. Changing a wallpaper from the
-# curated pool must not replace the theme colors with an image-derived palette.
-# ------------------------------------------------------------
-
-if ! awww img --transition-type center "$selected_file"; then
-    notify-send "Wallpaper" "No se pudo aplicar $(basename "$selected_file")"
-    exit 1
-fi
-
-printf '%s\n' "$selected_file" > "$CURRENT"
-
-# Quickshell background plugin resolves this symlink for the desktop layer.
-ln -sfn "$selected_file" "$SWAYP_STATE_DIR/background"
-
-notify-send "Wallpaper" "$(basename "$selected_file")"
-
-# Reload Sway so the generated theme colors become active immediately.
-# The wallpaper-startup path is intentionally reload-safe: it reapplies the
-# current wallpaper but does not request another reload.
-swaymsg reload >/dev/null
+notify-send "Wallpaper" "$(basename "$SELECTED_FILE")"
