@@ -465,7 +465,7 @@ Panel {
                 ? "Notifications are silenced"
                 : "No notifications"
               color: Color.notifications.text
-              opacity: 0.62
+              opacity: Style.opacity.mutedText
               font.family: root.fontFamily
               font.pixelSize: Style.font.body
               horizontalAlignment: Text.AlignHCenter
