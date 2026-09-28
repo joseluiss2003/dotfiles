@@ -22,7 +22,7 @@ BarWidget {
 
   property bool popupOpen: false
   property real maxLabelWidth: 190
-  readonly property real openPanelIndicatorWidth: Math.max(Style.space(10), row.implicitWidth)
+  readonly property real openPanelIndicatorWidth: Math.max(Style.spacing.sectionGap, row.implicitWidth)
 
   function close() { popupOpen = false }
 
@@ -163,7 +163,7 @@ BarWidget {
         "media",
         "border",
         Color.popups.border,
-        Math.max(1, Style.space(2))
+        Math.max(1, Style.spacing.compactGap)
       )
       radius: 0
       clip: true
@@ -190,9 +190,9 @@ BarWidget {
 
           Column {
             anchors.left: heroIcon.right
-            anchors.leftMargin: Style.space(10)
+            anchors.leftMargin: Style.spacing.sectionGap
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(2)
+            spacing: Style.spacing.compactGap
             width: parent.width - heroIcon.width - Style.space(42)
 
             Text {
@@ -220,7 +220,7 @@ BarWidget {
 
         PanelSeparator {
           width: parent.width - Style.space(20)
-          x: Style.space(10)
+          x: Style.spacing.sectionGap
           foreground: Color.popups.border
         }
 
@@ -243,7 +243,7 @@ BarWidget {
 
             Image {
               anchors.fill: parent
-              anchors.margins: Style.space(2)
+              anchors.margins: Style.spacing.compactGap
               source: root.activePlayer && root.activePlayer.trackArtUrl
                 ? root.activePlayer.trackArtUrl
                 : ""
@@ -308,7 +308,7 @@ BarWidget {
 
         PanelSeparator {
           width: parent.width - Style.space(20)
-          x: Style.space(10)
+          x: Style.spacing.sectionGap
           foreground: Color.popups.border
         }
 
@@ -355,7 +355,7 @@ BarWidget {
 
           PanelSeparator {
             width: parent.width - Style.space(20)
-            x: Style.space(10)
+            x: Style.spacing.sectionGap
             foreground: Color.popups.border
           }
 
@@ -379,7 +379,7 @@ BarWidget {
           Column {
             width: parent.width
             spacing: Style.space(4)
-            bottomPadding: Style.space(8)
+            bottomPadding: Style.spacing.controlGap
 
             Repeater {
               model: root.sourcePlayers
@@ -399,7 +399,7 @@ BarWidget {
                   : (player && player.identity ? player.identity : "")
 
                 width: parent.width - Style.space(20)
-                x: Style.space(10)
+                x: Style.spacing.sectionGap
                 height: Style.space(38)
                 radius: 0
                 color: selected ? Color.controls.activeBackground : Color.controls.background
