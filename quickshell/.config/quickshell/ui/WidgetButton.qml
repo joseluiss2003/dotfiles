@@ -95,7 +95,10 @@ Item {
 
     Behavior on color {
       enabled: !root.bar || root.bar.foregroundAnimationEnabled
-      ColorAnimation {\n        duration: root.bar && Color.themeTransitionActive ? 1200 : 160\n        easing.type: root.bar && Color.themeTransitionActive ? Easing.InOutCubic : Easing.OutCubic\n      }
+      ColorAnimation {
+        duration: root.bar && Color.themeTransitionActive ? 1200 : 160
+        easing.type: root.bar && Color.themeTransitionActive ? Easing.InOutCubic : Easing.OutCubic
+      }
     }
   }
 
