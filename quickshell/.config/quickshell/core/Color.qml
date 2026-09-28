@@ -219,6 +219,7 @@ QtObject {
   // Brand identity roles: one source of truth for every SwayP mark.
   readonly property QtObject brand: QtObject {
     readonly property color accent: root.accent
+    readonly property color foreground: root.bar.text
     readonly property color highlight: root.foreground
     readonly property color depth: root.active
   }
