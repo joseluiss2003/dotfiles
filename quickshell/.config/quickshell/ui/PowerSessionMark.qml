@@ -12,8 +12,8 @@ Item {
     anchors.fill: parent
     source: "assets/power-session.svg"
     fillMode: Image.PreserveAspectFit
-    smooth: false
-    mipmap: false
+    smooth: true
+    mipmap: true
     visible: false
   }
 
