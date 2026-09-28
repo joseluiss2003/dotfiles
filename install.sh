@@ -67,6 +67,7 @@ PACKAGES=(
   python
   qt6-wayland
   quickshell
+  qrencode
   rtkit
   slurp
   starship
