@@ -15,15 +15,15 @@ PanelWindow {
   required property Item anchorItem
   required property QtObject bar
   property var owner: null
-  property int margin: Style.gapsOut
-  property int padding: Style.spacing.popupPadding
+  property int margin: Style.popup.margin
+  property int padding: Style.popup.padding
   property int contentWidth: Style.space(280)
   property int contentHeight: Style.space(200)
-  property var borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Math.max(1, Style.space(2)))
+  property var borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Style.popup.borderWidth)
   property bool centerOnBar: false
   property bool alignToBarEdge: false
   property bool open: false
-  property int gap: Style.gapsOut
+  property int gap: Style.popup.gap
   property bool popoutSwitching: false
   property bool popoutSwitchClosing: false
 
@@ -168,7 +168,7 @@ PanelWindow {
 
   Timer {
     id: popoutSwitchTimer
-    interval: 150
+    interval: Style.popup.switchDelay
     onTriggered: root.popoutSwitching = false
   }
 
@@ -200,12 +200,12 @@ PanelWindow {
     color: Color.popups.background
     borderSpec: root.borderSpec
     padding: root.padding
-    radius: 0
+    radius: Style.popup.radius
     opacity: root.open || root.popoutSwitching ? 1.0 : 0
 
     Behavior on opacity {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
-      NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+      NumberAnimation { duration: Style.popup.enterFadeDuration; easing.type: Easing.OutCubic }
     }
 
     MouseArea {
