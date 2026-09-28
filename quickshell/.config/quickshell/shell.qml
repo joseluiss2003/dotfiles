@@ -23,6 +23,44 @@ ShellRoot {
 
   property string home: Quickshell.env("HOME")
 
+  // Theme transition: the previous theme briefly covers the new palette,
+  // then retracts horizontally from the center so the new theme is revealed
+  // in the same visual language as the wallpaper transition.
+  property bool themeTransitionActive: false
+  property color themeTransitionColor: "#000000"
+  property int themeTransitionSerial: 0
+
+  function beginThemeTransition(previousBackground) {
+    var value = String(previousBackground || "").trim()
+    if (!/^#[0-9A-Fa-f]{6}$/.test(value))
+      value = "#000000"
+
+    themeTransitionColor = value
+    themeTransitionActive = true
+    themeTransitionSerial += 1
+    themeTransitionRevealTimer.restart()
+    themeTransitionFinishTimer.restart()
+    return "ok"
+  }
+
+  Timer {
+    id: themeTransitionRevealTimer
+    interval: 55
+    repeat: false
+    onTriggered: {
+      themeTransitionAnimation.restart()
+    }
+  }
+
+  Timer {
+    id: themeTransitionFinishTimer
+    interval: 535
+    repeat: false
+    onTriggered: {
+      themeTransitionActive = false
+    }
+  }
+
   // SwayP shell entry point. First-party plugins live beside the shell.
   readonly property string shellPath: Quickshell.shellDir
   readonly property string firstPartyPluginsDir: shellPath + "/plugins"
@@ -1567,10 +1605,58 @@ Component.onCompleted: {
     }
   }
 
+  // ------------------------------------------------------- theme transition
+  // One overlay instance per monitor. PanelWindow + Variants is the supported
+  // Quickshell pattern for reusing a shell surface across all connected screens.
+  Variants {
+    model: Quickshell.screens
+
+    delegate: Component {
+      PanelWindow {
+        required property var modelData
+        screen: modelData
+        visible: shell.themeTransitionActive
+        color: "transparent"
+        aboveWindows: true
+        exclusionMode: ExclusionMode.Ignore
+        WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+        surfaceFormat.opaque: false
+
+        Rectangle {
+          id: themeTransitionCover
+          anchors.fill: parent
+          color: shell.themeTransitionColor
+          transform: Scale {
+            id: themeTransitionScale
+            origin.x: themeTransitionCover.width / 2
+            origin.y: themeTransitionCover.height / 2
+            xScale: 1
+            yScale: 1
+          }
+
+          NumberAnimation {
+            id: themeTransitionAnimation
+            target: themeTransitionScale
+            property: "xScale"
+            from: 1
+            to: 0
+            duration: 460
+            easing.type: Easing.OutCubic
+          }
+        }
+      }
+    }
+  }
+
   // ---------------------------------------------------------- shell IPC
 
   IpcHandler {
     target: "shell"
+
+    function beginThemeTransition(previousBackground: color): string {
+      return shell.beginThemeTransition(previousBackground)
+    }
 
     function ping(): string {
       return "ok"
