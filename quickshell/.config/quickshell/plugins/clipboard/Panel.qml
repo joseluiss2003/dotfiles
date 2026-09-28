@@ -424,7 +424,7 @@ Item {
 
           Row {
             anchors.left: parent.left
-            anchors.leftMargin: Style.space(16)
+            anchors.leftMargin: Style.popup.contentInset
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.popup.sectionGap
 
@@ -461,7 +461,7 @@ Item {
 
           Text {
             anchors.right: parent.right
-            anchors.rightMargin: Style.space(16)
+            anchors.rightMargin: Style.popup.contentInset
             anchors.verticalCenter: parent.verticalCenter
             text: root.history.length + (root.history.length === 1 ? " ITEM" : " ITEMS")
             color: Color.muted
@@ -472,8 +472,8 @@ Item {
         }
 
         PanelSeparator {
-          width: parent.width - Style.spacing.wideGap
-          x: Style.popup.sectionGap
+          width: parent.width - (Style.popup.contentInset * 2)
+          x: Style.popup.contentInset
           foreground: Color.outline
         }
 
@@ -482,7 +482,7 @@ Item {
           width: parent.width
           height: Math.max(
             Style.space(150),
-            parent.height - Style.space(58 + 1 + 48)
+            parent.height - Style.popup.headerHeight - Style.normalBorderWidth - Style.popup.footerHeight
           )
           clip: true
 
@@ -646,8 +646,8 @@ Item {
         }
 
         PanelSeparator {
-          width: parent.width - Style.spacing.wideGap
-          x: Style.popup.sectionGap
+          width: parent.width - (Style.popup.contentInset * 2)
+          x: Style.popup.contentInset
           foreground: Color.outline
         }
 
