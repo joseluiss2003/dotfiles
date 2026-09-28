@@ -9,40 +9,27 @@ PACKAGES=(
   alsa-plugins
   alsa-utils
   amd-ucode
-  aspell
-  aspell-es
   awww
-  b43-fwcutter
   base
   base-devel
   bash-completion
-  bind
   bluez
   bluez-utils
   brightnessctl
   btop
   btrfs-progs
-  cage
   cantarell-fonts
   cliphist
-  cryptsetup
-  device-mapper
   dialog
   diffutils
   dmidecode
-  dmraid
-  dnsmasq
   dosfstools
-  downgrade
   dracut
   duf
   e2fsprogs
-  efibootmgr
-  efitools
   ethtool
   exfatprogs
   ex-vi-compat
-  f2fs-tools
   fastfetch
   ffmpegthumbnailer
   firefox
@@ -51,79 +38,51 @@ PACKAGES=(
   git
   github-cli
   glances
-  gedit
   greetd
   greetd-tuigreet
   grim
-  grub
   gst-libav
   gst-plugin-pipewire
   gst-plugins-bad
   gst-plugins-ugly
   gtk4-layer-shell
-  haveged
-  hdparm
-  hwdetect
-  hwinfo
   inetutils
   inotify-tools
   imv
   inxi
   iptables
   iwd
-  jfsutils
   jq
   kitty
   less
   libadwaita
-  libdvdcss
-  libgsf
   libnotify
-  libopenraw
   linux
   linux-firmware
   linux-headers
   logrotate
   lsb-release
-  lsscsi
-  lvm2
   mako
   man-db
   man-pages
-  matugen
-  mdadm
-  meld
   mesa-utils
-  modemmanager
   mpv
   mtools
   nano
   nano-syntax-highlighting
   nautilus
-  netctl
   networkmanager
-  networkmanager-openconnect
-  networkmanager-openvpn
-  nfs-utils
-  nilfs-utils
   noto-fonts
   noto-fonts-cjk
   noto-fonts-emoji
   noto-fonts-extra
   nss-mdns
-  ntfs-3g
-  ntp
-  obsidian
   openssh
-  os-prober
-  pacman-contrib
   pavucontrol
   perl
-  pinta
   pipewire-alsa
   pipewire-jack
   pipewire-pulse
-  pkgfile
   playerctl
   plocate
   polkit-gnome
@@ -137,14 +96,9 @@ PACKAGES=(
   qt5-wayland
   qt6-wayland
   quickshell
-  rebuild-detector
-  reflector
   rsync
   rtkit
-  sg3_utils
   slurp
-  smartmontools
-  s-nail
   sof-firmware
   spice-vdagent
   starship
@@ -154,26 +108,19 @@ PACKAGES=(
   swaybg
   swayidle
   swaylock
-  sysfsutils
   systemd-sysvcompat
-  texinfo
-  tldr
   tree
   ttf-bitstream-vera
   ttf-dejavu
   ttf-jetbrains-mono-nerd
   ttf-liberation
   ttf-opensans
-  unrar
   unzip
   upower
-  usb_modeswitch
   usbutils
   vulkan-virtio
-  waybar
   wget
   which
-  whois
   wireless-regdb
   wireplumber
   wl-clipboard
@@ -183,16 +130,7 @@ PACKAGES=(
   xdg-user-dirs
   xdg-utils
   xf86-input-libinput
-  xfsprogs
-  xl2tpd
-  xorg-server
-  xorg-xdpyinfo
-  xorg-xinit
-  xorg-xinput
-  xorg-xkill
-  xorg-xrandr
   xorg-xwayland
-  xterm
   yazi
   zsh
   zsh-autosuggestions
@@ -248,25 +186,12 @@ LEGACY_ROOT_LINKS=(
   fuzzel
   kitty
   mako
-  matugen
   quickshell
   scripts
   starship
   sway
   swayp
   install.sh
-  etc
-  usr
-  HEAD
-  config
-  description
-  hooks
-  index
-  info
-  logs
-  objects
-  packed-refs
-  refs
 )
 
 for name in "${LEGACY_ROOT_LINKS[@]}"; do
