@@ -154,29 +154,15 @@ Item {
     Column {
       anchors.horizontalCenter: parent.horizontalCenter
       anchors.verticalCenter: parent.verticalCenter
-      spacing: 34
+      spacing: 40
 
       SwayPWordmark {
-        width: 330
-        height: 92
+        width: 520
+        height: 155
         anchors.horizontalCenter: parent.horizontalCenter
         color: Color.brand.accent
         highlightColor: Color.brand.highlight
         shadowColor: Color.brand.depth
-      }
-
-      Text {
-        anchors.horizontalCenter: parent.horizontalCenter
-
-        text: Qt.formatTime(root.currentTime, "HH:mm")
-
-        color: Color.foreground
-        font.family: Style.font.family
-        font.pixelSize: 72
-        font.weight: Font.Black
-        font.letterSpacing: 5
-        horizontalAlignment: Text.AlignHCenter
-        renderType: Text.NativeRendering
       }
 
       Item {
