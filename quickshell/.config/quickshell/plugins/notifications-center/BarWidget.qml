@@ -66,7 +66,7 @@ BarWidget {
       anchors.rightMargin: Style.space(2)
       anchors.topMargin: Style.space(2)
       text: root.notificationCount > 9 ? "9+" : String(root.notificationCount)
-      color: Color.accent
+      color: root.bar.barForeground
       font.family: root.bar.fontFamily
       font.pixelSize: Style.font.caption
       font.bold: true
