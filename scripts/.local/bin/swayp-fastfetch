@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PALETTE="$HOME/.local/state/swayp/current/palette.json"
-LOGO="$HOME/.config/swayp/branding/swayp-fastfetch.txt"
+LOGO="$HOME/.config/swayp/generated/swayp-fastfetch.svg"
 
 accent=""
 foreground=""
@@ -51,11 +51,5 @@ cyan="${cyan:-$accent}"
 exec fastfetch \
   --config "$HOME/.config/swayp/generated/fastfetch.jsonc" \
   --logo "$LOGO" \
-  --logo-type file \
-  --logo-color-1 "$logo1" \
-  --logo-color-2 "$logo2" \
-  --logo-color-3 "$logo3" \
-  --logo-color-4 "$logo4" \
-  --logo-color-5 "$logo5" \
-  --logo-color-6 "$logo6" \
+  --logo-type kitty \
   "$@"
