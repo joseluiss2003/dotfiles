@@ -262,17 +262,18 @@ if [ -d "$THEME_WALLPAPER_DIR" ]; then
     )"
 fi
 
-# Start the wallpaper reveal and palette transition together.
+# Start the fast wallpaper fade and palette transition together.
 # Do not wait for awww: its CLI may remain attached to the transition request,
 # which would make the palette update visibly lag behind the wallpaper.
 #
 # Fork awww first, then swap the staged palette immediately. Both transitions
-# therefore begin from the same shell turn and both run for exactly 1.2s.
+# therefore begin from the same shell turn; the wallpaper fade is intentionally
+# very short so the new wallpaper opens almost immediately.
 if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     awww img \
         --transition-type fade \
         --transition-fps 120 \
-        --transition-duration 0.24 \
+        --transition-duration 0.15 \
         "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
 
     ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
