@@ -38,7 +38,7 @@ BarWidget {
 
     Text {
       text: "󰝚"
-      color: Color.accent
+      color: Color.foreground
       font.family: root.bar.fontFamily
       font.pixelSize: Style.font.body
       anchors.verticalCenter: parent.verticalCenter
@@ -207,7 +207,7 @@ BarWidget {
 
             Text {
               text: root.identity ? root.identity.toUpperCase() : "MEDIA"
-              color: Color.muted
+              color: Color.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
@@ -237,7 +237,7 @@ BarWidget {
             anchors.leftMargin: Style.space(14)
             anchors.verticalCenter: parent.verticalCenter
             color: Util.alpha(Color.text, 0.045)
-            borderSpec: Border.controlSpec("normal", Color.text, Color.accent)
+            borderSpec: Border.controlSpec("normal", Color.text, Color.foreground)
             radius: 0
             clip: true
 
