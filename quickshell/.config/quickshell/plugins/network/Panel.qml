@@ -1119,7 +1119,7 @@ Panel {
         // result row. The radio switch remains beside it as the other hero action.
         RowLayout {
           id: heroActions
-          spacing: Style.space(8)
+          spacing: Style.spacing.controlGap
           anchors.right: parent.right
           anchors.verticalCenter: parent.verticalCenter
 
@@ -1132,7 +1132,7 @@ Panel {
             fontFamily: root.bar.fontFamily
             iconSize: Style.font.subtitle * 1.5
             horizontalPadding: Style.space(5)
-            verticalPadding: Style.space(2)
+            verticalPadding: Style.spacing.compactGap
             hasCursor: root.qrHeaderHasCursor
             Layout.alignment: Qt.AlignVCenter
             onHovered: function(on) { if (on) root.setHeaderCursor(root.qrHeaderIndex) }
@@ -1148,7 +1148,7 @@ Panel {
             fontFamily: root.bar.fontFamily
             iconSize: Style.font.subtitle * 1.5
             horizontalPadding: Style.space(5)
-            verticalPadding: Style.space(2)
+            verticalPadding: Style.spacing.compactGap
             hasCursor: root.speedHeaderHasCursor
             Layout.alignment: Qt.AlignVCenter
             onHovered: function(on) { if (on) root.setHeaderCursor(root.speedHeaderIndex) }
@@ -1180,7 +1180,7 @@ Panel {
           anchors.right: parent.right
           anchors.rightMargin: heroActions.width > 0 ? heroActions.width + Style.space(12) : 0
           anchors.verticalCenter: parent.verticalCenter
-          spacing: Style.space(2)
+          spacing: Style.spacing.compactGap
 
           // Link detail rides inline after the name — "Ethernet (2.5gbit)" —
           // rather than in a pill, which crowded the on/off switch.
@@ -1238,7 +1238,7 @@ Panel {
       Column {
         visible: root.hasCaptivePortal
         width: parent.width
-        spacing: Style.space(6)
+        spacing: Style.spacing.inset
 
         Button {
           id: portalAction
@@ -1248,7 +1248,7 @@ Panel {
           foreground: root.bar.urgent
           accent: root.bar.urgent
           fontFamily: root.bar.fontFamily
-          verticalPadding: Style.space(10)
+          verticalPadding: Style.spacing.sectionGap
           bordered: true
           active: true
           hasCursor: root.cursorActive && root.focusSection === "portal"
@@ -1334,7 +1334,7 @@ Panel {
       Column {
         visible: root.canSelectBand
         width: parent.width
-        spacing: Style.space(10)
+        spacing: Style.spacing.sectionGap
 
         // "Automatic" rides on the header line rather than under the pills: it
         // qualifies the whole row, and at header scale it reads as a modifier
@@ -1356,7 +1356,7 @@ Panel {
             id: bandAutoRow
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.space(6)
+            spacing: Style.spacing.inset
 
             PanelSectionHeader {
               id: bandAutoLabel
@@ -1424,7 +1424,7 @@ Panel {
           Row {
             id: bandRow
             width: parent.width
-            spacing: Style.space(6)
+            spacing: Style.spacing.inset
 
             readonly property int count: Math.max(1, root.bandAvailable.length)
             readonly property real cellWidth: (width - spacing * (count - 1)) / count
@@ -1540,7 +1540,7 @@ Panel {
     foreground: root.bar.foreground
     fontFamily: root.bar.fontFamily
     horizontalPadding: Style.spacing.controlPaddingX
-    verticalPadding: Style.spacing.controlPaddingY + Style.space(2)
+    verticalPadding: Style.spacing.controlPaddingY + Style.spacing.compactGap
     bordered: true
 
     active: root.bandCurrent === band
@@ -1679,8 +1679,8 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: parent.top
-      anchors.leftMargin: Style.space(10)
-      anchors.rightMargin: Style.space(10)
+      anchors.leftMargin: Style.spacing.sectionGap
+      anchors.rightMargin: Style.spacing.sectionGap
       implicitHeight: Math.max(networkIcon.implicitHeight, networkInfo.implicitHeight, rightAction.implicitHeight) + Style.spacing.rowPaddingX
 
       Text {
@@ -1750,9 +1750,9 @@ Panel {
         id: networkInfo
         spacing: Style.space(1)
         anchors.left: networkIcon.right
-        anchors.leftMargin: Style.space(10)
+        anchors.leftMargin: Style.spacing.sectionGap
         anchors.right: rightAction.visible ? rightAction.left : parent.right
-        anchors.rightMargin: rightAction.visible ? Style.space(8) : 0
+        anchors.rightMargin: rightAction.visible ? Style.spacing.controlGap : 0
         anchors.verticalCenter: parent.verticalCenter
 
         Text {
@@ -1804,8 +1804,8 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: rowMouse.bottom
-      anchors.leftMargin: Style.space(10)
-      anchors.rightMargin: Style.space(10)
+      anchors.leftMargin: Style.spacing.sectionGap
+      anchors.rightMargin: Style.spacing.sectionGap
       anchors.topMargin: Style.space(4)
       implicitHeight: (idField.visible ? idField.implicitHeight + Style.space(4) : 0) + pwField.implicitHeight + Style.spacing.rowGap
       height: implicitHeight
@@ -1816,7 +1816,7 @@ Panel {
         anchors.left: parent.left
         anchors.right: connectPwBtn.left
         anchors.top: parent.top
-        anchors.rightMargin: Style.space(6)
+        anchors.rightMargin: Style.spacing.inset
         placeholderText: "Identity (user@domain)"
         font.family: Style.font.family
         font.pixelSize: Style.font.body
@@ -1841,7 +1841,7 @@ Panel {
         anchors.right: connectPwBtn.left
         anchors.bottom: parent.bottom
         anchors.bottomMargin: Style.spacing.rowGap / 2
-        anchors.rightMargin: Style.space(6)
+        anchors.rightMargin: Style.spacing.inset
         password: true
         placeholderText: "Passphrase"
         font.family: Style.font.family
