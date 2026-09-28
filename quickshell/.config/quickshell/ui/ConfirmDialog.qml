@@ -13,7 +13,7 @@ Item {
   property color foreground: Color.foreground
   property color scrim: Util.alpha(Color.background, 0.7)
   property color selectedBackground: Util.alpha(Color.foreground, 0.08)
-  property color selectedText: Color.accent
+  property color selectedText: Color.foreground
   property string fontFamily: Style.font.family
   property int cornerRadius: Style.cornerRadius
 
