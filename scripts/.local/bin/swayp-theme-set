@@ -245,6 +245,24 @@ printf '%s\n' "$THEME" > "$PERSISTENT_THEME_FILE"
 # Remove state files from pre-static-theme versions.
 rm -f "$STATE_DIR/theme.name" "$STATE_DIR/palette-source"
 
+# Each theme owns a default wallpaper: use the first curated image in a stable
+# lexical order. The dedicated wallpaper picker can still override it later.
+THEME_WALLPAPER_DIR="$HOME/.config/swayp/wallpapers/$THEME"
+DEFAULT_WALLPAPER=""
+if [ -d "$THEME_WALLPAPER_DIR" ]; then
+    DEFAULT_WALLPAPER="$(
+        find "$THEME_WALLPAPER_DIR" -maxdepth 1 -type f \
+            \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \) \
+            -print 2>/dev/null | sort | head -n 1
+    )"
+fi
+
+if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
+    if awww img --transition-type center "$DEFAULT_WALLPAPER" >/dev/null 2>&1; then
+        ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
+    fi
+fi
+
 if command -v makoctl >/dev/null 2>&1 && pgrep -x mako >/dev/null 2>&1; then
     makoctl reload >/dev/null 2>&1 || true
 fi
