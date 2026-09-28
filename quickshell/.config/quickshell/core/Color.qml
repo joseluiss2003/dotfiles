@@ -245,7 +245,7 @@ QtObject {
     readonly property color background: root.popups.background
     readonly property color text: root.foreground
     readonly property color border: root.foreground
-    readonly property color countdown: root.foreground
+    readonly property color countdown: root.controls.text
   }
 
   readonly property QtObject menu: QtObject {
@@ -253,9 +253,9 @@ QtObject {
     readonly property color text: root.foreground
     readonly property color border: root.foreground
     readonly property color scrim: Util.alpha(root.backgroundDeep, 0.38)
-    readonly property color selectedBackground: root.accent
-    readonly property color selectedText: root.foreground
-    readonly property color selectedBorder: root.foreground
+    readonly property color selectedBackground: root.controls.selectedBackground
+    readonly property color selectedText: root.controls.selectedText
+    readonly property color selectedBorder: root.controls.selectedBorder
   }
 
   readonly property QtObject polkit: QtObject {
@@ -294,8 +294,8 @@ QtObject {
   readonly property QtObject imagePicker: QtObject {
     readonly property color scrim: Util.alpha(root.backgroundDeep, 0.72)
     readonly property color text: root.foreground
-    readonly property color selectedBorder: root.foreground
-    readonly property color unselectedBorder: Util.alpha(root.foreground, 0.45)
+    readonly property color selectedBorder: root.controls.selectedBorder
+    readonly property color unselectedBorder: Util.alpha(root.controls.text, 0.45)
   }
 
   function loadColors(raw) {
