@@ -52,8 +52,8 @@ BarWidget {
     focusTarget: keyCatcher
     padding: 0
     borderSpec: Border.surfaceSpec("power-session", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.space(200), panel.availableCardWidth)
-    contentHeight: Math.min(Style.space(240), panel.availableCardHeight)
+    contentWidth: Math.min(Style.compactPopupWidth, panel.availableCardWidth)
+    contentHeight: Math.min(Style.compactPopupHeight, panel.availableCardHeight)
     gap: Style.popup.gap
     // This plugin owns its own card surface below. Do not let KeyboardPanel
     // draw a second copy of the popup background underneath it.
