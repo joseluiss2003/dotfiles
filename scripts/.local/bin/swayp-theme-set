@@ -270,7 +270,9 @@ fi
 # therefore begin from the same shell turn and both run for exactly 1.2s.
 if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
     awww img \
-        --transition-type none \
+        --transition-type fade \
+        --transition-fps 120 \
+        --transition-duration 0.24 \
         "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
 
     ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
