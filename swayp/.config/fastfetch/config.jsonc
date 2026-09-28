@@ -5,7 +5,7 @@
     "source": "~/.config/swayp/branding/swayp-fastfetch.txt",
     "color": {
       "1": "white",
-      "2": "cyan"
+      "2": "white"
     },
     "padding": {
       "right": 4
