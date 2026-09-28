@@ -28,7 +28,7 @@ Item {
     " ": "S"
   })
 
-  function drawGlyph(ctx, glyph, x, y, w, h, thickness) {
+  function drawGlyph(ctx, glyph, x, y, w, h, thickness, layer) {
     var kind = glyphs[glyph] || "S"
     if (kind === "S") return
 
@@ -64,11 +64,10 @@ Item {
     return max
   }
 
-  // Deliberately fill the existing LockView slot. One solid accent color,
-  // matching the clock, with no semantic/logo palette involved.
+  // Large enough to make the wordmark a real lock-screen focal point.
   readonly property real cellWidth: Math.min(
-    (width - 8) / root.columns,
-    (height - 4) / 6
+    (width - 16) / root.columns,
+    (height - 8) / 6
   )
   readonly property real cellHeight: root.cellWidth
   readonly property real markWidth: root.columns * root.cellWidth
@@ -84,25 +83,96 @@ Item {
     onPaint: {
       var ctx = getContext("2d")
       ctx.clearRect(0, 0, width, height)
+
+      var thickness = Math.max(2.2, root.cellWidth * 0.36)
+
+      // Omarchy-inspired depth: a compact dark extrusion behind the accent.
+      // It gives the Unicode wordmark the heavier, more physical silhouette
+      // the lock screen needs without changing the clock's accent color.
+      ctx.fillStyle = root.shadowColor
+      for (var shadowRow = 0; shadowRow < root.rows.length; shadowRow++) {
+        var shadowLine = root.rows[shadowRow]
+        for (var shadowCol = 0; shadowCol < root.columns; shadowCol++) {
+          var shadowGlyph = shadowCol < shadowLine.length
+            ? shadowLine.charAt(shadowCol)
+            : " "
+          root.drawGlyph(
+            ctx,
+            shadowGlyph,
+            shadowCol * root.cellWidth + 2.4,
+            shadowRow * root.cellHeight + 3.2,
+            root.cellWidth,
+            root.cellHeight,
+            thickness,
+            "shadow"
+          )
+        }
+      }
+
+      // Crisp outline immediately around the main mark. This is the part that
+      // keeps the old Unicode-border character while preserving a clean logo.
+      ctx.fillStyle = root.shadowColor
+      var outline = Math.max(1.4, root.cellWidth * 0.20)
+      for (var outlineRow = 0; outlineRow < root.rows.length; outlineRow++) {
+        var outlineLine = root.rows[outlineRow]
+        for (var outlineCol = 0; outlineCol < root.columns; outlineCol++) {
+          var outlineGlyph = outlineCol < outlineLine.length
+            ? outlineLine.charAt(outlineCol)
+            : " "
+          for (var oy = -1; oy <= 1; oy++) {
+            for (var ox = -1; ox <= 1; ox++) {
+              if (ox === 0 && oy === 0) continue
+              root.drawGlyph(
+                ctx,
+                outlineGlyph,
+                outlineCol * root.cellWidth + ox * outline,
+                outlineRow * root.cellHeight + oy * outline,
+                root.cellWidth,
+                root.cellHeight,
+                thickness,
+                "outline"
+              )
+            }
+          }
+        }
+      }
+
+      // Main face: exactly the same accent used by the clock.
       ctx.fillStyle = root.color
-
-      var thickness = Math.max(2.0, root.cellWidth * 0.36)
-
       for (var row = 0; row < root.rows.length; row++) {
         var line = root.rows[row]
-        var y = row * root.cellHeight
-
         for (var col = 0; col < root.columns; col++) {
           var glyph = col < line.length ? line.charAt(col) : " "
           root.drawGlyph(
             ctx,
             glyph,
             col * root.cellWidth,
-            y,
+            row * root.cellHeight,
             root.cellWidth,
             root.cellHeight,
-            thickness
+            thickness,
+            "face"
           )
+        }
+      }
+
+      // Small upper highlight, inspired by the light cap visible on Omarchy's
+      // wordmark. It is deliberately restrained so the face remains accent.
+      ctx.fillStyle = root.highlightColor
+      var highlight = Math.max(1.0, root.cellWidth * 0.12)
+      for (var hr = 0; hr < root.rows.length; hr++) {
+        var hline = root.rows[hr]
+        for (var hc = 0; hc < root.columns; hc++) {
+          var hg = hc < hline.length ? hline.charAt(hc) : " "
+          var hk = root.glyphs[hg] || "S"
+          if (hk === "F" || hk === "H" || hk === "TL" || hk === "TR") {
+            ctx.fillRect(
+              hc * root.cellWidth,
+              hr * root.cellHeight,
+              root.cellWidth,
+              highlight
+            )
+          }
         }
       }
     }
@@ -110,11 +180,8 @@ Item {
     Connections {
       target: root
       function onColorChanged() { canvas.requestPaint() }
-    }
-
-    Connections {
-      target: Color
-      function onAccentChanged() { canvas.requestPaint() }
+      function onHighlightColorChanged() { canvas.requestPaint() }
+      function onShadowColorChanged() { canvas.requestPaint() }
     }
 
     Component.onCompleted: requestPaint()
