@@ -109,3 +109,6 @@ fi
 if [[ -n "$KITTY_WINDOW_ID" ]] && command -v fastfetch >/dev/null 2>&1; then
     fastfetch
 fi
+
+# SwayP Fastfetch: use the theme-generated config directly from the native command.
+fastfetch() { command /usr/bin/fastfetch --config "$HOME/.config/swayp/generated/fastfetch.jsonc" "$@"; }
