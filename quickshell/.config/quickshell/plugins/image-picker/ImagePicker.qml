@@ -459,6 +459,34 @@ Item {
               y: selected ? 0 : (root.expandedHeight - root.sliceHeight) / 2
               z: selected ? 100 : 50 - Math.min(Math.abs(relativeIndex), 40)
 
+              Behavior on x {
+                NumberAnimation {
+                  duration: 180
+                  easing.type: Easing.OutCubic
+                }
+              }
+
+              Behavior on y {
+                NumberAnimation {
+                  duration: 180
+                  easing.type: Easing.OutCubic
+                }
+              }
+
+              Behavior on width {
+                NumberAnimation {
+                  duration: 180
+                  easing.type: Easing.OutCubic
+                }
+              }
+
+              Behavior on height {
+                NumberAnimation {
+                  duration: 180
+                  easing.type: Easing.OutCubic
+                }
+              }
+
               readonly property real skAbs: Math.abs(root.skewOffset)
               readonly property real topLeft: root.skewOffset >= 0 ? skAbs : 0
               readonly property real topRight: root.skewOffset >= 0 ? width : width - skAbs
