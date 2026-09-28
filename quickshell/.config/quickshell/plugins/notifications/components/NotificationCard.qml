@@ -54,11 +54,11 @@ BorderSurface {
   // The `check` flag avoids Qt's missing-texture placeholder for unknown names.
   // Notification image-path values can be either file/image URIs or themed icon names.\n  // Resolve them through the same guarded path as app icons so bare names do not\n  // become broken Image sources.\n  readonly property string smallIconSource: image.length > 0 ? iconSource(image) : iconSource(appIcon)
   readonly property bool hasGlyph: glyph.length > 0
-  readonly property bool compactGlyph: NotificationLogic.shouldRenderCompactGlyph(glyph, smallIconSource, singleLineToast)
-  readonly property bool hasSmallIcon: smallIconSource.length > 0
+  readonly property bool compactGlyph: NotificationLogic.shouldRenderCompactGlyph(root.glyph, root.smallIconSource, root.singleLineToast)
+  readonly property bool hasSmallIcon: root.smallIconSource.length > 0
   readonly property bool summaryStartsWithGlyph: NotificationLogic.summaryStartsWithGlyph(summary)
   readonly property bool singleLineToast: sanitizedBody.length === 0
-  readonly property bool collapseRedundantIcon: singleLineToast && !hasGlyph && summaryStartsWithGlyph
+  readonly property bool collapseRedundantIcon: root.singleLineToast && !root.hasGlyph && root.summaryStartsWithGlyph
   readonly property string sanitizedBody: sanitizeBody(body)
   readonly property string styledBody: NotificationLogic.styledBody(body, app, appIcon)
 
