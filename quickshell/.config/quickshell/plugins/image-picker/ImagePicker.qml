@@ -387,6 +387,22 @@ Item {
       width: Math.min(parent.width - Style.space(48), root.expandedWidth + 2 * (root.sliceWidth + root.sliceSpacing) + 40)
       height: root.expandedHeight + Style.space(30) + root.bottomChromeHeight
       anchors.centerIn: parent
+      opacity: root.layoutSettled ? 1 : 0
+      scale: root.layoutSettled ? 1 : 0.985
+
+      Behavior on opacity {
+        NumberAnimation {
+          duration: 145
+          easing.type: Easing.OutQuint
+        }
+      }
+
+      Behavior on scale {
+        NumberAnimation {
+          duration: 165
+          easing.type: Easing.OutQuint
+        }
+      }
 
         MouseArea { anchors.fill: parent; onClicked: {} }
 
