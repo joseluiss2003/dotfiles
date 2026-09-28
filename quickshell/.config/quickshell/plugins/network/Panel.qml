@@ -1131,7 +1131,7 @@ Panel {
             foreground: root.bar.foreground
             fontFamily: root.bar.fontFamily
             iconSize: Style.font.subtitle * 1.5
-            horizontalPadding: Style.space(5)
+            horizontalPadding: Style.spacing.sm
             verticalPadding: Style.spacing.compactGap
             hasCursor: root.qrHeaderHasCursor
             Layout.alignment: Qt.AlignVCenter
@@ -1147,7 +1147,7 @@ Panel {
             foreground: root.bar.foreground
             fontFamily: root.bar.fontFamily
             iconSize: Style.font.subtitle * 1.5
-            horizontalPadding: Style.space(5)
+            horizontalPadding: Style.spacing.sm
             verticalPadding: Style.spacing.compactGap
             hasCursor: root.speedHeaderHasCursor
             Layout.alignment: Qt.AlignVCenter
@@ -1374,7 +1374,7 @@ Panel {
             ToggleSwitch {
               id: bandAutoSwitch
               trackHeight: Math.round(bandAutoLabel.font.pixelSize * 1.2)
-              cursorPad: Style.space(3)
+              cursorPad: Style.spacing.xs
               anchors.verticalCenter: bandAutoLabel.verticalCenter
               anchors.verticalCenterOffset: Math.round(bandAutoLabel.topPadding / 2)
               checked: !root.bandPinned
@@ -1748,7 +1748,7 @@ Panel {
 
       Column {
         id: networkInfo
-        spacing: Style.space(1)
+        spacing: Style.spacing.compactGap
         anchors.left: networkIcon.right
         anchors.leftMargin: Style.spacing.sectionGap
         anchors.right: rightAction.visible ? rightAction.left : parent.right
