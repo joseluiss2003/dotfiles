@@ -40,16 +40,16 @@ PanelWindow {
   required property Item anchorItem
   required property QtObject bar
   property var owner: null
-  property int margin: Style.gapsOut
-  property int padding: Style.spacing.popupPadding
+  property int margin: Style.popup.margin
+  property int padding: Style.popup.padding
   property int contentWidth: Style.space(280)
   property int contentHeight: Style.space(200)
-  property var borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Math.max(1, Style.space(2)))
+  property var borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Style.popup.borderWidth)
   property bool centerOnBar: false
   property bool open: false
   property bool drawBackground: true
   property color backgroundColor: Color.popups.background
-  property int gap: Style.gapsOut
+  property int gap: Style.popup.gap
   property bool popoutSwitching: false
   property bool popoutSwitchClosing: false
   property bool focusPrimed: false
@@ -206,7 +206,7 @@ PanelWindow {
 
   Timer {
     id: popoutSwitchTimer
-    interval: 150
+    interval: Style.popup.switchDelay
     onTriggered: root.popoutSwitching = false
   }
 
@@ -303,7 +303,7 @@ PanelWindow {
   // The motion should feel like the panel is gently released from the bar:
   // short travel, a soft ease-out and a tiny amount of scale-up. The scale
   // is intentionally subtle so it reads as polish rather than a zoom effect.
-  readonly property real animationDistance: Style.space(2)
+  readonly property real animationDistance: Style.popup.animationDistance
   readonly property real animationOffsetX: {
     if (barPos === "left") return animationDistance
     if (barPos === "right") return -animationDistance
@@ -324,7 +324,7 @@ PanelWindow {
     color: root.drawBackground ? root.backgroundColor : "transparent"
     borderSpec: root.borderSpec
     padding: root.padding
-    radius: Style.cornerRadius
+    radius: Style.popup.radius
     opacity: root.open || root.popoutSwitching ? 1.0 : 0
     scale: root.open || root.popoutSwitching ? 1.0 : 0.995
     transformOrigin: Item.Center
@@ -332,7 +332,7 @@ PanelWindow {
     Behavior on x {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 115 : 85
+        duration: root.open ? Style.popup.enterXDuration : Style.popup.exitXDuration
         easing.type: root.open ? Easing.OutCubic : Easing.InQuad
       }
     }
@@ -340,7 +340,7 @@ PanelWindow {
     Behavior on y {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 145 : 105
+        duration: root.open ? Style.popup.enterYDuration : Style.popup.exitYDuration
         easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
@@ -348,7 +348,7 @@ PanelWindow {
     Behavior on opacity {
       enabled: !root.popoutSwitching && !root.popoutSwitchClosing
       NumberAnimation {
-        duration: root.open ? 130 : 90
+        duration: root.open ? Style.popup.enterFadeDuration : Style.popup.exitFadeDuration
         easing.type: root.open ? Easing.OutCubic : Easing.InCubic
       }
     }
@@ -377,7 +377,7 @@ PanelWindow {
 
       Behavior on opacity {
         enabled: root.popoutSwitching
-        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+        NumberAnimation { duration: Style.popup.switchDuration; easing.type: Easing.OutCubic }
       }
     }
   }
