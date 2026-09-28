@@ -617,6 +617,8 @@ Item {
               width: ListView.view.width
               height: root.rowHeight
               color: "transparent"
+              scale: row.hasCursor ? 1.012 : 1.0
+              Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
 
               Rectangle {
                 anchors.fill: parent
