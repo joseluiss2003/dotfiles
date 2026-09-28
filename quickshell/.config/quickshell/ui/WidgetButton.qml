@@ -95,7 +95,7 @@ Item {
 
     Behavior on color {
       enabled: !root.bar || root.bar.foregroundAnimationEnabled
-      ColorAnimation { duration: 160 }
+      ColorAnimation { duration: root.bar && Color.themeTransitionActive ? 1200 : 160 }
     }
   }
 
