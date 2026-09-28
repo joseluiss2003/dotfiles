@@ -34,7 +34,15 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "󰯙"
+    text: ""
+    iconComponent: Component {
+      SwayPMark {
+        anchors.fill: parent
+        color: button.active && button.useActiveColor
+          ? button.activeColor
+          : (button.hot ? button.hoverColor : button.passiveColor)
+      }
+    }
     opticalSize: Style.bar.iconCanvas
     fontSize: Style.bar.iconFont
     onPressed: function(b) {
