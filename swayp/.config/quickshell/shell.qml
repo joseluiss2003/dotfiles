@@ -515,6 +515,12 @@ Component.onCompleted: {
         var target = service()
         return target && typeof target.playerKey === "function" ? target.playerKey(player) : ""
       },
+      _playerHasPlaybackStream: function(player) {
+        var target = service()
+        return target && typeof target.playerHasPlaybackStream === "function"
+          ? target.playerHasPlaybackStream(player)
+          : false
+      },
       _selectPlayer: function(playerKey) {
         var target = service()
         if (target && typeof target.selectPlayer === "function") target.selectPlayer(playerKey)
