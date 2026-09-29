@@ -43,7 +43,7 @@ Item {
   property int sliceHeight: 350
   property int sliceSpacing: 18
   property int skewOffset: 0
-  property int bottomChromeHeight: showLabels ? (filterable ? 104 : 74) : (filterable ? 60 : 30)
+  property int bottomChromeHeight: filterable ? 60 : 0
 
   onOpenedChanged: if (!opened) layoutSettled = false
 
@@ -608,7 +608,7 @@ Item {
         Text {
           id: selectedLabel
           textFormat: Text.PlainText
-          visible: root.showLabels
+          visible: false
           anchors.top: carousel.bottom
           anchors.topMargin: Style.space(16)
           anchors.horizontalCenter: carousel.horizontalCenter
