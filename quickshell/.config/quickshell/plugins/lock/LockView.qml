@@ -270,8 +270,11 @@ Item {
 
           Item {
             id: passwordDots
-            anchors.fill: passwordInput
+            anchors.centerIn: passwordInput
+            width: dotRow.implicitWidth
+            height: dotRow.implicitHeight
             visible: passwordInput.text.length > 0 && !root.authenticatingPassword && root.failureMessage.length === 0
+            scale: root.passwordDotScale
 
             Row {
               id: dotRow
@@ -279,7 +282,7 @@ Item {
               spacing: root.passwordDotLetterSpacing
 
               Repeater {
-                model: 32
+                model: passwordInput.text.length
 
                 delegate: Text {
                   id: dot
@@ -288,27 +291,34 @@ Item {
                   font.family: Style.font.family
                   font.pixelSize: root.passwordDotFontSize
                   renderType: Text.NativeRendering
-                  visible: index < passwordInput.text.length
-                  opacity: visible ? 1 : 0
+                  opacity: 0
+                  scale: 0.72
+                  transformOrigin: Item.Center
 
-                  Behavior on opacity {
+                  ParallelAnimation {
+                    running: true
+
                     NumberAnimation {
-                      duration: 115
+                      target: dot
+                      property: "opacity"
+                      from: 0
+                      to: 1
+                      duration: 95
+                      easing.type: Easing.OutCubic
+                    }
+
+                    NumberAnimation {
+                      target: dot
+                      property: "scale"
+                      from: 0.72
+                      to: 1
+                      duration: 155
                       easing.type: Easing.OutCubic
                     }
                   }
                 }
               }
             }
-          }
-
-          Rectangle {
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
-            width: parent.width * root.inputPulse
-            height: Style.space(2)
-            color: Color.lock.borderActive
-            opacity: 0.72
           }
 
           Text {
