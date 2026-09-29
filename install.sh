@@ -171,7 +171,7 @@ if [[ $EUID -eq 0 ]]; then
     exit 1
 fi
 
-for command in sudo stow; do
+for command in sudo; do
     if ! command -v "$command" >/dev/null 2>&1; then
         echo "ERROR: Falta el comando requerido: $command" >&2
         exit 1
