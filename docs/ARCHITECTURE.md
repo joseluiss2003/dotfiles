@@ -2,6 +2,24 @@
 
 This is the short reference for how the project fits together. Update it when the architecture changes.
 
+## Repository package
+
+All SwayP-owned desktop configuration is centralized in the single `swayp/` Stow package:
+
+~~~text
+swayp/
+├── .config/
+│   ├── fuzzel/
+│   ├── kitty/
+│   ├── quickshell/
+│   ├── sway/
+│   └── swayp/
+├── .local/bin/       # user-level SwayP utilities
+└── .zshrc            # shell configuration
+~~~
+
+This keeps the repository structure aligned with the installed home-directory layout while leaving `install.sh` and project documentation at the repository root.
+
 ## Layers
 
 ### Sway
@@ -11,7 +29,7 @@ SwayP must remain Sway-native. Do not introduce Hyprland-specific APIs, commands
 
 ### Quickshell
 ~~~text
-quickshell/.config/quickshell/
+swayp/.config/quickshell/
 ├── shell.qml      # shell entry point and orchestration
 ├── core/          # shared state, colors, style and helpers
 ├── ui/            # reusable visual components
@@ -22,7 +40,7 @@ quickshell/.config/quickshell/
 shell.qml owns shell lifecycle, configuration and plugin orchestration.
 
 ### Generated configuration
-The script scripts/.local/bin/swayp-theme-set turns one theme into runtime configuration:
+The script swayp/.local/bin/swayp-theme-set turns one theme into runtime configuration:
 
 ~~~text
 ~/.config/swayp/generated/
@@ -54,7 +72,7 @@ colors.toml is the canonical palette. Quickshell reads generated palette.json th
 For example, plugins should use Color.accent, Color.background, Color.muted and Style.space(...) instead of embedding Catppuccin, Dracula or Solarized hex values.
 
 ## Quickshell plugin model
-The plugin registry scans first-party plugins under quickshell/.config/quickshell/plugins/ and user plugins under ~/.config/swayp/plugins/.
+The plugin registry scans first-party plugins under swayp/.config/quickshell/plugins/ and user plugins under ~/.config/swayp/plugins/.
 
 Every plugin declares its contract in manifest.json.
 

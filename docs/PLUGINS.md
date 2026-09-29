@@ -195,7 +195,7 @@ IpcHandler {
 - Reusable patterns are documented.
 
 ## 11. First-party vs user plugins
-First-party plugins live in quickshell/.config/quickshell/plugins/.
+First-party plugins live in swayp/.config/quickshell/plugins/.
 User/third-party plugins live in ~/.config/swayp/plugins/.
 
 Keep experiments outside the first-party tree until they are ready for production.

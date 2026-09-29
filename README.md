@@ -28,23 +28,23 @@ swayp-theme-set
     └── Quickshell / lockscreen
 ~~~
 
+All desktop configuration owned by SwayP is centralized under `swayp/` and installed through the single Stow package.
+
 The theme files are the source of truth. Quickshell consumes the generated semantic palette through core/Color.qml; other applications receive generated configuration under ~/.config/swayp/generated/.
 
 ## Repository layout
 ~~~text
 .
 ├── docs/         # Project architecture and development guides
-├── swayp/        # SwayP core: Sway, Zsh, Starship, scripts, themes, wallpapers and runtime config
-├── quickshell/   # Quickshell shell, core, UI, services and plugins
-├── kitty/        # Kitty configuration
-├── fuzzel/       # Fuzzel configuration
+├── swayp/        # Complete SwayP package: Sway, Quickshell, Kitty, Fuzzel, Zsh, Starship, scripts, themes and wallpapers
+├── install.sh    # Bootstrap installer
 ~~~
 
 ## Documentation
 - [Architecture](docs/ARCHITECTURE.md)
 - [Creating Quickshell plugins](docs/PLUGINS.md)
 - [Creating and maintaining themes](docs/THEMES.md)
-- [Quickshell structure](quickshell/.config/quickshell/README.md)
+- [Quickshell structure](swayp/.config/quickshell/README.md)
 
 ## Installation
 ~~~bash
