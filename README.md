@@ -121,7 +121,7 @@ SwayP targets **Arch Linux and Arch-based systems**.
 
 ```bash
 git clone https://github.com/joseluiss2003/swayp.git
-cd sw ayp
+cd swayp
 ./install.sh
 ```
 
@@ -215,6 +215,6 @@ The focus after 1.0 is maintenance, polishing and careful evolution rather than 
 
 ## License
 
-The SwayP repository is distributed under the license included in the repository. Third-party projects, fonts and assets retain their own licenses.
+No project-wide SwayP license is declared yet. Third-party projects, fonts and assets retain their own licenses.
 
 For architecture and development details, start with [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
