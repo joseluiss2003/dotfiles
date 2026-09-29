@@ -9,6 +9,7 @@ This is the recipe to follow when adding a plugin.
 | panel | Standalone popup/panel | Panel.qml |
 | service | Long-lived backend | Service.qml |
 | menu | Command/action surface | Menu.qml |
+| overlay | Fullscreen or compositor-layer overlay | Panel.qml |
 | bar | Complete alternative bar | Bar.qml |
 
 A plugin can expose multiple kinds. swayp.menu is an example.
@@ -19,6 +20,14 @@ Bar widget:
 plugins/my-plugin/
 ├── manifest.json
 ├── BarWidget.qml
+└── Model.js          # optional
+~~~
+
+Overlay:
+~~~text
+plugins/my-plugin/
+├── manifest.json
+├── Panel.qml
 └── Model.js          # optional
 ~~~
 
