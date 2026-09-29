@@ -55,9 +55,14 @@ BarWidget {
     bar: root.bar
     text: ""
     iconComponent: Component {
-      PowerSessionMark {
+      Text {
         anchors.fill: parent
+        text: "⏻"
         color: root.bar.foreground
+        font.family: root.bar.fontFamily
+        font.pixelSize: Style.font.icon
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
       }
     }
     opticalSize: Style.bar.iconCanvas
@@ -112,11 +117,16 @@ BarWidget {
           width: parent.width
           implicitHeight: Style.space(48)
 
-          PowerSessionMark {
+          Text {
             id: heroMark
             width: Style.space(28)
             height: Style.space(28)
+            text: "⏻"
             color: root.bar.foreground
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.icon
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
           }
@@ -149,7 +159,7 @@ BarWidget {
 
         PanelSeparator {
           foreground: root.bar.foreground
-          opacity: 0.22
+          opacity: 0.42
         }
 
         // The Quattro-style rhythm is intentionally compact: paired actions
@@ -271,15 +281,6 @@ BarWidget {
           }
         }
 
-        Text {
-          width: parent.width
-          text: "↑ ↓  Select    Enter  Confirm    Esc  Close"
-          horizontalAlignment: Text.AlignHCenter
-          color: root.bar.foreground
-          opacity: 0.34
-          font.family: root.bar.fontFamily
-          font.pixelSize: Style.font.caption
-        }
       }
     }
   }
