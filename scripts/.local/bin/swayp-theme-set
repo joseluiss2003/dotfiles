@@ -277,16 +277,26 @@ printf '%s\n' "$THEME" > "$PERSISTENT_THEME_FILE"
 # Remove state files from pre-static-theme versions.
 rm -f "$STATE_DIR/theme.name" "$STATE_DIR/palette-source"
 
-# Each theme owns a default wallpaper: use the first curated image in a stable
-# lexical order. The dedicated wallpaper picker can still override it later.
+# Each theme owns a default wallpaper named 01. Prefer it explicitly so
+# adding another file cannot silently change the default. The first supported
+# image remains a compatibility fallback for older pools.
 THEME_WALLPAPER_DIR="$HOME/.config/swayp/wallpapers/$THEME"
 DEFAULT_WALLPAPER=""
 if [ -d "$THEME_WALLPAPER_DIR" ]; then
-    DEFAULT_WALLPAPER="$(
-        find "$THEME_WALLPAPER_DIR" -maxdepth 1 -type f \
-            \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \) \
-            -print 2>/dev/null | sort | head -n 1
-    )"
+    for extension in jpg jpeg png webp svg; do
+        if [ -f "$THEME_WALLPAPER_DIR/01.$extension" ]; then
+            DEFAULT_WALLPAPER="$THEME_WALLPAPER_DIR/01.$extension"
+            break
+        fi
+    done
+
+    if [ -z "$DEFAULT_WALLPAPER" ]; then
+        DEFAULT_WALLPAPER="$(
+            find "$THEME_WALLPAPER_DIR" -maxdepth 1 -type f \
+                \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \) \
+                -print 2>/dev/null | sort | head -n 1
+        )"
+    fi
 fi
 
 # Start the fast wallpaper fade and palette transition together.
@@ -310,6 +320,7 @@ if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
             --transition-duration 0.50 \
             "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
         ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
+        printf '%s\n' "$DEFAULT_WALLPAPER" > "$HOME/.local/state/wallpaper/current"
 
         # Give awww a tiny head start so its compositor-side fade begins just
         # before Quickshell repaints the shell palette.
