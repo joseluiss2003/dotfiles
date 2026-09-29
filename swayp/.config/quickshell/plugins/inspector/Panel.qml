@@ -27,7 +27,6 @@ Item {
   property string quickshellVersion: "—"
   property string themeName: "—"
   property var plugins: []
-  property bool refreshing: false
 
   readonly property var nightlightService: root.shell
     ? root.shell.firstPartyServiceFor("swayp.nightlight")
@@ -69,7 +68,6 @@ Item {
   }
 
   function refresh() {
-    root.refreshing = true
     statsProc.running = false
     outputsProc.running = false
     treeProc.running = false
@@ -83,7 +81,6 @@ Item {
     versionsProc.running = true
     themeFile.reload()
 
-    Qt.callLater(function() { root.refreshing = false })
   }
 
   function collectPlugins() {
@@ -487,8 +484,9 @@ Item {
             title: "GPU"
             value: root.gpu ? Math.round(root.gpu.usage) + "%" : "—"
             detail: root.gpu
-              ? Math.round(root.gpu.temperature) + "°C · " + Math.round(root.gpu.power) + "W"
-              : "NVIDIA telemetry unavailable"
+              ? root.gpu.name + " · " + Math.round(root.gpu.temperature) + "°C · " +
+                Math.round(root.gpu.memoryUsed) + "/" + Math.round(root.gpu.memoryTotal) + " MB"
+              : "GPU telemetry unavailable"
             accent: root.gpu ? root.metricColor(root.gpu.temperature, 75, false) : root.muted
           }
         }
@@ -547,7 +545,8 @@ Item {
                   required property var modelData
                   width: parent.width
                   height: Style.space(34)
-                  color: modelData.focused ? Color.active : "transparent"
+                  color: (modelData.focused || modelData.workspace === root.swayState.focusedWorkspace)
+                    ? Color.active : "transparent"
                   borderSpec: Border.none()
                   radius: Style.cornerRadius
 
