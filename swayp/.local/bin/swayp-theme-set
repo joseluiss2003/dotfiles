@@ -29,9 +29,12 @@ PALETTE_STAGED_OUTPUT="${STATE_DIR}/palette.json.next"
 # center-out masks.
 GENERATED_DIR="${HOME}/.config/swayp/generated"
 
-[ -n "$THEME" ] || { printf '%s\n' "usage: swayp-theme-set <theme>" >&2; exit 2; }
-[ -d "$THEME_DIR" ] || { printf 'Unknown SwayP theme: %s\n' "$THEME" >&2; exit 1; }
-[ -f "$THEME_DIR/colors.toml" ] || { printf 'Theme has no colors.toml: %s\n' "$THEME" >&2; exit 1; }
+[ -n "$THEME" ] || { printf '%s
+' "usage: swayp-theme-set <theme>" >&2; exit 2; }
+[ -d "$THEME_DIR" ] || { printf 'Unknown SwayP theme: %s
+' "$THEME" >&2; exit 1; }
+[ -f "$THEME_DIR/colors.toml" ] || { printf 'Theme has no colors.toml: %s
+' "$THEME" >&2; exit 1; }
 
 mkdir -p "$STATE_DIR" "$GENERATED_DIR" "$(dirname "$PERSISTENT_THEME_FILE")"
 
@@ -89,7 +92,8 @@ semantic = {
 
 with open(palette_path, "w") as f:
     json.dump({"colors": p, "semantic": semantic}, f, indent=2)
-    f.write("\n")
+    f.write("
+")
 
 surface = bg
 
@@ -266,7 +270,8 @@ PY
 
 
 ln -sfn "$THEME_DIR" "$STATE_DIR/theme"
-printf '%s\n' "$THEME" > "$PERSISTENT_THEME_FILE"
+printf '%s
+' "$THEME" > "$PERSISTENT_THEME_FILE"
 
 # Remove state files from pre-static-theme versions.
 rm -f "$STATE_DIR/theme.name" "$STATE_DIR/palette-source"
@@ -314,7 +319,8 @@ if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
             --transition-duration 0.50 \
             "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
         ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
-        printf '%s\n' "$DEFAULT_WALLPAPER" > "$HOME/.local/state/wallpaper/current"
+        printf '%s
+' "$DEFAULT_WALLPAPER" > "$HOME/.local/state/wallpaper/current"
 
         # Give awww a tiny head start so its compositor-side fade begins just
         # before Quickshell repaints the shell palette.
@@ -334,7 +340,14 @@ fi
 # transition. Kitty and Sway must move with the wallpaper and Quickshell,
 # not after the 500 ms reveal has already finished.
 
-# Apply Firefox from the same generated semantic palette. The helper is a no-op when\n# Firefox has not created a profile yet, so SwayP remains usable without Firefox.\nFIREFOX_THEME_SCRIPT="$HOME/.local/bin/swayp-firefox-theme"\nif [ -f "$FIREFOX_THEME_SCRIPT" ]; then\n    sh "$FIREFOX_THEME_SCRIPT" || true\nfi\n\nif command -v kitty >/dev/null 2>&1 && [ -f "$GENERATED_DIR/kitty-colors.conf" ]; then
+# Apply Firefox from the same generated semantic palette. The helper is a no-op when
+# Firefox has not created a profile yet, so SwayP remains usable without Firefox.
+FIREFOX_THEME_SCRIPT="$HOME/.local/bin/swayp-firefox-theme"
+if [ -f "$FIREFOX_THEME_SCRIPT" ]; then
+    sh "$FIREFOX_THEME_SCRIPT" || true
+fi
+
+if command -v kitty >/dev/null 2>&1 && [ -f "$GENERATED_DIR/kitty-colors.conf" ]; then
     # Kitty creates one control socket per running instance. Discover the
     # sockets directly so every Kitty process gets the new palette.
     for KITTY_SOCKET_PATH in /tmp/swayp-kitty.sock-*; do
@@ -355,4 +368,5 @@ if command -v swaymsg >/dev/null 2>&1; then
     fi
 fi
 
-printf 'SwayP theme applied: %s\n' "$THEME"
+printf 'SwayP theme applied: %s
+' "$THEME"
