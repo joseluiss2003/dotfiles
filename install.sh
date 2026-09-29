@@ -217,7 +217,6 @@ LEGACY_ROOT_LINKS=(
   fuzzel
   kitty
   quickshell
-  scripts
   swayp
   install.sh
 )
@@ -233,7 +232,6 @@ for name in "${LEGACY_ROOT_LINKS[@]}"; do
 done
 
 echo
-echo
 echo "==> Limpiando enlaces de Stow legacy..."
 
 remove_legacy_link() {
@@ -246,9 +244,6 @@ remove_legacy_link() {
     fi
 }
 
-remove_legacy_link "$HOME/.config/sway/config" "$DOTFILES_DIR/sway/.config/sway/config"
-remove_legacy_link "$HOME/.config/starship.toml" "$DOTFILES_DIR/starship/.config/starship.toml"
-remove_legacy_link "$HOME/.zshrc" "$DOTFILES_DIR/zsh/.zshrc"
 
 echo
 echo "==> Detectando paquetes de Stow..."
