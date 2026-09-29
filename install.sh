@@ -211,8 +211,26 @@ sudo systemctl enable power-profiles-daemon.service
 sudo systemctl enable greetd.service
 
 echo
+echo
 echo "==> Limpiando enlaces legacy de Stow..."
 
+remove_legacy_link() {
+    local target="$1"
+    local expected="$2"
+
+    if [[ -L "$target" ]] && [[ "$(readlink -m -- "$target")" == "$(readlink -m -- "$expected")" ]]; then
+        rm -- "$target"
+        echo "    ✓ Migrado $target"
+    fi
+}
+
+# Old standalone Stow packages were migrated into swayp/. Remove their
+# symlinks before applying the new unified package.
+remove_legacy_link "$HOME/.config/fuzzel" "$DOTFILES_DIR/fuzzel/.config/fuzzel"
+remove_legacy_link "$HOME/.config/kitty" "$DOTFILES_DIR/kitty/.config/kitty"
+remove_legacy_link "$HOME/.config/quickshell" "$DOTFILES_DIR/quickshell/.config/quickshell"
+
+# Remove old root-level Stow links created by previous repository layouts.
 LEGACY_ROOT_LINKS=(
   fuzzel
   kitty
@@ -225,50 +243,29 @@ for name in "${LEGACY_ROOT_LINKS[@]}"; do
     target="$HOME/$name"
     expected="$DOTFILES_DIR/$name"
 
-    if [[ -L "$target" ]] && [[ "$(readlink -f -- "$target")" == "$(realpath -- "$expected")" ]]; then
+    if [[ -L "$target" ]] && [[ "$(readlink -m -- "$target")" == "$(readlink -m -- "$expected")" ]]; then
         rm -- "$target"
         echo "    ✓ Eliminado ~/$name"
     fi
 done
 
 echo
-echo "==> Limpiando enlaces de Stow legacy..."
+echo "==> Detectando el paquete de Stow..."
 
-remove_legacy_link() {
-    local target="$1"
-    local expected="$2"
+STOW_PACKAGE="swayp"
 
-    if [[ -L "$target" ]] && [[ "$(readlink -f -- "$target")" == "$(realpath -- "$expected")" ]]; then
-        rm -- "$target"
-        echo "    ✓ Migrado $target"
-    fi
-}
+if [[ ! -d "$DOTFILES_DIR/$STOW_PACKAGE" ]]; then
+    echo "ERROR: Falta el paquete de Stow: $STOW_PACKAGE"
+    exit 1
+fi
 
-
-echo
-echo "==> Detectando paquetes de Stow..."
-
-STOW_PACKAGES=(
-  fuzzel
-  kitty
-  quickshell
-  swayp
-)
-
-for package in "${STOW_PACKAGES[@]}"; do
-    if [[ ! -d "$DOTFILES_DIR/$package" ]]; then
-        echo "ERROR: Falta el paquete de Stow: $package"
-        exit 1
-    fi
-done
-
-printf '    %s\n' "${STOW_PACKAGES[@]}"
+echo "    $STOW_PACKAGE"
 
 echo
 echo "==> Aplicando dotfiles..."
 
 cd "$DOTFILES_DIR"
-stow -t "$HOME" "${STOW_PACKAGES[@]}"
+stow -t "$HOME" "$STOW_PACKAGE"
 
 echo
 echo "==> Configurando greetd + tuigreet..."
@@ -307,7 +304,7 @@ else
 fi
 echo
 echo "Dotfiles instalados:"
-printf '  ✓ %s\n' "${STOW_PACKAGES[@]}"
+echo "  ✓ $STOW_PACKAGE"
 echo
 echo "Servicios habilitados:"
 echo "  ✓ Bluetooth"
