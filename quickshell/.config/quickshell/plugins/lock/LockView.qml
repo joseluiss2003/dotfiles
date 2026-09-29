@@ -217,7 +217,6 @@ Item {
             passwordCharacter: "\u25CF"
             passwordMaskDelay: 0
             color: "transparent"
-            opacity: 0
             selectionColor: Color.lock.selection
             selectedTextColor: Color.lock.text
             font.family: Style.font.family
@@ -275,7 +274,7 @@ Item {
               spacing: root.passwordDotLetterSpacing
 
               Repeater {
-                model: 32
+                model: passwordInput.text.length
 
                 delegate: Text {
                   id: dot
@@ -284,13 +283,21 @@ Item {
                   font.family: Style.font.family
                   font.pixelSize: root.passwordDotFontSize
                   renderType: Text.NativeRendering
-                  opacity: index < passwordInput.text.length ? 1 : 0
+                  opacity: 1
 
-                  Behavior on opacity {
-                    NumberAnimation {
-                      duration: 140
-                      easing.type: Easing.OutCubic
-                    }
+                  Component.onCompleted: {
+                    dot.opacity = 0
+                    dotFade.restart()
+                  }
+
+                  NumberAnimation {
+                    id: dotFade
+                    target: dot
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                    duration: 120
+                    easing.type: Easing.OutCubic
                   }
                 }
               }
