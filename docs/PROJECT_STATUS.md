@@ -23,7 +23,7 @@ This document keeps the SwayP project state separate from future ideas and known
 - Notifications and notification center.
 - OSD and clipboard functionality.
 - Quickshell lockscreen integration.
-- Geist v1.7.2 installation with SHA-256 verification.
+- Geist v1.7.2 and Geist Mono installation with SHA-256 verification.
 - Reproducible Arch installer with GNU Stow.
 - Optional utility installation through `./install.sh --extras`.
 - Legacy Stow layout migration in the installer.
