@@ -286,7 +286,13 @@ if [[ ! -f "$GEIST_FONT_DIR/Geist-Regular.ttf" ]]; then
     curl -fL --retry 3 --retry-delay 2 -o "$GEIST_ARCHIVE" "$GEIST_URL"
 
     echo "    Verificando SHA-256..."
-    echo "$GEIST_SHA256  $GEIST_ARCHIVE" | sha256sum -c -
+    GEIST_ACTUAL_SHA256="$(sha256sum "$GEIST_ARCHIVE" | awk '{print $1}')"
+    if [[ "$GEIST_ACTUAL_SHA256" != "$GEIST_SHA256" ]]; then
+        echo "ERROR: La suma SHA-256 de Geist no coincide." >&2
+        echo "    Esperada: $GEIST_SHA256" >&2
+        echo "    Obtenida: $GEIST_ACTUAL_SHA256" >&2
+        exit 1
+    fi
 
     GEIST_EXTRACT_DIR="$(mktemp -d)"
     trap 'rm -rf "$GEIST_EXTRACT_DIR"' EXIT
