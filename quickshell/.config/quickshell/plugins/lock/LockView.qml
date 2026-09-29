@@ -306,7 +306,7 @@ Item {
                     ? root.failureMessage
                     : root.placeholderText
                 )
-            visible: passwordInput.text.length === 0
+            visible: false
             color: root.authenticatingPassword
               ? Color.lock.text
               : (
