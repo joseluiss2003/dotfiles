@@ -23,6 +23,7 @@ Item {
   property bool syncingPasswordText: false
   property real revealProgress: 0
   property int shakeOffset: 0
+  property real inputPulse: 0
 
   readonly property string placeholderText: "Enter Password"
   readonly property int fieldWidth: 381
@@ -90,6 +91,13 @@ Item {
       duration: Style.fullscreen.settleDuration + 80
       easing.type: Easing.OutCubic
     }
+  }
+
+  SequentialAnimation {
+    id: inputPulseAnimation
+
+    NumberAnimation { target: root; property: "inputPulse"; to: 1; duration: 70; easing.type: Easing.OutCubic }
+    NumberAnimation { target: root; property: "inputPulse"; to: 0; duration: 190; easing.type: Easing.OutCubic }
   }
 
   SequentialAnimation {
@@ -216,6 +224,8 @@ Item {
             horizontalAlignment: TextInput.AlignHCenter
             activeFocusOnPress: true
             clip: true
+            scale: 1 + (root.inputPulse * 0.018)
+            transformOrigin: Item.Center
             enabled: root.inputEnabled && !root.authenticatingPassword
             readOnly: root.authenticatingPassword
             echoMode: TextInput.Password
@@ -240,6 +250,8 @@ Item {
             }
 
             onTextChanged: {
+              if (text.length > 0 && !root.syncingPasswordText)
+                inputPulseAnimation.restart()
               if (!root.syncingPasswordText)
                 root.passwordTextEdited(text)
               if (text.length > 0)
@@ -269,6 +281,15 @@ Item {
                 event.accepted = true
               }
             }
+          }
+
+          Rectangle {
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            width: parent.width * root.inputPulse
+            height: Style.space(2)
+            color: Color.lock.borderActive
+            opacity: 0.72
           }
 
           Text {
