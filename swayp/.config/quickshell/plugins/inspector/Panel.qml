@@ -635,7 +635,7 @@ Item {
                     implicitWidth: pluginLabel.implicitWidth + Style.spacing.xxl * 2
                     implicitHeight: Style.space(28)
                     color: Color.surfaceAlt
-                    borderSpec: Border.surfaceSpec("control", "border", Color.divider, 1)
+                    borderSpec: Border.flat(Color.divider, 1)
                     radius: Style.cornerRadius
 
                     Text {
@@ -699,7 +699,7 @@ Item {
     height: parent.height
 
     color: Color.surfaceAlt
-    borderSpec: Border.surfaceSpec("control", "border", Color.divider, 1)
+    borderSpec: Border.flat(Color.divider, 1)
     radius: Style.cornerRadius
 
     Column {
