@@ -11,7 +11,6 @@ BarWidget {
   id: root
   moduleName: "swayp.tray"
 
-  property bool expanded: false
   property bool managePopupOpen: false
   property bool trayMenuOpen: false
   property var activeTrayItem: null
@@ -20,18 +19,17 @@ BarWidget {
   readonly property string fontFamily: bar ? bar.fontFamily : Style.font.family
   readonly property var pinnedIds: settings.pinned instanceof Array ? settings.pinned : []
   readonly property var hiddenIds: settings.hidden instanceof Array ? settings.hidden : []
-  readonly property var pinnedItems: bucket("pinned")
-  readonly property var drawerItems: bucket("drawer")
   readonly property var allItems: bucket("all")
-  readonly property int drawerCount: drawerItems.length
+  readonly property var visibleItems: {
+    var result = []
+    for (var i = 0; i < allItems.length; i++) {
+      var item = allItems[i]
+      if (classifyItem(item) !== "hidden") result.push(item)
+    }
+    return result
+  }
   readonly property int trayItemExtent: Style.bar.iconSlot
   readonly property int trayItemGap: 0
-  readonly property int trayJoinGap: 0
-  readonly property int drawerExtent: drawerCount > 0 ? drawerCount * trayItemExtent + (drawerCount - 1) * trayItemGap : 0
-  // Match Waybar's group/tray-expander drawer transition-duration.
-  readonly property int animationDuration: 600
-  property real revealProgress: expanded ? 1 : 0
-  readonly property real revealExtent: drawerExtent * revealProgress
 
   // Submenu drill-down state. QsMenuEntry.display() renders a *platform* menu,
   // which Quickshell refuses unless the shell root sets `//@ pragma
@@ -215,10 +213,6 @@ BarWidget {
   implicitWidth: root.vertical ? root.barSize : trayContent.implicitWidth
   implicitHeight: root.vertical ? trayContent.implicitHeight : root.barSize
 
-  Behavior on revealProgress {
-    NumberAnimation { duration: root.animationDuration; easing.type: Easing.OutCubic }
-  }
-
   Loader {
     id: trayContent
     anchors.fill: parent
@@ -230,84 +224,24 @@ BarWidget {
 
     Item {
       id: horizontalTrayRoot
-
-      readonly property int pinnedWidth: pinnedRow.implicitWidth
-      readonly property int drawerBlockWidth: root.allItems.length > 0 ? expandIcon.implicitWidth + root.drawerExtent : 0
-
-      implicitWidth: pinnedWidth + drawerBlockWidth
+      implicitWidth: trayRow.implicitWidth
       implicitHeight: root.barSize
 
-      // Mask out the empty area the collapsed drawer reserves for its slide-in,
-      // so hovering it doesn't trigger expand and clicks pass through.
-      containmentMask: QtObject {
-        function contains(point: point): bool {
-          if (point.y < 0 || point.y > horizontalTrayRoot.height) return false
-          // Drawer reveals leftward; chevron sits at the right end when collapsed
-          // and slides left as it opens. The visible region starts at the chevron.
-          var chevronX = root.drawerExtent - root.revealExtent
-          if (point.x >= chevronX && point.x <= horizontalTrayRoot.drawerBlockWidth) return true
-          // Pinned items, placed to the right of the drawer block.
-          var pinnedStart = horizontalTrayRoot.drawerBlockWidth
-          return point.x >= pinnedStart && point.x <= horizontalTrayRoot.implicitWidth
-        }
-      }
-
-      Item {
-        id: drawerArea
-        x: 0
-        width: horizontalTrayRoot.drawerBlockWidth
-        height: root.barSize
-        visible: root.allItems.length > 0
-
-        BarIconButton {
-          id: expandIcon
-          bar: root.bar
-          width: implicitWidth
-          height: implicitHeight
-          x: root.drawerExtent - root.revealExtent
-          text: root.expanded ? "\uf054" : "\uf053"
-          onPressed: function(button) {
-            if (button === Qt.RightButton) {
-              root.managePopupOpen = !root.managePopupOpen
-              return
-            }
-            if (button === Qt.LeftButton) root.expanded = !root.expanded
-          }
-        }
-
-        Item {
-          id: trayClip
-          x: expandIcon.width
-          anchors.verticalCenter: parent.verticalCenter
-          width: root.drawerExtent
-          height: root.barSize
-          clip: true
-
-          Row {
-            id: trayIcons
-            x: root.drawerExtent - root.revealExtent
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: root.trayItemGap
-            layer.enabled: true
-
-            Repeater {
-              model: root.drawerItems
-              TrayItem {}
-            }
-          }
-        }
-      }
-
       Row {
-        id: pinnedRow
-        x: drawerArea.x + horizontalTrayRoot.drawerBlockWidth
+        id: trayRow
         anchors.verticalCenter: parent.verticalCenter
         spacing: root.trayItemGap
-        leftPadding: root.pinnedItems.length > 0 && root.allItems.length > 0 ? root.trayJoinGap : 0
+
         Repeater {
-          model: root.pinnedItems
+          model: root.visibleItems
           TrayItem {}
         }
+      }
+
+      MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onPressed: if (mouse.button === Qt.RightButton) root.managePopupOpen = true
       }
     }
   }
@@ -317,80 +251,24 @@ BarWidget {
 
     Item {
       id: verticalTrayRoot
-
-      readonly property int pinnedHeight: pinnedCol.implicitHeight
-      readonly property int drawerBlockHeight: root.allItems.length > 0 ? expandIcon.implicitHeight + root.drawerExtent : 0
-
       implicitWidth: root.barSize
-      implicitHeight: pinnedHeight + drawerBlockHeight
-
-      containmentMask: QtObject {
-        function contains(point: point): bool {
-          if (point.x < 0 || point.x > verticalTrayRoot.width) return false
-          var chevronY = root.drawerExtent - root.revealExtent
-          if (point.y >= chevronY && point.y <= verticalTrayRoot.drawerBlockHeight) return true
-          var pinnedStart = verticalTrayRoot.drawerBlockHeight
-          return point.y >= pinnedStart && point.y <= verticalTrayRoot.implicitHeight
-        }
-      }
-
-      Item {
-        id: drawerArea
-        y: 0
-        width: root.barSize
-        height: verticalTrayRoot.drawerBlockHeight
-        visible: root.allItems.length > 0
-
-        BarIconButton {
-          id: expandIcon
-          bar: root.bar
-          width: implicitWidth
-          height: implicitHeight
-          y: root.drawerExtent - root.revealExtent
-          text: root.expanded ? "\uf054" : "\uf053"
-          textRotation: 90
-          onPressed: function(button) {
-            if (button === Qt.RightButton) {
-              root.managePopupOpen = !root.managePopupOpen
-              return
-            }
-            if (button === Qt.LeftButton) root.expanded = !root.expanded
-          }
-        }
-
-        Item {
-          id: trayClip
-          y: expandIcon.height
-          anchors.horizontalCenter: parent.horizontalCenter
-          width: root.barSize
-          height: root.drawerExtent
-          clip: true
-
-          Column {
-            id: trayIcons
-            y: root.drawerExtent - root.revealExtent
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: root.trayItemGap
-            layer.enabled: true
-
-            Repeater {
-              model: root.drawerItems
-              TrayItem {}
-            }
-          }
-        }
-      }
+      implicitHeight: trayColumn.implicitHeight
 
       Column {
-        id: pinnedCol
-        y: drawerArea.y + verticalTrayRoot.drawerBlockHeight
+        id: trayColumn
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: root.trayItemGap
-        topPadding: root.pinnedItems.length > 0 && root.allItems.length > 0 ? root.trayJoinGap : 0
+
         Repeater {
-          model: root.pinnedItems
+          model: root.visibleItems
           TrayItem {}
         }
+      }
+
+      MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onPressed: if (mouse.button === Qt.RightButton) root.managePopupOpen = true
       }
     }
   }
@@ -809,8 +687,8 @@ BarWidget {
 
     TrayIcon {
       anchors.centerIn: parent
-      width: Style.space(12)
-      height: Style.space(12)
+      width: Style.bar.iconCanvas
+      height: Style.bar.iconCanvas
       icon: trayItemRoot.modelData.icon
     }
 
@@ -824,8 +702,13 @@ BarWidget {
       onExited: if (root.bar) root.bar.hideTooltip(trayItemRoot)
       onPressed: function(mouse) {
         if (mouse.button === Qt.RightButton) {
-          trayItemRoot.displayMenu(mouse)
-          mouse.accepted = true
+          if (mouse.modifiers & Qt.ShiftModifier) {
+            root.managePopupOpen = true
+            mouse.accepted = true
+          } else {
+            trayItemRoot.displayMenu(mouse)
+            mouse.accepted = true
+          }
         }
       }
       onClicked: function(mouse) {
