@@ -16,7 +16,7 @@ A plugin can declare multiple kinds and expose multiple entry points.
 |---|---|---|
 | clock | bar-widget | widget + popup + settings |
 | audio | panel | PipeWire-backed panel |
-| clipboard | bar-widget | widget + helper process |
+| clipboard | overlay | Omarchy-inspired clipboard history + helper process |
 | notifications | service | long-lived service |
 | lock | service | authentication/session lock |
 | menu | menu + bar-widget | multiple kinds |
