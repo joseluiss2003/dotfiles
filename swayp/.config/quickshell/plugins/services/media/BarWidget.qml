@@ -10,8 +10,16 @@ BarWidget {
   readonly property var mediaService: bar?.shell?.firstPartyServiceFor("swayp.media")
   readonly property var activePlayer: mediaService ? mediaService.activePlayer : null
   readonly property var sourcePlayers: mediaService ? mediaService.sourcePlayers : []
+  readonly property bool hasPlaybackStream: !!(mediaService && activePlayer
+    && mediaService.playerHasPlaybackStream(activePlayer))
 
-  readonly property bool hasMedia: activePlayer !== null && (activePlayer.trackTitle || activePlayer.trackArtist)
+  // The bar indicator represents actual playback, not a stale MPRIS player.
+  // Some players keep their MPRIS object and track metadata alive briefly
+  // after the application closes, so metadata alone is not enough.
+  readonly property bool hasMedia: activePlayer !== null
+    && !!activePlayer.isPlaying
+    && (activePlayer.trackTitle || activePlayer.trackArtist)
+    && hasPlaybackStream
   readonly property string playIcon: activePlayer && activePlayer.isPlaying ? "󰏤" : "󰐊"
   readonly property string title: activePlayer ? (activePlayer.trackTitle || "") : ""
   readonly property string artist: activePlayer ? (activePlayer.trackArtist || "") : ""
