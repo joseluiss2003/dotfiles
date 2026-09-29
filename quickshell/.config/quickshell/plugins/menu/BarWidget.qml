@@ -53,7 +53,7 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "⏻"
+    text: "󰐥"
     fontSize: Style.bar.iconFont
     opticalSize: Style.bar.iconCanvas
     onPressed: function(b) {
@@ -110,7 +110,7 @@ BarWidget {
             id: heroMark
             width: Style.space(34)
             height: Style.space(34)
-            text: "⏻"
+            text: "󰐥"
             color: root.bar.foreground
             fontFamily: root.bar.fontFamily
             fontSize: Style.font.display
