@@ -274,7 +274,7 @@ echo "==> Instalando Geist v1.7.2..."
 
 GEIST_VERSION="1.7.2"
 GEIST_URL="https://github.com/vercel/geist-font/releases/download/v1.7.2/geist-font-v1.7.2.zip"
-GEIST_SHA256="7fc800d2ac6b92844895196e5041aca55d814c15db70c44f79b3b83ab82b04e"
+GEIST_SHA256="7fc800d2ac6b92844895196e5041aca55d814c15db70c44f79b3b83ab82b04e2"
 GEIST_CACHE_DIR="$HOME/.cache/swayp"
 GEIST_ARCHIVE="$GEIST_CACHE_DIR/geist-font-v${GEIST_VERSION}.zip"
 GEIST_FONT_DIR="$HOME/.local/share/fonts/Geist"
