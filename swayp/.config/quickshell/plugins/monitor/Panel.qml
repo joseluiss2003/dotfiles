@@ -798,8 +798,7 @@ Panel {
             Item {
               width: parent.width
               implicitHeight: Math.max(
-                scaleHeader.implicitHeight,
-                scaleMonitor.implicitHeight
+                scaleHeader.implicitHeight
               )
 
               PanelSectionHeader {
