@@ -218,8 +218,6 @@ LEGACY_ROOT_LINKS=(
   kitty
   quickshell
   scripts
-  starship
-  sway
   swayp
   install.sh
 )
@@ -242,10 +240,7 @@ STOW_PACKAGES=(
   kitty
   quickshell
   scripts
-  starship
-  sway
   swayp
-  zsh
 )
 
 for package in "${STOW_PACKAGES[@]}"; do

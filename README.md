@@ -10,7 +10,6 @@ SwayP is a native Sway desktop shell with a modular Quickshell UI, a static them
 - **Kitty** — terminal
 - **Zsh + Starship** — shell and prompt
 - **Fuzzel** — application launcher
-- **Mako** — notifications
 - **Fastfetch** — terminal system information
 - **GNU Stow** — installation and home-directory linking
 
@@ -25,7 +24,6 @@ swayp-theme-set
     ├── Kitty
     ├── Starship
     ├── Fastfetch
-    ├── Mako
     ├── Fuzzel
     └── Quickshell / lockscreen
 ~~~
@@ -36,14 +34,10 @@ The theme files are the source of truth. Quickshell consumes the generated seman
 ~~~text
 .
 ├── docs/         # Project architecture and development guides
-├── sway/         # Sway configuration
+├── swayp/        # SwayP core: Sway, Zsh, Starship, themes, wallpapers and runtime config
 ├── quickshell/   # Quickshell shell, core, UI, services and plugins
 ├── kitty/        # Kitty configuration
-├── zsh/          # Zsh configuration
-├── starship/     # Starship source/fallback configuration
 ├── fuzzel/       # Fuzzel configuration
-├── mako/         # Mako configuration
-├── swayp/       # SwayP themes, wallpapers and runtime config
 └── scripts/      # User-level commands and generators
 ~~~
 

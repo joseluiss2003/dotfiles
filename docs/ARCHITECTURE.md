@@ -32,7 +32,6 @@ The script scripts/.local/bin/swayp-theme-set turns one theme into runtime confi
 ├── kitty-colors.conf
 ├── starship.toml
 ├── fastfetch.jsonc
-├── mako-colors
 └── fuzzel-colors.ini
 ~~~
 
