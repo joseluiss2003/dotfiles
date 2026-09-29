@@ -39,7 +39,6 @@ PACKAGES=(
   bluez
   bluez-utils
   brightnessctl
-  cliphist
   curl
   fastfetch
   ffmpegthumbnailer
