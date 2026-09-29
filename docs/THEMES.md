@@ -63,7 +63,11 @@ The generator validates the core ANSI fields: background, foreground, muted, red
 
 The additional semantic fields are part of the theme contract and should always be present.
 
-## 4. Current curated themes\n\nThe SwayP 1.0 collection currently includes `black-metal`, `catppuccin`, `catppuccin-latte`, `flexoki-light`, `gruvbox`, `kanagawa`, `osaka-jade` and `rose-pine-dawn`.\n\n## 5. Main color meanings
+## 4. Current curated themes
+
+The SwayP 1.0 collection currently includes `black-metal`, `catppuccin`, `catppuccin-latte`, `flexoki-light`, `gruvbox`, `kanagawa`, `osaka-jade` and `rose-pine-dawn`.
+
+## 5. Main color meanings
 - background — canonical base background.
 - dark_background — deeper surface.
 - darker_background — deepest surface.
