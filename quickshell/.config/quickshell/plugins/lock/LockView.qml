@@ -21,6 +21,8 @@ Item {
   property string userName: ""
   property date currentTime: new Date()
   property bool syncingPasswordText: false
+  property real revealProgress: 0
+  property int shakeOffset: 0
 
   readonly property string placeholderText: "Enter Password"
   readonly property int fieldWidth: 381
@@ -77,6 +79,41 @@ Item {
   signal clearFailureRequested()
   signal wakeRequested()
 
+  ParallelAnimation {
+    id: revealAnimation
+
+    NumberAnimation {
+      target: root
+      property: "revealProgress"
+      from: 0
+      to: 1
+      duration: Style.fullscreen.settleDuration + 80
+      easing.type: Easing.OutCubic
+    }
+  }
+
+  SequentialAnimation {
+    id: shakeAnimation
+
+    NumberAnimation { target: root; property: "shakeOffset"; to: -10; duration: 45; easing.type: Easing.OutQuad }
+    NumberAnimation { target: root; property: "shakeOffset"; to: 8; duration: 55; easing.type: Easing.InOutQuad }
+    NumberAnimation { target: root; property: "shakeOffset"; to: -5; duration: 45; easing.type: Easing.InOutQuad }
+    NumberAnimation { target: root; property: "shakeOffset"; to: 3; duration: 35; easing.type: Easing.InOutQuad }
+    NumberAnimation { target: root; property: "shakeOffset"; to: 0; duration: 45; easing.type: Easing.OutQuad }
+  }
+
+  onInputEnabledChanged: {
+    if (inputEnabled) {
+      revealAnimation.restart()
+      Qt.callLater(forcePasswordFocus)
+    }
+  }
+
+  onFailureMessageChanged: {
+    if (failureMessage.length > 0)
+      shakeAnimation.restart()
+  }
+
   Timer {
     interval: 1000
     repeat: true
@@ -129,7 +166,20 @@ Item {
     Column {
       anchors.horizontalCenter: parent.horizontalCenter
       anchors.verticalCenter: parent.verticalCenter
+      anchors.horizontalCenterOffset: root.shakeOffset
       spacing: 40
+      opacity: root.revealProgress
+      transform: [
+        Translate {
+          y: (1 - root.revealProgress) * 22
+        },
+        Scale {
+          origin.x: parent.width / 2
+          origin.y: parent.height / 2
+          xScale: 0.97 + (root.revealProgress * 0.03)
+          yScale: 0.97 + (root.revealProgress * 0.03)
+        }
+      ]
 
       SwayPWordmark {
         width: 760
