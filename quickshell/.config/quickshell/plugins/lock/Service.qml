@@ -149,21 +149,16 @@ Item {
     resetAuthenticationState()
     idleBlankTimer.stop()
     unlocking = true
-    unlockReleaseTimer.restart()
     logEvent("unlock-animation")
     runWake()
   }
 
-  Timer {
-    id: unlockReleaseTimer
-    interval: 260
-    repeat: false
-    onTriggered: {
-      root.unlocking = false
-      root.sessionLock.locked = false
-      root.logEvent("unlocked")
-      root.runWake()
-    }
+  function releaseUnlock() {
+    if (!unlocking) return
+    unlocking = false
+    sessionLock.locked = false
+    logEvent("unlocked")
+    runWake()
   }
 
   function armBlankTimer() {
@@ -311,6 +306,7 @@ Item {
         inputEnabled: root.lockRequested
         unlocking: root.unlocking
         userName: root.userName
+        onUnlockAnimationFinished: root.releaseUnlock()
         loadBackground: root.locked
         displaysBlank: root.screenBlank(lockSurface.screen ? lockSurface.screen.name : "")
         powerSaverActive: root.powerSaverActive
