@@ -24,7 +24,7 @@
       "center": [
         {
           "id": "swayp.clock",
-          "format": "ddd d MMM · HH:mm",
+          "format": "HH:mm",
           "formatAlt": "d MMMM 'W'ww yyyy",
           "verticalFormat": "HH\n—\nmm"
         }
