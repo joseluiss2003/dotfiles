@@ -285,6 +285,7 @@ Item {
                 model: passwordInput.text.length
 
                 delegate: Text {
+                  id: dot
                   text: "●"
                   color: Color.lock.text
                   font.family: Style.font.family
@@ -298,21 +299,21 @@ Item {
                     running: true
 
                     NumberAnimation {
-                      target: parent
+                      target: dot
                       property: "opacity"
                       from: 0
                       to: 1
-                      duration: 85
+                      duration: 95
                       easing.type: Easing.OutCubic
                     }
 
                     NumberAnimation {
-                      target: parent
+                      target: dot
                       property: "scale"
                       from: 0.72
                       to: 1
-                      duration: 180
-                      easing.type: Easing.OutBack
+                      duration: 155
+                      easing.type: Easing.OutCubic
                     }
                   }
                 }
