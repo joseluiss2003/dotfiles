@@ -114,6 +114,7 @@ bindsym $mod+Shift+s exec env PATH="$HOME/.local/bin:$PATH" swayp-screenshot-edi
 # Wallpaper and appearance selectors stay last so system snippets cannot override them.
 bindsym --no-repeat $mod+w exec env PATH="$HOME/.local/bin:$PATH" wallpaper-picker
 bindsym --no-repeat $mod+t exec env PATH="$HOME/.local/bin:$PATH" swayp-theme-picker
+bindsym --no-repeat $mod+Ctrl+v exec qs ipc call shell toggle swayp.clipboard "{}"
 
 # Manual lock
 bindsym $mod+l exec qs ipc call lock lock
@@ -136,8 +137,6 @@ exec env PATH="$HOME/.local/bin:$PATH" wallpaper-startup
 exec env PATH="$HOME/.local/bin:$PATH" qs
 exec playerctld daemon
 
-exec wl-paste --type text --watch cliphist store
-exec wl-paste --type image --watch cliphist store
 
 exec gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 exec gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
