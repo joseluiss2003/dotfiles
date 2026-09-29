@@ -83,6 +83,10 @@ bindsym $mod+Shift+0 move container to workspace $ws10
 workspace_layout tabbed
 default_orientation horizontal
 
+# SwayP window chrome: compact, centered titles with a clean border hierarchy.
+title_align center
+titlebar_border_thickness 1
+
 ### =========================
 ### Basic actions
 ### =========================
