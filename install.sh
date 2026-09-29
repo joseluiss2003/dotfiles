@@ -2,14 +2,14 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-WITH_EXTRAS=false
+EXTRAS=false
 
 usage() {
     cat <<'EOF'
-Usage: ./install.sh [--with-extras]
+Usage: ./install.sh [--extras]
 
 Options:
-  --with-extras    Install personal desktop utilities and AUR applications
+  --extras         Install personal desktop utilities and Obsidian
   -h, --help       Show this help
 EOF
 }
@@ -17,7 +17,7 @@ EOF
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --with-extras)
-            WITH_EXTRAS=true
+            EXTRAS=true
             shift
             ;;
         -h|--help)
@@ -148,7 +148,7 @@ done
 echo "==> Instalando dependencias de SwayP..."
 sudo pacman -S --needed "${PACKAGES[@]}"
 
-if [[ "$WITH_EXTRAS" == true ]]; then
+if [[ "$EXTRAS" == true ]]; then
     echo
     echo "==> Instalando utilidades extra..."
     sudo pacman -S --needed "${EXTRAS_PACKAGES[@]}"
@@ -314,7 +314,7 @@ echo "Dependencias SwayP instaladas: ${#PACKAGES[@]}"
 if [[ "$WITH_EXTRAS" == true ]]; then
     echo "Utilidades extra instaladas: ${#EXTRAS_PACKAGES[@]} + Obsidian"
 else
-    echo "Extras personales: omitidos (usa --with-extras)"
+    echo "Extras personales: omitidos (usa --extras)"
 fi
 echo
 echo "Dotfiles instalados:"
