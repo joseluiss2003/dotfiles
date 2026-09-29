@@ -252,7 +252,6 @@ STOW_PACKAGES=(
   fuzzel
   kitty
   quickshell
-  scripts
   swayp
 )
 
