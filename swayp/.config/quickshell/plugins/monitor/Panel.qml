@@ -27,6 +27,7 @@ Panel {
   property string monitorScale: ""
   property var displays: []
   property int enabledDisplayCount: 0
+  readonly property var nightlightService: bar?.shell?.firstPartyServiceFor("swayp.nightlight")
 
   // Carry sub-notch touchpad deltas between wheel events.
   property real wheelAccumulator: 0
@@ -810,23 +811,6 @@ Panel {
                 anchors.verticalCenter: parent.verticalCenter
               }
 
-              Text {
-                id: scaleMonitor
-                textFormat: Text.PlainText
-                text: root.focusedMonitor
-                visible:
-                  root.focusedMonitor !== "" &&
-                  root.enabledDisplayCount > 1
-
-                color: Color.foreground
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.caption
-                font.bold: true
-
-                anchors.right: parent.right
-                anchors.rightMargin: Style.spacing.inset
-                anchors.verticalCenter: parent.verticalCenter
-              }
             }
 
             Grid {
@@ -869,10 +853,40 @@ Panel {
             spacing: Style.spacing.sectionGap
             visible: root.displays.length > 1
 
-            PanelSectionHeader {
-              text: "DISPLAYS"
-              foreground: root.bar.foreground
-              fontFamily: root.bar.fontFamily
+            Item {
+              width: parent.width
+              implicitHeight: Math.max(displaysHeader.implicitHeight, nightlightAction.implicitHeight)
+
+              PanelSectionHeader {
+                id: displaysHeader
+                text: "DISPLAYS"
+                foreground: root.bar.foreground
+                fontFamily: root.bar.fontFamily
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+              }
+
+              Button {
+                id: nightlightAction
+                iconText: "󰔎"
+                tooltipText: root.nightlightService && root.nightlightService.enabled
+                  ? "Disable night light"
+                  : "Enable night light"
+                foreground: root.bar.foreground
+                fontFamily: root.bar.fontFamily
+                iconSize: Style.font.subtitle * 1.5
+                horizontalPadding: Style.spacing.sm
+                verticalPadding: Style.spacing.compactGap
+                bordered: false
+                active: root.nightlightService ? root.nightlightService.enabled : false
+                enabled: !!root.nightlightService
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                onClicked: {
+                  if (root.nightlightService)
+                    root.nightlightService.setNightlight(!root.nightlightService.enabled)
+                }
+              }
             }
 
             Repeater {
@@ -959,7 +973,7 @@ Panel {
 
       Text {
         textFormat: Text.PlainText
-        text: monitorRow.display.name + (monitorRow.display.focused ? " · focused" : "")
+        text: monitorRow.display.name
         color: root.bar.foreground
         font.family: root.bar.fontFamily
         font.pixelSize: Style.font.body
