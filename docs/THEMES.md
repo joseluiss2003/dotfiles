@@ -83,7 +83,7 @@ For recognized themes, preserve the canonical palette whenever possible.
 swayp-theme-set <theme-id>
 ~~~
 
-The generator updates Sway, Kitty, Starship, Fastfetch, Fuzzel and the Quickshell palette.
+The generator updates Sway, Kitty, Starship, Fastfetch, Fuzzel, Firefox and the Quickshell palette. Firefox uses the generated `~/.config/swayp/generated/firefox-userChrome.css` and applies it to discovered Firefox profiles.
 
 Do not edit files under ~/.config/swayp/generated/ by hand.
 
@@ -118,6 +118,7 @@ The selector automatically chooses the first supported image found in the theme 
 [ ] Fastfetch
 [ ] lockscreen
 [ ] Fuzzel
+[ ] Firefox (`userChrome.css`)
 ~~~
 
 ## 10. Theme philosophy
