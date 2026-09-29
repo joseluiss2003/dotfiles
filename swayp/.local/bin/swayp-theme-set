@@ -334,13 +334,6 @@ fi
 # transition. Kitty and Sway must move with the wallpaper and Quickshell,
 # not after the 500 ms reveal has already finished.
 
-# Apply Firefox from the same generated semantic palette. The helper is a no-op when
-# Firefox has not created a profile yet, so SwayP remains usable without Firefox.
-FIREFOX_THEME_SCRIPT="$HOME/.local/bin/swayp-firefox-theme"
-if [ -f "$FIREFOX_THEME_SCRIPT" ]; then
-    sh "$FIREFOX_THEME_SCRIPT" || true
-fi
-
 if command -v kitty >/dev/null 2>&1 && [ -f "$GENERATED_DIR/kitty-colors.conf" ]; then
     # Kitty creates one control socket per running instance. Discover the
     # sockets directly so every Kitty process gets the new palette.
