@@ -1,6 +1,6 @@
-# Creating SwayP themes
+# Creating SwayP 1.0 themes
 
-Themes are data. A new theme should not require QML changes.
+Themes are data. A new theme should not require QML changes. SwayP keeps the theme catalogue intentionally curated rather than turning the selector into an uncontrolled collection.
 
 ## 1. Minimal structure
 ~~~text
@@ -13,7 +13,7 @@ swayp/.config/swayp/wallpapers/<id>/
 └── wallpaper-02.jpg
 ~~~
 
-The repository theme path is the SwayP config tree under swayp/.config/swayp. The theme ID must match the wallpaper directory ID.
+The repository theme path is the SwayP config tree under `swayp/.config/swayp`. The theme ID must match the wallpaper directory ID. After Stow, this becomes `~/.config/swayp/themes/` and `~/.config/swayp/wallpapers/`.
 
 ## 2. theme.toml
 ~~~toml
@@ -63,7 +63,7 @@ The generator validates the core ANSI fields: background, foreground, muted, red
 
 The additional semantic fields are part of the theme contract and should always be present.
 
-## 4. Main color meanings
+## 4. Current curated themes\n\nThe SwayP 1.0 collection currently includes `black-metal`, `catppuccin`, `catppuccin-latte`, `flexoki-light`, `gruvbox`, `kanagawa`, `osaka-jade` and `rose-pine-dawn`.\n\n## 5. Main color meanings
 - background — canonical base background.
 - dark_background — deeper surface.
 - darker_background — deepest surface.
@@ -78,7 +78,7 @@ The additional semantic fields are part of the theme contract and should always 
 
 For recognized themes, preserve the canonical palette whenever possible.
 
-## 5. Applying a theme
+## 6. Applying a theme
 ~~~bash
 swayp-theme-set <theme-id>
 ~~~
@@ -87,24 +87,24 @@ The generator updates Sway, Kitty, Starship, Fastfetch, Fuzzel and the Quickshel
 
 Do not edit files under ~/.config/swayp/generated/ by hand.
 
-## 6. Wallpapers
+## 7. Wallpapers
 The selector accepts JPG, JPEG, PNG, WebP and SVG.
 
 A theme can have zero, one or many wallpapers. Multiple wallpapers are presented in one horizontal row.
 
 A theme does not need a wallpaper to be valid. A temporary generic preview is acceptable while curating the final wallpaper set.
 
-## 7. Theme preview
+## 8. Theme preview
 The selector automatically chooses the first supported image found in the theme wallpaper directory as its preview. Make the first image representative when possible.
 
-## 8. Adding a recognized palette
+## 9. Adding a recognized palette
 1. Start from the canonical palette.
 2. Map it into the SwayP field names.
 3. Do not alter canonical colors to work around one application.
 4. Fix the shared generator/component if the problem is generic.
 5. Test Quickshell, Sway, Kitty and terminal output.
 
-## 9. Checklist
+## 10. Checklist
 ~~~text
 [ ] themes/<id>/colors.toml
 [ ] themes/<id>/theme.toml
@@ -120,5 +120,5 @@ The selector automatically chooses the first supported image found in the theme 
 [ ] Fuzzel
 ~~~
 
-## 10. Theme philosophy
+## 11. Theme philosophy
 A large catalogue is not the goal. Keep themes that are actually wanted, visually distinct, recognizable and curated.
