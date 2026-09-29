@@ -40,7 +40,7 @@ swayp/.config/quickshell/
 shell.qml owns shell lifecycle, configuration and plugin orchestration.
 
 ### Generated configuration
-The script swayp/.local/bin/swayp-theme-set turns one theme into runtime configuration:
+The script swayp/.local/bin/swayp-theme-set turns one theme into runtime configuration. Firefox is handled by the companion `swayp-firefox-theme` helper, which consumes the same generated semantic palette:
 
 ~~~text
 ~/.config/swayp/generated/
