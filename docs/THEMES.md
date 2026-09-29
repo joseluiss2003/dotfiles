@@ -83,7 +83,7 @@ For recognized themes, preserve the canonical palette whenever possible.
 swayp-theme-set <theme-id>
 ~~~
 
-The generator updates Sway, Kitty, Starship, Fastfetch, Mako, Fuzzel and the Quickshell palette.
+The generator updates Sway, Kitty, Starship, Fastfetch, Fuzzel and the Quickshell palette.
 
 Do not edit files under ~/.config/swayp/generated/ by hand.
 
@@ -117,7 +117,7 @@ The selector automatically chooses the first supported image found in the theme 
 [ ] Starship
 [ ] Fastfetch
 [ ] lockscreen
-[ ] Mako/Fuzzel
+[ ] Fuzzel
 ~~~
 
 ## 10. Theme philosophy
