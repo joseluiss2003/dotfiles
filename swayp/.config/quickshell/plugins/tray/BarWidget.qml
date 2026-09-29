@@ -208,7 +208,7 @@ BarWidget {
     persistTrayState(p, h)
   }
 
-  visible: pinnedItems.length > 0 || drawerCount > 0
+  visible: visibleItems.length > 0
   clip: false
   implicitWidth: root.vertical ? root.barSize : trayContent.implicitWidth
   implicitHeight: root.vertical ? trayContent.implicitHeight : root.barSize
@@ -642,9 +642,7 @@ BarWidget {
   component TrayIcon: Item {
     id: trayIconRoot
     required property var icon
-    readonly property bool symbolic: root.iconIsSymbolic(icon)
-
-    Image {
+     Image {
       id: trayIconImage
       anchors.fill: parent
       fillMode: Image.PreserveAspectFit
