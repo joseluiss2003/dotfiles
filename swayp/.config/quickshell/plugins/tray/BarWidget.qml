@@ -238,11 +238,6 @@ BarWidget {
         }
       }
 
-      MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onPressed: if (mouse.button === Qt.RightButton) root.managePopupOpen = true
-      }
     }
   }
 
@@ -653,20 +648,16 @@ BarWidget {
       id: trayIconImage
       anchors.fill: parent
       fillMode: Image.PreserveAspectFit
-      // Decode at physical pixels: IconImage uses the logical size,
-      // which leaves PNG icons upscaled and blurry on HiDPI displays.
+      // Decode at physical pixels so tray icons stay crisp on HiDPI displays.
       sourceSize.width: Math.round(Math.min(width, height) * Screen.devicePixelRatio)
       sourceSize.height: Math.round(Math.min(width, height) * Screen.devicePixelRatio)
       source: root.trayIconSource(trayIconRoot.icon)
-      // Kept as a hidden layer so the effect can sample it as a texture.
-      visible: !trayIconRoot.symbolic
-      layer.enabled: trayIconRoot.symbolic
+      visible: false
     }
 
     MultiEffect {
       anchors.fill: trayIconImage
       source: trayIconImage
-      visible: trayIconRoot.symbolic
       colorization: 1.0
       colorizationColor: root.foreground
     }
