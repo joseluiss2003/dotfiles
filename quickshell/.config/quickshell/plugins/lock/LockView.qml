@@ -217,6 +217,7 @@ Item {
             passwordCharacter: "\u25CF"
             passwordMaskDelay: 0
             color: "transparent"
+            opacity: 0
             selectionColor: Color.lock.selection
             selectedTextColor: Color.lock.text
             font.family: Style.font.family
@@ -228,11 +229,7 @@ Item {
               : 0
             cursorVisible: false
 
-            cursorDelegate: Rectangle {
-              width: 2
-              color: Color.lock.text
-              visible: passwordInput.cursorVisible
-            }
+            cursorDelegate: Item { width: 0; height: 0; visible: false }
 
             onTextChanged: {
               if (text.length > 0 && !root.syncingPasswordText)
@@ -270,19 +267,15 @@ Item {
 
           Item {
             id: passwordDots
-            anchors.centerIn: passwordInput
-            width: dotRow.implicitWidth
-            height: dotRow.implicitHeight
+            anchors.fill: passwordInput
             visible: passwordInput.text.length > 0 && !root.authenticatingPassword && root.failureMessage.length === 0
-            scale: root.passwordDotScale
 
             Row {
-              id: dotRow
               anchors.centerIn: parent
               spacing: root.passwordDotLetterSpacing
 
               Repeater {
-                model: passwordInput.text.length
+                model: 32
 
                 delegate: Text {
                   id: dot
@@ -291,28 +284,11 @@ Item {
                   font.family: Style.font.family
                   font.pixelSize: root.passwordDotFontSize
                   renderType: Text.NativeRendering
-                  opacity: 0
-                  scale: 0.72
-                  transformOrigin: Item.Center
+                  opacity: index < passwordInput.text.length ? 1 : 0
 
-                  ParallelAnimation {
-                    running: true
-
+                  Behavior on opacity {
                     NumberAnimation {
-                      target: dot
-                      property: "opacity"
-                      from: 0
-                      to: 1
-                      duration: 95
-                      easing.type: Easing.OutCubic
-                    }
-
-                    NumberAnimation {
-                      target: dot
-                      property: "scale"
-                      from: 0.72
-                      to: 1
-                      duration: 155
+                      duration: 140
                       easing.type: Easing.OutCubic
                     }
                   }
