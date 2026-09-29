@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.I3
 import Quickshell.Wayland
 import qs.core
 import qs.ui
@@ -279,6 +280,8 @@ Item {
     function onPluginsChanged() { root.collectPlugins() }
   }
 
+  onShellChanged: root.collectPlugins()
+
   Component.onCompleted: root.collectPlugins()
 
   PanelWindow {
@@ -286,9 +289,7 @@ Item {
 
     screen: {
       var screens = Quickshell.screens || []
-      var focused = Quickshell.I3 && Quickshell.I3.focusedMonitor
-        ? Quickshell.I3.focusedMonitor
-        : null
+      var focused = I3.focusedMonitor
       if (focused) {
         for (var i = 0; i < screens.length; i++)
           if (String(screens[i].name || "") === String(focused.name || ""))
@@ -330,7 +331,11 @@ Item {
     MouseArea {
       anchors.fill: parent
       enabled: root.opened
-      onClicked: root.close()
+      onClicked: function(mouse) {
+        if (mouse.x < card.x || mouse.x > card.x + card.width ||
+            mouse.y < card.y || mouse.y > card.y + card.height)
+          root.close()
+      }
     }
 
     Item {
@@ -650,6 +655,7 @@ Item {
   }
 
   component RuntimeLine: Row {
+    id: runtimeLine
     required property string label
     required property string value
     width: parent.width
@@ -658,7 +664,7 @@ Item {
 
     Text {
       width: Style.space(82)
-      text: parent.parent.label
+      text: runtimeLine.label
       color: root.muted
       font.family: Style.font.family
       font.pixelSize: Style.font.caption
@@ -666,7 +672,7 @@ Item {
 
     Text {
       width: parent.width - Style.space(82) - parent.spacing
-      text: parent.parent.value
+      text: runtimeLine.value
       color: root.panelForeground
       font.family: Style.font.family
       font.pixelSize: Style.font.caption
