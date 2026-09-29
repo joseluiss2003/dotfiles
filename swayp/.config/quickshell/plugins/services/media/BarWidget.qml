@@ -50,7 +50,7 @@ BarWidget {
     useActiveColor: false
     text: "󰝚"
     labelVisible: true
-    fontSize: Style.font.icon
+    fontSize: Style.bar.iconFont
     horizontalMargin: 0
     verticalPadding: 0
     tooltipText: root.hasMedia
