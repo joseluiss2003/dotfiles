@@ -80,17 +80,14 @@ Item {
   signal clearFailureRequested()
   signal wakeRequested()
 
-  ParallelAnimation {
+  NumberAnimation {
     id: revealAnimation
-
-    NumberAnimation {
-      target: root
-      property: "revealProgress"
-      from: 0
-      to: 1
-      duration: Style.fullscreen.settleDuration + 80
-      easing.type: Easing.OutCubic
-    }
+    target: root
+    property: "revealProgress"
+    from: 0
+    to: 1
+    duration: 220
+    easing.type: Easing.OutCubic
   }
 
 
@@ -175,18 +172,6 @@ Item {
       anchors.horizontalCenterOffset: root.shakeOffset
       spacing: 40
       opacity: root.revealProgress
-      transform: [
-        Translate {
-          y: (1 - root.revealProgress) * 22
-        },
-        Scale {
-          origin.x: parent.width / 2
-          origin.y: parent.height / 2
-          xScale: 0.97 + (root.revealProgress * 0.03)
-          yScale: 0.97 + (root.revealProgress * 0.03)
-        }
-      ]
-
       SwayPWordmark {
         width: 760
         height: 180
@@ -226,14 +211,12 @@ Item {
             horizontalAlignment: TextInput.AlignHCenter
             activeFocusOnPress: true
             clip: true
-            scale: 1 + (root.inputPulse * 0.018)
-            transformOrigin: Item.Center
             enabled: root.inputEnabled && !root.authenticatingPassword
             readOnly: root.authenticatingPassword
             echoMode: TextInput.Password
             passwordCharacter: "\u25CF"
             passwordMaskDelay: 0
-            color: Color.lock.text
+            color: "transparent"
             selectionColor: Color.lock.selection
             selectedTextColor: Color.lock.text
             font.family: Style.font.family
@@ -281,6 +264,58 @@ Item {
               ) {
                 root.passwordTextEdited("")
                 event.accepted = true
+              }
+            }
+          }
+
+          Item {
+            id: passwordDots
+            anchors.centerIn: passwordInput
+            width: dotRow.implicitWidth
+            height: dotRow.implicitHeight
+            visible: passwordInput.text.length > 0 && !root.authenticatingPassword && root.failureMessage.length === 0
+            scale: root.passwordDotScale
+
+            Row {
+              id: dotRow
+              anchors.centerIn: parent
+              spacing: root.passwordDotLetterSpacing
+
+              Repeater {
+                model: passwordInput.text.length
+
+                delegate: Text {
+                  text: "●"
+                  color: Color.lock.text
+                  font.family: Style.font.family
+                  font.pixelSize: root.passwordDotFontSize
+                  renderType: Text.NativeRendering
+                  opacity: 0
+                  scale: 0.72
+                  transformOrigin: Item.Center
+
+                  ParallelAnimation {
+                    running: true
+
+                    NumberAnimation {
+                      target: parent
+                      property: "opacity"
+                      from: 0
+                      to: 1
+                      duration: 85
+                      easing.type: Easing.OutCubic
+                    }
+
+                    NumberAnimation {
+                      target: parent
+                      property: "scale"
+                      from: 0.72
+                      to: 1
+                      duration: 180
+                      easing.type: Easing.OutBack
+                    }
+                  }
+                }
               }
             }
           }
