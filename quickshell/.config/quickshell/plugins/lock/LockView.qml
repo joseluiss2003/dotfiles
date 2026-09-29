@@ -140,11 +140,6 @@ Item {
   onPasswordTextChanged:
     syncPasswordText()
 
-  onInputEnabledChanged: {
-    if (inputEnabled)
-      Qt.callLater(forcePasswordFocus)
-  }
-
   Component.onCompleted: {
     syncPasswordText()
     revealAnimation.restart()
