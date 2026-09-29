@@ -8,7 +8,7 @@
     "id": "swayp.bar",
     "position": "top",
     "transparent": false,
-    "centerAnchor": "swayp.media",
+    "centerAnchor": "swayp.clock",
     "layout": {
       "left": [
         {
@@ -23,12 +23,18 @@
       ],
       "center": [
         {
-          "id": "swayp.media"
+          "id": "swayp.clock",
+          "format": "ddd d MMM · HH:mm",
+          "formatAlt": "d MMMM 'W'ww yyyy",
+          "verticalFormat": "HH\n—\nmm"
         }
       ],
       "right": [
         {
           "id": "swayp.tray"
+        },
+        {
+          "id": "swayp.media"
         },
         {
           "id": "swayp.bluetooth"
@@ -48,12 +54,6 @@
         {
           "id": "swayp.notification-center"
         },
-        {
-          "id": "swayp.clock",
-          "format": "HH:mm",
-          "formatAlt": "d MMMM 'W'ww yyyy",
-          "verticalFormat": "HH\n—\nmm"
-        }
       ]
     }
   },
