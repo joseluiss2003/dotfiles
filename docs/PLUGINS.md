@@ -171,7 +171,7 @@ Use Style.space(...) and existing typography/style tokens for geometry.
 Use Sway IPC or shared Sway helpers for compositor state. Do not call Hyprland tools or IPC.
 
 ## 9. IPC
-Keep IPC targets under the sw ay p.* namespace:
+Keep IPC targets under the `swayp.*` namespace:
 ~~~qml
 IpcHandler {
   enabled: root.ipcInstanceOwner
