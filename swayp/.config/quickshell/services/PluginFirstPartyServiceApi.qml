@@ -17,6 +17,7 @@ QtObject {
   property var _setDoNotDisturb: null
   property var _runAction: null
   property var _playerKey: null
+  property var _playerHasPlaybackStream: null
   property var _selectPlayer: null
 
   function setIdleEnabled(value) {
@@ -38,6 +39,12 @@ QtObject {
 
   function playerKey(player) {
     return serviceId === "swayp.media" && _playerKey ? _playerKey(player) : ""
+  }
+
+  function playerHasPlaybackStream(player) {
+    return serviceId === "swayp.media" && _playerHasPlaybackStream
+      ? !!_playerHasPlaybackStream(player)
+      : false
   }
 
   function selectPlayer(playerId) {
