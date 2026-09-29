@@ -73,7 +73,12 @@ ShellRoot {
       centerAnchor: "swayp.clock",
       layout: {
         left: [{ id: "swayp.menu" }, { id: "swayp.workspaces" }],
-        center: [{ id: "swayp.clock", format: "dddd HH:mm" }],
+        center: [{
+          id: "swayp.clock",
+          format: "ddd d MMM · HH:mm",
+          formatAlt: "d MMMM 'W'ww yyyy",
+          verticalFormat: "HH\\n—\\nmm"
+        }],
         right: [{ id: "swayp.media" }, { id: "swayp.audio" }]
       }
     },
