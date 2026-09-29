@@ -52,7 +52,6 @@ PACKAGES=(
   jq
   kitty
   libnotify
-  mako
   nautilus
   networkmanager
   noto-fonts
@@ -217,7 +216,6 @@ echo "==> Limpiando enlaces legacy de Stow..."
 LEGACY_ROOT_LINKS=(
   fuzzel
   kitty
-  mako
   quickshell
   scripts
   starship
@@ -242,7 +240,6 @@ echo "==> Detectando paquetes de Stow..."
 STOW_PACKAGES=(
   fuzzel
   kitty
-  mako
   quickshell
   scripts
   starship
