@@ -19,7 +19,6 @@ Item {
   property bool pendingSessionLock: false
   property bool authenticatingPassword: false
   property bool fingerprintAuthenticating: false
-  property bool unlocking: false
   property bool passwordPamConfigured: false
   property bool fingerprintConfigured: false
   property bool previewVisible: false
@@ -148,14 +147,6 @@ Item {
     pendingSessionLockTimer.stop()
     resetAuthenticationState()
     idleBlankTimer.stop()
-    unlocking = true
-    logEvent("unlock-animation")
-    runWake()
-  }
-
-  function releaseUnlock() {
-    if (!unlocking) return
-    unlocking = false
     sessionLock.locked = false
     logEvent("unlocked")
     runWake()
@@ -304,9 +295,7 @@ Item {
         failureMessage: root.failureMessage
         failedAttempts: root.failedAttempts
         inputEnabled: root.lockRequested
-        unlocking: root.unlocking
         userName: root.userName
-        onUnlockAnimationFinished: root.releaseUnlock()
         loadBackground: root.locked
         displaysBlank: root.screenBlank(lockSurface.screen ? lockSurface.screen.name : "")
         powerSaverActive: root.powerSaverActive
