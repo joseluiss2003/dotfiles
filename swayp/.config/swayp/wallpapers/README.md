@@ -4,13 +4,10 @@ Each theme can ship its own wallpaper pool:
 
 - `black-metal/`
 - `catppuccin/`
-- `everforest/`
-- `flexoki-light/`
 - `gruvbox/`
 - `kanagawa/`
 - `osaka-jade/`
 - `rose-pine-dawn/`
-- `srcery/`
 
 The wallpaper picker prefers the pool belonging to the currently active theme and falls back to `~/Pictures/wallpapers` when that pool is empty.
 
