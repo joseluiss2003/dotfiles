@@ -29,12 +29,9 @@ PALETTE_STAGED_OUTPUT="${STATE_DIR}/palette.json.next"
 # center-out masks.
 GENERATED_DIR="${HOME}/.config/swayp/generated"
 
-[ -n "$THEME" ] || { printf '%s
-' "usage: swayp-theme-set <theme>" >&2; exit 2; }
-[ -d "$THEME_DIR" ] || { printf 'Unknown SwayP theme: %s
-' "$THEME" >&2; exit 1; }
-[ -f "$THEME_DIR/colors.toml" ] || { printf 'Theme has no colors.toml: %s
-' "$THEME" >&2; exit 1; }
+[ -n "$THEME" ] || { printf '%s\n' "usage: swayp-theme-set <theme>" >&2; exit 2; }
+[ -d "$THEME_DIR" ] || { printf 'Unknown SwayP theme: %s\n' "$THEME" >&2; exit 1; }
+[ -f "$THEME_DIR/colors.toml" ] || { printf 'Theme has no colors.toml: %s\n' "$THEME" >&2; exit 1; }
 
 mkdir -p "$STATE_DIR" "$GENERATED_DIR" "$(dirname "$PERSISTENT_THEME_FILE")"
 
@@ -92,8 +89,7 @@ semantic = {
 
 with open(palette_path, "w") as f:
     json.dump({"colors": p, "semantic": semantic}, f, indent=2)
-    f.write("
-")
+    f.write("\n")
 
 surface = bg
 
@@ -270,8 +266,7 @@ PY
 
 
 ln -sfn "$THEME_DIR" "$STATE_DIR/theme"
-printf '%s
-' "$THEME" > "$PERSISTENT_THEME_FILE"
+printf '%s\n' "$THEME" > "$PERSISTENT_THEME_FILE"
 
 # Remove state files from pre-static-theme versions.
 rm -f "$STATE_DIR/theme.name" "$STATE_DIR/palette-source"
@@ -319,8 +314,7 @@ if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
             --transition-duration 0.50 \
             "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
         ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
-        printf '%s
-' "$DEFAULT_WALLPAPER" > "$HOME/.local/state/wallpaper/current"
+        printf '%s\n' "$DEFAULT_WALLPAPER" > "$HOME/.local/state/wallpaper/current"
 
         # Give awww a tiny head start so its compositor-side fade begins just
         # before Quickshell repaints the shell palette.
@@ -368,5 +362,4 @@ if command -v swaymsg >/dev/null 2>&1; then
     fi
 fi
 
-printf 'SwayP theme applied: %s
-' "$THEME"
+printf 'SwayP theme applied: %s\n' "$THEME"
