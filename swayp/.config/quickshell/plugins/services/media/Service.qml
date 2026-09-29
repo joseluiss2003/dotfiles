@@ -316,6 +316,29 @@ Item {
     trackOsdTimer.restart()
   }
 
+  function adjustPlayerVolume(delta, targetKey) {
+    var player = playerForKey(targetKey) || activePlayer
+    if (!player) return false
+
+    var streams = playbackStreams
+    for (var i = 0; i < streams.length; i++) {
+      var stream = streams[i]
+      if (!stream || !stream.ready || !stream.audio) continue
+      if (!playerHasPlaybackStream(player, [stream])) continue
+
+      var current = Number(stream.audio.volume)
+      if (!isFinite(current)) continue
+
+      var next = Math.max(0, Math.min(1, current + Number(delta || 0)))
+      if (Math.abs(next - current) < 0.0001) return false
+
+      stream.audio.volume = next
+      return true
+    }
+
+    return false
+  }
+
   function selectPlayer(key) {
     var player = playerForKey(key)
     if (!player || !hasMetadata(player)) return false
