@@ -4,9 +4,9 @@ import Quickshell
 import qs.ui
 import qs.core
 
-// SwayP session launcher. This is intentionally a first-class popup:
-// shared KeyboardPanel surface, shared Button controls and shared keyboard
-// navigation, with no private card/border system.
+// SwayP session launcher. First-class popup built entirely from the shared
+// panel/control system so it follows the same Quattro visual language as the
+// other shell popups.
 BarWidget {
   id: root
   moduleName: "swayp.menu"
@@ -106,14 +106,16 @@ BarWidget {
         anchors.top: parent.top
         spacing: Style.spacing.panelGap
 
+        // Compact hero: the popup identifies itself immediately without
+        // spending a full section on decorative text.
         Item {
           width: parent.width
-          implicitHeight: Style.space(52)
+          implicitHeight: Style.space(48)
 
           PowerSessionMark {
             id: heroMark
-            width: Style.space(26)
-            height: Style.space(26)
+            width: Style.space(28)
+            height: Style.space(28)
             color: root.bar.foreground
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
@@ -123,10 +125,10 @@ BarWidget {
             anchors.left: heroMark.right
             anchors.leftMargin: Style.spacing.panelGap
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.compactGap
+            spacing: Style.spacing.xs
 
             Text {
-              text: "Session"
+              text: "Power & Session"
               color: root.bar.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.title
@@ -134,129 +136,127 @@ BarWidget {
             }
 
             Text {
-              text: "POWER & SESSION"
+              text: "SYSTEM SESSION"
               color: root.bar.foreground
-              opacity: 0.62
+              opacity: 0.58
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
-              font.letterSpacing: 1.1
+              font.letterSpacing: 1.0
             }
           }
-
         }
 
         PanelSeparator {
           foreground: root.bar.foreground
-          opacity: 0.28
+          opacity: 0.22
         }
 
+        // The Quattro-style rhythm is intentionally compact: paired actions
+        // carry equal visual weight while the destructive action gets its own
+        // full-width row.
         Column {
           width: parent.width
           spacing: Style.spacing.controlGap
 
-          Button {
+          Row {
             width: parent.width
-            height: Style.space(44)
-            leftAlign: true
-            horizontalPadding: Style.spacing.controlPaddingX
-            verticalPadding: Style.spacing.compactGap
-            iconText: "󰌾"
-            text: "Lock"
-            iconSize: Style.font.icon
-            fontSize: Style.font.body
-            foreground: root.bar.foreground
-            accent: root.bar.foreground
-            hasCursor: root.cursorActive && root.selectedIndex === 0
-            selectionBorderOnly: true
-            onClicked: root.lock()
-            onHovered: function(h) {
-              if (h) {
-                root.cursorActive = true
-                root.selectedIndex = 0
+            spacing: Style.spacing.controlGap
+
+            Button {
+              width: (parent.width - parent.spacing) / 2
+              height: Style.space(52)
+              iconText: "󰌾"
+              text: "Lock"
+              iconSize: Style.font.icon
+              fontSize: Style.font.bodySmall
+              foreground: root.bar.foreground
+              accent: root.bar.foreground
+              hasCursor: root.cursorActive && root.selectedIndex === 0
+              selectionBorderOnly: true
+              onClicked: root.lock()
+              onHovered: function(h) {
+                if (h) {
+                  root.cursorActive = true
+                  root.selectedIndex = 0
+                }
+              }
+            }
+
+            Button {
+              width: (parent.width - parent.spacing) / 2
+              height: Style.space(52)
+              iconText: "󰒲"
+              text: "Suspend"
+              iconSize: Style.font.icon
+              fontSize: Style.font.bodySmall
+              foreground: root.bar.foreground
+              accent: root.bar.foreground
+              hasCursor: root.cursorActive && root.selectedIndex === 1
+              selectionBorderOnly: true
+              onClicked: root.suspend()
+              onHovered: function(h) {
+                if (h) {
+                  root.cursorActive = true
+                  root.selectedIndex = 1
+                }
+              }
+            }
+          }
+
+          Row {
+            width: parent.width
+            spacing: Style.spacing.controlGap
+
+            Button {
+              width: (parent.width - parent.spacing) / 2
+              height: Style.space(52)
+              iconText: "󰍃"
+              text: "Log out"
+              iconSize: Style.font.icon
+              fontSize: Style.font.bodySmall
+              foreground: root.bar.foreground
+              accent: root.bar.foreground
+              hasCursor: root.cursorActive && root.selectedIndex === 2
+              selectionBorderOnly: true
+              onClicked: root.logout()
+              onHovered: function(h) {
+                if (h) {
+                  root.cursorActive = true
+                  root.selectedIndex = 2
+                }
+              }
+            }
+
+            Button {
+              width: (parent.width - parent.spacing) / 2
+              height: Style.space(52)
+              iconText: "󰜉"
+              text: "Reboot"
+              iconSize: Style.font.icon
+              fontSize: Style.font.bodySmall
+              foreground: root.bar.foreground
+              accent: root.bar.foreground
+              hasCursor: root.cursorActive && root.selectedIndex === 3
+              selectionBorderOnly: true
+              onClicked: root.reboot()
+              onHovered: function(h) {
+                if (h) {
+                  root.cursorActive = true
+                  root.selectedIndex = 3
+                }
               }
             }
           }
 
           Button {
             width: parent.width
-            height: Style.space(44)
+            height: Style.space(46)
             leftAlign: true
-            horizontalPadding: Style.spacing.controlPaddingX
-            verticalPadding: Style.spacing.compactGap
-            iconText: "󰒲"
-            text: "Suspend"
-            iconSize: Style.font.icon
-            fontSize: Style.font.body
-            foreground: root.bar.foreground
-            accent: root.bar.foreground
-            hasCursor: root.cursorActive && root.selectedIndex === 1
-            selectionBorderOnly: true
-            onClicked: root.suspend()
-            onHovered: function(h) {
-              if (h) {
-                root.cursorActive = true
-                root.selectedIndex = 1
-              }
-            }
-          }
-
-          Button {
-            width: parent.width
-            height: Style.space(44)
-            leftAlign: true
-            horizontalPadding: Style.spacing.controlPaddingX
-            verticalPadding: Style.spacing.compactGap
-            iconText: "󰍃"
-            text: "Log out"
-            iconSize: Style.font.icon
-            fontSize: Style.font.body
-            foreground: root.bar.foreground
-            accent: root.bar.foreground
-            hasCursor: root.cursorActive && root.selectedIndex === 2
-            selectionBorderOnly: true
-            onClicked: root.logout()
-            onHovered: function(h) {
-              if (h) {
-                root.cursorActive = true
-                root.selectedIndex = 2
-              }
-            }
-          }
-
-          Button {
-            width: parent.width
-            height: Style.space(44)
-            leftAlign: true
-            horizontalPadding: Style.spacing.controlPaddingX
-            verticalPadding: Style.spacing.compactGap
-            iconText: "󰜉"
-            text: "Reboot"
-            iconSize: Style.font.icon
-            fontSize: Style.font.body
-            foreground: root.bar.foreground
-            accent: root.bar.foreground
-            hasCursor: root.cursorActive && root.selectedIndex === 3
-            selectionBorderOnly: true
-            onClicked: root.reboot()
-            onHovered: function(h) {
-              if (h) {
-                root.cursorActive = true
-                root.selectedIndex = 3
-              }
-            }
-          }
-
-          Button {
-            width: parent.width
-            height: Style.space(44)
-            leftAlign: true
-            horizontalPadding: Style.spacing.controlPaddingX
-            verticalPadding: Style.spacing.compactGap
             iconText: "⏻"
             text: "Power off"
             iconSize: Style.font.icon
-            fontSize: Style.font.body
+            fontSize: Style.font.bodySmall
             foreground: root.bar.foreground
             accent: Color.error
             hasCursor: root.cursorActive && root.selectedIndex === 4
@@ -273,10 +273,10 @@ BarWidget {
 
         Text {
           width: parent.width
-          text: "Select an action"
+          text: "↑ ↓  Select    Enter  Confirm    Esc  Close"
           horizontalAlignment: Text.AlignHCenter
           color: root.bar.foreground
-          opacity: 0.42
+          opacity: 0.34
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.caption
         }
