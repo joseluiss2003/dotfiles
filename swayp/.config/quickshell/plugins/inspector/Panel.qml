@@ -484,7 +484,7 @@ Item {
             title: "GPU"
             value: root.gpu ? Math.round(root.gpu.usage) + "%" : "—"
             detail: root.gpu
-              ? root.gpu.name.replace(/^NVIDIA GeForce /, "RTX ") + " · " +
+              ? root.gpu.name.replace(/^NVIDIA GeForce /, "") + " · " +
                 Math.round(root.gpu.temperature) + "°C · " +
                 Math.round(root.gpu.memoryUsed) + "/" + Math.round(root.gpu.memoryTotal) + " MB"
               : "GPU telemetry unavailable"
@@ -635,7 +635,7 @@ Item {
                     implicitWidth: pluginLabel.implicitWidth + Style.spacing.xxl * 2
                     implicitHeight: Style.space(28)
                     color: Color.surfaceAlt
-                    borderSpec: Border.surfaceSpec("control", "border", Color.controls.border, 1)
+                    borderSpec: Border.surfaceSpec("control", "border", Color.divider, 1)
                     radius: Style.cornerRadius
 
                     Text {
@@ -699,7 +699,7 @@ Item {
     height: parent.height
 
     color: Color.surfaceAlt
-    borderSpec: Border.surfaceSpec("control", "border", Color.controls.border, 1)
+    borderSpec: Border.surfaceSpec("control", "border", Color.divider, 1)
     radius: Style.cornerRadius
 
     Column {
