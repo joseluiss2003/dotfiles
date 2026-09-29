@@ -84,6 +84,7 @@ Current plugin kinds are:
 - panel
 - service
 - menu
+- overlay
 
 A plugin may declare multiple kinds and entry points.
 
