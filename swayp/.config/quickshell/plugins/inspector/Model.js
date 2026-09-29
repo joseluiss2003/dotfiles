@@ -101,11 +101,17 @@ function parseTree(raw) {
     }
 
     if (node.focused === true) {
-      var app = String(node.app_id || "")
-      var klass = node.window_properties ? String(node.window_properties.class || "") : ""
-      var title = String(node.name || "")
-      result.focused = app || klass || title || result.focused
-      result.focusedWorkspace = nextWorkspace
+      if (String(node.type || "") === "workspace")
+        result.focusedWorkspace = String(node.name || nextWorkspace)
+
+      var isClient = String(node.type || "") === "con" && number(node.pid, 0) > 0
+      if (isClient) {
+        var app = String(node.app_id || "")
+        var klass = node.window_properties ? String(node.window_properties.class || "") : ""
+        var title = String(node.name || "")
+        result.focused = app || klass || title || result.focused
+        result.focusedWorkspace = nextWorkspace
+      }
     }
 
     // Leaf containers with a pid represent actual client windows in Sway's tree.
