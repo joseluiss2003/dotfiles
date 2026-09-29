@@ -1,6 +1,8 @@
 # SwayP 1.0 architecture
 
-This is the short reference for how the SwayP 1.0 shell fits together. Update it when the architecture changes.\n\nSwayP began as a small Sway customization project and evolved into a complete desktop shell. The architecture intentionally keeps SwayP independent while taking Omarchy/Quattro as a visual and architectural reference.
+This is the short reference for how the SwayP 1.0 shell fits together. Update it when the architecture changes.
+
+SwayP began as a small Sway customization project and evolved into a complete desktop shell. The architecture intentionally keeps SwayP independent while taking Omarchy/Quattro as a visual and architectural reference.
 
 ## Repository package
 
@@ -105,7 +107,11 @@ Persistent runtime state lives under ~/.local/state/swayp/. Examples include the
 
 Regeneratable output belongs in the appropriate XDG runtime/cache locations, not in the repository.
 
-## External reference\n\nOmarchy and its Quattro direction are an explicit architectural and visual reference for SwayP. SwayP does not treat Omarchy as a runtime dependency; its shell, plugin registry, theme generator and configuration remain SwayP-owned.\n\n## Design rules
+## External reference
+
+Omarchy and its Quattro direction are an explicit architectural and visual reference for SwayP. SwayP does not treat Omarchy as a runtime dependency; its shell, plugin registry, theme generator and configuration remain SwayP-owned.
+
+## Design rules
 - One source of truth per concern.
 - Shared visual primitives belong in core/ and ui/.
 - Feature-specific logic belongs in its plugin directory.
