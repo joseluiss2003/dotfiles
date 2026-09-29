@@ -1,6 +1,6 @@
-# SwayP architecture
+# SwayP 1.0 architecture
 
-This is the short reference for how the project fits together. Update it when the architecture changes.
+This is the short reference for how the SwayP 1.0 shell fits together. Update it when the architecture changes.\n\nSwayP began as a small Sway customization project and evolved into a complete desktop shell. The architecture intentionally keeps SwayP independent while taking Omarchy/Quattro as a visual and architectural reference.
 
 ## Repository package
 
@@ -63,7 +63,7 @@ Theme source lives in the repository under swayp/.config/swayp/themes/<theme>/:
 └── theme.toml
 ~~~
 
-Wallpapers live under ~/.config/swayp/wallpapers/<theme>/.
+Wallpapers are shipped under `swayp/.config/swayp/wallpapers/<theme>/` and become `~/.config/swayp/wallpapers/<theme>/` after Stow. Runtime/user-added wallpapers may also live directly under `~/.config/swayp/wallpapers/<theme>/`.
 
 colors.toml is the canonical palette. Quickshell reads generated palette.json through core/Color.qml.
 
@@ -105,7 +105,7 @@ Persistent runtime state lives under ~/.local/state/swayp/. Examples include the
 
 Regeneratable output belongs in the appropriate XDG runtime/cache locations, not in the repository.
 
-## Design rules
+## External reference\n\nOmarchy and its Quattro direction are an explicit architectural and visual reference for SwayP. SwayP does not treat Omarchy as a runtime dependency; its shell, plugin registry, theme generator and configuration remain SwayP-owned.\n\n## Design rules
 - One source of truth per concern.
 - Shared visual primitives belong in core/ and ui/.
 - Feature-specific logic belongs in its plugin directory.
