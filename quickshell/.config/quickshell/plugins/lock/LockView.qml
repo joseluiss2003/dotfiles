@@ -227,6 +227,7 @@ Item {
               ? root.passwordDotLetterSpacing * root.passwordDotScale
               : 0
             cursorVisible: false
+            cursorPosition: 0
 
             cursorDelegate: Item { width: 0; height: 0; visible: false }
 
@@ -285,19 +286,11 @@ Item {
                   renderType: Text.NativeRendering
                   opacity: 1
 
-                  Component.onCompleted: {
-                    dot.opacity = 0
-                    dotFade.restart()
-                  }
-
-                  NumberAnimation {
-                    id: dotFade
-                    target: dot
-                    property: "opacity"
-                    from: 0
-                    to: 1
-                    duration: 120
-                    easing.type: Easing.OutCubic
+                  Behavior on opacity {
+                    NumberAnimation {
+                      duration: 80
+                      easing.type: Easing.OutCubic
+                    }
                   }
                 }
               }
