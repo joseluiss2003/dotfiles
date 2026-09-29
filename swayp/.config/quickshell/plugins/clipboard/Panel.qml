@@ -9,13 +9,8 @@ import "ClipboardHistory.js" as ClipboardHistory
 Item {
   id: root
 
-  // Lets the bar associate the KeyboardPanel coordinator with this widget.
-  readonly property string moduleName: "swayp.clipboard"
-
   property bool opened: false
-  // Injected by the bar-widget host so PopupCard can anchor to the actual bar button.
-  property Item anchorItem: null
-  property QtObject bar: null
+  property string filterText: ""
   property int selectedIndex: 0
   property bool cursorActive: false
   property bool clearConfirmOpen: false
@@ -26,27 +21,26 @@ Item {
   // Shares the [menu] surface tokens — themes that style the menu also
   // style the clipboard. Selected-row colors composed in the
   // singleton so consumers drop them straight into Rectangle bindings.
-  property color background: Color.popups.background
-  property color foreground: Color.popups.text
-  property color border: Color.popups.border
-  property var borderSpec: Border.surfaceSpec("clipboard", "border", border, Math.max(1, Style.spacing.compactGap))
+  property color background: Color.menu.background
+  property color foreground: Color.menu.text
+  property color border: Color.menu.border
+  property var borderSpec: Border.surfaceSpec("menu", "border", border, Math.max(1, Style.space(2)))
   property color scrim: Color.menu.scrim
-  property color selectedBackground: Color.controls.selectedBackground
-  property color selectedText: Color.controls.selectedText
+  property color selectedBackground: Color.menu.selectedBackground
+  property color selectedText: Color.menu.selectedText
   readonly property int cornerRadius: 0
   property string fontFamily: Style.font.menuFamily
-  property int contentMargin: Style.popup.contentInset
-  property int headerHeight: Style.popup.headerHeight
-  property int contentSpacing: 0
-  property int cardWidth: Style.space(520)
-  property int cardHeight: Style.space(500)
-  property int previewHeight: Style.space(94)
-  property int rowHeight: Style.space(46)
-  readonly property var selectedEntry: displayModel.count > 0 && selectedIndex >= 0 && selectedIndex < displayModel.count ? displayModel.get(selectedIndex) : null
+  property int contentMargin: Style.spacing.panelPadding
+  property int headerHeight: Math.max(Style.space(34), Style.font.title + Style.spacing.controlPaddingY * 2)
+  property int contentSpacing: Style.spacing.md
+  property int cardWidth: Math.min(Style.space(875), panel.width - Style.gapsOut * 2)
+  property int cardHeight: Math.min(Style.space(600), panel.height - Style.gapsOut * 2)
+  property int rowHeight: Math.max(Style.space(50), Style.font.body + Style.font.caption + Style.spacing.rowPaddingX * 2)
   property int historyLimit: 500
 
   function open(payloadJson) {
     root.opened = true
+    root.filterText = ""
     root.selectedIndex = 0
     root.cursorActive = true
     root.disarmPointer()
@@ -136,7 +130,7 @@ Item {
   }
 
   function rebuildDisplay() {
-    var rows = ClipboardHistory.displayRows(root.history, "", 50)
+    var rows = ClipboardHistory.displayRows(root.history, root.filterText, 50)
 
     displayModel.clear()
     for (var i = 0; i < rows.length; i++) {
@@ -181,6 +175,14 @@ Item {
     resultList.positionViewAtIndex(root.selectedIndex, ListView.Contain)
   }
 
+  function setFilter(nextFilter) {
+    root.filterText = nextFilter
+    root.selectedIndex = 0
+    root.cursorActive = true
+    root.disarmPointer()
+    root.rebuildDisplay()
+  }
+
   function disarmPointer() {
     pointerGate.reset()
   }
@@ -192,14 +194,6 @@ Item {
   }
 
   function activateIndex(index) {
-    if (index < 0 || index >= displayModel.count) return
-    var row = displayModel.get(index)
-    // Normal selection means: put this history item back into the clipboard.
-    // Pasting into the focused application remains available via Shift+Enter.
-    root.copySelected(row)
-  }
-
-  function pasteIndex(index) {
     if (index < 0 || index >= displayModel.count) return
     var row = displayModel.get(index)
     root.applySelected(row)
@@ -217,35 +211,44 @@ Item {
     root.openSelected(row)
   }
 
-  function shellQuote(value) {
-    return Util.shellQuote(String(value))
+  function applySelected(row) {
+    if (!row) return
+    root.opened = false
+    if (row.entryType === "image") {
+      root.copySelected(row)
+    Quickshell.execDetached(["bash", "-c", "sleep 0.15; wtype -M shift -k Insert -m shift 2>/dev/null || true"])
+    } else if (row.fullText) {
+      root.copySelected(row)
+    Quickshell.execDetached(["bash", "-c", "sleep 0.15; wtype -M shift -k Insert -m shift 2>/dev/null || true"])
+    }
   }
 
   function copySelected(row) {
     if (!row) return
-    if (row.entryType === "image" && row.path) {
-      var imageCommand = "wl-copy --type " + shellQuote(row.mime || "image/png") + " < " + shellQuote(row.path)
+    root.opened = false
+    if (row.entryType === "image") {
+      if (row.entryType === "image" && row.path) {
+      var imageCommand = "wl-copy --type " + Util.shellQuote(row.mime || "image/png") + " < " + Util.shellQuote(row.path)
       Quickshell.execDetached(["bash", "-c", imageCommand])
-    } else if (row.fullText !== undefined && row.fullText !== null) {
-      var textCommand = "printf %s " + shellQuote(row.fullText) + " | wl-copy"
+    } else {
+      var textCommand = "jq -j --argjson index " + String(row.historyIndex) + " '.[$index].text' " + Util.shellQuote(root.historyPath) + " | wl-copy"
       Quickshell.execDetached(["bash", "-c", textCommand])
     }
-  }
-
-  function applySelected(row) {
-    if (!row) return
-    root.copySelected(row)
-    root.opened = false
-    Quickshell.execDetached(["bash", "-c", "sleep 0.05; wtype -M shift -P Insert -p Insert -m shift 2>/dev/null || true"])
+    } else if (row.fullText) {
+      
+    }
   }
 
   function openSelected(row) {
     if (!row) return
     root.opened = false
-    if (row.entryType === "image" && row.path)
+    if (row.entryType === "image" && row.path) {
       Quickshell.execDetached(["xdg-open", row.path])
-    else if (row.fullText)
-      Quickshell.execDetached(["xdg-open", "data:text/plain," + encodeURIComponent(row.fullText)])
+    } else if (row.fullText !== undefined) {
+      var openDir = Quickshell.env("XDG_STATE_HOME") || (Quickshell.env("HOME") + "/.local/state")
+      var openCommand = "mkdir -p " + Util.shellQuote(openDir + "/swayp/clipboard-open") + "; f=$(mktemp --tmpdir=" + Util.shellQuote(openDir + "/swayp/clipboard-open") + " clipboard.XXXXXX.txt); jq -j --argjson index " + String(row.historyIndex) + " '.[$index].text' " + Util.shellQuote(root.historyPath) + " > \"$f\"; xdg-open \"$f\""
+      Quickshell.execDetached(["bash", "-c", openCommand])
+    }
   }
 
   Component.onCompleted: initProc.running = true
@@ -254,7 +257,7 @@ Item {
 
   PointerMoveGate {
     id: pointerGate
-    referenceItem: resultList
+    referenceItem: card
   }
 
   FileView {
@@ -321,34 +324,43 @@ Item {
     }
   }
 
-  KeyboardPanel {
+  PanelWindow {
     id: panel
-    anchorItem: root.anchorItem
-    bar: root.bar
-    owner: root
-    open: root.opened && !!root.anchorItem
-    keyboardEnabled: false
+    visible: root.opened
+    anchors { top: true; bottom: true; left: true; right: true }
+    color: "transparent"
+    WlrLayershell.namespace: "swayp-clipboard"
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: root.opened ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    exclusionMode: ExclusionMode.Ignore
 
-    padding: 0
-    drawBackground: false
-    borderSpec: Border.surfaceSpec("clipboard", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(root.cardWidth, panel.availableCardWidth)
-    contentHeight: Math.min(root.cardHeight, panel.availableCardHeight)
-    gap: Style.popup.gap
+    Rectangle {
+      anchors.fill: parent
+      color: root.scrim
+    }
+
+    MouseArea {
+      anchors.fill: parent
+      onClicked: root.close()
+    }
 
     BorderSurface {
       id: card
-      anchors.fill: parent
+      width: root.cardWidth
+      height: root.cardHeight
+      radius: root.cornerRadius
+      anchors.centerIn: parent
       color: root.background
       borderSpec: root.borderSpec
-      radius: 0
-      clip: true
+      padding: root.contentMargin
+
+      MouseArea { anchors.fill: parent; onClicked: {} }
 
       Item {
         id: keyCatcher
         anchors.fill: parent
-        focus: root.opened
         z: root.clearConfirmOpen ? 20 : 0
+        focus: true
 
         Keys.priority: Keys.BeforeItem
         Keys.onPressed: function(event) {
@@ -358,7 +370,11 @@ Item {
           }
 
           if (event.key === Qt.Key_Escape) {
-            root.close()
+            if (root.filterText) root.setFilter("")
+            else root.close()
+            event.accepted = true
+          } else if (Util.editsFilter(event, root.filterText)) {
+            root.setFilter(Util.editedFilter(event, root.filterText))
             event.accepted = true
           } else if (event.key === Qt.Key_Delete) {
             if (event.modifiers & Qt.ShiftModifier) root.requestClearHistory()
@@ -384,19 +400,19 @@ Item {
             event.accepted = true
           } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
             if (root.cursorActive && (event.modifiers & Qt.AltModifier)) root.openIndex(root.selectedIndex)
-            else if (root.cursorActive && (event.modifiers & Qt.ShiftModifier)) root.pasteIndex(root.selectedIndex)
+            else if (root.cursorActive && (event.modifiers & Qt.ShiftModifier)) root.copyIndex(root.selectedIndex)
             else if (root.cursorActive) root.activateIndex(root.selectedIndex)
             else if (displayModel.count > 0) root.cursorActive = true
+            event.accepted = true
+          } else if (event.text && event.text.length === 1 && event.text.charCodeAt(0) >= 32 && event.text.charCodeAt(0) !== 127) {
+            root.setFilter(root.filterText + event.text)
             event.accepted = true
           }
         }
 
-        Component.onCompleted: {
-          if (root.opened) Qt.callLater(function() { forceActiveFocus() })
-        }
-
         ConfirmDialog {
           id: clearConfirm
+
           anchors.fill: parent
           opened: root.clearConfirmOpen
           z: 10
@@ -416,369 +432,192 @@ Item {
 
       Column {
         anchors.fill: parent
-        spacing: 0
+        anchors.topMargin: card.contentTopInset
+        anchors.rightMargin: card.contentRightInset
+        anchors.bottomMargin: card.contentBottomInset
+        anchors.leftMargin: card.contentLeftInset
+        spacing: root.contentSpacing
 
-        // Header — same visual grammar as the notification center:
-        // icon, title, quiet subtitle, count.
-        Item {
+        Rectangle {
           width: parent.width
-          height: Style.popup.headerHeight
-
-          Row {
-            anchors.left: parent.left
-            anchors.leftMargin: Style.popup.contentInset
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.popup.sectionGap
-
-            Text {
-              text: "󰅌"
-              color: Color.controls.text
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.display
-              anchors.verticalCenter: parent.verticalCenter
-            }
-
-            Column {
-              spacing: Style.spacing.compactGap
-              anchors.verticalCenter: parent.verticalCenter
-
-              Text {
-                text: "Clipboard"
-                color: Color.text
-                font.family: root.fontFamily
-                font.pixelSize: Style.font.title
-                font.bold: true
-              }
-
-              Text {
-                text: "RECENT FRAGMENTS"
-                color: Color.muted
-                font.family: root.fontFamily
-                font.pixelSize: Style.font.caption
-                font.bold: true
-                font.letterSpacing: 1.1
-              }
-            }
-          }
+          height: root.headerHeight
+          radius: root.cornerRadius
+          color: "transparent"
 
           Text {
+            textFormat: Text.PlainText
+            anchors.left: parent.left
             anchors.right: parent.right
-            anchors.rightMargin: Style.popup.contentInset
             anchors.verticalCenter: parent.verticalCenter
-            text: root.history.length + (root.history.length === 1 ? " ITEM" : " ITEMS")
-            color: Color.muted
+            text: root.filterText || "Search clipboard…"
+            color: root.foreground
+            opacity: root.filterText ? 1 : 0.58
             font.family: root.fontFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
+            font.pixelSize: Style.font.heading
+            elide: Text.ElideRight
           }
         }
 
-        PanelSeparator {
-          width: parent.width - (Style.popup.contentInset * 2)
-          x: Style.popup.contentInset
-          foreground: Color.outline
-        }
-
-        // Preview — the selected fragment gets a proper visual stage instead
-        // of being just another line in the list. This is the part that makes
-        // clipboard feel like a first-class SwayP surface rather than a menu.
         Item {
           width: parent.width
-          height: root.previewHeight
-          visible: root.selectedEntry !== null
+          height: parent.height - root.headerHeight - root.contentSpacing
 
-          BorderSurface {
+          Row {
             anchors.fill: parent
-            color: Util.alpha(root.foreground, 0.028)
-            borderSpec: Border.surfaceSpec("clipboard", "preview", root.border, Style.normalBorderWidth)
-            radius: root.cornerRadius
-            clip: true
+            spacing: 0
 
             Item {
-              anchors.fill: parent
-              anchors.leftMargin: Style.popup.contentInset
-              anchors.rightMargin: Style.popup.contentInset
-              anchors.topMargin: Style.spacing.sm
-              anchors.bottomMargin: Style.spacing.sm
+              width: parent.width / 2
+              height: parent.height
+              clip: true
 
-              Row {
+              ListView {
+                id: resultList
                 anchors.fill: parent
-                spacing: Style.popup.sectionGap
+                anchors.rightMargin: root.contentMargin
+                model: displayModel
+                clip: true
+                spacing: Style.space(4)
+                boundsBehavior: Flickable.StopAtBounds
 
-                Item {
-                  width: Style.space(64)
-                  height: parent.height
+                delegate: Rectangle {
+                  id: row
+                  required property int index
+                  required property string entryType
+                  required property string previewText
+                  required property string fullText
+                  required property string previewImage
 
-                  Rectangle {
-                    anchors.centerIn: parent
-                    width: Style.space(56)
-                    height: Style.space(56)
-                    color: Util.alpha(Color.controls.text, 0.045)
-                    border.width: Style.normalBorderWidth
-                    border.color: Util.alpha(root.border, 0.32)
+                  readonly property bool hasCursor: root.cursorActive && index === root.selectedIndex
+
+                  width: ListView.view.width
+                  height: root.rowHeight
+                  radius: root.cornerRadius
+                  color: hasCursor ? root.selectedBackground : "transparent"
+
+                  Row {
+                    anchors.fill: parent
+                    anchors.leftMargin: Style.space(12)
+                    anchors.rightMargin: Style.space(12)
+                    anchors.topMargin: Style.space(8)
+                    anchors.bottomMargin: Style.space(8)
+                    spacing: Style.space(10)
 
                     Image {
-                      visible: root.selectedEntry && root.selectedEntry.previewImage.length > 0
-                      anchors.fill: parent
-                      anchors.margins: Style.space(6)
-                      source: root.selectedEntry ? root.selectedEntry.previewImage : ""
+                      visible: parent.parent.previewImage.length > 0
+                      width: visible ? parent.height : 0
+                      height: parent.height
+                      source: parent.parent.previewImage
                       fillMode: Image.PreserveAspectFit
                       asynchronous: true
                       smooth: true
                     }
 
                     Text {
-                      visible: root.selectedEntry && root.selectedEntry.previewImage.length === 0
-                      anchors.centerIn: parent
-                      text: root.selectedEntry && root.selectedEntry.entryType === "image" ? "󰋩" : root.selectedEntry && root.selectedEntry.entryType === "file" ? "󰈔" : "󰅌"
-                      color: Color.controls.text
+                      textFormat: Text.PlainText
+                      width: parent.width - (parent.parent.previewImage.length > 0 ? parent.height + parent.spacing : 0)
+                      height: parent.height
+                      text: parent.parent.previewText
+                      color: parent.parent.hasCursor ? root.selectedText : root.foreground
                       font.family: root.fontFamily
-                      font.pixelSize: Style.font.display
+                      font.pixelSize: Style.font.title
+                      opacity: parent.parent.entryType === "image" || parent.parent.entryType === "file" ? 0.72 : 1.0
+                      elide: Text.ElideRight
+                      wrapMode: Text.NoWrap
+                      verticalAlignment: Text.AlignVCenter
                     }
                   }
-                }
 
-                Column {
-                  anchors.verticalCenter: parent.verticalCenter
-                  width: parent.width - Style.space(76)
-                  spacing: Style.spacing.compactGap
-
-                  Text {
-                    text: root.selectedEntry ? (root.selectedEntry.entryType === "image" ? "IMAGE" : root.selectedEntry.entryType === "file" ? "FILE" : "TEXT") : ""
-                    color: Color.muted
-                    font.family: root.fontFamily
-                    font.pixelSize: Style.font.caption
-                    font.bold: true
-                    font.letterSpacing: 1.1
-                  }
-
-                  Text {
-                    width: parent.width
-                    text: root.selectedEntry ? root.selectedEntry.previewText : ""
-                    color: root.foreground
-                    font.family: root.fontFamily
-                    font.pixelSize: Style.font.body
-                    font.weight: Font.Medium
-                    wrapMode: Text.Wrap
-                    elide: Text.ElideRight
-                    maximumLineCount: 2
-                  }
-
-                  Text {
-                    text: root.selectedEntry ? (root.selectedIndex + 1) + " / " + displayModel.count : ""
-                    color: Color.muted
-                    font.family: root.fontFamily
-                    font.pixelSize: Style.font.caption
+                  MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onPositionChanged: function(mouse) {
+                      root.selectFromPointer(row.index, row, mouse)
+                    }
+                    onClicked: {
+                      root.cursorActive = true
+                      root.selectedIndex = row.index
+                      root.activateIndex(row.index)
+                    }
                   }
                 }
               }
             }
-          }
-        }
 
-        PanelSeparator {
-          visible: root.selectedEntry !== null
-          width: parent.width - (Style.popup.contentInset * 2)
-          x: Style.popup.contentInset
-          foreground: Color.outline
-        }
+            Item {
+              width: parent.width / 2
+              height: parent.height
+              clip: true
 
-        // History — deliberately quiet until an item is selected.
-        Item {
-          width: parent.width
-          height: Math.max(
-            Style.space(120),
-            parent.height - Style.popup.headerHeight - root.previewHeight - Style.popup.footerHeight - Style.space(3)
-          )
-          clip: true
-
-          ListView {
-            id: resultList
-            anchors.fill: parent
-            anchors.leftMargin: Style.popup.contentInset
-            anchors.rightMargin: Style.popup.contentInset
-            anchors.topMargin: Style.popup.sectionGap
-            anchors.bottomMargin: Style.popup.sectionGap
-            model: displayModel
-            clip: true
-            spacing: Style.spacing.sm
-            boundsBehavior: Flickable.StopAtBounds
-            interactive: contentHeight > height
-
-            delegate: Rectangle {
-              id: row
-              required property int index
-              required property string entryType
-              required property string previewText
-              required property string fullText
-              required property string previewImage
-
-              readonly property bool hasCursor: root.cursorActive && index === root.selectedIndex
-              width: ListView.view.width
-              height: root.rowHeight
-              color: "transparent"
-              scale: row.hasCursor ? 1.012 : 1.0
-              Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+              property var activeRow: displayModel.count > 0 && root.selectedIndex >= 0 && root.selectedIndex < displayModel.count ? displayModel.get(root.selectedIndex) : null
 
               Rectangle {
-                anchors.fill: parent
-                color: row.hasCursor
-                  ? Color.controls.hoverBackground
-                  : Util.alpha(root.foreground, 0.025)
-                border.width: Style.normalBorderWidth
-                border.color: row.hasCursor
-                  ? Color.controls.selectedBorder
-                  : Util.alpha(root.border, 0.22)
-              }
-
-              Rectangle {
-                visible: row.hasCursor
                 anchors.left: parent.left
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                width: Style.space(1)
-                color: Color.controls.border
+                width: Style.normalBorderWidth
+                color: Util.alpha(root.border, 0.28)
               }
 
-              Row {
+              Text {
+                textFormat: Text.PlainText
+                visible: parent.activeRow && !parent.activeRow.previewImage
                 anchors.fill: parent
-                anchors.leftMargin: Style.popup.contentInset
-                anchors.rightMargin: Style.popup.contentInset
-                spacing: Style.popup.sectionGap
-
-                Item {
-                  width: Style.space(30)
-                  height: parent.height
-
-                  Image {
-                    visible: row.previewImage.length > 0
-                    anchors.centerIn: parent
-                    width: Style.space(24)
-                    height: Style.space(24)
-                    source: row.previewImage
-                    fillMode: Image.PreserveAspectFit
-                    asynchronous: true
-                    smooth: true
-                  }
-
-                  Text {
-                    visible: !row.previewImage
-                    anchors.centerIn: parent
-                    text: row.entryType === "image"
-                      ? "󰋩"
-                      : row.entryType === "file"
-                        ? "󰈔"
-                        : "󰅌"
-                    color: row.hasCursor ? root.selectedText : Color.controls.text
-                    opacity: row.hasCursor ? 1 : 0.78
-                    font.family: root.fontFamily
-                    font.pixelSize: Style.font.body
-                  }
-                }
-
-                Column {
-                  anchors.verticalCenter: parent.verticalCenter
-                  width: parent.width - Style.space(40)
-                  spacing: Style.spacing.compactGap
-
-                  Text {
-                    width: parent.width
-                    text: row.previewText
-                    color: row.hasCursor ? root.selectedText : root.foreground
-                    font.family: root.fontFamily
-                    font.pixelSize: Style.font.body
-                    elide: Text.ElideRight
-                    wrapMode: Text.NoWrap
-                  }
-
-                  Text {
-                    width: parent.width
-                    text: row.entryType === "image"
-                      ? "IMAGE"
-                      : row.entryType === "file"
-                        ? "FILE"
-                        : "TEXT"
-                    color: row.hasCursor ? root.selectedText : Color.muted
-                    opacity: row.hasCursor ? 0.76 : 0.58
-                    font.family: root.fontFamily
-                    font.pixelSize: Style.font.caption
-                    font.bold: true
-                    font.letterSpacing: 0.7
-                  }
-                }
+                anchors.leftMargin: root.contentMargin
+                anchors.rightMargin: 0
+                anchors.topMargin: 0
+                anchors.bottomMargin: 0
+                text: parent.activeRow ? parent.activeRow.fullText : ""
+                color: root.foreground
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.title
+                wrapMode: Text.WrapAnywhere
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignTop
               }
 
-              MouseArea {
+              Image {
+                visible: parent.activeRow && parent.activeRow.previewImage
                 anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-
-                onPositionChanged: function(mouse) {
-                  root.selectFromPointer(row.index, row, mouse)
-                }
-
-                onClicked: {
-                  root.cursorActive = true
-                  root.selectedIndex = row.index
-                  root.activateIndex(row.index)
-                }
+                anchors.leftMargin: root.contentMargin
+                anchors.rightMargin: 0
+                anchors.topMargin: 0
+                anchors.bottomMargin: 0
+                source: parent.activeRow ? parent.activeRow.previewImage : ""
+                fillMode: Image.PreserveAspectFit
+                verticalAlignment: Image.AlignTop
+                asynchronous: true
+                smooth: true
               }
             }
           }
 
           Column {
             anchors.centerIn: parent
-            spacing: Style.spacing.sm
+            spacing: Style.space(8)
             visible: displayModel.count === 0
 
             Text {
               text: "󰅌"
-              color: Color.controls.text
-              opacity: 0.72
+              color: root.selectedText
+              opacity: 0.8
               font.family: root.fontFamily
               font.pixelSize: Style.font.displayLarge
               horizontalAlignment: Text.AlignHCenter
-              width: Style.space(300)
+              width: parent.width
             }
 
             Text {
-              text: "Clipboard is empty"
+              textFormat: Text.PlainText
+              text: root.history.length === 0 ? "Clipboard is empty" : "No matches for “" + root.filterText + "”"
               color: root.foreground
-              opacity: Style.opacity.mutedText
+              opacity: 0.7
               font.family: root.fontFamily
-              font.pixelSize: Style.font.body
+              font.pixelSize: Style.font.title
               horizontalAlignment: Text.AlignHCenter
-              width: Style.space(300)
+              width: parent.width
             }
-          }
-        }
-
-        PanelSeparator {
-          width: parent.width - (Style.popup.contentInset * 2)
-          x: Style.popup.contentInset
-          foreground: Color.outline
-        }
-
-        // Footer — one deliberate action, aligned to the same inset as the list.
-        Item {
-          width: parent.width
-          height: Style.popup.footerHeight
-
-          Button {
-            id: clearButton
-            anchors.right: parent.right
-            anchors.rightMargin: Style.popup.contentInset
-            anchors.verticalCenter: parent.verticalCenter
-            width: Style.space(82)
-            height: Style.space(30)
-            text: "Clear"
-            iconText: "󰆴"
-            foreground: root.foreground
-            fontFamily: root.fontFamily
-            fontSize: Style.font.bodySmall
-            bordered: true
-            enabled: root.history.length > 0
-            onClicked: root.requestClearHistory()
           }
         }
       }
