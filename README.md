@@ -34,11 +34,10 @@ The theme files are the source of truth. Quickshell consumes the generated seman
 ~~~text
 .
 ├── docs/         # Project architecture and development guides
-├── swayp/        # SwayP core: Sway, Zsh, Starship, themes, wallpapers and runtime config
+├── swayp/        # SwayP core: Sway, Zsh, Starship, scripts, themes, wallpapers and runtime config
 ├── quickshell/   # Quickshell shell, core, UI, services and plugins
 ├── kitty/        # Kitty configuration
 ├── fuzzel/       # Fuzzel configuration
-└── scripts/      # User-level commands and generators
 ~~~
 
 ## Documentation
