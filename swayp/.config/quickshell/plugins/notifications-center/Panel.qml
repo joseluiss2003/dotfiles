@@ -67,7 +67,7 @@ Panel {
   // The center is a standalone panel, not a child of the bar. Keep its
   // typography independent from bar lifetime while using the same resolved
   // font that the bar ultimately uses.
-  readonly property string fontFamily: Style.font.resolvedFamily
+  readonly property string fontFamily: Style.font.family
 
   readonly property var notificationPhrases: [
     "Catching signals",
