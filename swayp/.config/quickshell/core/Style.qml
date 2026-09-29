@@ -310,7 +310,7 @@ QtObject {
   // component follows the fontconfig alias configured by SwayP writes.
   // Themes can override per-token via [font] in shell.toml, but the
   // family stays system-wide.
-  property string fontFamily: "Geist"
+  property string fontFamily: "Geist Mono"
 
   // The concrete family `monospace` resolves to right now, e.g.
   // "JetBrainsMono Nerd Font". Bind `font.family` to `fontFamily` (so the
