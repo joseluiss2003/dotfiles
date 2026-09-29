@@ -226,7 +226,7 @@ Item {
             font.letterSpacing: text.length > 0
               ? root.passwordDotLetterSpacing * root.passwordDotScale
               : 0
-            cursorVisible: activeFocus && root.showPasswordCursor && text.length > 0
+            cursorVisible: false
 
             cursorDelegate: Rectangle {
               width: 2
@@ -275,19 +275,11 @@ Item {
 
             Row {
               id: dotRow
-              y: (parent.height - height) / 2
-              x: (parent.width - implicitWidth) / 2
+              anchors.centerIn: parent
               spacing: root.passwordDotLetterSpacing
 
-              Behavior on x {
-                NumberAnimation {
-                  duration: 115
-                  easing.type: Easing.OutCubic
-                }
-              }
-
               Repeater {
-                model: passwordInput.text.length
+                model: 32
 
                 delegate: Text {
                   id: dot
@@ -296,13 +288,14 @@ Item {
                   font.family: Style.font.family
                   font.pixelSize: root.passwordDotFontSize
                   renderType: Text.NativeRendering
-                  opacity: 0
+                  visible: index < passwordInput.text.length
+                  opacity: visible ? 1 : 0
 
-                  NumberAnimation on opacity {
-                    from: 0
-                    to: 1
-                    duration: 165
-                    easing.type: Easing.OutCubic
+                  Behavior on opacity {
+                    NumberAnimation {
+                      duration: 115
+                      easing.type: Easing.OutCubic
+                    }
                   }
                 }
               }
