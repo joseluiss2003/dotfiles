@@ -213,40 +213,37 @@ Item {
 
   function applySelected(row) {
     if (!row) return
+    root.copySelected(row)
     root.opened = false
-    if (row.entryType === "image") {
-      root.copySelected(row)
     Quickshell.execDetached(["bash", "-c", "sleep 0.15; wtype -M shift -k Insert -m shift 2>/dev/null || true"])
-    } else if (row.fullText) {
-      root.copySelected(row)
-    Quickshell.execDetached(["bash", "-c", "sleep 0.15; wtype -M shift -k Insert -m shift 2>/dev/null || true"])
-    }
   }
 
   function copySelected(row) {
     if (!row) return
     root.opened = false
-    if (row.entryType === "image") {
-      if (row.entryType === "image" && row.path) {
+
+    if (row.entryType === "image" && row.path) {
       var imageCommand = "wl-copy --type " + Util.shellQuote(row.mime || "image/png") + " < " + Util.shellQuote(row.path)
       Quickshell.execDetached(["bash", "-c", imageCommand])
-    } else {
+    } else if (row.entryType === "text" || row.entryType === "file") {
       var textCommand = "jq -j --argjson index " + String(row.historyIndex) + " '.[$index].text' " + Util.shellQuote(root.historyPath) + " | wl-copy"
       Quickshell.execDetached(["bash", "-c", textCommand])
-    }
-    } else if (row.fullText) {
-      
     }
   }
 
   function openSelected(row) {
     if (!row) return
     root.opened = false
+
     if (row.entryType === "image" && row.path) {
       Quickshell.execDetached(["xdg-open", row.path])
-    } else if (row.fullText !== undefined) {
+    } else if (row.entryType === "text" || row.entryType === "file") {
       var openDir = Quickshell.env("XDG_STATE_HOME") || (Quickshell.env("HOME") + "/.local/state")
-      var openCommand = "mkdir -p " + Util.shellQuote(openDir + "/swayp/clipboard-open") + "; f=$(mktemp --tmpdir=" + Util.shellQuote(openDir + "/swayp/clipboard-open") + " clipboard.XXXXXX.txt); jq -j --argjson index " + String(row.historyIndex) + " '.[$index].text' " + Util.shellQuote(root.historyPath) + " > \"$f\"; xdg-open \"$f\""
+      var openCommand = "mkdir -p " + Util.shellQuote(openDir + "/swayp/clipboard-open") +
+        "; f=$(mktemp --tmpdir=" + Util.shellQuote(openDir + "/swayp/clipboard-open") +
+        " clipboard.XXXXXX.txt); jq -j --argjson index " + String(row.historyIndex) +
+        " '.[$index].text' " + Util.shellQuote(root.historyPath) +
+        " > \"$f\"; xdg-open \"$f\""
       Quickshell.execDetached(["bash", "-c", openCommand])
     }
   }
