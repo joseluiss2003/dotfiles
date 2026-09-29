@@ -96,67 +96,34 @@ PACKAGES=(
   zsh-syntax-highlighting
 )
 
-# Convenience software kept separate from the SwayP runtime. This preserves
-# the previous "personal machine" setup without making those applications
-# mandatory on every SwayP installation.
-EXTRA_PACKAGES=(
-  alsa-firmware
-  alsa-plugins
-  alsa-utils
-  base-devel
-  bash-completion
+# Optional desktop utilities. Install with: ./install.sh --extras
+# Obsidian is distributed through the AUR; the installer uses an existing
+# yay/paru helper for that single package.
+EXTRAS_PACKAGES=(
+  bat
   btop
-  cantarell-fonts
-  dialog
-  diffutils
-  duf
-  ex-vi-compat
+  evince
+  fd
+  file-roller
   firefox
-  fprintd
+  gedit
   git
-  github-cli
-  glances
-  gst-libav
-  gst-plugin-pipewire
-  gst-plugins-bad
-  gst-plugins-ugly
   imv
-  inxi
-  iwd
   less
-  linux-firmware
-  logrotate
-  lsb-release
   man-db
-  man-pages
-  mesa-utils
   mpv
   nano
-  nano-syntax-highlighting
-  nss-mdns
   openssh
+  p7zip
+  pciutils
   pavucontrol
-  perl
-  pipewire-jack
-  plocate
-  poppler-glib
+  ripgrep
   rsync
-  sof-firmware
-  sudo
   tree
-  ttf-bitstream-vera
-  ttf-opensans
-  unzip
   usbutils
   wget
-  which
-  wireless-regdb
   yazi
-)
-
-AUR_PACKAGES=(
-  localsend
-  spotify
+  zoxide
 )
 
 echo "==> Comprobando distribución..."
@@ -183,28 +150,25 @@ sudo pacman -S --needed "${PACKAGES[@]}"
 
 if [[ "$WITH_EXTRAS" == true ]]; then
     echo
-    echo "==> Instalando extras personales..."
-    sudo pacman -S --needed "${EXTRA_PACKAGES[@]}"
+    echo "==> Instalando utilidades extra..."
+    sudo pacman -S --needed "${EXTRAS_PACKAGES[@]}"
 
     echo
-    echo "==> Instalando aplicaciones AUR..."
+    echo "==> Instalando Obsidian..."
     AUR_HELPER=""
     if command -v yay >/dev/null 2>&1; then
         AUR_HELPER="yay"
     elif command -v paru >/dev/null 2>&1; then
         AUR_HELPER="paru"
     else
-        echo "ERROR: Se necesita yay o paru para instalar los extras AUR:"
-        printf '  - %s\n' "${AUR_PACKAGES[@]}"
-        echo
-        echo "Instala un helper AUR o ejecuta el instalador sin --with-extras."
+        echo "ERROR: Para instalar Obsidian con --extras necesitas yay o paru." >&2
+        echo "    Instala un helper AUR y vuelve a ejecutar ./install.sh --extras." >&2
         exit 1
     fi
 
-    "$AUR_HELPER" -S --needed "${AUR_PACKAGES[@]}"
+    "$AUR_HELPER" -S --needed obsidian
 fi
 
-echo
 echo "==> Activando servicios..."
 
 sudo systemctl enable bluetooth.service
@@ -348,8 +312,7 @@ echo "========================================"
 echo
 echo "Dependencias SwayP instaladas: ${#PACKAGES[@]}"
 if [[ "$WITH_EXTRAS" == true ]]; then
-    echo "Extras personales instalados: ${#EXTRA_PACKAGES[@]}"
-    echo "Aplicaciones AUR instaladas: ${#AUR_PACKAGES[@]}"
+    echo "Utilidades extra instaladas: ${#EXTRAS_PACKAGES[@]} + Obsidian"
 else
     echo "Extras personales: omitidos (usa --with-extras)"
 fi
