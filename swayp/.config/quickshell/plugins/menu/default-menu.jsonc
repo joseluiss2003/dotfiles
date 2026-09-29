@@ -7,6 +7,7 @@
   "system": {"icon":"","label":"System","aliases":["power-menu"]},
   "system.lock": {"icon":"","label":"Lock","action":"qs ipc call lock lock"},
   "system.suspend": {"icon":"󰒲","label":"Suspend","action":"systemctl suspend"},
+  "system.hibernate": {"icon":"󰤁","label":"Hibernate","when":"grep -qw disk /sys/power/state 2>/dev/null","action":"systemctl hibernate"},
   "system.logout": {"icon":"󰍃","label":"Logout","action":"swaymsg exit"},
   "system.reboot": {"icon":"󰜉","label":"Reboot","action":"systemctl reboot"},
   "system.shutdown": {"icon":"󰐥","label":"Shutdown","action":"systemctl poweroff"},
