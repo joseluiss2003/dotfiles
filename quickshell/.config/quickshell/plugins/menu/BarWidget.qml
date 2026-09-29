@@ -60,13 +60,13 @@ BarWidget {
         text: "⏻"
         color: root.bar.foreground
         font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.icon
+        font.pixelSize: Style.font.heading
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
       }
     }
-    opticalSize: Style.bar.iconCanvas
-    fontSize: Style.bar.iconFont
+    opticalSize: Style.space(24)
+    fontSize: Style.font.heading
     onPressed: function(b) {
       if (b === Qt.RightButton) root.logout()
       else root.popupOpen = !root.popupOpen
@@ -119,12 +119,12 @@ BarWidget {
 
           Text {
             id: heroMark
-            width: Style.space(28)
-            height: Style.space(28)
+            width: Style.space(34)
+            height: Style.space(34)
             text: "⏻"
             color: root.bar.foreground
             font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.icon
+            font.pixelSize: Style.font.display
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             anchors.left: parent.left
