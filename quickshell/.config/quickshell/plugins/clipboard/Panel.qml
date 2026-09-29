@@ -764,18 +764,6 @@ Item {
           width: parent.width
           height: Style.popup.footerHeight
 
-          Text {
-            anchors.left: parent.left
-            anchors.leftMargin: Style.popup.contentInset
-            anchors.verticalCenter: parent.verticalCenter
-            text: "ENTER  COPY   ·   SHIFT+ENTER  PASTE"
-            color: Color.muted
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-            font.letterSpacing: 0.4
-          }
-
           Button {
             id: clearButton
             anchors.right: parent.right
