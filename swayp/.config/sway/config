@@ -85,7 +85,9 @@ default_orientation horizontal
 
 # SwayP window chrome: compact, centered titles with a clean border hierarchy.
 title_align center
-titlebar_border_thickness 1
+titlebar_border_thickness 2
+titlebar_padding 3
+hide_edge_borders none
 
 ### =========================
 ### Basic actions
