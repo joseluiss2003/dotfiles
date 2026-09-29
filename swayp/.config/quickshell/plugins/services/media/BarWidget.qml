@@ -66,36 +66,12 @@ BarWidget {
       else
         root.popupOpen = !root.popupOpen
     }
-  }
 
-  MouseArea {
-    anchors.fill: parent
-    hoverEnabled: true
-    cursorShape: root.activePlayer ? Qt.PointingHandCursor : Qt.ArrowCursor
-    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-
-    onClicked: function(mouse) {
-      if (!root.activePlayer) return
-      if (mouse.button === Qt.MiddleButton) {
-        if (root.mediaService) root.mediaService.runAction("next", false)
-      } else if (mouse.button === Qt.RightButton) {
-        if (root.mediaService) root.mediaService.runAction("playPause", false)
-      } else if (mouse.button === Qt.LeftButton) {
-        root.popupOpen = !root.popupOpen
-      }
-    }
-
-    onWheel: function(wheel) {
+    onWheelMoved: function(delta) {
       if (!root.activePlayer || !root.mediaService) return
-      var delta = wheel.angleDelta.y > 0 ? 0.05 : -0.05
-      root.mediaService.adjustPlayerVolume(delta, root.mediaService.playerKey(root.activePlayer))
+      var step = delta > 0 ? 0.05 : -0.05
+      root.mediaService.adjustPlayerVolume(step, root.mediaService.playerKey(root.activePlayer))
     }
-
-    onEntered: if (root.bar)
-      root.bar.showTooltip(root, root.hasMedia
-        ? (root.title + (root.artist ? " — " + root.artist : ""))
-        : "")
-    onExited: if (root.bar) root.bar.hideTooltip(root)
   }
 
   KeyboardPanel {
