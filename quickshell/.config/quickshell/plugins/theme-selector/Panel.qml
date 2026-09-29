@@ -209,8 +209,12 @@ Item {
       "  name=$(awk -F= '/^[[:space:]]*name[[:space:]]*=/{sub(/^[[:space:]]*/, \"\", $2); sub(/[[:space:]]*$/, \"\", $2); gsub(/^\"|\"$/, \"\", $2); print $2; exit}' \"$dir/theme.toml\" 2>/dev/null); " +
       "  [ -n \"$name\" ] || name=\"$id\"; " +
       "  desc=$(awk -F= '/^[[:space:]]*description[[:space:]]*=/{sub(/^[[:space:]]*/, \"\", $2); sub(/[[:space:]]*$/, \"\", $2); gsub(/^\"|\"$/, \"\", $2); print $2; exit}' \"$dir/theme.toml\" 2>/dev/null); " +
-      "  preview=$(find \"$HOME/.config/swayp/wallpapers/$id\" -maxdepth 1 -type f " +
-      "    \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.svg' \\) -print 2>/dev/null | sort | head -n1); " +
+      "  preview=$(find \"$dir\" -maxdepth 1 -type f " +
+      "    \\( -iname 'preview.jpg' -o -iname 'preview.jpeg' -o -iname 'preview.png' -o -iname 'preview.webp' -o -iname 'preview.svg' \\) -print 2>/dev/null | sort | head -n1); " +
+      "  if [ -z \"$preview\" ]; then " +
+      "    preview=$(find \"$HOME/.config/swayp/wallpapers/$id\" -maxdepth 1 -type f " +
+      "      \\( -iname '01.jpg' -o -iname '01.jpeg' -o -iname '01.png' -o -iname '01.webp' -o -iname '01.svg' \\) -print 2>/dev/null | sort | head -n1); " +
+      "  fi; " +
       "  printf '%s\\t%s\\t%s\\t%s\\n' \"$id\" \"$name\" \"$desc\" \"$preview\"; " +
       "done 2>/dev/null | sort",
       "swayp-theme-list",
