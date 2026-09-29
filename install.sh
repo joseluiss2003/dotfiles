@@ -16,7 +16,7 @@ EOF
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --with-extras)
+        --extras)
             EXTRAS=true
             shift
             ;;
@@ -311,7 +311,7 @@ echo " Instalación completada correctamente"
 echo "========================================"
 echo
 echo "Dependencias SwayP instaladas: ${#PACKAGES[@]}"
-if [[ "$WITH_EXTRAS" == true ]]; then
+if [[ "$EXTRAS" == true ]]; then
     echo "Utilidades extra instaladas: ${#EXTRAS_PACKAGES[@]} + Obsidian"
 else
     echo "Extras personales: omitidos (usa --extras)"
