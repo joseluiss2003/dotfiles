@@ -84,11 +84,9 @@ BarWidget {
     }
 
     onWheel: function(wheel) {
-      if (!root.activePlayer) return
-      if (wheel.angleDelta.y > 0 && root.mediaService)
-        root.mediaService.runAction("previous", false)
-      else if (wheel.angleDelta.y < 0 && root.mediaService)
-        root.mediaService.runAction("next", false)
+      if (!root.activePlayer || !root.mediaService) return
+      var delta = wheel.angleDelta.y > 0 ? 0.05 : -0.05
+      root.mediaService.adjustPlayerVolume(delta, root.mediaService.playerKey(root.activePlayer))
     }
 
     onEntered: if (root.bar)
