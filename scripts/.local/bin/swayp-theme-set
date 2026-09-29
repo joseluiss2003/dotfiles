@@ -296,32 +296,32 @@ fi
 # Fork awww first, then swap the staged palette immediately. Both transitions
 # therefore begin from the same shell turn; the wallpaper fade is intentionally
 # matches the Quickshell palette transition duration exactly.
-if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
-    awww img \
-        --transition-type fade \
-        --transition-fps 240 \
-        --transition-duration 0.50 \
-        "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
+# Apply the staged palette regardless of whether this theme has a
+# curated wallpaper pool. Quickshell must not depend on a wallpaper existing.
+# This is especially important for new themes while their wallpaper pools are
+# still being curated.
+if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
+    mv -f "$PALETTE_STAGED_OUTPUT" "$PALETTE_OUTPUT"
 
-    ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
-
-    if [ -f "$PALETTE_STAGED_OUTPUT" ]; then
-        mv -f "$PALETTE_STAGED_OUTPUT" "$PALETTE_OUTPUT"
+    if [ -n "$DEFAULT_WALLPAPER" ] && command -v awww >/dev/null 2>&1; then
+        awww img \
+            --transition-type fade \
+            --transition-fps 240 \
+            --transition-duration 0.50 \
+            "$DEFAULT_WALLPAPER" >/dev/null 2>&1 &
+        ln -sfn "$DEFAULT_WALLPAPER" "$STATE_DIR/background"
 
         # Give awww a tiny head start so its compositor-side fade begins just
-        # before Quickshell repaints the shell palette. 10 ms is the midpoint
-        # between the previous leading/lagging timings.
+        # before Quickshell repaints the shell palette.
         sleep 0.019
+    fi
 
-        # Push the exact new palette directly into the running Quickshell
-        # instead of waiting for FileView's filesystem watcher. The watcher
-        # is intentionally kept as a persistence/fallback path, but it must
-        # not decide when the visual transition starts.
-        if command -v qs >/dev/null 2>&1; then
-            PALETTE_B64="$(base64 -w0 "$PALETTE_OUTPUT")"
-            SHELL_B64="$(base64 -w0 "$THEME_DIR/theme.toml")"
-            qs ipc call shell applyTheme "$PALETTE_B64" "$SHELL_B64" >/dev/null 2>&1 || true
-        fi
+    # Push the exact new palette directly into the running Quickshell instead
+    # of waiting for FileView's filesystem watcher.
+    if command -v qs >/dev/null 2>&1; then
+        PALETTE_B64="$(base64 -w0 "$PALETTE_OUTPUT")"
+        SHELL_B64="$(base64 -w0 "$THEME_DIR/theme.toml")"
+        qs ipc call shell applyTheme "$PALETTE_B64" "$SHELL_B64" >/dev/null 2>&1 || true
     fi
 fi
 
