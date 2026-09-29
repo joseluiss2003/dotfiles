@@ -104,8 +104,7 @@ function parseTree(raw) {
       if (String(node.type || "") === "workspace")
         result.focusedWorkspace = String(node.name || nextWorkspace)
 
-      var isClient = String(node.type || "") === "con" && number(node.pid, 0) > 0
-      if (isClient) {
+      if (String(node.type || "") === "con") {
         var app = String(node.app_id || "")
         var klass = node.window_properties ? String(node.window_properties.class || "") : ""
         var title = String(node.name || "")
