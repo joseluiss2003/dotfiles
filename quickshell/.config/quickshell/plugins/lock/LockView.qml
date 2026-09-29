@@ -24,6 +24,8 @@ Item {
   property real revealProgress: 0
   property int shakeOffset: 0
   property real inputPulse: 0
+  property bool unlocking: false
+  property real unlockProgress: 0
 
   readonly property string placeholderText: "Enter Password"
   readonly property int fieldWidth: 381
@@ -94,6 +96,12 @@ Item {
   }
 
   SequentialAnimation {
+    id: unlockAnimation
+
+    NumberAnimation { target: root; property: "unlockProgress"; from: 0; to: 1; duration: 260; easing.type: Easing.InOutCubic }
+  }
+
+  SequentialAnimation {
     id: inputPulseAnimation
 
     NumberAnimation { target: root; property: "inputPulse"; to: 1; duration: 70; easing.type: Easing.OutCubic }
@@ -115,6 +123,11 @@ Item {
       revealAnimation.restart()
       Qt.callLater(forcePasswordFocus)
     }
+  }
+
+  onUnlockingChanged: {
+    if (unlocking) unlockAnimation.restart()
+    else unlockProgress = 0
   }
 
   onFailureMessageChanged: {
@@ -172,7 +185,7 @@ Item {
       anchors.verticalCenter: parent.verticalCenter
       anchors.horizontalCenterOffset: root.shakeOffset
       spacing: 40
-      opacity: root.revealProgress
+      opacity: root.revealProgress * (1 - (root.unlockProgress * 0.95))
       transform: [
         Translate {
           y: (1 - root.revealProgress) * 22
@@ -180,8 +193,8 @@ Item {
         Scale {
           origin.x: parent.width / 2
           origin.y: parent.height / 2
-          xScale: 0.97 + (root.revealProgress * 0.03)
-          yScale: 0.97 + (root.revealProgress * 0.03)
+          xScale: (0.97 + (root.revealProgress * 0.03)) * (1 - (root.unlockProgress * 0.035))
+          yScale: (0.97 + (root.revealProgress * 0.03)) * (1 - (root.unlockProgress * 0.035))
         }
       ]
 
