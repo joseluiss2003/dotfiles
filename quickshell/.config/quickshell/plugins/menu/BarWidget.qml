@@ -250,7 +250,7 @@ BarWidget {
             width: parent.width
             height: Style.space(46)
             leftAlign: true
-            iconText: "⏻"
+            iconText: "󰐥"
             text: "Power off"
             iconSize: Style.font.icon
             fontSize: Style.font.bodySmall
