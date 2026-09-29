@@ -233,6 +233,24 @@ for name in "${LEGACY_ROOT_LINKS[@]}"; do
 done
 
 echo
+echo
+echo "==> Limpiando enlaces de Stow legacy..."
+
+remove_legacy_link() {
+    local target="$1"
+    local expected="$2"
+
+    if [[ -L "$target" ]] && [[ "$(readlink -f -- "$target")" == "$(realpath -- "$expected")" ]]; then
+        rm -- "$target"
+        echo "    ✓ Migrado $target"
+    fi
+}
+
+remove_legacy_link "$HOME/.config/sway/config" "$DOTFILES_DIR/sway/.config/sway/config"
+remove_legacy_link "$HOME/.config/starship.toml" "$DOTFILES_DIR/starship/.config/starship.toml"
+remove_legacy_link "$HOME/.zshrc" "$DOTFILES_DIR/zsh/.zshrc"
+
+echo
 echo "==> Detectando paquetes de Stow..."
 
 STOW_PACKAGES=(
