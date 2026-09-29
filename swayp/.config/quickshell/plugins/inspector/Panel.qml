@@ -31,15 +31,12 @@ Item {
   readonly property var nightlightService: root.shell
     ? root.shell.firstPartyServiceFor("swayp.nightlight")
     : null
-  readonly property var batteryService: root.shell
-    ? root.shell.firstPartyServiceFor("swayp.battery")
-    : null
-  readonly property var mediaService: root.shell
-    ? root.shell.firstPartyServiceFor("swayp.media")
-    : null
-  readonly property var idleService: root.shell
-    ? root.shell.firstPartyServiceFor("swayp.idle")
-    : null
+  readonly property string focusedWorkspaceName: I3.focusedWorkspace
+    ? String(I3.focusedWorkspace.name || "")
+    : ""
+  readonly property string focusedMonitorName: I3.focusedMonitor
+    ? String(I3.focusedMonitor.name || "")
+    : ""
 
   readonly property color panelBackground: Color.menu.background
   readonly property color panelForeground: Color.menu.text
@@ -73,6 +70,9 @@ Item {
     treeProc.running = false
     gpuProc.running = false
     versionsProc.running = false
+
+    I3.refreshMonitors()
+    I3.refreshWorkspaces()
 
     statsProc.running = true
     outputsProc.running = true
@@ -545,8 +545,11 @@ Item {
                   required property var modelData
                   width: parent.width
                   height: Style.space(34)
-                  color: (modelData.focused || modelData.workspace === root.swayState.focusedWorkspace)
-                    ? Color.active : "transparent"
+                  color: (
+                    modelData.focused ||
+                    modelData.name === root.focusedMonitorName ||
+                    modelData.workspace === root.focusedWorkspaceName
+                  ) ? Color.active : "transparent"
                   borderSpec: Border.none()
                   radius: Style.cornerRadius
 
@@ -590,7 +593,10 @@ Item {
               RuntimeLine { label: "Sway"; value: root.swayVersion }
               RuntimeLine { label: "Quickshell"; value: root.quickshellVersion }
               RuntimeLine { label: "Focused"; value: root.swayState.focused || "—" }
-              RuntimeLine { label: "Workspace"; value: root.swayState.focusedWorkspace || "—" }
+              RuntimeLine {
+                label: "Workspace"
+                value: root.focusedWorkspaceName || root.swayState.focusedWorkspace || "—"
+              }
             }
           }
         }
@@ -684,6 +690,9 @@ Item {
     required property string value
     required property string detail
     required property color accent
+
+    width: parent.width
+    height: parent.height
 
     color: Color.surfaceAlt
     borderSpec: Border.surfaceSpec("control", "border", Color.controls.border, 1)
