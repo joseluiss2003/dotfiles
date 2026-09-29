@@ -21,48 +21,42 @@ BarWidget {
     : ""
 
   property bool popupOpen: false
-  property real maxLabelWidth: 190
-  readonly property real openPanelIndicatorWidth: Math.max(Style.spacing.sectionGap, row.implicitWidth)
+  readonly property real openPanelIndicatorWidth: Style.bar.iconSlot
 
   function close() { popupOpen = false }
 
+  // Media behaves like the other right-side applets: it only occupies space
+  // while a player exposes useful track metadata.
   visible: hasMedia
-  implicitWidth: hasMedia ? row.implicitWidth + Style.spacing.xxl : 0
+  implicitWidth: hasMedia ? Style.bar.iconSlot : 0
   implicitHeight: barSize
 
-  // Quiet now-playing strip: accent is reserved for the music glyph.
-  Row {
-    id: row
-    anchors.centerIn: parent
-    spacing: Style.spacing.sm
+  WidgetButton {
+    id: button
+    anchors.fill: parent
+    bar: root.bar
+    foreground: Color.foreground
+    passiveColor: Color.foreground
+    activeColor: Color.foreground
+    hoverColor: Color.foreground
+    useActiveColor: false
+    text: "󰝚"
+    labelVisible: true
+    fontSize: Style.font.icon
+    horizontalMargin: 0
+    verticalPadding: 0
+    tooltipText: root.hasMedia
+      ? (root.title + (root.artist ? " — " + root.artist : ""))
+      : "Media"
 
-    Text {
-      text: "󰝚"
-      color: Color.foreground
-      font.family: root.bar.fontFamily
-      font.pixelSize: Style.font.body
-      anchors.verticalCenter: parent.verticalCenter
-    }
-
-    Item {
-      id: scrollClip
-      width: Math.min(root.maxLabelWidth, labelText.implicitWidth)
-      height: labelText.implicitHeight
-      clip: true
-      anchors.verticalCenter: parent.verticalCenter
-
-      Text {
-        id: labelText
-        textFormat: Text.PlainText
-        text: root.artist ? root.title + "-" + root.artist : root.title
-        color: Color.foreground
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.body
-        font.bold: true
-        anchors.verticalCenter: parent.verticalCenter
-        width: scrollClip.width
-        elide: Text.ElideRight
-      }
+    onPressed: function(b) {
+      if (!root.activePlayer || !root.mediaService) return
+      if (b === Qt.MiddleButton)
+        root.mediaService.runAction("next", false)
+      else if (b === Qt.RightButton)
+        root.mediaService.runAction("playPause", false)
+      else
+        root.popupOpen = !root.popupOpen
     }
   }
 
