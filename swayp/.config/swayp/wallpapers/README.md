@@ -2,12 +2,16 @@
 
 Each theme can ship its own wallpaper pool:
 
+- `black-metal/`
 - `catppuccin/`
+- `everforest/`
+- `flexoki-light/`
 - `gruvbox/`
 - `kanagawa/`
 - `osaka-jade/`
-- `ristretto/`
+- `rose-pine-dawn/`
+- `srcery/`
 
 The wallpaper picker prefers the pool belonging to the currently active theme and falls back to `~/Pictures/wallpapers` when that pool is empty.
 
-Keep the wallpaper files in these directories; the future SwayP style selector will use the same pools for previews and selection.
+A theme does not need a wallpaper pool to be valid. When a pool is present, the first supported image is used as the default wallpaper and selector preview.
