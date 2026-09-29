@@ -112,6 +112,7 @@ See:
 - [Plugin development](docs/PLUGINS.md)
 - [Theme development](docs/THEMES.md)
 - [Quickshell structure](swayp/.config/quickshell/README.md)
+- [Project status](docs/PROJECT_STATUS.md)
 
 ## Installation
 
