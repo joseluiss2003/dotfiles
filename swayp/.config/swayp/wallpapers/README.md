@@ -1,14 +1,13 @@
 # SwayP theme wallpaper pools
 
-Each theme can ship its own wallpaper pool:
+Each theme can ship its own wallpaper pool. Current curated pools:
 
 - `black-metal/`
 - `catppuccin/`
 - `gruvbox/`
 - `kanagawa/`
 - `osaka-jade/`
-- `rose-pine-dawn/`
 
-The wallpaper picker prefers the pool belonging to the currently active theme and falls back to `~/Pictures/wallpapers` when that pool is empty.
+Themes without a curated pool remain valid and fall back to `~/Pictures/wallpapers`.
 
-A theme does not need a wallpaper pool to be valid. When a pool is present, the first supported image is used as the default wallpaper and selector preview.
+When a pool is present, its first supported image is used as the default wallpaper and selector preview.
