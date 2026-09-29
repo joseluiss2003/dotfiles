@@ -19,6 +19,7 @@ Item {
   property bool pendingSessionLock: false
   property bool authenticatingPassword: false
   property bool fingerprintAuthenticating: false
+  property bool unlocking: false
   property bool passwordPamConfigured: false
   property bool fingerprintConfigured: false
   property bool previewVisible: false
@@ -147,9 +148,22 @@ Item {
     pendingSessionLockTimer.stop()
     resetAuthenticationState()
     idleBlankTimer.stop()
-    sessionLock.locked = false
-    logEvent("unlocked")
+    unlocking = true
+    unlockReleaseTimer.restart()
+    logEvent("unlock-animation")
     runWake()
+  }
+
+  Timer {
+    id: unlockReleaseTimer
+    interval: 260
+    repeat: false
+    onTriggered: {
+      root.unlocking = false
+      root.sessionLock.locked = false
+      root.logEvent("unlocked")
+      root.runWake()
+    }
   }
 
   function armBlankTimer() {
@@ -295,6 +309,7 @@ Item {
         failureMessage: root.failureMessage
         failedAttempts: root.failedAttempts
         inputEnabled: root.lockRequested
+        unlocking: root.unlocking
         userName: root.userName
         loadBackground: root.locked
         displaysBlank: root.screenBlank(lockSurface.screen ? lockSurface.screen.name : "")
