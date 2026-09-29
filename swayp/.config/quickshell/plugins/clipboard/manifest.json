@@ -2,21 +2,14 @@
   "schemaVersion": 1,
   "id": "swayp.clipboard",
   "name": "Clipboard",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "SwayP",
-  "description": "Clipboard history dropdown",
+  "description": "Omarchy Quattro-inspired clipboard history overlay for text and images",
   "kinds": [
-    "bar-widget"
+    "overlay"
   ],
   "keepLoaded": true,
-  "barWidget": {
-    "displayName": "Clipboard",
-    "description": "Opens the clipboard history dropdown",
-    "category": "System",
-    "allowMultiple": false,
-    "defaultSection": "right"
-  },
   "entryPoints": {
-    "barWidget": "BarWidget.qml"
+    "overlay": "Panel.qml"
   }
 }
