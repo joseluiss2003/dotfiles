@@ -43,12 +43,14 @@ PACKAGES=(
   curl
   fastfetch
   ffmpegthumbnailer
+  fontconfig
   fuzzel
   greetd
   greetd-tuigreet
   grim
   iw
   iputils
+  unzip
   jq
   kitty
   libnotify
@@ -266,6 +268,49 @@ echo "==> Aplicando dotfiles..."
 
 cd "$DOTFILES_DIR"
 stow -t "$HOME" "$STOW_PACKAGE"
+
+echo
+echo "==> Instalando Geist v1.7.2..."
+
+GEIST_VERSION="1.7.2"
+GEIST_URL="https://github.com/vercel/geist-font/releases/download/v1.7.2/geist-font-v1.7.2.zip"
+GEIST_SHA256="7fc800d2ac6b92844895196e5041aca55d814c15db70c44f79b3b83ab82b04e"
+GEIST_CACHE_DIR="$HOME/.cache/swayp"
+GEIST_ARCHIVE="$GEIST_CACHE_DIR/geist-font-v${GEIST_VERSION}.zip"
+GEIST_FONT_DIR="$HOME/.local/share/fonts/Geist"
+
+mkdir -p "$GEIST_CACHE_DIR" "$GEIST_FONT_DIR"
+
+if [[ ! -f "$GEIST_FONT_DIR/Geist-Regular.ttf" ]]; then
+    echo "    Descargando Geist v${GEIST_VERSION}..."
+    curl -fL --retry 3 --retry-delay 2 -o "$GEIST_ARCHIVE" "$GEIST_URL"
+
+    echo "    Verificando SHA-256..."
+    echo "$GEIST_SHA256  $GEIST_ARCHIVE" | sha256sum -c -
+
+    GEIST_EXTRACT_DIR="$(mktemp -d)"
+    trap 'rm -rf "$GEIST_EXTRACT_DIR"' EXIT
+
+    unzip -q "$GEIST_ARCHIVE" 'geist-font/Geist/ttf/*.ttf' -d "$GEIST_EXTRACT_DIR"
+
+    while IFS= read -r font; do
+        install -Dm644 "$font" "$GEIST_FONT_DIR/$(basename "$font")"
+    done < <(find "$GEIST_EXTRACT_DIR/geist-font/Geist/ttf" -maxdepth 1 -type f -name '*.ttf' -print)
+
+    rm -rf "$GEIST_EXTRACT_DIR"
+    trap - EXIT
+else
+    echo "    Geist v${GEIST_VERSION} ya está instalado."
+fi
+
+fc-cache -f "$GEIST_FONT_DIR"
+
+if ! fc-match -f '%{family}\n' Geist | grep -qx 'Geist'; then
+    echo "ERROR: Fontconfig no detecta Geist después de la instalación." >&2
+    exit 1
+fi
+
+echo "    ✓ Geist v${GEIST_VERSION} disponible para Quickshell."
 
 echo
 echo "==> Configurando greetd + tuigreet..."
