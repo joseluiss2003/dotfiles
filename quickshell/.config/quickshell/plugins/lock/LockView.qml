@@ -270,16 +270,21 @@ Item {
 
           Item {
             id: passwordDots
-            anchors.centerIn: passwordInput
-            width: dotRow.implicitWidth
-            height: dotRow.implicitHeight
+            anchors.fill: passwordInput
             visible: passwordInput.text.length > 0 && !root.authenticatingPassword && root.failureMessage.length === 0
-            scale: root.passwordDotScale
 
             Row {
               id: dotRow
-              anchors.centerIn: parent
+              y: (parent.height - height) / 2
+              x: (parent.width - implicitWidth) / 2
               spacing: root.passwordDotLetterSpacing
+
+              Behavior on x {
+                NumberAnimation {
+                  duration: 115
+                  easing.type: Easing.OutCubic
+                }
+              }
 
               Repeater {
                 model: passwordInput.text.length
@@ -292,29 +297,12 @@ Item {
                   font.pixelSize: root.passwordDotFontSize
                   renderType: Text.NativeRendering
                   opacity: 0
-                  scale: 0.72
-                  transformOrigin: Item.Center
 
-                  ParallelAnimation {
-                    running: true
-
-                    NumberAnimation {
-                      target: dot
-                      property: "opacity"
-                      from: 0
-                      to: 1
-                      duration: 95
-                      easing.type: Easing.OutCubic
-                    }
-
-                    NumberAnimation {
-                      target: dot
-                      property: "scale"
-                      from: 0.72
-                      to: 1
-                      duration: 155
-                      easing.type: Easing.OutCubic
-                    }
+                  NumberAnimation on opacity {
+                    from: 0
+                    to: 1
+                    duration: 165
+                    easing.type: Easing.OutCubic
                   }
                 }
               }
