@@ -53,20 +53,9 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: ""
-    iconComponent: Component {
-      Text {
-        anchors.fill: parent
-        text: "⏻"
-        color: root.bar.foreground
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.heading
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-      }
-    }
-    opticalSize: Style.space(24)
-    fontSize: Style.font.heading
+    text: "⏻"
+    fontSize: Style.bar.iconFont
+    opticalSize: Style.bar.iconCanvas
     onPressed: function(b) {
       if (b === Qt.RightButton) root.logout()
       else root.popupOpen = !root.popupOpen
@@ -117,16 +106,14 @@ BarWidget {
           width: parent.width
           implicitHeight: Style.space(48)
 
-          Text {
+          OpticalGlyph {
             id: heroMark
             width: Style.space(34)
             height: Style.space(34)
             text: "⏻"
             color: root.bar.foreground
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.display
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+            fontFamily: root.bar.fontFamily
+            fontSize: Style.font.display
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
           }
