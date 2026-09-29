@@ -115,6 +115,7 @@ bindsym $mod+Shift+s exec env PATH="$HOME/.local/bin:$PATH" swayp-screenshot-edi
 bindsym --no-repeat $mod+w exec env PATH="$HOME/.local/bin:$PATH" wallpaper-picker
 bindsym --no-repeat $mod+t exec env PATH="$HOME/.local/bin:$PATH" swayp-theme-picker
 bindsym --no-repeat $mod+Ctrl+v exec qs ipc call shell toggle swayp.clipboard "{}"
+bindsym --no-repeat $mod+Shift+i exec qs ipc call shell toggle swayp.inspector "{}"
 
 # Manual lock
 bindsym $mod+l exec qs ipc call lock lock
