@@ -78,6 +78,7 @@ Item {
     !root.powerSaverActive
 
   signal submitPassword(string password)
+  signal unlockAnimationFinished()
   signal passwordTextEdited(string password)
   signal clearFailureRequested()
   signal wakeRequested()
@@ -98,7 +99,15 @@ Item {
   SequentialAnimation {
     id: unlockAnimation
 
-    NumberAnimation { target: root; property: "unlockProgress"; from: 0; to: 1; duration: 260; easing.type: Easing.InOutCubic }
+    NumberAnimation {
+      target: root
+      property: "unlockProgress"
+      from: 0
+      to: 1
+      duration: 260
+      easing.type: Easing.InOutCubic
+      onFinished: root.unlockAnimationFinished()
+    }
   }
 
   SequentialAnimation {
