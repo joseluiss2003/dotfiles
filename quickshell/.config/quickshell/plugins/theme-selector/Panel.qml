@@ -25,9 +25,11 @@ Item {
   property color muted: Color.foreground
 
   readonly property int previewWidth: Style.space(760)
-  readonly property int previewHeight: Style.space(470)
+  // Theme previews are 16:9 (1920x1080 class). Keep the cards at the
+  // source aspect ratio so PreserveAspectCrop never cuts the artwork.
+  readonly property int previewHeight: Math.round(previewWidth * 9 / 16)
   readonly property int sideWidth: Style.space(250)
-  readonly property int sideHeight: Style.space(350)
+  readonly property int sideHeight: Math.round(sideWidth * 9 / 16)
   readonly property int sideGap: Style.space(18)
   readonly property int carouselSlots: themeModel.count >= 5 ? 5 : (themeModel.count > 1 ? 3 : 1)
   readonly property int carouselCenter: Math.floor(carouselSlots / 2)
