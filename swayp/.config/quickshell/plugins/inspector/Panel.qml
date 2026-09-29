@@ -484,7 +484,8 @@ Item {
             title: "GPU"
             value: root.gpu ? Math.round(root.gpu.usage) + "%" : "—"
             detail: root.gpu
-              ? root.gpu.name + " · " + Math.round(root.gpu.temperature) + "°C · " +
+              ? root.gpu.name.replace(/^NVIDIA GeForce /, "RTX ") + " · " +
+                Math.round(root.gpu.temperature) + "°C · " +
                 Math.round(root.gpu.memoryUsed) + "/" + Math.round(root.gpu.memoryTotal) + " MB"
               : "GPU telemetry unavailable"
             accent: root.gpu ? root.metricColor(root.gpu.temperature, 75, false) : root.muted
@@ -568,12 +569,15 @@ Item {
                     anchors.right: parent.right
                     anchors.rightMargin: Style.spacing.sm
                     anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width - Style.spacing.sm * 2 - Style.space(80)
                     text: modelData.width + "×" + modelData.height +
                       "  " + Model.formatRefresh(modelData.refresh) +
                       "  " + Model.formatScale(modelData.scale)
                     color: root.muted
                     font.family: Style.font.family
                     font.pixelSize: Style.font.caption
+                    horizontalAlignment: Text.AlignRight
+                    elide: Text.ElideLeft
                   }
                 }
               }
