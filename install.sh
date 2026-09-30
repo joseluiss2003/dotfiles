@@ -48,7 +48,6 @@ PACKAGES=(
   greetd-tuigreet
   grim
   iw
-  inotify-tools
   iputils
   unzip
   jq
@@ -79,7 +78,6 @@ PACKAGES=(
   swayidle
   swaylock
   ttf-dejavu
-  ttf-jetbrains-mono-nerd
   ttf-liberation
   upower
   wireplumber
@@ -243,17 +241,6 @@ stow -t "$HOME" "$STOW_PACKAGE"
 
 echo
 echo "==> Instalando Maple Mono NF..."
-
-AUR_HELPER=""
-if command -v yay >/dev/null 2>&1; then
-    AUR_HELPER="yay"
-elif command -v paru >/dev/null 2>&1; then
-    AUR_HELPER="paru"
-else
-    echo "ERROR: SwayP requiere un helper AUR (yay o paru) para instalar Maple Mono NF." >&2
-    echo "       Instala yay o paru y vuelve a ejecutar ./install.sh." >&2
-    exit 1
-fi
 
 "$AUR_HELPER" -S --needed maplemono-nf
 
