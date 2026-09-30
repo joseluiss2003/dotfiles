@@ -38,11 +38,12 @@ function parseProfiles(raw, previousIndex) {
   }
 }
 
-function profileIcon(name) {
-  if (name === "power-saver") return "󰌪"
-  if (name === "balanced") return "󰊚"
-  if (name === "performance") return "󰓅"
-  return "󰂄"
+function profileIcon(name, icons) {
+  var i = icons || {}
+  if (name === "power-saver") return i.profilePowerSaver || ""
+  if (name === "balanced") return i.profileBalanced || ""
+  if (name === "performance") return i.profilePerformance || ""
+  return i.profileFallback || ""
 }
 
 function batteryFraction(device) {
@@ -63,18 +64,20 @@ function chargeThresholdActive(device, onBattery, states) {
   return Number(d.changeRate || 0) <= 0.2 || Number(d.timeToFull || 0) >= 8 * 60 * 60
 }
 
-function batteryIcon(device, onBattery, states) {
+function batteryIcon(device, onBattery, states, icons) {
   var d = device || {}
   if (!d.isPresent) return ""
 
-  var chargingIcons = ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
-  var defaultIcons = ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+  var i = icons || {}
+  var chargingIcons = Array.isArray(i.batteryCharging) ? i.batteryCharging : []
+  var defaultIcons = Array.isArray(i.battery) ? i.battery : []
   var index = Math.max(0, Math.min(9, Math.floor(d.percentage * 10)))
   var threshold = chargeThresholdActive(d, onBattery, states)
 
+  if (defaultIcons.length === 0) return ""
   if (threshold) return defaultIcons[index]
-  if (d.state === states.FullyCharged) return "󰂅"
-  if (!onBattery) return chargingIcons[index]
+  if (d.state === states.FullyCharged) return chargingIcons[9] || defaultIcons[9]
+  if (!onBattery) return chargingIcons[index] || defaultIcons[index]
   return defaultIcons[index]
 }
 
