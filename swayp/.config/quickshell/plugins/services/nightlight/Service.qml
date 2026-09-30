@@ -10,7 +10,7 @@ Item {
 
   // Keep in sync with bin/swayp-toggle-nightlight, which sets the same
   // temperatures for callers outside the shell (keybindings, menu, ssh).
-  readonly property int nightTemperature: 4000
+  readonly property int nightTemperature: 4800
   readonly property int dayTemperature: 6500
 
   property bool stateLoaded: false
