@@ -22,7 +22,7 @@ SwayP is designed to be **Sway-native**, modular and maintainable. It takes arch
 - Multi-monitor-aware shell components.
 - Centralized semantic colors shared by Sway, Quickshell and applications.
 - Kitty, Zsh, Starship, Fastfetch and Fuzzel integration.
-- Geist typography for the Quickshell UI.
+- Maple Mono NF typography across Sway and Quickshell.
 - A reproducible Arch Linux installer using GNU Stow.
 - Optional desktop utilities through `./install.sh --extras`.
 
@@ -132,7 +132,7 @@ The installer:
 2. enables the required system services;
 3. migrates legacy SwayP Stow links when present;
 4. applies the unified `swayp/` package with GNU Stow;
-5. installs and verifies Geist v1.7.2;
+5. installs and verifies Maple Mono NF through the Arch AUR;
 6. configures greetd + tuigreet;
 7. configures Zsh as the default shell.
 
@@ -142,7 +142,7 @@ The installer:
 ./install.sh --extras
 ```
 
-This installs the optional desktop utility set and Obsidian. Obsidian is obtained through an existing `yay` or `paru` helper.
+This installs the optional desktop utility set and Obsidian. The standard installation also requires an existing `yay` or `paru` helper to install Maple Mono NF; `--extras` reuses that helper for Obsidian.
 
 Run:
 
@@ -194,7 +194,7 @@ SwayP is built on and around several open-source projects, including:
 - [Starship](https://starship.rs/)
 - [Fastfetch](https://github.com/fastfetch-cli/fastfetch)
 - [GNU Stow](https://www.gnu.org/software/stow/)
-- [Geist](https://github.com/vercel/geist-font)
+- [Maple Mono](https://github.com/subframe7536/maple-font)
 
 Their respective licenses and upstream projects remain their own.
 
