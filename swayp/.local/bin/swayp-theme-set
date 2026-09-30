@@ -249,11 +249,11 @@ bright_cyan = "{bc}"
 block_title = {{ fg = "{accent}", modifiers = ["Bold"] }}
 border = {{ fg = "{muted}" }}
 playback_status = {{ fg = "{green}", modifiers = ["Bold"] }}
-playback_track = {{ fg = "{fg}", modifiers = ["Bold"] }}
-playback_artists = {{ fg = "{accent}" }}
+playback_track = {{ fg = "{bfg}", modifiers = ["Bold"] }}
+playback_artists = {{ fg = "{accent}", modifiers = ["Bold"] }}
 playback_album = {{ fg = "{muted}" }}
 playback_genres = {{ fg = "{muted}", modifiers = ["Italic"] }}
-playback_metadata = {{ fg = "{muted}" }}
+playback_metadata = {{ fg = "{muted}", modifiers = ["Dim"] }}
 playback_progress_bar = {{ fg = "{accent}", bg = "{c["lighter_background"]}" }}
 playback_progress_bar_unfilled = {{ bg = "{c["lighter_background"]}" }}
 current_playing = {{ fg = "{green}", modifiers = ["Bold"] }}
