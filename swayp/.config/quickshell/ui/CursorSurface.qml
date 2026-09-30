@@ -46,8 +46,11 @@ BorderSurface {
     anchors.verticalCenter: parent.verticalCenter
     z: 10
   }
+  // Keyboard selection uses the marker + fill as its primary affordance.
+  // Avoid a full row outline here: it keeps dense lists visually quiet while
+  // actual focused controls can still use Button's focus ring.
   borderSpec: root.hasCursor
-    ? Border.controlSpec("hover-cursor", root.foreground, root.accent)
+    ? Border.none()
     : (root.current
       ? Border.controlSpec("selected", root.foreground, root.accent)
       : (root.bordered
