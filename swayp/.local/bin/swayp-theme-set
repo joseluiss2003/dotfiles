@@ -28,7 +28,6 @@ PALETTE_STAGED_OUTPUT="${STATE_DIR}/palette.json.next"
 # Keep Quickshell out of the wallpaper transition path to avoid overlapping
 # center-out masks.
 GENERATED_DIR="${HOME}/.config/swayp/generated"
-SPOTIFY_CONFIG_DIR="${HOME}/.config/spotify-player"
 
 [ -n "$THEME" ] || { printf '%s\n' "usage: swayp-theme-set <theme>" >&2; exit 2; }
 [ -d "$THEME_DIR" ] || { printf 'Unknown SwayP theme: %s\n' "$THEME" >&2; exit 1; }
