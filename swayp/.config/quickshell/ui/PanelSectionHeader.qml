@@ -1,6 +1,5 @@
 import QtQuick
 import qs.core
-import qs.ui
 
 // Shared section heading for popup/panel content.
 // The optional leading glyph is the small TUI affordance used by revamp
