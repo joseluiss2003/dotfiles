@@ -5,6 +5,7 @@ import Quickshell.I3
 import Quickshell.Services.UPower
 import qs.core
 import qs.ui
+import qs.ui
 import "Model.js" as Model
 
 Panel {
@@ -49,7 +50,7 @@ Panel {
 
   function batteryIcon() {
     var device = UPower.displayDevice
-    return Model.batteryIcon(device, root.discharging, upowerStates())
+    return Model.batteryIcon(device, root.discharging, upowerStates(), Icons)
   }
 
   function modeLabel() {
@@ -58,7 +59,7 @@ Panel {
   }
 
   function profileIcon(name) {
-    return Model.profileIcon(name)
+    return Model.profileIcon(name, Icons)
   }
 
   readonly property bool fullyCharged: {
