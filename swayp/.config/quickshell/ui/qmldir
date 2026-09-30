@@ -1,5 +1,7 @@
 module qs.ui
 
+singleton Icons 1.0 Icons.qml
+
 BarIndicator 1.0 BarIndicator.qml
 BarIconButton 1.0 BarIconButton.qml
 BarWidget 1.0 BarWidget.qml
