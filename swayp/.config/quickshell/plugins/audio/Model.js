@@ -86,31 +86,33 @@ function isHeadphones(node) {
     || blob.indexOf("airpod") !== -1
 }
 
-function sinkGlyph(node) {
-  if (!node) return "󰓃"
-  if (isHeadphones(node)) return "󰋋"
+function sinkGlyph(node, icons) {
+  var set = icons || ({})
+  if (!node) return set.audioOutput || ""
+  if (isHeadphones(node)) return set.headphones || ""
   var p = nodeProps(node)
   var blob = String([
     node.name, node.description, node.nickname,
     p["device.icon-name"] || "",
     p["device.product.name"] || ""
   ].join(" ")).toLowerCase()
-  if (blob.indexOf("bluetooth") !== -1) return "󰂯"
-  if (blob.indexOf("hdmi") !== -1 || blob.indexOf("display") !== -1) return "󰍹"
-  return "󰓃"
+  if (blob.indexOf("bluetooth") !== -1) return set.bluetooth || ""
+  if (blob.indexOf("hdmi") !== -1 || blob.indexOf("display") !== -1) return set.monitor || ""
+  return set.audioOutput || ""
 }
 
-function sourceGlyph(node) {
-  if (!node) return "󰍬"
+function sourceGlyph(node, icons) {
+  var set = icons || ({})
+  if (!node) return set.microphone || ""
   var p = nodeProps(node)
   var blob = String([
     node.name, node.description, node.nickname,
     p["device.icon-name"] || ""
   ].join(" ")).toLowerCase()
-  if (blob.indexOf("headset") !== -1) return "󰋋"
-  if (blob.indexOf("bluetooth") !== -1) return "󰂯"
-  if (blob.indexOf("webcam") !== -1 || blob.indexOf("camera") !== -1) return "󰄀"
-  return "󰍬"
+  if (blob.indexOf("headset") !== -1) return set.headphones || ""
+  if (blob.indexOf("bluetooth") !== -1) return set.bluetooth || ""
+  if (blob.indexOf("webcam") !== -1 || blob.indexOf("camera") !== -1) return set.webcam || ""
+  return set.microphone || ""
 }
 
 function friendlyStreamLabel(label) {
