@@ -117,6 +117,7 @@ EXTRAS_PACKAGES=(
   pavucontrol
   ripgrep
   rsync
+  spotify-player
   tree
   usbutils
   wget
