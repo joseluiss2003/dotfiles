@@ -70,6 +70,19 @@ QtObject {
   readonly property string focusColorToken: styleString("focus-color", "accent")
   readonly property string selectionColorToken: styleString("selection-color", "accent")
 
+  // ------------------------------------------------------------- TUI language
+  // Small textual affordances shared by keyboard-first surfaces. Keeping them
+  // in Style makes the visual grammar configurable without turning glyphs into
+  // plugin-specific decisions.
+  readonly property QtObject tui: QtObject {
+    readonly property string cursorMarker: root.styleString("cursor-marker", ">")
+    readonly property string headerMarker: root.styleString("header-marker", ">")
+    readonly property string stateOn: root.styleString("state-on", "●")
+    readonly property string stateOff: root.styleString("state-off", "○")
+    readonly property string statePartial: root.styleString("state-partial", "◐")
+    readonly property string stateError: root.styleString("state-error", "×")
+  }
+
   readonly property int normalBorderWidth: Math.max(0, Math.round(styleNum("normal-border-width", 1)))
   readonly property int hoverBorderWidth: Math.max(0, Math.round(styleNum("hover-cursor-border-width", normalBorderWidth)))
   readonly property int selectedBorderWidth: Math.max(0, Math.round(styleNum("selected-border-width", 0)))
