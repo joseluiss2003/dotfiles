@@ -127,9 +127,10 @@ QtObject {
   // Keep the bar on the same base background as Sway and Kitty so the
   // whole desktop shares one continuous surface. Normal applets use the
   // same foreground as the clock; accent is reserved for active/hover states.
-  // The bar gets a slightly raised surface from the active theme while
-  // keeping the same semantic palette/tint as the rest of the shell.
-  readonly property color themeBarBackground: themeLighterBackground
+  // Keep the bar on the same base background as Sway and Kitty so the
+  // whole desktop shares one continuous surface. Normal applets use the
+  // same foreground as the clock; accent is reserved for active/hover states.
+  readonly property color themeBarBackground: themeBackground
   readonly property color themeBarForeground: themeForeground
   readonly property color themeBarPassive: themeForeground
 
