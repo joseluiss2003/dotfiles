@@ -155,17 +155,6 @@ if [[ "$EXTRAS" == true ]]; then
 
     echo
     echo "==> Instalando Obsidian..."
-    AUR_HELPER=""
-    if command -v yay >/dev/null 2>&1; then
-        AUR_HELPER="yay"
-    elif command -v paru >/dev/null 2>&1; then
-        AUR_HELPER="paru"
-    else
-        echo "ERROR: Para instalar Obsidian con --extras necesitas yay o paru." >&2
-        echo "    Instala un helper AUR y vuelve a ejecutar ./install.sh --extras." >&2
-        exit 1
-    fi
-
     "$AUR_HELPER" -S --needed obsidian
 fi
 
@@ -249,66 +238,27 @@ cd "$DOTFILES_DIR"
 stow -t "$HOME" "$STOW_PACKAGE"
 
 echo
-echo "==> Instalando Geist v1.7.2 (Geist + Geist Mono)..."
+echo "==> Instalando Maple Mono NF..."
 
-GEIST_VERSION="1.7.2"
-GEIST_URL="https://github.com/vercel/geist-font/releases/download/v1.7.2/geist-font-v1.7.2.zip"
-GEIST_SHA256="7fc800d2ac6b92844895196e5041aca55d814c15db70c44f79b3b83ab82b04e2"
-GEIST_CACHE_DIR="$HOME/.cache/swayp"
-GEIST_ARCHIVE="$GEIST_CACHE_DIR/geist-font-v${GEIST_VERSION}.zip"
-GEIST_FONT_DIR="$HOME/.local/share/fonts/Geist"
-GEIST_MONO_FONT_DIR="$HOME/.local/share/fonts/GeistMono"
-
-mkdir -p "$GEIST_CACHE_DIR" "$GEIST_FONT_DIR" "$GEIST_MONO_FONT_DIR"
-
-if [[ ! -f "$GEIST_FONT_DIR/Geist-Regular.ttf" || ! -f "$GEIST_MONO_FONT_DIR/GeistMono-Regular.ttf" ]]; then
-    echo "    Descargando Geist v${GEIST_VERSION}..."
-    curl -fL --retry 3 --retry-delay 2 -o "$GEIST_ARCHIVE" "$GEIST_URL"
-
-    echo "    Verificando SHA-256..."
-    GEIST_ACTUAL_SHA256="$(sha256sum "$GEIST_ARCHIVE" | awk '{print $1}')"
-    if [[ "$GEIST_ACTUAL_SHA256" != "$GEIST_SHA256" ]]; then
-        echo "ERROR: La suma SHA-256 de Geist no coincide." >&2
-        echo "    Esperada: $GEIST_SHA256" >&2
-        echo "    Obtenida: $GEIST_ACTUAL_SHA256" >&2
-        exit 1
-    fi
-
-    GEIST_EXTRACT_DIR="$(mktemp -d)"
-    trap 'rm -rf "$GEIST_EXTRACT_DIR"' EXIT
-
-    unzip -q "$GEIST_ARCHIVE" \
-        'geist-font/Geist/ttf/*.ttf' \
-        'geist-font/GeistMono/ttf/*.ttf' \
-        -d "$GEIST_EXTRACT_DIR"
-
-    while IFS= read -r font; do
-        install -Dm644 "$font" "$GEIST_FONT_DIR/$(basename "$font")"
-    done < <(find "$GEIST_EXTRACT_DIR/geist-font/Geist/ttf" -maxdepth 1 -type f -name '*.ttf' -print)
-
-    while IFS= read -r font; do
-        install -Dm644 "$font" "$GEIST_MONO_FONT_DIR/$(basename "$font")"
-    done < <(find "$GEIST_EXTRACT_DIR/geist-font/GeistMono/ttf" -maxdepth 1 -type f -name '*.ttf' -print)
-
-    rm -rf "$GEIST_EXTRACT_DIR"
-    trap - EXIT
+AUR_HELPER=""
+if command -v yay >/dev/null 2>&1; then
+    AUR_HELPER="yay"
+elif command -v paru >/dev/null 2>&1; then
+    AUR_HELPER="paru"
 else
-    echo "    Geist v${GEIST_VERSION} ya está instalado."
-fi
-
-fc-cache -f "$GEIST_FONT_DIR" "$GEIST_MONO_FONT_DIR"
-
-if ! fc-match -f '%{family}\n' Geist | grep -qx 'Geist'; then
-    echo "ERROR: Fontconfig no detecta Geist después de la instalación." >&2
+    echo "ERROR: SwayP requiere un helper AUR (yay o paru) para instalar Maple Mono NF." >&2
+    echo "       Instala yay o paru y vuelve a ejecutar ./install.sh." >&2
     exit 1
 fi
 
-if ! fc-match -f '%{family}\n' 'Geist Mono' | grep -qx 'Geist Mono'; then
-    echo "ERROR: Fontconfig no detecta Geist Mono después de la instalación." >&2
+"$AUR_HELPER" -S --needed maplemono-nf
+
+if ! fc-match -f '%{family}\\n' 'Maple Mono NF' | grep -qx 'Maple Mono NF'; then
+    echo "ERROR: Fontconfig no detecta Maple Mono NF después de la instalación." >&2
     exit 1
 fi
 
-echo "    ✓ Geist v1.7.2 y Geist Mono disponibles para SwayP."
+echo "    ✓ Maple Mono NF disponible para SwayP."
 
 echo
 echo "==> Configurando greetd + tuigreet..."
