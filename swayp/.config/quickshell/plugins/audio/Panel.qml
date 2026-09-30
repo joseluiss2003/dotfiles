@@ -400,19 +400,19 @@ Panel {
   function outputIcon(volume) {
     // Match the old Waybar pulseaudio glyph set. The Material Design speaker
     // icons render visually smaller in JetBrainsMono Nerd Font.
-    if (!sink || !sink.audio) return ""
-    if (isHeadphones(sink)) return "󰋋"
-    if (outputMuted) return ""
+    if (!sink || !sink.audio) return Icons.volumeMuted
+    if (isHeadphones(sink)) return Icons.headphones
+    if (outputMuted) return Icons.volumeMuted
     var v = volume === undefined ? outputVolume : volume
-    if (v >= 0.67) return ""
-    if (v >= 0.34) return ""
-    if (v > 0) return ""
-    return ""
+    if (v >= 0.67) return Icons.volumeHigh
+    if (v >= 0.34) return Icons.volumeMedium
+    if (v > 0) return Icons.volumeLow
+    return Icons.volumeMuted
   }
 
   function inputIcon() {
-    if (!source || !source.audio) return "󰍭"
-    return inputMuted ? "󰍭" : "󰍬"
+    if (!source || !source.audio) return Icons.microphoneMuted
+    return inputMuted ? Icons.microphoneMuted : Icons.microphone
   }
 
   // Playful mood-name for a given output volume. Mirrors the brightness
@@ -1153,7 +1153,7 @@ Panel {
         Text {
           id: streamMuteIcon
           textFormat: Text.PlainText
-          text: streamRow.streamMuted ? "󰝟" : "󰕾"
+          text: streamRow.streamMuted ? Icons.volumeMuted : Icons.audio
           color: root.bar.foreground
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.title
