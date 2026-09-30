@@ -3,10 +3,9 @@
 
 theme = "swayp"
 
-# Keep playback compact but expressive: track first, artist/album second,
-# controls and device metadata last.
+# Keep the now-playing surface focused on the track and essential controls.
 playback_format = "{status} {track} {liked}\n{artists} • {album}\n{metadata}"
-playback_metadata_fields = ["repeat", "shuffle", "volume", "device"]
+playback_metadata_fields = ["volume", "shuffle", "repeat"]
 
 border_type = "Plain"
 progress_bar_type = "Line"
