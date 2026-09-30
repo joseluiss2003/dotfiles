@@ -147,17 +147,6 @@ done
 
 echo "==> Comprobando helper AUR..."
 
-AUR_HELPER=""
-if command -v yay >/dev/null 2>&1; then
-    AUR_HELPER="yay"
-elif command -v paru >/dev/null 2>&1; then
-    AUR_HELPER="paru"
-else
-    echo "ERROR: SwayP requiere un helper AUR (yay o paru) para instalar Maple Mono NF." >&2
-    echo "       Instala yay o paru y vuelve a ejecutar ./install.sh." >&2
-    exit 1
-fi
-
 echo "    $AUR_HELPER"
 
 echo "==> Instalando dependencias de SwayP..."
