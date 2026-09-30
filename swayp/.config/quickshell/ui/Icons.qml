@@ -51,6 +51,9 @@ QtObject {
   readonly property string settings: "󰒓"
   readonly property string clipboard: "󰅍"
   readonly property string speed: "󰓅"
+  readonly property string qrCode: "󰐲"
+  readonly property string captivePortal: "󰏌"
+  readonly property string forget: "󰅙"
   readonly property string theme: "󰏘"
   readonly property string wallpaper: "󰸉"
 
