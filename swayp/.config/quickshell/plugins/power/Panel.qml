@@ -5,7 +5,6 @@ import Quickshell.I3
 import Quickshell.Services.UPower
 import qs.core
 import qs.ui
-import qs.ui
 import "Model.js" as Model
 
 Panel {
