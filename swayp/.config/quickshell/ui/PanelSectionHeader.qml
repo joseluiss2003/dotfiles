@@ -37,6 +37,7 @@ Row {
     font.family: root.fontFamily
     font.pixelSize: root.fontSize
     font.bold: true
+    letterSpacing: Math.max(0, Math.round(root.fontSize * 0.04))
     verticalAlignment: Text.AlignVCenter
     topPadding: Math.ceil(root.fontSize * 0.15)
   }
