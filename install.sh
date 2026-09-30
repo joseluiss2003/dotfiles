@@ -97,8 +97,8 @@ PACKAGES=(
 )
 
 # Optional desktop utilities. Install with: ./install.sh --extras
-# Obsidian is distributed through the AUR; the installer uses an existing
-# yay/paru helper for that single package.
+# Maple Mono NF and Obsidian are distributed through the AUR; the installer
+# reuses an existing yay/paru helper for both packages.
 EXTRAS_PACKAGES=(
   bat
   btop
