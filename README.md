@@ -118,6 +118,8 @@ See:
 
 SwayP targets **Arch Linux and Arch-based systems**.
 
+The standard installer uses an existing **`yay` or `paru`** helper to install the required Maple Mono NF font from the Arch User Repository.
+
 ### Standard installation
 
 ```bash
