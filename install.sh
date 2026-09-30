@@ -253,7 +253,7 @@ fi
 
 "$AUR_HELPER" -S --needed maplemono-nf
 
-if ! fc-match -f '%{family}\\n' 'Maple Mono NF' | grep -qx 'Maple Mono NF'; then
+if ! fc-match -f '%{family}\n' 'Maple Mono NF' | grep -qx 'Maple Mono NF'; then
     echo "ERROR: Fontconfig no detecta Maple Mono NF después de la instalación." >&2
     exit 1
 fi
