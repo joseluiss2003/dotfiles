@@ -703,7 +703,7 @@ QtObject {
       + "}; "
       + "scan_firstparty() { local dir=\"$1\"; "
       + "  [[ -d \"$dir\" ]] || return 0; "
-      + "  while IFS= read -r manifest; do emit_manifest firstparty \"$manifest\"; done < <(find \"$dir\" -mindepth 2 -maxdepth 3 -type f \\( -name manifest.json -o -name '*.manifest.json' \\) | sort); "
+      + "  while IFS= read -r manifest; do emit_manifest firstparty \"$manifest\"; done < <(find -L \"$dir\" -mindepth 2 -maxdepth 3 -type f \\( -name manifest.json -o -name '*.manifest.json' \\) | sort); "
       + "}; "
       + "scan_thirdparty() { local dir=\"$1\"; "
       + "  [[ -d \"$dir\" ]] || return 0; "
