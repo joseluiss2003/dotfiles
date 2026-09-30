@@ -19,9 +19,17 @@ QtObject {
 
   readonly property string network: "󰤨"
   readonly property string wifi: "󰤨"
+  readonly property var wifiStrength: ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
+  readonly property string wifiRestricted: "󰤩"
+  readonly property string wifiDisconnected: "󰤮"
   readonly property string ethernet: "󰈀"
+  readonly property string ethernetRestricted: "󰈂"
   readonly property string bluetooth: "󰂯"
+  readonly property string bluetoothConnected: "󰂱"
+  readonly property string bluetoothOff: "󰂲"
   readonly property string audio: "󰕾"
+  readonly property string audioOutput: "󰓃"
+  readonly property string webcam: "󰄀"
   readonly property string volumeMuted: ""
   readonly property string volumeLow: ""
   readonly property string volumeMedium: ""
