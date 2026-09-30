@@ -48,6 +48,7 @@ PACKAGES=(
   greetd-tuigreet
   grim
   iw
+  inotify-tools
   iputils
   unzip
   jq
@@ -194,6 +195,21 @@ remove_legacy_link() {
 remove_legacy_link "$HOME/.config/fuzzel" "$DOTFILES_DIR/fuzzel/.config/fuzzel"
 remove_legacy_link "$HOME/.config/kitty" "$DOTFILES_DIR/kitty/.config/kitty"
 remove_legacy_link "$HOME/.config/quickshell" "$DOTFILES_DIR/quickshell/.config/quickshell"
+
+# A previous migration could have left ~/.config/quickshell as a real
+# directory containing only managed symlinks. That prevents Stow from
+# collapsing the package into the single canonical symlink. Remove that
+# legacy shell tree only when it contains no regular files.
+if [[ -d "$HOME/.config/quickshell" && ! -L "$HOME/.config/quickshell" ]]; then
+    if ! find "$HOME/.config/quickshell" -type f -print -quit | grep -q .; then
+        rm -rf -- "$HOME/.config/quickshell"
+        echo "    ✓ Eliminado árbol legacy de Quickshell"
+    else
+        echo "ERROR: $HOME/.config/quickshell contiene archivos reales." >&2
+        echo "       Muévelos o haz copia antes de ejecutar de nuevo el instalador." >&2
+        exit 1
+    fi
+fi
 
 # Remove old root-level Stow links created by previous repository layouts.
 LEGACY_ROOT_LINKS=(
