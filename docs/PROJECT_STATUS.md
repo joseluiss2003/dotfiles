@@ -23,7 +23,7 @@ This document keeps the SwayP project state separate from future ideas and known
 - Notifications and notification center.
 - OSD and clipboard functionality.
 - Quickshell lockscreen integration.
-- Geist v1.7.2 and Geist Mono installation with SHA-256 verification.
+- Maple Mono NF typography for Sway and Quickshell, installed through the Arch AUR.
 - Reproducible Arch installer with GNU Stow.
 - Optional utility installation through `./install.sh --extras`.
 - Legacy Stow layout migration in the installer.
@@ -37,8 +37,8 @@ This document keeps the SwayP project state separate from future ideas and known
 
 ## Known issues
 
-- If Quickshell is already running before a manually installed font is registered with Fontconfig, the existing process may need to be restarted before it resolves the new family. A fresh SwayP installation installs Geist before starting the normal shell session.
-- Optional Obsidian installation requires an existing `yay` or `paru` helper when `--extras` is used.
+- If Quickshell is already running before a manually installed font is registered with Fontconfig, the existing process may need to be restarted before it resolves the new family. A fresh SwayP installation installs Maple Mono NF before the normal shell session starts.
+- The installer requires an existing `yay` or `paru` helper for Maple Mono NF; `--extras` also uses it for Obsidian.
 
 ## Future ideas
 
