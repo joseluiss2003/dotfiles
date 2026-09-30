@@ -12,6 +12,7 @@ Row {
   property string fontFamily: Style.font.family
   property real fontSize: Style.font.caption
   property string leadingGlyph: ""
+  property string text: ""
   property bool uppercase: true
 
   spacing: Style.spacing.sm
