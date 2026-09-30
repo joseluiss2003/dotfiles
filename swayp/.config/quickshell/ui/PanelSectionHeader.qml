@@ -11,7 +11,7 @@ Row {
   property color accent: Color.accent
   property string fontFamily: Style.font.family
   property real fontSize: Style.font.caption
-  property string leadingGlyph: ""
+  property string leadingGlyph: Style.tui.headerMarker
   property string text: ""
   property bool uppercase: true
 
@@ -25,6 +25,7 @@ Row {
     font.family: root.fontFamily
     font.pixelSize: root.fontSize
     font.bold: true
+    letterSpacing: Math.max(0, Math.round(root.fontSize * 0.04))
     verticalAlignment: Text.AlignVCenter
     topPadding: Math.ceil(root.fontSize * 0.15)
   }
