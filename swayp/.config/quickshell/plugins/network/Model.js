@@ -8,10 +8,12 @@ function parseNetworkStatus(raw) {
   }
 }
 
-function wifiIconFor(strength) {
-  var icons = ["󰤯", "󰤟", "󰤢", "󰤥", "󰤨"]
-  var index = Math.max(0, Math.min(4, Math.ceil(strength / 20) - 1))
-  return icons[index]
+function wifiIconFor(strength, icons) {
+  var set = icons || ({})
+  var values = set.wifiStrength || []
+  if (!values.length) return ""
+  var index = Math.max(0, Math.min(values.length - 1, Math.ceil(strength / 20) - 1))
+  return values[index]
 }
 
 // A known plain-HTTP endpoint lets the network redirect the browser to its
@@ -29,11 +31,12 @@ function connectivityState(kind, connectivity, states, checksEnabled) {
   return "unknown"
 }
 
-function connectionIcon(kind, signalStrength, connectivity) {
+function connectionIcon(kind, signalStrength, connectivity, icons) {
+  var set = icons || ({})
   var restricted = connectivity === "portal" || connectivity === "limited"
-  if (kind === "wifi") return restricted ? "󰤩" : wifiIconFor(signalStrength)
-  if (kind === "ethernet") return restricted ? "󰈂" : "󰈀"
-  return "󰤮"
+  if (kind === "wifi") return restricted ? (set.wifiRestricted || "") : wifiIconFor(signalStrength, set)
+  if (kind === "ethernet") return restricted ? (set.ethernetRestricted || "") : (set.ethernet || "")
+  return set.wifiDisconnected || ""
 }
 
 function formatHeaderSpeed(mbps) {
