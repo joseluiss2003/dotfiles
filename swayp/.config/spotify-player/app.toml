@@ -33,8 +33,8 @@ volume_scroll_step = 5
 
 [layout]
 # SwayP library: playlists are the primary surface. Album/artist panes are
-# intentionally collapsed to zero width.
-library = { album_percent = 0, playlist_percent = 100 }
+# reduced to the minimum valid remaining width.
+library = { album_percent = 0, playlist_percent = 99 }
 playback_window_position = "Top"
 playback_window_height = 8
 
