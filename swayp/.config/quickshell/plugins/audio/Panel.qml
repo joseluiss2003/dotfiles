@@ -497,11 +497,11 @@ Panel {
   }
 
   function sinkGlyph(node) {
-    return Model.sinkGlyph(node)
+    return Model.sinkGlyph(node, Icons)
   }
 
   function sourceGlyph(node) {
-    return Model.sourceGlyph(node)
+    return Model.sourceGlyph(node, Icons)
   }
 
   function friendlyStreamLabel(label) {
