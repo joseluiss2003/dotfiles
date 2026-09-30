@@ -9,7 +9,7 @@ playback_format = "{status} {track} {liked}\n{artists} • {album}\n{metadata}"
 playback_metadata_fields = ["repeat", "shuffle", "volume", "device"]
 
 border_type = "Plain"
-progress_bar_type = "Rectangle"
+progress_bar_type = "Line"
 progress_bar_position = "Bottom"
 
 play_icon = "▶"
@@ -25,7 +25,7 @@ enable_mouse_scroll_volume = true
 enable_audio_visualization = true
 enable_relative_line_number = true
 
-# Give the cover and visualizer enough room to breathe in the playback pane.
+# Keep the artwork compact while leaving room for the visualizer.
 cover_img_length = 10
 cover_img_width = 7
 page_size_in_rows = 20
@@ -37,7 +37,7 @@ volume_scroll_step = 5
 # reduced to the minimum valid remaining width.
 library = { album_percent = 0, playlist_percent = 99 }
 playback_window_position = "Top"
-playback_window_height = 12
+playback_window_height = 10
 
 [device]
 name = "spotify-player"
