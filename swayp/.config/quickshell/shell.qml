@@ -185,11 +185,8 @@ Component.onCompleted: {
     pluginRegistry.shellConfigProvider = function() { return shell.shellConfig }
     pluginRegistry.shellConfigMutator = function(mutate) { shell.mutateShellConfig(mutate) }
 
-    // PluginRegistry.ensureUserDir() runs in its own Component.onCompleted and
-    // chains rescan() once the directory exists. We also kick a scan here in
-    // case the user dir already existed at startup.
-    pluginRegistry.rescan()
-
+    // PluginRegistry owns its startup scan. It creates the user plugin
+    // directory first and rescans after that, avoiding a startup race.
     shell._syncServices()
 }
 
