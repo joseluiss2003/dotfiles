@@ -18,6 +18,11 @@ BorderSurface {
   property bool current: false
   property bool outline: false
   property bool bordered: false
+  // TUI cursor marker: selection is readable even when a theme uses a very
+  // subtle fill/border. It is painted out of flow so it never changes row size.
+  property bool showCursorMarker: true
+  property string cursorMarker: Style.tui.cursorMarker
+  property color cursorMarkerColor: accent
 
   property color foreground: Color.bar.text
   property color accent: Color.accent
@@ -27,6 +32,20 @@ BorderSurface {
   radius: Style.cornerRadius
 
   color: hasCursor ? fill : (current ? currentFill : "transparent")
+
+  Text {
+    visible: root.showCursorMarker && root.hasCursor && root.cursorMarker !== ""
+    textFormat: Text.PlainText
+    text: root.cursorMarker
+    color: root.cursorMarkerColor
+    font.family: Style.font.family
+    font.pixelSize: Style.font.body
+    font.bold: true
+    anchors.left: parent.left
+    anchors.leftMargin: Style.spacing.xs
+    anchors.verticalCenter: parent.verticalCenter
+    z: 10
+  }
   borderSpec: root.hasCursor
     ? Border.controlSpec("hover-cursor", root.foreground, root.accent)
     : (root.current
