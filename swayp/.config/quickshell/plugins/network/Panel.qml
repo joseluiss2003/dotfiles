@@ -451,7 +451,7 @@ Panel {
   }, connectivityChecksEnabled)
   readonly property bool hasCaptivePortal: connectivity === "portal"
   readonly property bool restricted: hasCaptivePortal || connectivity === "limited"
-  readonly property string icon: Model.connectionIcon(kind, signalStrength, connectivity)
+  readonly property string icon: Model.connectionIcon(kind, signalStrength, connectivity, Icons)
   readonly property string connectionKey: kind === "wifi" && wifiDevice && connectedWifiNetwork
     ? kind + ":" + wifiDevice.name + ":" + connectedWifiNetwork.name
     : (kind === "ethernet" && wiredDevice ? kind + ":" + wiredDevice.name : "")
@@ -652,7 +652,7 @@ Panel {
   }
 
   function wifiIconFor(strength) {
-    return Model.wifiIconFor(strength)
+    return Model.wifiIconFor(strength, Icons)
   }
 
   function updateBand(raw) {
@@ -1126,7 +1126,7 @@ Panel {
           Button {
             id: qrAction
             visible: root.canShareWifi
-            iconText: "󰐲"
+            iconText: Icons.qrCode
             tooltipText: "Show QR code"
             foreground: root.bar.foreground
             fontFamily: root.bar.fontFamily
@@ -1142,7 +1142,7 @@ Panel {
           Button {
             id: speedAction
             visible: root.canRunSpeedTest
-            iconText: "󰓅"
+            iconText: Icons.speed
             tooltipText: "Run a speed test"
             foreground: root.bar.foreground
             fontFamily: root.bar.fontFamily
@@ -1244,7 +1244,7 @@ Panel {
           id: portalAction
           width: parent.width
           text: "Open Captive Portal"
-          iconText: "󰏌"
+          iconText: Icons.captivePortal
           foreground: root.bar.urgent
           accent: root.bar.urgent
           fontFamily: root.bar.fontFamily
@@ -1687,7 +1687,7 @@ Panel {
         id: networkIcon
         textFormat: Text.PlainText
         text: row.net ? Model.connectionIcon("wifi", row.net.signal,
-          row.isConnected && root.kind === "wifi" ? root.connectivity : "") : ""
+          row.isConnected && root.kind === "wifi" ? root.connectivity : "", Icons) : ""
         color: row.statusColor
         font.family: root.bar.fontFamily
         font.pixelSize: Style.font.title
@@ -1892,7 +1892,7 @@ Panel {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         enabled: row.net && pwField.text.length > 0 && (!row.isEnterprise || idField.text.length > 0)
-        iconText: "󰄬"
+        iconText: Icons.check
         tooltipText: "Connect"
         foreground: root.bar.foreground
         fontFamily: root.bar.fontFamily
