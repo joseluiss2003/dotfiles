@@ -58,9 +58,9 @@ Panel {
 
   readonly property string icon: {
     if (!adapter) return ""
-    if (!adapter.enabled) return "󰂲"
-    if (connectedDevices.length > 0) return "󰂱"
-    return "󰂯"
+    if (!adapter.enabled) return Icons.bluetoothOff
+    if (connectedDevices.length > 0) return Icons.bluetoothConnected
+    return Icons.bluetooth
   }
 
   property int phraseIndex: 0
@@ -973,7 +973,7 @@ Panel {
       Text {
         id: deviceIcon
         textFormat: Text.PlainText
-        text: row.isConnected ? "󰂱" : "󰂯"
+        text: row.isConnected ? Icons.bluetoothConnected : Icons.bluetooth
         color: row.statusColor
         font.family: root.bar.fontFamily
         font.pixelSize: Style.font.heading
@@ -1016,7 +1016,7 @@ Panel {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         visible: row.showForgetButton
-        iconText: "󰅙"
+        iconText: Icons.forget
         tooltipText: "Forget"
         foreground: root.bar.foreground
         hoverColor: root.bar.foreground
