@@ -681,6 +681,37 @@ BarWidget {
       icon: trayItemRoot.modelData.icon
     }
 
+    Rectangle {
+      id: traySelectionIndicator
+      readonly property bool selected: root.trayMenuOpen && root.activeTrayItem === trayItemRoot.modelData
+      readonly property bool hovered: mouseArea.containsMouse
+      visible: selected || hovered
+      opacity: selected ? 0.9 : 0.55
+      color: Color.foreground
+      radius: Math.min(width, height) / 2
+      width: root.vertical ? Style.space(2) : Style.bar.iconCanvas
+      height: root.vertical ? Style.bar.iconCanvas : Style.space(2)
+      x: root.vertical
+        ? (root.position === "left" ? parent.width - width - Style.space(2) : Style.space(2))
+        : Math.round((parent.width - width) / 2)
+      y: root.vertical
+        ? Math.round((parent.height - height) / 2)
+        : (root.position === "top" ? parent.height - height - Style.space(2) : Style.space(2))
+      z: 50
+
+      Behavior on opacity {
+        NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+      }
+
+      Behavior on width {
+        NumberAnimation { duration: 155; easing.type: Easing.OutQuint }
+      }
+
+      Behavior on height {
+        NumberAnimation { duration: 155; easing.type: Easing.OutQuint }
+      }
+    }
+
     MouseArea {
       id: mouseArea
       anchors.fill: parent
