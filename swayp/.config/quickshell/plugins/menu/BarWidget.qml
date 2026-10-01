@@ -144,10 +144,8 @@ BarWidget {
           }
         }
 
-        PanelSeparator {
-          foreground: root.bar.foreground
-          opacity: 0.42
-        }
+        // The compact session actions follow the same TUI grammar as the other
+        // SwayP popups; the hero separator is intentionally omitted.
 
         // The Quattro-style rhythm is intentionally compact: paired actions
         // carry equal visual weight while the destructive action gets its own
