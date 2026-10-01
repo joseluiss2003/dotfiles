@@ -174,49 +174,11 @@ BarWidget {
         anchors.margins: Style.popup.contentInset
         spacing: Style.spacing.panelGap
 
-        // Compact hero: same grammar as Network / Bluetooth / Audio.
-        Item {
-          width: parent.width
-          implicitHeight: Math.max(heroIcon.implicitHeight, heroText.implicitHeight)
-
-          Text {
-            id: heroIcon
-            text: "󰝚"
-            color: Color.foreground
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.display
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-          }
-
-          Column {
-            id: heroText
-            anchors.left: heroIcon.right
-            anchors.leftMargin: Style.spacing.panelGap
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.compactGap
-
-            Text {
-              text: "Media"
-              color: root.bar.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.title
-              font.bold: true
-              elide: Text.ElideRight
-              width: parent.width
-            }
-
-            Text {
-              text: root.identity ? root.identity.toUpperCase() : "NOW PLAYING"
-              color: Color.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-              elide: Text.ElideRight
-              width: parent.width
-            }
-          }
+        PanelCliHeader {
+          title: "Media"
+          status: root.identity ? root.identity : "NOW PLAYING"
+          foreground: root.bar.foreground
+          fontFamily: root.bar.fontFamily
         }
 
         PanelSeparator {
