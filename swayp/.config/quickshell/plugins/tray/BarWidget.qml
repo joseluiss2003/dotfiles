@@ -684,9 +684,8 @@ BarWidget {
     Rectangle {
       id: traySelectionIndicator
       readonly property bool selected: root.trayMenuOpen && root.activeTrayItem === trayItemRoot.modelData
-      readonly property bool hovered: mouseArea.containsMouse
-      visible: selected || hovered
-      opacity: selected ? 0.9 : 0.55
+      visible: selected
+      opacity: 0.9
       color: Color.foreground
       radius: Math.min(width, height) / 2
       width: root.vertical ? Style.space(2) : Style.bar.iconCanvas
