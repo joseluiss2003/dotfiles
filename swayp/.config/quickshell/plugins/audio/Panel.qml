@@ -707,11 +707,7 @@ Panel {
 
 
           // ---- Output devices ----
-          PanelSeparator {
-            foreground: root.bar.foreground
-          }
-
-          Column {
+Column {
             width: parent.width
             spacing: Style.spacing.inset
 
@@ -795,12 +791,7 @@ Panel {
           }
 
           // ---- Input ----
-          PanelSeparator {
-            visible: root.displayAudioSources.length > 0 || !!root.source
-            foreground: root.bar.foreground
-          }
-
-          Column {
+Column {
             width: parent.width
             spacing: Style.spacing.inset
             visible: root.displayAudioSources.length > 0 || !!root.source
@@ -906,12 +897,7 @@ Panel {
           }
 
           // ---- Per-app streams ----
-          PanelSeparator {
-            visible: root.displayAudioStreams.length > 0
-            foreground: root.bar.foreground
-          }
-
-          Column {
+Column {
             width: parent.width
             spacing: Style.spacing.sectionGap
             visible: root.displayAudioStreams.length > 0
