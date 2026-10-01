@@ -1034,9 +1034,8 @@ Panel {
       id: sinkLabel
       anchors.left: parent.left
       anchors.right: parent.right
-      anchors.leftMargin: Style.spacing.sectionGap
-      anchors.rightMargin: Style.spacing.sectionGap
-      anchors.verticalCenter: parent.verticalCenter
+      anchors.leftMargin: Style.spacing.sectionGap + Style.spacing.md
+      anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.mdverticalCenter
       textFormat: Text.PlainText
       text: root.nodeLabel(sinkRow.node)
         + (sinkRow.isActive ? "  · DEFAULT" : "")
@@ -1079,9 +1078,8 @@ Panel {
       id: sourceLabel
       anchors.left: parent.left
       anchors.right: parent.right
-      anchors.leftMargin: Style.spacing.sectionGap
-      anchors.rightMargin: Style.spacing.sectionGap
-      anchors.verticalCenter: parent.verticalCenter
+      anchors.leftMargin: Style.spacing.sectionGap + Style.spacing.md
+      anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.mdverticalCenter
       textFormat: Text.PlainText
       text: root.nodeLabel(sourceRow.node)
         + (sourceRow.isActive ? "  · DEFAULT" : "")
