@@ -1808,91 +1808,87 @@ Panel {
       anchors.top: rowMouse.bottom
       anchors.leftMargin: Style.spacing.sectionGap
       anchors.rightMargin: Style.spacing.sectionGap
-      anchors.topMargin: Style.spacing.sm
-      implicitHeight: (idField.visible ? idField.implicitHeight + Style.spacing.sm : 0) + pwField.implicitHeight + Style.spacing.rowGap
+      anchors.topMargin: Style.spacing.xs
+      implicitHeight: passwordHeader.implicitHeight + Style.spacing.xs + passwordFields.implicitHeight
       height: implicitHeight
 
-      TextField {
-        id: idField
-        visible: row.isEnterprise && !row.isBusy && !row.isFailed
+      PanelSectionHeader {
+        id: passwordHeader
+        text: row.isEnterprise ? "IDENTITY / PASSPHRASE" : "PASSPHRASE"
+        foreground: root.bar.foreground
+        fontFamily: root.bar.fontFamily
         anchors.left: parent.left
-        anchors.right: connectPwBtn.left
         anchors.top: parent.top
-        anchors.rightMargin: Style.spacing.inset
-        placeholderText: "Identity (user@domain)"
-        font.family: Style.font.family
-        font.pixelSize: Style.font.body
-        foreground: root.bar.foreground
-        horizontalPadding: Style.spacing.controlGap
-        verticalPadding: Style.spacing.controlPaddingY
-        enabled: !row.isBusy
-        text: row.isPasswordOpen ? root.identityText : ""
-
-        onAccepted: pwField.forceActiveFocus()
-        onTextChanged: if (row.isPasswordOpen && text !== root.identityText) root.identityText = text
-        Keys.onEscapePressed: root.cancelPasswordPrompt()
-
-        onVisibleChanged: if (visible) Qt.callLater(forceActiveFocus)
-        Component.onCompleted: if (visible) Qt.callLater(forceActiveFocus)
       }
 
-      TextField {
-        id: pwField
-        visible: !row.isBusy && !row.isFailed
+      Column {
+        id: passwordFields
         anchors.left: parent.left
         anchors.right: connectPwBtn.left
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: Style.spacing.rowGap / 2
+        anchors.top: passwordHeader.bottom
+        spacing: Style.spacing.xs
         anchors.rightMargin: Style.spacing.inset
-        password: true
-        placeholderText: "Passphrase"
-        font.family: Style.font.family
-        font.pixelSize: Style.font.body
-        foreground: root.bar.foreground
-        horizontalPadding: Style.spacing.controlGap
-        verticalPadding: Style.spacing.controlPaddingY
-        enabled: !row.isBusy
-        text: row.isPasswordOpen ? root.passwordText : ""
 
-        onAccepted: row.submitCredentials()
-        onTextChanged: if (row.isPasswordOpen && text !== root.passwordText) root.passwordText = text
-        Keys.onEscapePressed: root.cancelPasswordPrompt()
+        TextField {
+          id: idField
+          visible: row.isEnterprise && !row.isBusy && !row.isFailed
+          width: parent.width
+          placeholderText: "Identity (user@domain)"
+          font.family: Style.font.family
+          font.pixelSize: Style.font.body
+          foreground: root.bar.foreground
+          horizontalPadding: Style.spacing.controlGap
+          verticalPadding: Style.spacing.xs
+          enabled: !row.isBusy
+          text: row.isPasswordOpen ? root.identityText : ""
 
-        onVisibleChanged: if (visible && !row.isEnterprise) Qt.callLater(forceActiveFocus)
-        Component.onCompleted: if (visible && !row.isEnterprise) Qt.callLater(forceActiveFocus)
-      }
+          onAccepted: pwField.forceActiveFocus()
+          onTextChanged: if (row.isPasswordOpen && text !== root.identityText) root.identityText = text
+          Keys.onEscapePressed: root.cancelPasswordPrompt()
 
-      BorderSurface {
-        id: statusMsgWrapper
-        visible: row.isBusy || row.isFailed
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        height: Style.spacing.controlHeight
-        color: Style.normalFillFor(root.bar.foreground)
-        borderSpec: Border.controlSpec("normal", root.bar.foreground, Color.foreground)
-        radius: Style.cornerRadius
+          onVisibleChanged: if (visible) Qt.callLater(forceActiveFocus)
+          Component.onCompleted: if (visible) Qt.callLater(forceActiveFocus)
+        }
+
+        TextField {
+          id: pwField
+          visible: !row.isBusy && !row.isFailed
+          width: parent.width
+          password: true
+          placeholderText: "Passphrase"
+          font.family: Style.font.family
+          font.pixelSize: Style.font.body
+          foreground: root.bar.foreground
+          horizontalPadding: Style.spacing.controlGap
+          verticalPadding: Style.spacing.xs
+          enabled: !row.isBusy
+          text: row.isPasswordOpen ? root.passwordText : ""
+
+          onAccepted: row.submitCredentials()
+          onTextChanged: if (row.isPasswordOpen && text !== root.passwordText) root.passwordText = text
+          Keys.onEscapePressed: root.cancelPasswordPrompt()
+
+          onVisibleChanged: if (visible && !row.isEnterprise) Qt.callLater(forceActiveFocus)
+          Component.onCompleted: if (visible && !row.isEnterprise) Qt.callLater(forceActiveFocus)
+        }
 
         Text {
+          visible: row.isBusy || row.isFailed
+          width: parent.width
           textFormat: Text.PlainText
-          anchors.fill: parent
-          horizontalAlignment: Text.AlignHCenter
-          verticalAlignment: Text.AlignVCenter
-          text: row.isFailed ? "Wrong password" : "Connecting..."
+          text: row.isFailed ? "× WRONG PASSWORD" : "● CONNECTING…"
           color: row.isFailed ? root.bar.urgent : root.bar.foreground
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.bodySmall
+          font.bold: true
         }
       }
 
-      // 22×22 right-anchored to line up with lockIndicator above. Esc closes
-      // the prompt (handled by pwField.Keys.onEscapePressed)
-      // so there's no separate cancel button.
       PanelActionButton {
         id: connectPwBtn
         visible: !row.isBusy && !row.isFailed
         anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.bottom: passwordFields.bottom
         enabled: row.net && pwField.text.length > 0 && (!row.isEnterprise || idField.text.length > 0)
         iconText: Icons.check
         tooltipText: "Connect"
