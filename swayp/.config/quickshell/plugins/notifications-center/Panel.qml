@@ -69,18 +69,6 @@ Panel {
   // font that the bar ultimately uses.
   readonly property string fontFamily: Style.font.family
 
-  readonly property var notificationPhrases: [
-    "Catching signals",
-    "Watching events",
-    "Listening quietly",
-    "Sorting alerts",
-    "Keeping watch",
-    "Reading the room"
-  ]
-  property int notificationPhraseIndex: Math.floor(Math.random() * notificationPhrases.length)
-  readonly property string notificationPhrase:
-    notificationPhrases[notificationPhraseIndex % notificationPhrases.length]
-
   function activeRows() {
     var rows = []
     if (!notifications) return rows
@@ -157,6 +145,57 @@ Panel {
   readonly property bool dnd:
     notificationService ? !!notificationService.doNotDisturb : false
 
+  property int selectedIndex: 0
+
+  function formatTime(timestamp) {
+    var date = new Date(Number(timestamp) || 0)
+    if (!isFinite(date.getTime())) return "--:--"
+    return Qt.formatTime(date, "HH:mm")
+  }
+
+  function clampSelection() {
+    if (centerModel.count <= 0) {
+      selectedIndex = 0
+      return
+    }
+    selectedIndex = Math.max(0, Math.min(selectedIndex, centerModel.count - 1))
+    Qt.callLater(function() {
+      if (notificationList && selectedIndex >= 0)
+        notificationList.positionViewAtIndex(selectedIndex, ListView.Contain)
+    })
+  }
+
+  function moveSelection(delta) {
+    if (centerModel.count <= 0) return
+    selectedIndex = (selectedIndex + delta + centerModel.count) % centerModel.count
+    Qt.callLater(function() {
+      notificationList.positionViewAtIndex(selectedIndex, ListView.Contain)
+    })
+  }
+
+  function openSelected() {
+    if (!root.notificationService || selectedIndex < 0 || selectedIndex >= centerModel.count) return
+    var row = centerModel.get(selectedIndex)
+    if (!row) return
+    var active = root.activeIndex(row.originalId, row.timestamp)
+    if (active >= 0)
+      root.notificationService.invokePopupDefault(active)
+    else
+      root.notificationService.focusApp({ app: row.app })
+  }
+
+  function clearSelected() {
+    if (!root.notificationService || selectedIndex < 0 || selectedIndex >= centerModel.count) return
+    var row = centerModel.get(selectedIndex)
+    if (!row) return
+    var active = root.activeIndex(row.originalId, row.timestamp)
+    if (active >= 0)
+      root.notificationService.dismissPopup(active)
+    root.notificationService.removeHistoryEntry({
+      originalId: row.originalId,
+      timestamp: row.timestamp
+    })
+  }
 
   function toggleDnd() {
     if (notificationService)
@@ -176,6 +215,7 @@ Panel {
       waitForEnd: true
       onStreamFinished: {
         root.rebuildCenter(text)
+        root.clampSelection()
         if (root.historyReloadPending) {
           root.historyReloadPending = false
           Qt.callLater(root.reloadHistory)
@@ -216,7 +256,7 @@ Panel {
     target: root
     function onOpenedChanged() {
       if (root.opened) {
-        root.notificationPhraseIndex = Math.floor(Math.random() * root.notificationPhrases.length)
+        root.selectedIndex = 0
         root.reloadHistory()
       }
     }
@@ -235,7 +275,7 @@ Panel {
     padding: 0
     drawBackground: false
     borderSpec: Border.surfaceSpec("notifications", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.space(440), popup.availableCardWidth)
+    contentWidth: Math.min(Style.space(400), popup.availableCardWidth)
     contentHeight: Math.min(
       popup.availableCardHeight,
       card.headerHeight
@@ -260,8 +300,33 @@ Panel {
       }
 
       Keys.onReturnPressed: function(event) {
-        root.closePanel()
+        root.openSelected()
         event.accepted = true
+      }
+
+      Keys.onUpPressed: function(event) {
+        root.moveSelection(-1)
+        event.accepted = true
+      }
+
+      Keys.onDownPressed: function(event) {
+        root.moveSelection(1)
+        event.accepted = true
+      }
+
+      Keys.onDeletePressed: function(event) {
+        root.clearSelected()
+        event.accepted = true
+      }
+
+      Keys.onPressed: function(event) {
+        if (event.text.toLowerCase() === "d") {
+          root.toggleDnd()
+          event.accepted = true
+        } else if (event.text.toLowerCase() === "c") {
+          root.clearAll()
+          event.accepted = true
+        }
       }
 
       Component.onCompleted: {
@@ -273,8 +338,8 @@ Panel {
     BorderSurface {
       id: card
     
-      readonly property int widthLimit: Style.space(440)
-      readonly property int maxListHeight: Style.space(480)
+      readonly property int widthLimit: Style.space(400)
+      readonly property int maxListHeight: Style.space(400)
       readonly property int headerHeight: Style.popup.headerHeight
     
       anchors.fill: parent
@@ -328,12 +393,11 @@ Panel {
             }
     
             Text {
-              text: root.dnd ? "DO NOT DISTURB" : root.notificationPhrase.toUpperCase()
+              text: root.dnd ? "DO NOT DISTURB" : "EVENT LOG"
               color: Color.foreground
               font.family: root.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
-              font.letterSpacing: 1.1
             }
           }
     
@@ -379,7 +443,7 @@ Panel {
     
             delegate: Item {
               id: row
-    
+
               required property int index
               required property int originalId
               required property string app
@@ -390,60 +454,70 @@ Panel {
               required property string glyph
               required property int urgency
               required property double timestamp
-    
+
               width: notificationList.width
-              implicitHeight: notificationCard.implicitHeight
-    
-              NotificationComponents.NotificationCard {
-                id: notificationCard
-    
+              height: rowColumn.implicitHeight
+
+              Column {
+                id: rowColumn
                 width: parent.width
-                app: row.app
-                appIcon: row.appIcon
-                summary: row.summary
-                body: row.body
-                image: row.image
-                glyph: row.glyph
-                originalId: row.originalId
-                imagePersistenceDir: root.notificationService ? root.notificationService.imagesDir : ""
-                urgency: row.urgency
-                timestamp: row.timestamp
-                cornerRadius: 0
-                fontFamily: root.fontFamily
-    
-                // The service already owns action dispatch and lifecycle.
-                // Reuse it rather than duplicating notification handling.
-                onCloseRequested: {
-                  if (!root.notificationService) return
-    
-                  var active = root.activeIndex(row.originalId, row.timestamp)
-                  if (active >= 0)
-                    root.notificationService.dismissPopup(active)
-    
-                  // Whether the notification is still live or already in
-                  // history, the X means "remove this entry from the
-                  // center". For a live popup the dismiss above queues its
-                  // archive first; the history delete therefore runs after
-                  // that archive and wins deterministically.
-                  root.notificationService.removeHistoryEntry({
-                    originalId: row.originalId,
-                    timestamp: row.timestamp
-                  })
+                spacing: Style.spacing.xs
+
+                CursorSurface {
+                  width: parent.width
+                  height: Math.max(Style.space(30), mainLine.implicitHeight)
+                  hasCursor: root.selectedIndex === row.index
+                  foreground: Color.notifications.text
+                  fill: "transparent"
+                  currentFill: "transparent"
+
+                  Text {
+                    id: mainLine
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.leftMargin: Style.spacing.md + Style.spacing.md
+                    anchors.rightMargin: Style.spacing.md
+                    anchors.verticalCenter: parent.verticalCenter
+                    textFormat: Text.PlainText
+                    text: (row.urgency === 2 ? "! " : "")
+                      + String(row.app || "SYSTEM").toUpperCase()
+                      + "  "
+                      + root.formatTime(row.timestamp)
+                    color: row.urgency === 2 ? Color.urgent : Color.notifications.text
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.body
+                    font.bold: true
+                    elide: Text.ElideRight
+                  }
+
+                  MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onContainsMouseChanged: if (containsMouse) root.selectedIndex = row.index
+                    onClicked: root.openSelected()
+                  }
                 }
-    
-                onCardClicked: {
-                  if (!root.notificationService) return
-                  if (root.isActiveEntry(row.originalId, row.timestamp))
-                    root.notificationService.invokePopupDefault(root.activeIndex(row.originalId, row.timestamp))
-                  else
-                    root.notificationService.focusApp({
-                      app: row.app
-                    })
+
+                Text {
+                  width: parent.width
+                  leftPadding: Style.spacing.md + Style.spacing.md
+                  rightPadding: Style.spacing.md
+                  textFormat: Text.PlainText
+                  text: {
+                    var title = String(row.summary || "").trim()
+                    var body = NotificationLogic.sanitizeBody(String(row.body || ""))
+                    if (title.length > 0 && body.length > 0) return title + " · " + body
+                    return title.length > 0 ? title : (body.length > 0 ? body : "—")
+                  }
+                  color: Color.notifications.text
+                  opacity: 0.76
+                  font.family: root.fontFamily
+                  font.pixelSize: Style.font.caption
+                  elide: Text.ElideRight
+                  maximumLineCount: 1
                 }
               }
             }
-          }
-    
           Column {
             anchors.centerIn: parent
             visible: root.notificationCount === 0
@@ -455,15 +529,15 @@ Panel {
               color: Color.foreground
               opacity: 0.75
               font.family: root.fontFamily
-              font.pixelSize: Style.font.displayLarge
+              font.pixelSize: Style.font.display
               horizontalAlignment: Text.AlignHCenter
             }
     
             Text {
               width: Style.space(300)
               text: root.dnd
-                ? "Notifications are silenced"
-                : "No notifications"
+                ? "NOTIFICATIONS SILENCED"
+                : "NO NOTIFICATIONS"
               color: Color.notifications.text
               opacity: Style.opacity.mutedText
               font.family: root.fontFamily
@@ -477,37 +551,27 @@ Panel {
           id: footer
           Layout.fillWidth: true
           implicitHeight: Style.popup.footerHeight
-    
-          Row {
+
+          PanelStatusLine {
             anchors.fill: parent
             anchors.leftMargin: Style.popup.contentInset
             anchors.rightMargin: Style.popup.contentInset
-            anchors.bottomMargin: Style.spacing.controlGap
-            spacing: Style.spacing.inset
-    
-            Button {
-              width: (parent.width - parent.spacing) / 2
-              text: root.dnd ? "Allow" : "Silence"
-              iconText: root.dnd ? "󰂚" : "󰂛"
-              foreground: Color.notifications.text
-              fontFamily: root.fontFamily
-              fontSize: Style.font.bodySmall
-              bordered: true
-              onClicked: root.toggleDnd()
-            }
-    
-            Button {
-              width: (parent.width - parent.spacing) / 2
-              text: "Clear"
-              iconText: "󰆴"
-              foreground: Color.notifications.text
-              fontFamily: root.fontFamily
-              fontSize: Style.font.bodySmall
-              bordered: true
-              enabled: root.notificationCount > 0
-              onClicked: root.clearAll()
-            }
+            stateText: root.notificationCount > 0
+              ? root.notificationCount + (root.notificationCount === 1 ? " NOTIFICATION" : " NOTIFICATIONS")
+              : "EMPTY"
+            foreground: Color.notifications.text
+            accent: Color.accent
+            fontFamily: root.fontFamily
+            hints: [
+              { key: "↑↓", label: "NAV" },
+              { key: "ENTER", label: "OPEN" },
+              { key: "D", label: root.dnd ? "ALLOW" : "DND" },
+              { key: "C", label: "CLEAR" },
+              { key: "DEL", label: "REMOVE" },
+              { key: "ESC", label: "CLOSE" }
+            ]
           }
+        }
         }
       }
     }
