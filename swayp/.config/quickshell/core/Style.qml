@@ -76,7 +76,7 @@ QtObject {
   // plugin-specific decisions.
   readonly property QtObject tui: QtObject {
     readonly property string cursorMarker: root.styleString("cursor-marker", ">")
-    readonly property string headerMarker: root.styleString("header-marker", ">")
+    readonly property string headerMarker: root.styleString("header-marker", "󰅂")
     readonly property string stateOn: root.styleString("state-on", "●")
     readonly property string stateOff: root.styleString("state-off", "○")
     readonly property string statePartial: root.styleString("state-partial", "◐")
