@@ -780,7 +780,7 @@ Panel {
       color: root.bar.foreground
       font.family: root.bar.fontFamily
       font.pixelSize: Style.font.body
-      font.bold: monitorRow.hasCursor || monitorRow.isFocused
+      font.bold: monitorRow.isFocused
       elide: Text.ElideRight
       opacity: monitorRow.canToggle ? 1.0 : 0.45
     }
