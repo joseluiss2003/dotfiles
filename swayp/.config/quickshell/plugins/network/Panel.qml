@@ -908,7 +908,7 @@ Panel {
   SequentialAnimation {
     id: connectionPhraseSwap
     PropertyAnimation {
-      target: heroMeta; property: "opacity"
+      target: cliHeader; property: "statusOpacity"
       to: 0.0; duration: Style.popup.contentFadeOutDuration; easing.type: Easing.OutQuad
     }
     ScriptAction {
@@ -1098,8 +1098,25 @@ Panel {
       spacing: Style.spacing.xxl
 
       PanelCliHeader {
-        title: heroSsid.title
-        status: heroMeta.text
+        id: cliHeader
+        title: {
+          if (root.kind === "wifi" && root.connectedWifiNetwork) return root.connectedWifiNetwork.name || "Wi-Fi"
+          if (root.info.type === "wifi") return root.info.ssid || "Wi-Fi"
+          if (root.info.type === "ethernet") return "Ethernet"
+          return root.info.iface || (root.kind === "disconnected" ? "Disconnected" : "No connection")
+        }
+        status: {
+          if (root.hasCaptivePortal) return "SIGN-IN REQUIRED"
+          if (root.restricted) return "LIMITED INTERNET ACCESS"
+          if (root.info.type === "wifi") {
+            if (root.canDisconnect) return root.connectionPhrase
+            if (root.kind === "disconnected") return "NOT CONNECTED"
+            return ""
+          }
+          if (root.info.type === "ethernet") return root.connectionPhrase
+          if (root.kind === "disconnected") return "NOT CONNECTED"
+          return ""
+        }
         foreground: root.bar.foreground
         accent: root.restricted ? root.bar.urgent : Color.accent
         fontFamily: root.bar.fontFamily
