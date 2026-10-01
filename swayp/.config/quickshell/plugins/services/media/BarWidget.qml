@@ -176,7 +176,7 @@ BarWidget {
 
         Item {
           width: parent.width
-          height: Style.spacing.sm
+          height: Style.spacing.xs
         }
 
         PanelCliHeader {
@@ -243,7 +243,7 @@ BarWidget {
               id: trackMetadata
               anchors.left: parent.left
               anchors.right: parent.right
-              anchors.top: parent.top
+              anchors.verticalCenter: parent.verticalCenter
               spacing: Style.spacing.xs
 
               Text {
