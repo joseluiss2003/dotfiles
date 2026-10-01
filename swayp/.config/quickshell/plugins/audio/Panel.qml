@@ -562,12 +562,6 @@ Panel {
   PwObjectTracker { objects: root.candidateSources }
   PwObjectTracker { objects: root.audioStreams }
 
-  PwNodePeakMonitor {
-    id: inputPeakMonitor
-    node: root.source
-    enabled: root.opened && !!root.source
-  }
-
   Process {
     id: sinkAvailabilityProc
     command: ["swayp-audio-sink-availability"]
@@ -859,19 +853,6 @@ Column {
                   onRightClicked: root.toggleInputMute()
                 }
 
-                Rectangle {
-                  width: parent.width
-                  height: Style.space(2)
-                  color: Util.alpha(root.bar.foreground, 0.14)
-                  opacity: root.inputMuted ? 0.35 : 1.0
-
-                  Rectangle {
-                    height: parent.height
-                    width: parent.width * Math.max(0, Math.min(1, inputPeakMonitor.peak))
-                    color: root.bar.foreground
-                    Behavior on width { NumberAnimation { duration: 70 } }
-                  }
-                }
               }
 
               HoverHandler {
