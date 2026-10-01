@@ -42,6 +42,7 @@ PanelWindow {
   property var owner: null
   property int margin: Style.popup.margin
   property int padding: Style.popup.padding
+  property real contentPaddingTop: padding
   property int contentWidth: Style.space(280)
   property int contentHeight: Style.space(200)
   property var borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Style.popup.borderWidth)
@@ -370,7 +371,7 @@ PanelWindow {
     Item {
       id: contentHolder
       anchors.fill: parent
-      anchors.topMargin: card.contentTopInset
+      anchors.topMargin: card.borderTop + root.contentPaddingTop
       anchors.rightMargin: card.contentRightInset
       anchors.bottomMargin: card.contentBottomInset
       anchors.leftMargin: card.contentLeftInset
