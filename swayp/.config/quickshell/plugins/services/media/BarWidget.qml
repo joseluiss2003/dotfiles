@@ -174,11 +174,6 @@ BarWidget {
         anchors.margins: Style.popup.contentInset
         spacing: Style.spacing.panelGap
 
-        Item {
-          width: parent.width
-          height: Style.spacing.xs
-        }
-
         PanelCliHeader {
           title: "Media"
           status: root.identity ? root.identity : "NOW PLAYING"
@@ -243,7 +238,7 @@ BarWidget {
               id: trackMetadata
               anchors.left: parent.left
               anchors.right: parent.right
-              anchors.verticalCenter: parent.verticalCenter
+              anchors.top: parent.top
               spacing: Style.spacing.xs
 
               Text {
