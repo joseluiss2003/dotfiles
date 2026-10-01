@@ -808,6 +808,7 @@ Panel {
               foreground: root.bar.foreground
               fill: "transparent"
               currentFill: "transparent"
+              showCursorMarker: false
               outline: false
 
               PanelSlider {
@@ -898,6 +899,7 @@ Panel {
               foreground: root.bar.foreground
               fill: "transparent"
               currentFill: "transparent"
+              showCursorMarker: false
               outline: false
 
               Column {
