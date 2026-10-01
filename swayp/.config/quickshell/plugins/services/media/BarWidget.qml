@@ -190,12 +190,7 @@ BarWidget {
           }
         }
 
-        PanelSeparator {
-          width: parent.width
-          foreground: Color.popups.border
-        }
-
-        // Track information stays compact: metadata sits at the top-right
+// Track information stays compact: metadata sits at the top-right
         // of the artwork and playback controls live directly underneath it.
         // This keeps the player row short and lets the players list move up.
         Item {
@@ -379,12 +374,7 @@ BarWidget {
           spacing: Style.spacing.sm
           visible: root.sourcePlayers.length > 0
 
-          PanelSeparator {
-            width: parent.width
-            foreground: Color.popups.border
-          }
-
-          PanelSectionHeader {
+PanelSectionHeader {
             text: "PLAYERS"
             foreground: root.bar.foreground
             fontFamily: root.bar.fontFamily
