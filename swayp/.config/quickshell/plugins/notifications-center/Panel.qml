@@ -559,7 +559,6 @@ Panel {
               horizontalAlignment: Text.AlignHCenter
             }
           }
-        }
     
         Item {
           id: footer
