@@ -190,7 +190,7 @@ BarWidget {
         // This keeps the player row short and lets the players list move up.
         Item {
           width: parent.width
-          height: artwork.height + (root.sourcePlayers.length > 1 ? 0 : Style.spacing.panelGap + Style.spacing.md)
+          height: artwork.height + (root.sourcePlayers.length > 1 ? 0 : Style.spacing.xxl)
           implicitHeight: height
 
           BorderSurface {
