@@ -1738,7 +1738,7 @@ Item {
       id: horizontalModuleList
 
       Row {
-        spacing: moduleListRoot.region === "right" ? Style.space(0) : (moduleListRoot.region === "left" ? Style.bar.iconGap : 0)
+        spacing: (moduleListRoot.region === "left" || moduleListRoot.region === "right") ? Style.bar.iconGap : 0
 
         Repeater {
           model: moduleListRoot.entries
@@ -1756,7 +1756,7 @@ Item {
       id: verticalModuleList
 
       Column {
-        spacing: moduleListRoot.region === "right" ? Style.space(0) : (moduleListRoot.region === "left" ? Style.bar.iconGap : 0)
+        spacing: (moduleListRoot.region === "left" || moduleListRoot.region === "right") ? Style.bar.iconGap : 0
 
         Repeater {
           model: moduleListRoot.entries
