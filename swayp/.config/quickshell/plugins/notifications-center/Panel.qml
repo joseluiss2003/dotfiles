@@ -362,7 +362,8 @@ Panel {
     
       readonly property int widthLimit: Style.space(400)
       readonly property int maxListHeight: Style.space(400)
-      readonly property int headerHeight: Style.popup.headerHeight
+      readonly property int headerHeight: Style.popup.padding
+        + Style.font.body + Style.spacing.sm * 2
     
       anchors.fill: parent
     
@@ -386,9 +387,10 @@ Panel {
           PanelCliHeader {
             anchors.left: parent.left
             anchors.right: parent.right
+            anchors.top: parent.top
             anchors.leftMargin: Style.popup.contentInset
             anchors.rightMargin: Style.popup.contentInset
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.topMargin: Style.popup.padding
             title: "Notifications"
             status: root.dnd
               ? "DO NOT DISTURB · " + root.notificationCount + " EVENTS"
