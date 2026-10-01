@@ -333,52 +333,6 @@ Panel {
           }
         }
 
-        // ---------- Battery info ----------
-        PanelSeparator {
-          foreground: root.bar.foreground
-        }
-
-        Column {
-          visible: root.batteryInfo.percentage !== undefined
-          width: parent.width
-          spacing: Style.spacing.xs
-
-          PanelSectionHeader {
-            text: "BATTERY"
-            foreground: root.bar.foreground
-            fontFamily: root.bar.fontFamily
-          }
-
-          Row {
-            width: parent.width
-            spacing: Style.spacing.md
-
-            Column {
-              width: (parent.width - parent.spacing) / 2
-              spacing: Style.spacing.xs
-              InfoPair { label: "SIZE"; value: root.batteryInfo.size || "—" }
-              InfoPair { label: "CYCLES"; value: root.batteryInfo.cycles || "—" }
-            }
-
-            Column {
-              width: (parent.width - parent.spacing) / 2
-              spacing: Style.spacing.xs
-              InfoPair {
-                label: root.chargeThresholdActive ? "LIMIT" : (root.discharging ? "TIME LEFT" : "TIME FULL")
-                value: root.chargeThresholdActive
-                  ? (root.batteryInfo.threshold || "—")
-                  : (root.batteryFlowIdle ? "—" : (root.batteryInfo.time || "—"))
-              }
-              InfoPair {
-                label: root.chargeThresholdActive ? "STATE" : "RATE"
-                value: root.chargeThresholdActive
-                  ? "HOLDING"
-                  : (root.batteryFull ? "IDLE" : (root.batteryInfo.rate || "—"))
-              }
-            }
-          }
-        }
-
         // ---------- Power profile picker ----------
         PanelSeparator {
           foreground: root.bar.foreground
@@ -397,46 +351,53 @@ Panel {
           Repeater {
             model: root.profiles
 
-            CursorSurface {
+            Item {
               id: profileRow
               required property var modelData
               required property int index
 
-              width: parent.width
-              implicitHeight: profileLabel.implicitHeight
-              hasCursor: root.cursorActive && root.profileIndex === index
-              current: root.activeProfile === String(modelData)
-              fill: "transparent"
-              currentFill: "transparent"
-              foreground: root.bar.foreground
+              width: Style.space(220)
+              height: profileLabel.implicitHeight
+              anchors.horizontalCenter: parent.horizontalCenter
 
-              Text {
-                id: profileLabel
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.leftMargin: Style.spacing.md + Style.spacing.md
-                anchors.rightMargin: Style.spacing.md
-                anchors.verticalCenter: parent.verticalCenter
-                textFormat: Text.PlainText
-                text: String(modelData).toUpperCase()
-                  + (root.activeProfile === String(modelData) ? "  · ACTIVE" : "")
-                color: root.bar.foreground
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.body
-                font.bold: root.activeProfile === String(modelData)
-              }
-
-              MouseArea {
+              CursorSurface {
                 anchors.fill: parent
-                hoverEnabled: true
-                onContainsMouseChanged: if (containsMouse) {
-                  root.cursorActive = true
-                  root.profileIndex = index
+                hasCursor: root.cursorActive && root.profileIndex === index
+                current: root.activeProfile === String(modelData)
+                fill: "transparent"
+                currentFill: "transparent"
+                foreground: root.bar.foreground
+
+                Text {
+                  id: profileLabel
+                  anchors.left: parent.left
+                  anchors.right: parent.right
+                  anchors.leftMargin: Style.spacing.md
+                  anchors.rightMargin: Style.spacing.md
+                  anchors.verticalCenter: parent.verticalCenter
+                  horizontalAlignment: Text.AlignHCenter
+                  textFormat: Text.PlainText
+                  text: String(modelData).toUpperCase()
+                    + (root.activeProfile === String(modelData) ? "  · ACTIVE" : "")
+                  color: root.bar.foreground
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.body
+                  font.bold: root.activeProfile === String(modelData)
                 }
-                onClicked: root.setProfile(String(modelData))
+
+                MouseArea {
+                  anchors.fill: parent
+                  hoverEnabled: true
+                  onContainsMouseChanged: if (containsMouse) {
+                    root.cursorActive = true
+                    root.profileIndex = index
+                  }
+                  onClicked: root.setProfile(String(modelData))
+                }
               }
             }
           }
+        }
         PanelStatusLine {
           stateText: root.heroStatusText + " · " + Math.round(root.batteryFraction * 100) + "%"
           foreground: root.bar.foreground
@@ -453,31 +414,3 @@ Panel {
       }
     }
   }
-
-  component InfoPair: Row {
-    property string label: ""
-    property string value: ""
-
-    width: parent.width
-    spacing: Style.spacing.controlGap
-
-    InfoLabel { text: label }
-    Item { width: Math.max(0, parent.width - parent.children[0].implicitWidth - parent.children[2].implicitWidth - parent.spacing * 2); height: 1 }
-    InfoValue { text: value }
-  }
-
-  component InfoLabel: Text {
-    textFormat: Text.PlainText
-    color: root.bar.foreground
-    opacity: 0.6
-    font.family: root.bar.fontFamily
-    font.pixelSize: Style.font.bodySmall
-  }
-
-  component InfoValue: Text {
-    textFormat: Text.PlainText
-    color: root.bar.foreground
-    font.family: root.bar.fontFamily
-    font.pixelSize: Style.font.bodySmall
-  }
-}
