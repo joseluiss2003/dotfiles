@@ -27,8 +27,11 @@ BarWidget {
   property bool popupOpen: false
   property int selectedPlayerIndex: 0
 
-  visible: hasMedia
-  implicitWidth: hasMedia ? Style.bar.iconSlot : 0
+  // Keep the media widget present while an MPRIS player exists, even when
+  // it is paused/stopped. The bar represents an available media endpoint,
+  // not only active playback.
+  visible: sourcePlayers.length > 0
+  implicitWidth: sourcePlayers.length > 0 ? Style.bar.iconSlot : 0
   implicitHeight: barSize
 
   function close() {
