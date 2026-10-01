@@ -1895,6 +1895,7 @@ Panel {
             visible: !row.isBusy && !row.isFailed
             width: parent.width - parent.children[0].width - passwordRow.spacing - connectPwBtn.width - Style.spacing.xs
             password: true
+            terminalMode: true
             placeholderText: "••••••••"
             font.family: Style.font.family
             font.pixelSize: Style.font.body
