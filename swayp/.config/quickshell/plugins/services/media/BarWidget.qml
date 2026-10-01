@@ -104,10 +104,14 @@ BarWidget {
     owner: root
     open: root.popupOpen
     focusTarget: keyCatcher
-    padding: Style.popup.padding
+    padding: 0
     borderSpec: Border.surfaceSpec("media", "panel-wrapper", "transparent", 0)
     contentWidth: Math.min(Style.space(344), panel.availableCardWidth)
-    contentHeight: panel.fittedContentHeight(panelColumn.implicitHeight)
+    contentHeight: Math.min(
+      panelColumn.implicitHeight + Style.popup.contentInset * 2
+        + Border.top(card.borderSpec) + Border.bottom(card.borderSpec),
+      panel.availableCardHeight
+    )
     gap: Style.popup.gap
     drawBackground: false
 
@@ -174,6 +178,7 @@ BarWidget {
       Column {
         id: panelColumn
         anchors.fill: parent
+        anchors.margins: Style.popup.contentInset
         spacing: Style.spacing.panelGap
 
         PanelCliHeader {
