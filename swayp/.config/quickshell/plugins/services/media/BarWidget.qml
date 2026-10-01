@@ -398,7 +398,7 @@ BarWidget {
           id: playersSection
           width: parent.width
           spacing: Style.spacing.sm
-          visible: root.sourcePlayers.length > 1
+          visible: root.sourcePlayers.length > 0
 
           PanelSeparator {
             width: parent.width
