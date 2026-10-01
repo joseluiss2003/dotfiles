@@ -121,8 +121,12 @@ PanelSectionHeader {
           fontFamily: root.bar.fontFamily
         }
 
-        Repeater {
-          model: root.sessionActions
+        Column {
+          width: parent.width
+          spacing: Style.spacing.inset
+
+          Repeater {
+            model: root.sessionActions
 
             Item {
               id: sessionRow
@@ -169,6 +173,7 @@ PanelSectionHeader {
                 }
               }
             }
+          }
         }
       }
     }
