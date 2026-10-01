@@ -13,18 +13,24 @@ Column {
   property color accent: Color.accent
   property string fontFamily: Style.font.family
 
+  width: parent ? parent.width : implicitWidth
+  implicitWidth: Math.max(stateTextText.implicitWidth, hintsRow.implicitWidth)
+  implicitHeight: separator.implicitHeight + spacing + hintsRow.implicitHeight
   spacing: Style.spacing.xs
 
   PanelSeparator {
+    id: separator
     foreground: root.foreground
     strength: 0.16
   }
 
   Row {
+    id: statusRow
     width: parent.width
     spacing: Style.spacing.md
 
     Text {
+      id: stateTextText
       width: Math.max(0, parent.width - hintsRow.implicitWidth - Style.spacing.md)
       textFormat: Text.PlainText
       text: root.stateText
