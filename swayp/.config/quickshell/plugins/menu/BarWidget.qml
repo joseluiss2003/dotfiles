@@ -160,6 +160,7 @@ PanelSectionHeader {
                 MouseArea {
                   anchors.fill: parent
                   hoverEnabled: true
+                  cursorShape: Qt.PointingHandCursor
                   onContainsMouseChanged: if (containsMouse) {
                     root.cursorActive = true
                     root.selectedIndex = index
