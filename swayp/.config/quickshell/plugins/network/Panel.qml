@@ -1259,12 +1259,7 @@ Panel {
 
       // Wi-Fi band selection. Only on Wi-Fi, and only when the network answers
       // on more than one band -- a single-band AP has nothing to toggle.
-      PanelSeparator {
-        visible: root.canSelectBand
-        foreground: root.bar.foreground
-      }
-
-      Column {
+Column {
         visible: root.canSelectBand
         width: parent.width
         spacing: Style.spacing.sectionGap
@@ -1386,12 +1381,7 @@ Panel {
       }
 
       // Wi-Fi networks (only if a Wi-Fi station is available).
-      PanelSeparator {
-        visible: root.wifiStationAvailable && root.wifiNetworks.length > 0
-        foreground: root.bar.foreground
-      }
-
-      PanelSectionHeader {
+PanelSectionHeader {
         visible: root.wifiStationAvailable && root.scanning
         text: "SCANNING WI-FI…"
         foreground: root.bar.foreground
