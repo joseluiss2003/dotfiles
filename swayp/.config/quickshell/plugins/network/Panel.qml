@@ -1865,7 +1865,10 @@ Panel {
 
           TextField {
             id: idField
-            width: parent.width - parent.children[0].width - identityRow.spacing
+            width: parent.width
+  - Style.space(12)
+  - Style.space(34)
+  - identityRow.spacing * 2
             terminalMode: true
             placeholderText: "user@domain"
             font.family: Style.font.family
@@ -1916,7 +1919,12 @@ Panel {
           TextField {
             id: pwField
             visible: !row.isBusy && !row.isFailed
-            width: parent.width - parent.children[0].width - passwordRow.spacing - connectPwBtn.width - Style.spacing.xs
+            width: parent.width
+  - Style.space(12)
+  - Style.space(34)
+  - passwordRow.spacing * 2
+  - connectPwBtn.width
+  - Style.spacing.xs
             password: true
             terminalMode: true
             placeholderText: "••••••••"
