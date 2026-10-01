@@ -1594,7 +1594,9 @@ Panel {
     readonly property bool isSelected: root.focusSection === "wifi" && root.selectedIndex === index
     // The cursor always represents navigation focus, even on the currently
     // connected network. Connection state is conveyed by statusText.
-    hasCursor: root.cursorActive && isSelected && !root.wifiActionFocused
+    // Once credentials are open, the inline field owns the cursor marker.
+    // Do not leave the network-row marker on the authentication header.
+    hasCursor: root.cursorActive && isSelected && !root.wifiActionFocused && !isPasswordOpen
     current: false
     fill: "transparent"
     currentFill: "transparent"
