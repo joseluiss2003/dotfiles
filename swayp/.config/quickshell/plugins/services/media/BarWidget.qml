@@ -186,7 +186,6 @@ BarWidget {
           status: root.identity ? root.identity : "NOW PLAYING"
           foreground: root.bar.foreground
           fontFamily: root.bar.fontFamily
-          titleVerticalOffset: Style.space(1)
         }
 
 // Track information stays compact: metadata sits at the top-right
