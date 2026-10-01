@@ -755,13 +755,18 @@ Panel {
     foreground: root.bar.foreground
     fill: "transparent"
     currentFill: "transparent"
-    implicitHeight: monitorLabel.implicitHeight
+    showCursorMarker: true
+    cursorMarkerVerticalOffset: 0
+    implicitHeight: Math.max(
+      monitorLabel.implicitHeight,
+      Style.font.body + Style.spacing.sm * 2
+    )
 
     Text {
       id: monitorLabel
       anchors.left: parent.left
       anchors.right: parent.right
-      anchors.leftMargin: Style.spacing.md + Style.spacing.md
+      anchors.leftMargin: Style.spacing.md + Style.spacing.xs
       anchors.rightMargin: Style.spacing.md
       anchors.verticalCenter: parent.verticalCenter
       textFormat: Text.PlainText
@@ -775,7 +780,7 @@ Panel {
       color: root.bar.foreground
       font.family: root.bar.fontFamily
       font.pixelSize: Style.font.body
-      font.bold: monitorRow.isFocused
+      font.bold: monitorRow.hasCursor || monitorRow.isFocused
       elide: Text.ElideRight
       opacity: monitorRow.canToggle ? 1.0 : 0.45
     }
