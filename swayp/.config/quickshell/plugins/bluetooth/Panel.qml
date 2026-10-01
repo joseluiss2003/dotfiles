@@ -667,79 +667,23 @@ Panel {
         anchors.fill: parent
         spacing: Style.spacing.panelGap
 
-        // ---------- Hero: Bluetooth icon · status ----------
-        Item {
-          id: heroBlock
-          width: parent.width
-          implicitHeight: Math.max(heroIcon.implicitHeight, heroLabels.implicitHeight, powerSwitch.implicitHeight)
-
-          // Status only — the switch owns toggling, mouse and keyboard alike.
-          Text {
-            id: heroIcon
-            textFormat: Text.PlainText
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            text: root.icon
-            color: root.adapter && root.adapter.enabled ? root.bar.foreground : Util.alpha(root.bar.foreground, 0.5)
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.display
-            opacity: root.adapter && root.adapter.enabled ? 1.0 : 0.5
-          }
-
-          // Compact on/off switch on the trailing edge of the hero, and the
-          // header's only cursor target.
-          ToggleSwitch {
-            id: powerSwitch
-            visible: !!root.adapter
-            checked: !!root.adapter && root.adapter.enabled
-            hasCursor: root.headerHasCursor
-            foreground: root.bar.foreground
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            onHovered: function(on) { if (on) root.setHeaderCursor() }
-            onToggled: root.toggleBluetooth()
-
-            PanelToolTip {
-              visible: powerSwitch.containsMouse
-              text: root.toggleHint
-              fontFamily: root.bar.fontFamily
-            }
-          }
-
-          Column {
-            id: heroLabels
-            anchors.left: heroIcon.right
-            anchors.leftMargin: Style.spacing.panelGap
-            anchors.right: parent.right
-            anchors.rightMargin: powerSwitch.visible ? powerSwitch.width + Style.spacing.xxl : 0
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.compactGap
-
-            Text {
-              text: "BLUETOOTH"
-              color: root.bar.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.title
-              font.bold: true
-              font.letterSpacing: 0.8
-              elide: Text.ElideRight
-              width: parent.width
-            }
-
-            Text {
-              id: heroStatus
-              textFormat: Text.PlainText
-              text: root.heroStatusText.toUpperCase()
-              color: Color.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-              font.letterSpacing: 0.8
-              elide: Text.ElideRight
-              width: parent.width
+        PanelCliHeader {
+          title: "Bluetooth"
+          status: root.heroStatusText.replace(/^● |^○ |^× /, "")
+          foreground: root.bar.foreground
+          fontFamily: root.bar.fontFamily
+          trailingControl: Component {
+            ToggleSwitch {
+              visible: !!root.adapter
+              checked: !!root.adapter && root.adapter.enabled
+              hasCursor: root.headerHasCursor
+              foreground: root.bar.foreground
+              onHovered: function(on) { if (on) root.setHeaderCursor() }
+              onToggled: root.toggleBluetooth()
             }
           }
         }
+
 
         // Scrollable device list — capped so a noisy neighborhood doesn't
         // grow the popup past the screen.
