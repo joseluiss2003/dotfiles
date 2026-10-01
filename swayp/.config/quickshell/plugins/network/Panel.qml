@@ -1274,6 +1274,7 @@ Column {
           PanelSectionHeader {
             id: bandHeader
             text: root.bandSectionTitle
+            leadingGlyph: Icons.wifi
             foreground: root.bar.foreground
             fontFamily: root.bar.fontFamily
             anchors.left: parent.left
@@ -1290,6 +1291,7 @@ Column {
             PanelSectionHeader {
               id: bandAutoLabel
               text: "AUTOMATIC"
+              leadingGlyph: Icons.settings
               foreground: root.bar.foreground
               fontFamily: root.bar.fontFamily
               anchors.left: parent.left
@@ -1384,6 +1386,7 @@ Column {
 PanelSectionHeader {
         visible: root.wifiStationAvailable && root.scanning
         text: "SCANNING WI-FI…"
+        leadingGlyph: Icons.wifi
         foreground: root.bar.foreground
         fontFamily: root.bar.fontFamily
       }
@@ -1427,6 +1430,7 @@ PanelSectionHeader {
             PanelSectionHeader {
               visible: sectionTitle !== ""
               text: sectionTitle
+              leadingGlyph: Icons.wifi
               foreground: root.bar.foreground
               fontFamily: root.bar.fontFamily
               height: visible ? implicitHeight : 0
