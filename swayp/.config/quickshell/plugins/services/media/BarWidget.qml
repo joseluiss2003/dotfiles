@@ -440,7 +440,7 @@ BarWidget {
                 id: sourceText
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.leftMargin: Style.spacing.xxl
+                anchors.leftMargin: Style.spacing.xxxl
                 anchors.rightMargin: Style.spacing.md
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: Style.spacing.xs
