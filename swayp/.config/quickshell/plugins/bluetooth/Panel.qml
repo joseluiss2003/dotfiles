@@ -627,7 +627,10 @@ Panel {
     open: root.opened
     focusTarget: keyCatcher
     contentWidth: panel.fittedContentWidth(Style.space(380))
-    contentHeight: panel.fittedContentHeight(column.implicitHeight)
+    // Fixed composition height: the list is a viewport, not a sizing
+  // source. This keeps the status line inside the card regardless of how
+  // many BlueZ devices discovery returns.
+  contentHeight: panel.fittedContentHeight(Style.space(360))
 
     PanelKeyCatcher {
       id: keyCatcher
@@ -772,11 +775,9 @@ Panel {
           // Keep a deliberate viewport so the footer always remains part
           // of the panel composition. A busy Bluetooth environment scrolls;
           // it must not push the status line out of the card.
-          height: Math.min(contentHeight, Style.space(220))
-          // Column/KeyboardPanel size from implicitHeight; keep the fixed
-          // viewport in that calculation so everything after the list
-          // (notably the terminal status line) remains inside the card.
-          implicitHeight: height
+          // Deliberate viewport: the panel has a fixed composition
+          // and the device list is the part that scrolls.
+          height: Math.min(contentHeight, Style.space(180))
           spacing: Style.spacing.sectionGap
           clip: true
           boundsBehavior: Flickable.StopAtBounds
