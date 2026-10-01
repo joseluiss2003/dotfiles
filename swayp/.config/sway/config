@@ -155,7 +155,7 @@ default_border pixel 2
 default_floating_border normal 2
 focus_follows_mouse yes
 
-gaps inner 8
+gaps inner 2
 gaps outer 8
 
 ### =========================
