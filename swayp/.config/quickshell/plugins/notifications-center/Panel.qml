@@ -147,6 +147,17 @@ Panel {
 
   property int selectedIndex: 0
 
+  function plainNotificationText(value) {
+    var text = String(value || "")
+    text = text.replace(/<br\\s*\\/?\\s*>/gi, " ")
+    text = text.replace(/<[^>]*>/g, "")
+    text = text.replace(/&nbsp;/gi, " ")
+    text = text.replace(/&amp;/gi, "&")
+    text = text.replace(/&lt;/gi, "<")
+    text = text.replace(/&gt;/gi, ">")
+    return text.replace(/\\s+/g, " ").trim()
+  }
+
   function formatTime(timestamp) {
     var date = new Date(Number(timestamp) || 0)
     if (!isFinite(date.getTime())) return "--:--"
@@ -405,7 +416,7 @@ Panel {
             anchors.right: parent.right
             anchors.rightMargin: Style.spacing.panelGap
             anchors.verticalCenter: parent.verticalCenter
-            text: root.notificationCount + (root.notificationCount === 1 ? " ALERT" : " ALERTS")
+            text: root.notificationCount + (root.notificationCount === 1 ? " NOTIFICATION" : " NOTIFICATIONS")
             color: Color.notifications.countdown
             font.family: root.fontFamily
             font.pixelSize: Style.font.caption
@@ -505,7 +516,7 @@ Panel {
                   textFormat: Text.PlainText
                   text: {
                     var title = String(row.summary || "").trim()
-                    var body = NotificationLogic.sanitizeBody(String(row.body || ""))
+                    var body = root.plainNotificationText(row.body)
                     if (title.length > 0 && body.length > 0) return title + " · " + body
                     return title.length > 0 ? title : (body.length > 0 ? body : "—")
                   }
@@ -518,8 +529,11 @@ Panel {
                 }
               }
             }
-          Column {
-            anchors.centerIn: parent
+          }
+        }
+
+        Column {
+          anchors.centerIn: parent
             visible: root.notificationCount === 0
             spacing: Style.spacing.controlGap
     
