@@ -1806,8 +1806,8 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: rowMouse.bottom
-      anchors.leftMargin: Style.spacing.sectionGap + Style.spacing.md
-      anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.md
+      anchors.leftMargin: Style.spacing.sectionGap + Style.spacing.panelPadding
+      anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.panelPadding
       anchors.topMargin: Style.spacing.xs
       implicitHeight: passwordRows.implicitHeight
       height: implicitHeight
