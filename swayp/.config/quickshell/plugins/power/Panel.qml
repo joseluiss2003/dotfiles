@@ -175,7 +175,7 @@ Panel {
 
   Process {
     id: profilesProc
-    command: ["bash", "-c", "active=$(powerprofilesctl get 2>/dev/null || true); powerprofilesctl list 2>/dev/null | awk -v active=\"$active\" '/^[[:space:]]*[a-z0-9-]+:/ {name=$1; sub(/:$/, \"\", name); gsub(/[[:space:]]/, \"\", name); print name \"\\t\" (name == active ? 1 : 0)}'"]
+    command: ["bash", "-c", "active=$(powerprofilesctl get 2>/dev/null || true); powerprofilesctl list 2>/dev/null | awk -v active=\"$active\" '/^[[:space:]]*\\*?[[:space:]]*[a-z0-9-]+:/ {name=$0; sub(/^[[:space:]]*\\*?[[:space:]]*/, \"\", name); sub(/:.*/, \"\", name); print name \"\\t\" (name == active ? 1 : 0)}'"]
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.updateProfiles(text) }
   }
 
