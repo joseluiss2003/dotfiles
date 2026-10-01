@@ -16,11 +16,6 @@ Row {
   property bool uppercase: true
 
   width: parent ? parent.width : implicitWidth
-  implicitWidth: (leadingText.visible ? leadingText.implicitWidth + spacing : 0) + labelText.implicitWidth
-  implicitHeight: Math.max(
-    leadingText.visible ? leadingText.implicitHeight : 0,
-    labelText.implicitHeight
-  )
   spacing: Style.spacing.sm
 
   Text {
