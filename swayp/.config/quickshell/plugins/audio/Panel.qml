@@ -806,7 +806,7 @@ Panel {
               hasCursor: root.cursorActive && root.focusSection === "output" && root.selectedIndex === -1
               onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(outputSliderRow)
               foreground: root.bar.foreground
-              outline: true
+              outline: false
 
               PanelSlider {
                 id: outputSlider
@@ -894,7 +894,7 @@ Panel {
               hasCursor: root.cursorActive && root.focusSection === "input" && root.selectedIndex === -1
               onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(inputSliderRow)
               foreground: root.bar.foreground
-              outline: true
+              outline: false
 
               Column {
                 id: inputControls
@@ -983,6 +983,21 @@ Panel {
                 rowIndex: index
               }
             }
+          }
+
+          PanelStatusLine {
+            stateText: "OUTPUT · " + Math.round(
+              (outputSlider.dragging ? outputSlider.liveValue : root.outputVolume) * 100
+            ) + "%" + (root.outputMuted ? " · MUTED" : "")
+            foreground: root.bar.foreground
+            accent: Color.accent
+            fontFamily: root.bar.fontFamily
+            hints: [
+              { key: "↑↓", label: "NAV" },
+              { key: "←→", label: "VOLUME" },
+              { key: "ENTER", label: "MUTE" },
+              { key: "ESC", label: "CLOSE" }
+            ]
           }
         }
       }
@@ -1142,7 +1157,7 @@ Panel {
       }
 
       PanelSlider {
-        bar: root
+        bar: root.bar
         width: parent.width
         minimum: 0
         maximum: 1.5
