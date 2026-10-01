@@ -1455,7 +1455,7 @@ Panel {
 
       // Wi-Fi networks (only if a Wi-Fi station is available).
       PanelSeparator {
-        visible: root.wifiStationAvailable
+        visible: root.wifiStationAvailable && root.wifiNetworks.length > 0
         foreground: root.bar.foreground
       }
 
