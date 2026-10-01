@@ -484,7 +484,7 @@ BarWidget {
 
           Item {
             width: parent.width
-            height: Style.spacing.xxl
+            height: Style.spacing.huge
           }
         }
       }
