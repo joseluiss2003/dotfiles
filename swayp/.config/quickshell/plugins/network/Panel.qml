@@ -1762,6 +1762,7 @@ Panel {
         id: networkInfo
         spacing: Style.spacing.compactGap
         anchors.left: parent.left
+        anchors.leftMargin: Style.spacing.md
         anchors.right: rightAction.visible ? rightAction.left : parent.right
         anchors.rightMargin: rightAction.visible ? Style.spacing.controlGap : 0
         anchors.verticalCenter: parent.verticalCenter
