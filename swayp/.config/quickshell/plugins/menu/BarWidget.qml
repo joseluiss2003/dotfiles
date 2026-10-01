@@ -134,6 +134,7 @@ PanelSectionHeader {
               required property int index
 
               width: parent.width
+              height: sessionLabel.implicitHeight
 
               CursorSurface {
                 anchors.fill: parent
