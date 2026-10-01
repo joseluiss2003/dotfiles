@@ -1596,6 +1596,8 @@ Panel {
     // connected network. Connection state is conveyed by statusText.
     hasCursor: root.cursorActive && isSelected && !root.wifiActionFocused
     current: false
+    fill: "transparent"
+    currentFill: "transparent"
     readonly property bool forgetFocused: isSelected && root.wifiActionFocused && canForget
     readonly property bool forgetVisible: canForget && (!requiresCredentials || forgetFocused || rightMouse.containsMouse)
 
@@ -1698,7 +1700,8 @@ Panel {
       anchors.top: parent.top
       anchors.leftMargin: Style.spacing.sectionGap
       anchors.rightMargin: Style.spacing.sectionGap
-      implicitHeight: Math.max(networkInfo.implicitHeight, rightAction.implicitHeight) + Style.spacing.rowPaddingX
+      // Dense one-line rows are the default Network/TUI presentation.
+      implicitHeight: Math.max(networkInfo.implicitHeight, rightAction.implicitHeight) + Style.spacing.xs
 
       // The row's leading cursor marker is the navigation affordance.
       // Network-specific glyphs stay in the hero; repeating them on every row
@@ -1765,26 +1768,16 @@ Panel {
 
         Text {
           textFormat: Text.PlainText
-          text: row.net ? (row.net.ssid || "Hidden") : ""
-          color: root.bar.foreground
+          // Keep each network on one compact terminal-style line. Status is
+          // appended to the label instead of creating a second row.
+          text: {
+            var name = row.net ? (row.net.ssid || "Hidden") : ""
+            var status = row.statusText
+            return status !== "" ? name + "  · " + status.toUpperCase() : name
+          }
+          color: row.isFailed ? row.statusColor : root.bar.foreground
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.body
-          elide: Text.ElideRight
-          width: parent.width
-        }
-        Text {
-          textFormat: Text.PlainText
-          // Signal strength is conveyed by the wifi-bars icon and the
-          // right-edge glyph/buttons carry protection or forget affordances,
-          // so the second line only carries action status (Connecting…,
-          // Connected, Failed, etc.). Collapses to zero height when empty
-          // so rows without status keep a tight one-line look.
-          text: row.statusText
-          visible: row.statusText !== ""
-          height: visible ? implicitHeight : 0
-          color: row.statusColor
-          font.family: root.bar.fontFamily
-          font.pixelSize: Style.font.caption
           elide: Text.ElideRight
           width: parent.width
         }
