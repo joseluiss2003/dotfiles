@@ -282,6 +282,7 @@ Column {
 
           PanelSectionHeader {
             text: "POWER PROFILE"
+            leadingGlyph: Icons.power
             foreground: root.bar.foreground
             fontFamily: root.bar.fontFamily
           }
