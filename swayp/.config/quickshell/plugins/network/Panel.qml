@@ -1861,6 +1861,7 @@ Panel {
             font.bold: true
             width: Style.space(34)
             verticalAlignment: Text.AlignVCenter
+            anchors.verticalCenter: idField.verticalCenter
           }
 
           TextField {
@@ -1914,6 +1915,7 @@ Panel {
             font.bold: true
             width: Style.space(34)
             verticalAlignment: Text.AlignVCenter
+            anchors.verticalCenter: pwField.verticalCenter
           }
 
           TextField {
