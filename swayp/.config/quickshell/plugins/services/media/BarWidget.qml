@@ -174,6 +174,13 @@ BarWidget {
         anchors.margins: Style.popup.contentInset
         spacing: Style.spacing.panelGap
 
+        // Media gets a tiny breathing gap above the CLI header without
+        // changing the shared popup framing used by the other panels.
+        Item {
+          width: parent.width
+          height: Style.spacing.sm
+        }
+
         PanelCliHeader {
           title: "Media"
           status: root.identity ? root.identity : "NOW PLAYING"
@@ -186,8 +193,9 @@ BarWidget {
           foreground: Color.popups.border
         }
 
-        // Track information. Artwork stays small and functional instead of
-        // turning the popup into a card-heavy media player.
+        // Track information stays compact: metadata sits at the top-right
+        // of the artwork and playback controls live directly underneath it.
+        // This keeps the player row short and lets the players list move up.
         Item {
           width: parent.width
           implicitHeight: artwork.height
@@ -230,7 +238,7 @@ BarWidget {
             anchors.left: artwork.right
             anchors.leftMargin: Style.spacing.panelGap
             anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
+            anchors.top: parent.top
             spacing: Style.spacing.xs
 
             Text {
@@ -264,93 +272,91 @@ BarWidget {
               elide: Text.ElideRight
               visible: text !== ""
             }
-          }
-        }
 
-        // Playback controls use text/glyph affordances rather than three
-        // separate cards. The play state is the only accented control.
-        Row {
-          width: implicitWidth
-          height: Style.space(38)
-          spacing: Style.spacing.xxl
-          anchors.horizontalCenter: parent.horizontalCenter
-          anchors.horizontalCenterOffset: 0
+            // Playback controls sit immediately below the metadata instead
+            // of consuming a full-width row underneath the artwork.
+            Row {
+              width: implicitWidth
+              height: Style.space(38)
+              spacing: Style.spacing.xxl
 
-          Item {
-            width: Style.space(34)
-            height: parent.height
+              Item {
+                width: Style.space(34)
+                height: parent.height
 
-            Text {
-              anchors.centerIn: parent
-              text: "󰒮"
-              color: previousMouse.containsMouse ? Color.accent : Color.foreground
-              opacity: root.activePlayer && root.activePlayer.canGoPrevious ? 1.0 : 0.35
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.iconLarge
-            }
+                Text {
+                  anchors.centerIn: parent
+                  text: "󰒮"
+                  color: previousMouse.containsMouse ? Color.accent : Color.foreground
+                  opacity: root.activePlayer && root.activePlayer.canGoPrevious ? 1.0 : 0.35
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.iconLarge
+                }
 
-            MouseArea {
-              id: previousMouse
-              anchors.fill: parent
-              enabled: !!(root.activePlayer && root.activePlayer.canGoPrevious)
-              hoverEnabled: true
-              cursorShape: Qt.PointingHandCursor
-              onClicked: root.action("previous")
-            }
-          }
+                MouseArea {
+                  id: previousMouse
+                  anchors.fill: parent
+                  enabled: !!(root.activePlayer && root.activePlayer.canGoPrevious)
+                  hoverEnabled: true
+                  cursorShape: Qt.PointingHandCursor
+                  onClicked: root.action("previous")
+                }
+              }
 
-          Item {
-            width: Style.space(40)
-            height: parent.height
+              Item {
+                width: Style.space(40)
+                height: parent.height
 
-            Text {
-              anchors.centerIn: parent
-              text: root.playIcon
-              color: playMouse.containsMouse ? Color.accent : Color.foreground
-              opacity: root.activePlayer && (
-                root.activePlayer.canTogglePlaying
-                || root.activePlayer.canPlay
-                || root.activePlayer.canPause
-              ) ? 1.0 : 0.35
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.display
-              font.bold: true
-            }
+                Text {
+                  anchors.centerIn: parent
+                  text: root.playIcon
+                  color: playMouse.containsMouse ? Color.accent : Color.foreground
+                  opacity: root.activePlayer && (
+                    root.activePlayer.canTogglePlaying
+                    || root.activePlayer.canPlay
+                    || root.activePlayer.canPause
+                  ) ? 1.0 : 0.35
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.display
+                  font.bold: true
+                }
 
-            MouseArea {
-              id: playMouse
-              anchors.fill: parent
-              enabled: !!(root.activePlayer && (
-                root.activePlayer.canTogglePlaying
-                || root.activePlayer.canPlay
-                || root.activePlayer.canPause
-              ))
-              hoverEnabled: true
-              cursorShape: Qt.PointingHandCursor
-              onClicked: root.action("playPause")
-            }
-          }
+                MouseArea {
+                  id: playMouse
+                  anchors.fill: parent
+                  enabled: !!(root.activePlayer && (
+                    root.activePlayer.canTogglePlaying
+                    || root.activePlayer.canPlay
+                    || root.activePlayer.canPause
+                  ))
+                  hoverEnabled: true
+                  cursorShape: Qt.PointingHandCursor
+                  onClicked: root.action("playPause")
+                }
+              }
 
-          Item {
-            width: Style.space(38)
-            height: parent.height
+              Item {
+                width: Style.space(38)
+                height: parent.height
 
-            Text {
-              anchors.centerIn: parent
-              text: "󰒭"
-              color: nextMouse.containsMouse ? Color.accent : Color.foreground
-              opacity: root.activePlayer && root.activePlayer.canGoNext ? 1.0 : 0.35
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.iconLarge
-            }
+                Text {
+                  anchors.centerIn: parent
+                  text: "󰒭"
+                  color: nextMouse.containsMouse ? Color.accent : Color.foreground
+                  opacity: root.activePlayer && root.activePlayer.canGoNext ? 1.0 : 0.35
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.iconLarge
+                }
 
-            MouseArea {
-              id: nextMouse
-              anchors.fill: parent
-              enabled: !!(root.activePlayer && root.activePlayer.canGoNext)
-              hoverEnabled: true
-              cursorShape: Qt.PointingHandCursor
-              onClicked: root.action("next")
+                MouseArea {
+                  id: nextMouse
+                  anchors.fill: parent
+                  enabled: !!(root.activePlayer && root.activePlayer.canGoNext)
+                  hoverEnabled: true
+                  cursorShape: Qt.PointingHandCursor
+                  onClicked: root.action("next")
+                }
+              }
             }
           }
         }
