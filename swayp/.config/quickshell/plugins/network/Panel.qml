@@ -1105,6 +1105,7 @@ Panel {
           if (root.info.type === "ethernet") return "Ethernet"
           return root.info.iface || (root.kind === "disconnected" ? "Disconnected" : "No connection")
         }
+        iconText: root.icon
         status: {
           if (root.hasCaptivePortal) return "SIGN-IN REQUIRED"
           if (root.restricted) return "LIMITED INTERNET ACCESS"
