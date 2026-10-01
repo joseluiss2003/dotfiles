@@ -278,7 +278,7 @@ BarWidget {
               id: playbackControls
               anchors.horizontalCenter: parent.horizontalCenter
               anchors.bottom: parent.bottom
-              anchors.bottomMargin: Style.spacing.md
+              anchors.bottomMargin: parent.height - artwork.height
               width: implicitWidth
               height: Style.space(38)
               spacing: Style.spacing.xxl
