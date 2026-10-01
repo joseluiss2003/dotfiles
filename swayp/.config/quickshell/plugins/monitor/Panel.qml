@@ -784,20 +784,7 @@ Panel {
             }
           }
 
-          PanelStatusLine {
-            stateText: root.displays.length > 0
-              ? root.displays.length + " DISPLAY" + (root.displays.length === 1 ? "" : "S")
-              : "NO DISPLAY"
-            foreground: root.bar.foreground
-            accent: Color.accent
-            fontFamily: root.bar.fontFamily
-            hints: [
-              { key: "↑↓", label: "NAV" },
-              { key: "←→", label: "ADJUST" },
-              { key: "ENTER", label: "APPLY" },
-              { key: "ESC", label: "CLOSE" }
-            ]
-          }
+          
 
         }
       }
