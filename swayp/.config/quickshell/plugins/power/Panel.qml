@@ -233,69 +233,11 @@ Panel {
         anchors.top: parent.top
         spacing: Style.spacing.panelGap
 
-        // ---------- Hero: battery icon · title/status · percentage ----------
-        Item {
-          width: parent.width
-          implicitHeight: Math.max(heroIcon.implicitHeight, heroLabels.implicitHeight, heroPercent.implicitHeight)
-
-          Text {
-            id: heroIcon
-            textFormat: Text.PlainText
-            text: root.batteryIcon()
-            color: root.bar.foreground
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.display
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-
-            Behavior on color { ColorAnimation { duration: 200 } }
-          }
-
-          Column {
-            id: heroLabels
-            anchors.left: heroIcon.right
-            anchors.leftMargin: Style.spacing.panelGap
-            anchors.right: heroPercent.left
-            anchors.rightMargin: Style.spacing.sectionGap
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.compactGap
-
-            Text {
-              text: "Battery"
-              color: root.bar.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.title
-              font.bold: true
-              elide: Text.ElideRight
-              width: parent.width
-            }
-
-            Text {
-              id: heroStatus
-              textFormat: Text.PlainText
-              text: root.heroStatusText.toUpperCase()
-              color: Color.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-              elide: Text.ElideRight
-              width: parent.width
-            }
-          }
-
-          Text {
-            id: heroPercent
-            textFormat: Text.PlainText
-            text: root.batteryInfo.percentage || "—"
-            color: root.bar.foreground
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.displayLarge
-            font.bold: true
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-
-            Behavior on color { ColorAnimation { duration: 200 } }
-          }
+        PanelCliHeader {
+          title: "Battery"
+          status: (root.batteryInfo.percentage || "—") + " · " + root.heroStatusText
+          foreground: root.bar.foreground
+          fontFamily: root.bar.fontFamily
         }
 
         // ---------- Battery progress bar ----------
