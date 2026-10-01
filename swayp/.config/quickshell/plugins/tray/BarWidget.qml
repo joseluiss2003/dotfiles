@@ -219,6 +219,49 @@ BarWidget {
     sourceComponent: root.vertical ? verticalTray : horizontalTray
   }
 
+  // The tray selection mark belongs to the bar, not to an individual TrayItem.
+  // This keeps its geometry identical to ModuleSlot's panel indicator while
+  // still following whichever tray icon opened the menu.
+  Rectangle {
+    id: traySelectionIndicator
+    readonly property bool selected: root.trayMenuOpen && !!root.activeTrayAnchor
+    visible: selected
+    opacity: selected ? 0.9 : 0
+    color: Color.foreground
+    radius: Math.min(width, height) / 2
+    width: root.vertical ? Style.space(2) : Style.bar.iconCanvas
+    height: root.vertical ? Style.bar.iconCanvas : Style.space(2)
+
+    readonly property point anchorPoint: {
+      if (!root.activeTrayAnchor) return Qt.point(0, 0)
+      try {
+        return root.activeTrayAnchor.mapToItem(root, 0, 0)
+      } catch (e) {
+        return Qt.point(0, 0)
+      }
+    }
+
+    x: root.vertical
+      ? (root.bar && root.bar.position === "left" ? root.width - width : 0)
+      : Math.round(anchorPoint.x + (root.activeTrayAnchor ? (root.activeTrayAnchor.width - width) / 2 : 0))
+    y: root.vertical
+      ? Math.round(anchorPoint.y + (root.activeTrayAnchor ? (root.activeTrayAnchor.height - height) / 2 : 0))
+      : (root.bar && root.bar.position === "top" ? root.barSize - height : 0)
+    z: 100
+
+    Behavior on opacity {
+      NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+    }
+
+    Behavior on width {
+      NumberAnimation { duration: 155; easing.type: Easing.OutQuint }
+    }
+
+    Behavior on height {
+      NumberAnimation { duration: 155; easing.type: Easing.OutQuint }
+    }
+  }
+
   Component {
     id: horizontalTray
 
@@ -679,36 +722,6 @@ BarWidget {
       width: Style.bar.iconCanvas
       height: Style.bar.iconCanvas
       icon: trayItemRoot.modelData.icon
-    }
-
-    Rectangle {
-      id: traySelectionIndicator
-      readonly property bool selected: root.trayMenuOpen && root.activeTrayItem === trayItemRoot.modelData
-      visible: selected
-      opacity: 0.9
-      color: Color.foreground
-      radius: Math.min(width, height) / 2
-      width: root.vertical ? Style.space(2) : Style.bar.iconCanvas
-      height: root.vertical ? Style.bar.iconCanvas : Style.space(2)
-      x: root.vertical
-        ? (root.bar && root.bar.position === "left" ? parent.width - width - Style.space(1) : Style.space(1))
-        : Math.round((parent.width - width) / 2)
-      y: root.vertical
-        ? Math.round((parent.height - height) / 2)
-        : (root.bar && root.bar.position === "top" ? root.barSize - height : 0)
-      z: 50
-
-      Behavior on opacity {
-        NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
-      }
-
-      Behavior on width {
-        NumberAnimation { duration: 155; easing.type: Easing.OutQuint }
-      }
-
-      Behavior on height {
-        NumberAnimation { duration: 155; easing.type: Easing.OutQuint }
-      }
     }
 
     MouseArea {
