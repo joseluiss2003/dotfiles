@@ -173,7 +173,7 @@ BarWidget {
               required property int index
 
               width: parent.width
-              height: Style.space(34)
+              height: Style.space(30)
 
               CursorSurface {
                 anchors.fill: parent
@@ -183,29 +183,14 @@ BarWidget {
                 currentFill: "transparent"
 
                 Text {
-                  id: actionIcon
                   textFormat: Text.PlainText
-                  text: modelData.icon
+                  text: modelData.label
                   color: index === 4 ? Color.error : root.bar.foreground
                   font.family: root.bar.fontFamily
                   font.pixelSize: Style.font.body
-                  width: Style.space(22)
-                  horizontalAlignment: Text.AlignHCenter
-                  verticalAlignment: Text.AlignVCenter
-                  anchors.left: parent.left
-                  anchors.leftMargin: Style.spacing.md
-                  anchors.verticalCenter: parent.verticalCenter
-                }
-
-                Text {
-                  textFormat: Text.PlainText
-                  text: modelData.label
-                  color: root.bar.foreground
-                  font.family: root.bar.fontFamily
-                  font.pixelSize: Style.font.body
                   font.bold: index === 4
-                  anchors.left: actionIcon.right
-                  anchors.leftMargin: Style.spacing.md
+                  anchors.left: parent.left
+                  anchors.leftMargin: Style.spacing.md + Style.spacing.md
                   anchors.verticalCenter: parent.verticalCenter
                 }
 
