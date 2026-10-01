@@ -356,9 +356,8 @@ Panel {
               required property var modelData
               required property int index
 
-              width: profileLabel.implicitWidth + Style.spacing.md + Style.spacing.md
+              width: parent.width
               height: profileLabel.implicitHeight
-              anchors.horizontalCenter: parent.horizontalCenter
 
               CursorSurface {
                 anchors.fill: parent
@@ -371,8 +370,7 @@ Panel {
                 Text {
                   id: profileLabel
                   anchors.left: parent.left
-                  anchors.right: parent.right
-                  anchors.leftMargin: Style.spacing.md
+                  anchors.leftMargin: Style.spacing.md + Style.spacing.md
                   anchors.verticalCenter: parent.verticalCenter
                   textFormat: Text.PlainText
                   text: String(modelData).toUpperCase()
