@@ -239,72 +239,6 @@ Panel {
     }))
   }
 
-  function normalizeScale(scale) {
-    return Model.normalizeScale(scale)
-  }
-
-  function activeScaleIndex() {
-    for (var i = 0; i < displays.length; i++) {
-      var display = displays[i]
-      if (display && display.focused)
-        return Model.matchingScaleIndex(scaleValues, monitorScale, display.width, display.height)
-    }
-    return -1
-  }
-
-  function effectiveScale(scale) {
-    for (var i = 0; i < displays.length; i++) {
-      var display = displays[i]
-      if (display && display.focused)
-        return Model.cleanScale(scale, display.width, display.height)
-    }
-    return normalizeScale(scale)
-  }
-
-  // Playful mood-name for a given brightness percent. Bands intentionally
-  // span ~10–20 points so casual tweaks change the label, while small
-  // nudges within one band don't.
-  function brightnessName(percent) {
-    return Model.brightnessName(percent)
-  }
-
-  function updateDisplays(displaysJson) {
-    var parsed = Model.parseDisplays(displaysJson)
-    root.displays = parsed.displays
-    root.enabledDisplayCount = parsed.enabledDisplayCount
-  }
-
-  function toggleDisplay(name, enabled) {
-    if (!name) return
-    if (enabled && root.enabledDisplayCount <= 1) return
-
-    actionProc.command = enabled ? ["swaymsg", "output", name, "disable"] : ["swaymsg", "output", name, "enable"]
-    if (!actionProc.running) actionProc.running = true
-  }
-
-  // ---- Text size (shell base font + GTK text-scaling, via one CLI) ----
-  function nearestTextStop(px) {
-    var best = 0
-    var bestDist = 1e9
-    for (var i = 0; i < textSizeStops.length; i++) {
-      var d = Math.abs(textSizeStops[i] - px)
-      if (d < bestDist) { bestDist = d; best = i }
-    }
-    return best
-  }
-
-  // Effective stop index: the pending choice while a change is in flight,
-  // otherwise whatever Style's live base-size rounds to.
-  function currentTextIndex() {
-    return textSizePreviewIndex >= 0 ? textSizePreviewIndex : nearestTextStop(Style.font.baseSize)
-  }
-
-  // px shown in the header: the pending stop if any, else the true base-size
-  // (which may be an off-notch value set from the CLI).
-  function displayedTextPx() {
-    return textSizePreviewIndex >= 0 ? textSizeStops[textSizePreviewIndex] : Style.font.baseSize
-  }
-
   function setTextSize(px) {
     textScaleProc.command = ["swayp-display-text-size", String(px)]
     if (!textScaleProc.running) textScaleProc.running = true
@@ -891,5 +825,4 @@ Panel {
         root.toggleDisplay(monitorRow.display.name, monitorRow.display.enabled)
     }
   }
-}
 }
