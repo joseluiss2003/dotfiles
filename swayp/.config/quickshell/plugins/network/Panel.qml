@@ -1288,34 +1288,34 @@ Panel {
           // opened, once the first probe returned, shoving everything below
           // them down. They now hold their place and read "--" until there is
           // a sample.
-          InfoLabel { text: "Ping" }
+          InfoLabel { text: "PING" }
           DetailValue {
             text: root.formatPingLatency(root.internetPingLatency)
             color: root.internetPingPacketLoss > 0 ? root.bar.urgent : root.bar.foreground
           }
-          InfoLabel { text: "Packet Loss" }
+          InfoLabel { text: "LOSS" }
           DetailValue {
             text: root.formatPacketLoss(root.internetPingPacketLoss)
             color: root.internetPingPacketLoss > 0 ? root.bar.urgent : root.bar.foreground
           }
 
-          InfoLabel { text: "Receiving" }
+          InfoLabel { text: "RX" }
           DetailValue { text: root.hasTransferStats ? root.formatRate(root.downloadRate) : "--" }
-          InfoLabel { text: "Sending" }
+          InfoLabel { text: "TX" }
           DetailValue { text: root.hasTransferStats ? root.formatRate(root.uploadRate) : "--" }
 
-          InfoLabel { text: "Downloaded" }
+          InfoLabel { text: "DOWN" }
           DetailValue { text: root.hasTransferStats ? root.formatBytes(parseFloat(root.info.rx_bytes || "0")) : "--" }
-          InfoLabel { text: "Uploaded" }
+          InfoLabel { text: "UP" }
           DetailValue { text: root.hasTransferStats ? root.formatBytes(parseFloat(root.info.tx_bytes || "0")) : "--" }
 
-          InfoLabel { text: "IP Address" }
+          InfoLabel { text: "IP" }
           DetailValue {
             text: root.info.ip || "--"
             copyable: !!root.info.ip
             tooltipText: "Copy IP"
           }
-          InfoLabel { text: "Gateway" }
+          InfoLabel { text: "GW" }
           DetailValue {
             text: root.info.gateway || "--"
             copyable: !!root.info.gateway
@@ -1471,25 +1471,6 @@ Panel {
       // gives us positionViewAtIndex for free, which is what keeps the
       // keyboard-selected row scrolled into view as j/k walk past the
       // visible window.
-      PanelStatusLine {
-        id: statusLine
-        stateText: root.restricted
-          ? "× LIMITED"
-          : (root.scanning
-            ? "● SCANNING"
-            : (root.kind === "disconnected" ? "○ DISCONNECTED" : "● CONNECTED"))
-        foreground: root.bar.foreground
-        accent: Color.accent
-        fontFamily: root.bar.fontFamily
-        hints: [
-          { key: "↑↓", label: "NAV" },
-          { key: "ENTER", label: "CONNECT" },
-          { key: "X", label: "FORGET" },
-          { key: "R", label: "REFRESH" },
-          { key: "ESC", label: "CLOSE" }
-        ]
-      }
-
       ListView {
         id: networkList
         visible: root.wifiStationAvailable
@@ -1537,6 +1518,25 @@ Panel {
             }
           }
         }
+      }
+
+      PanelStatusLine {
+        id: statusLine
+        stateText: root.restricted
+          ? "× LIMITED"
+          : (root.scanning
+            ? "● SCANNING"
+            : (root.kind === "disconnected" ? "○ DISCONNECTED" : "● CONNECTED"))
+        foreground: root.bar.foreground
+        accent: Color.accent
+        fontFamily: root.bar.fontFamily
+        hints: [
+          { key: "↑↓", label: "NAV" },
+          { key: "ENTER", label: "CONNECT" },
+          { key: "X", label: "FORGET" },
+          { key: "R", label: "REFRESH" },
+          { key: "ESC", label: "CLOSE" }
+        ]
       }
     }
     }
