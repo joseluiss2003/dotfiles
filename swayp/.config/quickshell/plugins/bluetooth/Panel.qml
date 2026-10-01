@@ -151,6 +151,20 @@ Panel {
     return rows
   }
 
+  // The ListView is a viewport, but its height must not force the whole
+  // popup to a fixed size. Give it only the space its current rows need,
+  // capped for busy discovery sessions.
+  readonly property int scrollViewportHeight: {
+    var rows = scrollRows.length
+    if (rows === 0) return 0
+    var sections = 0
+    if (knownDevices.length > 0) sections += 1
+    if (sectionVisible("discovered")) sections += 1
+    var rowBudget = rows * Style.space(32)
+    var sectionBudget = sections * Style.space(20)
+    return Math.min(Style.space(180), rowBudget + sectionBudget)
+  }
+
   // Live BlueZ device behind a row. Rows carry primitives only, so actions
   // resolve the backend object here rather than holding a wrapper that can
   // dangle mid-incubation. `devices` is already the raw device array (see the
@@ -772,12 +786,9 @@ Panel {
         ListView {
           id: deviceListView
           width: parent.width
-          // Keep a deliberate viewport so the footer always remains part
-          // of the panel composition. A busy Bluetooth environment scrolls;
-          // it must not push the status line out of the card.
-          // Deliberate viewport: the panel has a fixed composition
-          // and the device list is the part that scrolls.
-          height: Math.min(contentHeight, Style.space(180))
+          // The viewport grows with the actual device model and caps out
+          // when discovery gets noisy. The panel itself remains content-sized.
+          height: root.scrollViewportHeight
           spacing: Style.spacing.sectionGap
           clip: true
           boundsBehavior: Flickable.StopAtBounds
