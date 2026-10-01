@@ -878,7 +878,4 @@ Panel {
     }
   }
 
-  // Two-line device row showing name + live status. Pending state is owned
-  // by the panel so it survives rows moving between sections.
-false
 }
