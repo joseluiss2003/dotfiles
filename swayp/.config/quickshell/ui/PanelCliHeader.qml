@@ -13,6 +13,7 @@ Item {
   property color accent: Color.accent
   property string fontFamily: Style.font.family
   property real fontSize: Style.font.body
+  property real titleVerticalOffset: 0
   property Component trailingControl: null
   property alias statusOpacity: statusText.opacity
 
@@ -34,6 +35,7 @@ Item {
     font.bold: true
     anchors.left: parent.left
     anchors.verticalCenter: parent.verticalCenter
+    anchors.verticalCenterOffset: root.titleVerticalOffset
   }
 
   Text {
@@ -50,6 +52,7 @@ Item {
     anchors.right: statusText.left
     anchors.rightMargin: Style.spacing.md
     anchors.verticalCenter: parent.verticalCenter
+    anchors.verticalCenterOffset: root.titleVerticalOffset
   }
 
   Text {
