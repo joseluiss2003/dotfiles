@@ -291,13 +291,9 @@ Panel {
       popup.availableCardHeight,
       card.headerHeight
         + Style.spacing.controlGap
-        + (
-          root.notificationCount === 0
-            ? Style.space(112)
-            : Math.min(
-                card.maxListHeight,
-                Math.max(notificationList.contentHeight + Style.space(16), Style.space(72))
-              )
+        + Math.min(
+          card.maxListHeight,
+          Math.max(notificationList.contentHeight + Style.space(16), Style.space(72))
         )
         + Style.spacing.controlGap
         + Style.popup.footerHeight
@@ -437,12 +433,11 @@ Panel {
     
         Item {
           Layout.fillWidth: true
-          Layout.preferredHeight: root.notificationCount === 0
-            ? Style.space(112)
-            : Math.min(
-                card.maxListHeight,
-                Math.max(notificationList.contentHeight + Style.space(16), Style.space(84))
-              )
+          visible: root.notificationCount > 0
+          Layout.preferredHeight: Math.min(
+            card.maxListHeight,
+            Math.max(notificationList.contentHeight + Style.space(16), Style.space(84))
+          )
     
           ListView {
             id: notificationList
