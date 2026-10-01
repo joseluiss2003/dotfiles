@@ -1592,6 +1592,10 @@ Panel {
       : false
     readonly property bool canForget: root.canForgetNetwork(net)
     readonly property bool isSelected: root.focusSection === "wifi" && root.selectedIndex === index
+    // The cursor always represents navigation focus, even on the currently
+    // connected network. Connection state is conveyed by statusText.
+    hasCursor: root.cursorActive && isSelected && !root.wifiActionFocused
+    current: false
     readonly property bool forgetFocused: isSelected && root.wifiActionFocused && canForget
     readonly property bool forgetVisible: canForget && (!requiresCredentials || forgetFocused || rightMouse.containsMouse)
 
