@@ -1205,7 +1205,11 @@ Item {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            text: root.filterText || (root.dmenuActive ? (root.dmenuPrompt + "…") : ((root.item(root.activeMenu) ? (root.item(root.activeMenu).title || root.item(root.activeMenu).label) : "Go") + "…"))
+            text: root.filterText || (root.dmenuActive
+              ? (root.dmenuPrompt + "…")
+              : (root.activeMenu === "system"
+                ? "SYSTEM"
+                : ((root.item(root.activeMenu) ? (root.item(root.activeMenu).title || root.item(root.activeMenu).label) : "Go") + "…")))
             color: root.foreground
             opacity: root.filterText ? 1 : 0.58
             font.family: root.fontFamily
@@ -1266,7 +1270,8 @@ Item {
 
               readonly property bool hasCursor: root.cursorActive && row.index === root.selectedIndex
               readonly property bool isApp: row.kind === "app"
-              readonly property bool hasIcon: row.icon.length > 0 || row.isApp
+              readonly property bool isSystemMenu: root.activeMenu === "system"
+              readonly property bool hasIcon: !row.isSystemMenu && (row.icon.length > 0 || row.isApp)
 
               width: ListView.view.width
               height: root.rowHeightForDetail(row.detail)
@@ -1274,8 +1279,8 @@ Item {
               // installed, not to be picked.
               opacity: row.disabled ? 0.4 : 1
               radius: root.cornerRadius
-              color: row.hasCursor ? root.selectedBackground : "transparent"
-              borderSpec: row.hasCursor ? root.selectedBorderSpec : Border.none()
+              color: "transparent"
+              borderSpec: Border.none()
 
               Rectangle {
                 visible: false
@@ -1286,6 +1291,23 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: root.rowReservedBorderLeft + Style.space(8)
                 anchors.verticalCenter: parent.verticalCenter
+              }
+
+              Text {
+                id: cursorMarker
+                visible: row.isSystemMenu && row.hasCursor
+                textFormat: Text.PlainText
+                text: Style.tui.cursorMarker
+                color: Color.accent
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.body
+                font.bold: true
+                width: Style.space(12)
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                anchors.left: parent.left
+                anchors.leftMargin: root.rowReservedBorderLeft + Style.space(8)
+                y: contentColumn.y + labelText.y + (labelText.height - height) / 2
               }
 
               Text {
@@ -1324,7 +1346,11 @@ Item {
               Column {
                 id: contentColumn
                 anchors.left: row.hasIcon ? iconText.right : parent.left
-                anchors.leftMargin: row.hasIcon ? Style.space(6) : root.rowReservedBorderLeft + Style.space(18)
+                anchors.leftMargin: row.hasIcon
+                  ? Style.space(6)
+                  : (row.isSystemMenu
+                    ? root.rowReservedBorderLeft + Style.space(28)
+                    : root.rowReservedBorderLeft + Style.space(18))
                 anchors.right: trail.left
                 anchors.rightMargin: Style.space(6)
                 anchors.verticalCenter: parent.verticalCenter
@@ -1337,8 +1363,8 @@ Item {
                   text: row.label
                   color: row.hasCursor ? root.selectedText : root.foreground
                   font.family: root.fontFamily
-                  font.pixelSize: Style.font.heading
-                  font.weight: Font.Medium
+                  font.pixelSize: row.isSystemMenu ? Style.font.body : Style.font.heading
+                  font.weight: row.isSystemMenu ? Font.Normal : Font.Medium
                   elide: Text.ElideRight
                 }
 
@@ -1376,7 +1402,7 @@ Item {
 
                 Text {
                   textFormat: Text.PlainText
-                  text: row.kind === "menu" || row.kind === "link" ? "›" : ""
+                  text: row.isSystemMenu ? "" : (row.kind === "menu" || row.kind === "link" ? "›" : "")
                   color: row.hasCursor ? root.selectedText : root.foreground
                   opacity: row.kind === "menu" || row.kind === "link" ? 0.36 : 0
                   font.family: root.fontFamily
