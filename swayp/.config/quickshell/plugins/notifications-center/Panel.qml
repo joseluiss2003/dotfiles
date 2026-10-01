@@ -388,8 +388,8 @@ Panel {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.leftMargin: Style.popup.contentInset
-            anchors.rightMargin: Style.popup.contentInset
+            anchors.leftMargin: Style.popup.contentInset + Style.spacing.sm
+            anchors.rightMargin: Style.popup.contentInset + Style.spacing.sm
             anchors.topMargin: Style.popup.padding
             title: "Notifications"
             status: root.dnd
