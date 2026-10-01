@@ -104,16 +104,8 @@ BarWidget {
     owner: root
     open: root.popupOpen
     focusTarget: keyCatcher
-    padding: 0
-    borderSpec: Border.surfaceSpec("media", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.space(344), panel.availableCardWidth)
-    contentHeight: Math.min(
-      panelColumn.implicitHeight + Style.popup.contentInset * 2
-        + Border.top(card.borderSpec) + Border.bottom(card.borderSpec),
-      panel.availableCardHeight
-    )
-    gap: Style.popup.gap
-    drawBackground: false
+    contentWidth: panel.fittedContentWidth(Style.space(344))
+    contentHeight: panel.fittedContentHeight(panelColumn.implicitHeight)
 
     Item {
       id: keyCatcher
@@ -162,24 +154,10 @@ BarWidget {
         Qt.callLater(function() { forceActiveFocus() })
     }
 
-    BorderSurface {
-      id: card
+    Column {
+      id: panelColumn
       anchors.fill: parent
-      color: Color.popups.background
-      borderSpec: Border.surfaceSpec(
-        "media",
-        "border",
-        Color.popups.border,
-        Math.max(1, Style.spacing.compactGap)
-      )
-      radius: 0
-      clip: true
-
-      Column {
-        id: panelColumn
-        anchors.fill: parent
-        anchors.margins: Style.popup.contentInset
-        spacing: Style.spacing.panelGap
+      spacing: Style.spacing.panelGap
 
         PanelCliHeader {
           title: "Media"
@@ -447,7 +425,5 @@ PanelSectionHeader {
             }
           }
 
-        }
       }
-    }
   }}
