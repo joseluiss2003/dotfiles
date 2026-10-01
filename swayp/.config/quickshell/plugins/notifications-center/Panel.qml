@@ -149,13 +149,13 @@ Panel {
 
   function plainNotificationText(value) {
     var text = String(value || "")
-    text = text.replace(/<br\\s*\\/?\\s*>/gi, " ")
+    text = text.replace(/<br\s*\/?\s*>/gi, " ")
     text = text.replace(/<[^>]*>/g, "")
     text = text.replace(/&nbsp;/gi, " ")
     text = text.replace(/&amp;/gi, "&")
     text = text.replace(/&lt;/gi, "<")
     text = text.replace(/&gt;/gi, ">")
-    return text.replace(/\\s+/g, " ").trim()
+    return text.replace(/\s+/g, " ").trim()
   }
 
   function formatTime(timestamp) {
