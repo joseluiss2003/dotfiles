@@ -436,7 +436,7 @@ Panel {
 
             Text {
               id: clearAllAction
-              text: "C  CLEAR"
+              text: "CLEAR"
               color: root.notificationCount > 0 ? Color.accent : Color.foreground
               opacity: root.notificationCount > 0 ? 1.0 : 0.45
               font.family: root.fontFamily
