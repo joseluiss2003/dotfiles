@@ -300,7 +300,6 @@ Panel {
               )
         )
         + Style.spacing.controlGap
-        + Style.popup.footerHeight
         + card.borderTop + card.borderBottom
     )
 
@@ -570,37 +569,7 @@ Panel {
           }
         }
     
-        Item {
-          id: footer
-          Layout.fillWidth: true
-          implicitHeight: Style.popup.footerHeight
-
-          PanelStatusLine {
-            anchors.fill: parent
-            anchors.leftMargin: Style.popup.contentInset
-            anchors.rightMargin: Style.popup.contentInset
-            stateText: root.notificationCount > 0
-              ? root.notificationCount + (root.notificationCount === 1 ? " NOTIFICATION" : " NOTIFICATIONS")
-              : "EMPTY"
-            foreground: Color.notifications.text
-            accent: Color.accent
-            fontFamily: root.fontFamily
-            hints: root.notificationCount === 0
-              ? [
-                  { key: "D", label: root.dnd ? "ALLOW" : "SILENCE" },
-                  { key: "C", label: "CLEAR" },
-                  { key: "ESC", label: "CLOSE" }
-                ]
-              : [
-                  { key: "↑↓", label: "NAV" },
-                  { key: "ENTER", label: "OPEN" },
-                  { key: "D", label: root.dnd ? "ALLOW" : "SILENCE" },
-                  { key: "C", label: "CLEAR" },
-                  { key: "DEL", label: "REMOVE" },
-                  { key: "ESC", label: "CLOSE" }
-                ]
-          }
-        }
+        
         }
       }
     }
