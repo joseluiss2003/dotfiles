@@ -437,8 +437,6 @@ Panel {
               }
             }
           }
-        }
-
         PanelStatusLine {
           stateText: root.heroStatusText + " · " + Math.round(root.batteryFraction * 100) + "%"
           foreground: root.bar.foreground
