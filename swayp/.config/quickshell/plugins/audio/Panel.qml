@@ -1037,6 +1037,10 @@ Column {
     fill: "transparent"
     currentFill: "transparent"
     implicitHeight: streamColumn.implicitHeight + Style.spacing.xs
+    // The stream row contains two visual levels (name and slider), but the
+    // TUI cursor belongs to the selectable application name, not the row's
+    // overall center.
+    cursorMarkerVerticalOffset: -(Style.spacing.xs + streamSlider.implicitHeight) / 2
 
     Column {
       id: streamColumn
@@ -1079,6 +1083,7 @@ Column {
       }
 
       PanelSlider {
+        id: streamSlider
         bar: root.bar
         width: parent.width
         minimum: 0
