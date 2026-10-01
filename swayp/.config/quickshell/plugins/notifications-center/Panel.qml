@@ -532,13 +532,17 @@ Panel {
           }
         }
 
-        Column {
-          anchors.centerIn: parent
-            visible: root.notificationCount === 0
+        Item {
+          Layout.fillWidth: true
+          Layout.fillHeight: true
+          visible: root.notificationCount === 0
+
+          Column {
+            anchors.centerIn: parent
             spacing: Style.spacing.controlGap
-    
+
             Text {
-              width: parent.width
+              width: Style.space(300)
               text: "󰂚"
               color: Color.foreground
               opacity: 0.75
@@ -546,7 +550,7 @@ Panel {
               font.pixelSize: Style.font.display
               horizontalAlignment: Text.AlignHCenter
             }
-    
+
             Text {
               width: Style.space(300)
               text: root.dnd
@@ -559,61 +563,31 @@ Panel {
               horizontalAlignment: Text.AlignHCenter
             }
           }
+        }
     
         Item {
           id: footer
           Layout.fillWidth: true
-          implicitHeight: Style.popup.footerHeight + Style.spacing.controlGap
+          implicitHeight: Style.popup.footerHeight
 
-          Column {
+          PanelStatusLine {
             anchors.fill: parent
-            spacing: Style.spacing.controlGap
-
-            PanelStatusLine {
-              width: parent.width
-              height: Style.popup.footerHeight - Style.spacing.controlGap
-              stateText: root.notificationCount > 0
-                ? root.notificationCount + (root.notificationCount === 1 ? " NOTIFICATION" : " NOTIFICATIONS")
-                : "EMPTY"
-              foreground: Color.notifications.text
-              accent: Color.accent
-              fontFamily: root.fontFamily
-              hints: [
-                { key: "↑↓", label: "NAV" },
-                { key: "ENTER", label: "OPEN" },
-                { key: "DEL", label: "REMOVE" },
-                { key: "ESC", label: "CLOSE" }
-              ]
-            }
-
-            Row {
-              width: parent.width
-              height: Style.space(28)
-              spacing: Style.spacing.inset
-
-              Button {
-                width: (parent.width - parent.spacing) / 2
-                text: root.dnd ? "ALLOW NOTIFICATIONS" : "SILENCE NOTIFICATIONS"
-                iconText: root.dnd ? "󰂚" : "󰂛"
-                foreground: Color.notifications.text
-                fontFamily: root.fontFamily
-                fontSize: Style.font.caption
-                bordered: true
-                onClicked: root.toggleDnd()
-              }
-
-              Button {
-                width: (parent.width - parent.spacing) / 2
-                text: "CLEAR"
-                iconText: "󰆴"
-                foreground: Color.notifications.text
-                fontFamily: root.fontFamily
-                fontSize: Style.font.caption
-                bordered: true
-                enabled: root.notificationCount > 0
-                onClicked: root.clearAll()
-              }
-            }
+            anchors.leftMargin: Style.popup.contentInset
+            anchors.rightMargin: Style.popup.contentInset
+            stateText: root.notificationCount > 0
+              ? root.notificationCount + (root.notificationCount === 1 ? " NOTIFICATION" : " NOTIFICATIONS")
+              : "EMPTY"
+            foreground: Color.notifications.text
+            accent: Color.accent
+            fontFamily: root.fontFamily
+            hints: [
+              { key: "↑↓", label: "NAV" },
+              { key: "ENTER", label: "OPEN" },
+              { key: "D", label: root.dnd ? "ALLOW" : "SILENCE" },
+              { key: "C", label: "CLEAR" },
+              { key: "DEL", label: "REMOVE" },
+              { key: "ESC", label: "CLOSE" }
+            ]
           }
         }
         }
