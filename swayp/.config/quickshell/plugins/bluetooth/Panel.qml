@@ -63,22 +63,17 @@ Panel {
     return Icons.bluetooth
   }
 
-  property int phraseIndex: 0
-  readonly property var activePhrases: [
-    "Untangling wires",
-    "Streaming vikings",
-    "Pairing mysteries",
-    "Herding headsets",
-    "Taming radios",
-    "Summoning speakers",
-    "Wrangling codecs",
-    "Polishing packets"
-  ]
-  readonly property bool rotatingPhrases: adapter && adapter.enabled
   readonly property string heroStatusText: {
-    if (!adapter) return "No adapter"
-    if (!adapter.enabled) return "Turned Off"
-    return activePhrases[phraseIndex % activePhrases.length]
+    if (!adapter) return "NO ADAPTER"
+    if (!adapter.enabled) return "RADIO OFF"
+    if (adapter.discovering) {
+      return connectedDevices.length > 0
+        ? "ON · " + connectedDevices.length + " CONNECTED · SCANNING"
+        : "ON · SCANNING"
+    }
+    return connectedDevices.length > 0
+      ? "ON · " + connectedDevices.length + " CONNECTED"
+      : "ON · READY"
   }
 
   // Single cursor model shared by keyboard and mouse. Sections:
@@ -873,6 +868,19 @@ Panel {
           font.pixelSize: Style.font.bodySmall
           wrapMode: Text.WordWrap
           width: parent.width
+        }
+
+        PanelStatusLine {
+          stateText: root.heroStatusText
+          foreground: root.bar.foreground
+          accent: Color.accent
+          fontFamily: root.bar.fontFamily
+          hints: [
+            { key: "↑↓", label: "NAV" },
+            { key: "ENTER", label: root.adapter && root.adapter.enabled ? "CONNECT" : "TOGGLE" },
+            { key: "X", label: "FORGET" },
+            { key: "ESC", label: "CLOSE" }
+          ]
         }
       }
     }
