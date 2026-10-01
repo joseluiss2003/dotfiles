@@ -158,6 +158,9 @@ focus_follows_mouse yes
 gaps inner 2
 gaps outer 8
 
+# Apply outer gaps to already-existing workspaces on startup and reload.
+exec_always swaymsg "gaps outer all set 8"
+
 ### =========================
 ### System configuration
 ### =========================
