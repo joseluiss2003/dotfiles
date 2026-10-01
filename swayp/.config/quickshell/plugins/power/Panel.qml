@@ -394,18 +394,7 @@ Panel {
             }
           }
         }
-        PanelStatusLine {
-          stateText: root.heroStatusText + " · " + Math.round(root.batteryFraction * 100) + "%"
-          foreground: root.bar.foreground
-          accent: Color.accent
-          fontFamily: root.bar.fontFamily
-          hints: [
-            { key: "↑↓", label: "NAV" },
-            { key: "ENTER", label: "PROFILE" },
-            { key: "R", label: "REFRESH" },
-            { key: "ESC", label: "CLOSE" }
-          ]
-        }
+        
         }
       }
     }
