@@ -712,6 +712,7 @@ Column {
               PanelSectionHeader {
                 id: outputHeader
                 text: "OUTPUT"
+                leadingGlyph: Icons.audioOutput
                 foreground: root.bar.foreground
                 fontFamily: root.bar.fontFamily
                 anchors.left: parent.left
@@ -797,6 +798,7 @@ Column {
               PanelSectionHeader {
                 id: microphoneHeader
                 text: "INPUT"
+                leadingGlyph: Icons.microphone
                 foreground: root.bar.foreground
                 fontFamily: root.bar.fontFamily
                 anchors.left: parent.left
@@ -885,6 +887,7 @@ Column {
 
             PanelSectionHeader {
               text: "PLAYBACK"
+              leadingGlyph: Icons.media
               foreground: root.bar.foreground
               fontFamily: root.bar.fontFamily
             }
