@@ -15,11 +15,11 @@ BarWidget {
   property int selectedIndex: 0
   property bool cursorActive: false
   readonly property var sessionActions: [
-    { label: "LOCK", icon: "󰌾" },
-    { label: "SUSPEND", icon: "󰒲" },
-    { label: "LOG OUT", icon: "󰍃" },
-    { label: "REBOOT", icon: "󰜉" },
-    { label: "POWER OFF", icon: "󰐥" }
+    { label: "LOCK", icon: Icons.lock },
+    { label: "SUSPEND", icon: Icons.suspend },
+    { label: "LOG OUT", icon: Icons.logout },
+    { label: "REBOOT", icon: Icons.reboot },
+    { label: "POWER OFF", icon: Icons.power }
   ]
 
   function close() {
@@ -116,6 +116,7 @@ BarWidget {
 
 PanelSectionHeader {
           text: "SESSION"
+          leadingGlyph: Icons.power
           foreground: root.bar.foreground
           fontFamily: root.bar.fontFamily
         }
@@ -143,14 +144,29 @@ PanelSectionHeader {
                 currentFill: "transparent"
 
                 Text {
+                  id: actionIcon
+                  textFormat: Text.PlainText
+                  text: modelData.icon
+                  color: index === 4 ? Color.error : root.bar.foreground
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.icon
+                  width: Style.space(24)
+                  horizontalAlignment: Text.AlignLeft
+                  verticalAlignment: Text.AlignVCenter
+                  anchors.left: parent.left
+                  anchors.leftMargin: Style.spacing.md
+                  anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Text {
                   textFormat: Text.PlainText
                   text: modelData.label
                   color: index === 4 ? Color.error : root.bar.foreground
                   font.family: root.bar.fontFamily
                   font.pixelSize: Style.font.body
                   font.bold: index === 4
-                  anchors.left: parent.left
-                  anchors.leftMargin: Style.spacing.md + Style.spacing.md
+                  anchors.left: actionIcon.right
+                  anchors.leftMargin: Style.spacing.sm
                   anchors.verticalCenter: parent.verticalCenter
                 }
 
