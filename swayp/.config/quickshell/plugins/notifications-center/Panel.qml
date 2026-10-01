@@ -509,7 +509,7 @@ Panel {
 
                 CursorSurface {
                   width: parent.width
-                  height: Math.max(Style.space(30), mainLine.implicitHeight)
+                  height: Math.max(Style.space(30), Style.font.body)
                   hasCursor: root.selectedIndex === row.index
                   foreground: Color.notifications.text
                   fill: "transparent"
