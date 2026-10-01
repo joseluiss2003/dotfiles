@@ -1,45 +1,17 @@
 import QtQuick
 import qs.core
 
-// Bare on/off switch: a track with a sliding knob and no label. This is the
-// switch `Toggle` parks at the end of its labeled row, factored out so panel
-// headers and other compact controls render the identical thing.
-//
-// The caller owns the value: bind `checked` to real state and flip it in
-// response to `toggled()`. Services that already track a desired state
-// optimistically can get an instant knob
-// throw for free, because `checked` is already the optimistic value.
-//
-// `busy` marks an operation in flight and swallows further clicks, but leaves
-// hover, cursor, and tooltips alone so the control does not flicker every time
-// a background refresh runs.
-//
-// The cursor is a ring drawn outside the track rather than a state on the
-// track itself: themes give normal chrome a stronger border than hover-cursor
-// (0.4 vs 0.25 by default), which is right for controls that are borderless at
-// rest but would make a bordered track go *fainter* under the cursor. On the
-// panel background the ring reads immediately. `cursorRing` follows
-// `interactive` — a switch whose surrounding row owns the click owns the
-// cursor too.
-//
-// `rounded` auto-detects from Style.cornerRadius so the switch follows the
-// theme shape from Style.cornerRadius by default.
+// CLI-style binary toggle used by compact SwayP controls.
+// State is explicit text instead of a GUI switch: "● ON" / "○ OFF".
 Item {
   id: root
 
   property bool checked: false
   property bool busy: false
-
-  // Off when the surrounding row owns the click, as in `Toggle`.
   property bool interactive: true
-
-  // Panel-cursor flag. Same role as Button.hasCursor: panels with their own
-  // keyboard cursor bind this to drive the highlight separately from hover.
   property bool hasCursor: false
-
   property bool cursorRing: interactive
-  property int cursorPad: Style.space(6)
-  property bool rounded: Style.cornerRadius > 0
+  property int cursorPad: Style.space(4)
   property color foreground: Color.bar.text
   property color accent: Color.foreground
 
@@ -48,22 +20,11 @@ Item {
 
   readonly property alias containsMouse: mouse.containsMouse
   readonly property bool hot: hasCursor || mouse.containsMouse
+  readonly property string stateGlyph: root.checked ? Style.tui.stateOn : Style.tui.stateOff
+  readonly property string stateLabel: root.checked ? "ON" : "OFF"
 
-  // `trackHeight` is settable so a compact placement — a switch riding a panel
-  // section header, say — can ask for a genuinely smaller control instead of
-  // scaling a big one down, which lands the track and knob on fractional pixels
-  // and blurs their edges. The derived sizes only carry floors low enough to
-  // stay out of an override's way; at the default track height each one is
-  // already above its floor, so nothing about the normal switch changes.
-  property int trackHeight: Math.max(22, Math.round(Style.spacing.controlHeight * 0.55))
-  property int trackWidth: Math.round(trackHeight * 1.9)
-  property int knobSize: Math.max(6, Math.round(trackHeight * 0.72))
-  property int knobInset: Math.max(1, Math.round((trackHeight - knobSize) / 2))
-
-  readonly property int _pad: cursorRing ? cursorPad : 0
-
-  implicitWidth: trackWidth + _pad * 2
-  implicitHeight: trackHeight + _pad * 2
+  implicitWidth: stateText.implicitWidth + (cursorRing ? cursorPad * 2 : 0)
+  implicitHeight: Math.max(stateText.implicitHeight, Style.font.body) + (cursorRing ? cursorPad * 2 : 0)
 
   BorderSurface {
     anchors.fill: parent
@@ -73,30 +34,17 @@ Item {
     borderSpec: Border.controlSpec("hover-cursor", root.foreground, root.accent)
   }
 
-  BorderSurface {
-    id: track
-    width: root.trackWidth
-    height: root.trackHeight
+  Text {
+    id: stateText
     anchors.centerIn: parent
-    radius: root.rounded ? height / 2 : 0
-    color: root.checked
-      ? Style.selectedAccentFill
-      : Style.normalFillFor(root.foreground, root.accent)
-    borderSpec: Border.controlSpec(root.checked ? "selected" : "normal", root.foreground, root.accent)
+    textFormat: Text.PlainText
+    text: root.stateGlyph + " " + root.stateLabel
+    color: root.checked ? root.foreground : Util.alpha(root.foreground, 0.62)
+    font.family: Style.font.family
+    font.pixelSize: Style.font.body
+    font.bold: true
 
     Behavior on color { ColorAnimation { duration: 120 } }
-
-    Rectangle {
-      width: root.knobSize
-      height: root.knobSize
-      radius: root.rounded ? height / 2 : 0
-      x: root.checked ? track.width - width - root.knobInset : root.knobInset
-      anchors.verticalCenter: parent.verticalCenter
-      color: root.checked ? Color.foreground : Color.foreground
-
-      Behavior on x { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
-      Behavior on color { ColorAnimation { duration: 120 } }
-    }
   }
 
   MouseArea {
