@@ -724,14 +724,9 @@ Panel {
           }
 
           // ---------- Displays ----------
-          PanelSeparator {
-            visible: root.displays.length > 1
-            foreground: root.bar.foreground
-          }
-
           Column {
             width: parent.width
-            spacing: Style.spacing.compactGap
+            spacing: Style.spacing.xs
             visible: root.displays.length > 1
 
             Item {
