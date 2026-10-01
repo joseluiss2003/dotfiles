@@ -14,6 +14,7 @@ Item {
   property string fontFamily: Style.font.family
   property real fontSize: Style.font.body
   property Component trailingControl: null
+  property alias statusOpacity: statusText.opacity
 
   width: parent ? parent.width : implicitWidth
   implicitHeight: Math.max(titleText.implicitHeight, statusText.implicitHeight, trailingLoader.implicitHeight)
