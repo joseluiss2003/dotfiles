@@ -91,46 +91,7 @@ Panel {
     return root.bar ? root.bar.foreground : Color.foreground
   }
 
-  // Cute agent-flavored phrases shown in the hero status line, rotated on a
-  // timer so the panel feels alive when current is flowing (either direction).
-  readonly property var chargingPhrases: [
-    "Pumping power",
-    "Injecting electrons",
-    "Pouring juice",
-    "Amassing watts",
-    "Hoarding joules",
-    "Sucking volts",
-    "Topping reserves",
-    "Soaking amps",
-    "Inhaling kilowatts"
-  ]
-  readonly property var onBatteryPhrases: [
-    "Slurping power",
-    "Spending joules",
-    "Draining watts",
-    "Burning electrons",
-    "Sipping juice",
-    "Spending coulombs",
-    "Bleeding amps",
-    "Guzzling volts",
-    "Munching reserves"
-  ]
-  property int phraseIndex: 0
-
-  // Whichever list is "active" given the current power state.
-  readonly property var activePhrases: {
-    if (fullyCharged) return []
-    if (charging) return chargingPhrases
-    if (discharging) return onBatteryPhrases
-    return []
-  }
-  readonly property bool rotatingPhrases: activePhrases.length > 0
-
-  readonly property string heroStatusText: {
-    if (fullyCharged) return "Fully charged"
-    if (rotatingPhrases) return activePhrases[phraseIndex % activePhrases.length]
-    return modeLabel()
-  }
+  readonly property string heroStatusText: modeLabel().toUpperCase()
 
   function refresh() {
     if (!batteryPresent) return
@@ -225,49 +186,6 @@ Panel {
 
   Timer { interval: 5000; running: root.opened; repeat: true; onTriggered: root.refresh() }
 
-  // Rotate the status phrase while the panel is open and we're in a
-  // rotating state (charging or on battery). The text swap is wrapped in a
-  // fade so the changeover reads as one organism rather than a hard cut.
-  Timer {
-    id: phraseTimer
-    interval: 2800
-    running: root.opened && root.rotatingPhrases
-    repeat: true
-    triggeredOnStart: false
-    onTriggered: phraseSwap.restart()
-  }
-
-  SequentialAnimation {
-    id: phraseSwap
-    PropertyAnimation {
-      target: heroStatus; property: "opacity"
-      to: 0.0; duration: Style.popup.contentFadeOutDuration; easing.type: Easing.OutQuad
-    }
-    ScriptAction {
-      script: {
-        var n = root.activePhrases.length
-        if (n > 0) root.phraseIndex = (root.phraseIndex + 1) % n
-      }
-    }
-    PropertyAnimation {
-      target: heroStatus; property: "opacity"
-      to: 1.0; duration: Style.popup.contentFadeInDuration; easing.type: Easing.InQuad
-    }
-  }
-
-  // If we leave a rotating state mid-swap, halt the animation and snap back
-  // to full opacity so "FULLY CHARGED" is legible immediately rather than
-  // appearing dimmed.
-  Connections {
-    target: root
-    function onRotatingPhrasesChanged() {
-      if (!root.rotatingPhrases) {
-        phraseSwap.stop()
-        heroStatus.opacity = 1.0
-      }
-    }
-  }
-
   BarIconButton {
     id: button
     anchors.fill: parent
@@ -302,8 +220,7 @@ Panel {
       anchors.fill: parent
       onMoveRequested: function(dx, dy) {
         if (!root.cursorActive) { root.cursorActive = true; return }
-        if (dx !== 0) root.selectProfileByDelta(dx)
-        else if (dy !== 0) root.selectProfileByDelta(dy)
+        if (dx !== 0 || dy !== 0) root.selectProfileByDelta(dx !== 0 ? dx : dy)
       }
       onActivateRequested: if (root.cursorActive) root.activateSelectedProfile()
       onCloseRequested: root.close()
@@ -361,7 +278,6 @@ Panel {
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
-              font.letterSpacing: 1.2
               elide: Text.ElideRight
               width: parent.width
             }
@@ -417,34 +333,48 @@ Panel {
           }
         }
 
-        // ---------- Stats ----------
-        // Visibility is intentionally only gated by "we've ever loaded data" so
-        // the section never collapses mid-transition. fullyCharged is *not* part
-        // of the condition: UPower briefly reports FullyCharged on plug-in when
-        // the battery sits above the charge-control start threshold, and we
-        // refuse to flicker the whole panel for that ~1s window.
-        Row {
+        // ---------- Battery info ----------
+        PanelSeparator {
+          foreground: root.bar.foreground
+        }
+
+        Column {
           visible: root.batteryInfo.percentage !== undefined
           width: parent.width
-          spacing: Style.spacing.wideGap
+          spacing: Style.spacing.xs
 
-          Column {
-            width: (parent.width - parent.spacing) / 2
-            spacing: Style.spacing.labelGap
-            InfoPair { label: "Battery size"; value: root.batteryInfo.size || "" }
-            InfoPair { label: "Charge cycles"; value: root.batteryInfo.cycles || "—" }
+          PanelSectionHeader {
+            text: "BATTERY"
+            foreground: root.bar.foreground
+            fontFamily: root.bar.fontFamily
           }
 
-          Column {
-            width: (parent.width - parent.spacing) / 2
-            spacing: Style.spacing.labelGap
-            InfoPair {
-              label: root.chargeThresholdActive ? "Charge limit" : (root.discharging ? "Time left" : "Time to full")
-              value: root.chargeThresholdActive ? (root.batteryInfo.threshold || "-") : (root.batteryFlowIdle ? "-" : (root.batteryInfo.time || "—"))
+          Row {
+            width: parent.width
+            spacing: Style.spacing.md
+
+            Column {
+              width: (parent.width - parent.spacing) / 2
+              spacing: Style.spacing.xs
+              InfoPair { label: "SIZE"; value: root.batteryInfo.size || "—" }
+              InfoPair { label: "CYCLES"; value: root.batteryInfo.cycles || "—" }
             }
-            InfoPair {
-              label: root.chargeThresholdActive ? "Battery state" : (root.discharging ? "Discharging" : "Charging")
-              value: root.chargeThresholdActive ? "Holding" : (root.batteryFull ? "-" : (root.batteryInfo.rate || ""))
+
+            Column {
+              width: (parent.width - parent.spacing) / 2
+              spacing: Style.spacing.xs
+              InfoPair {
+                label: root.chargeThresholdActive ? "LIMIT" : (root.discharging ? "TIME LEFT" : "TIME FULL")
+                value: root.chargeThresholdActive
+                  ? (root.batteryInfo.threshold || "—")
+                  : (root.batteryFlowIdle ? "—" : (root.batteryInfo.time || "—"))
+              }
+              InfoPair {
+                label: root.chargeThresholdActive ? "STATE" : "RATE"
+                value: root.chargeThresholdActive
+                  ? "HOLDING"
+                  : (root.batteryFull ? "IDLE" : (root.batteryInfo.rate || "—"))
+              }
             }
           }
         }
@@ -456,7 +386,7 @@ Panel {
 
         Column {
           width: parent.width
-          spacing: Style.spacing.sectionGap
+          spacing: Style.spacing.xs
 
           PanelSectionHeader {
             text: "POWER PROFILE"
@@ -464,42 +394,63 @@ Panel {
             fontFamily: root.bar.fontFamily
           }
 
-          Row {
-            id: profileRow
-            width: parent.width
-            spacing: Style.spacing.inset
+          Repeater {
+            model: root.profiles
 
-            readonly property real cellWidth: root.profiles.length > 0
-              ? (width - spacing * (root.profiles.length - 1)) / root.profiles.length
-              : 0
+            CursorSurface {
+              id: profileRow
+              required property var modelData
+              required property int index
 
-            Repeater {
-              model: root.profiles
-              Button {
-                required property var modelData
-                required property int index
-                width: profileRow.cellWidth
-                iconText: root.profileIcon(String(modelData))
-                iconSize: Style.font.title
-                text: String(modelData).charAt(0).toUpperCase() + String(modelData).slice(1)
-                fontSize: Style.font.bodySmall
-                foreground: root.bar.foreground
-                fontFamily: root.bar.fontFamily
-                horizontalPadding: Style.spacing.controlPaddingX
-                verticalPadding: Style.spacing.controlPaddingY + Style.spacing.compactGap
-                bordered: true
-                active: root.activeProfile === modelData
-                hasCursor: root.cursorActive && root.profileIndex === index
-                onClicked: root.setProfile(modelData)
-                onHovered: function(h) {
-                  if (h) {
-                    root.cursorActive = true
-                    root.profileIndex = index
-                  }
+              width: parent.width
+              implicitHeight: profileLabel.implicitHeight
+              hasCursor: root.cursorActive && root.profileIndex === index
+              current: root.activeProfile === String(modelData)
+              fill: "transparent"
+              currentFill: "transparent"
+              foreground: root.bar.foreground
+
+              Text {
+                id: profileLabel
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: Style.spacing.md + Style.spacing.md
+                anchors.rightMargin: Style.spacing.md
+                anchors.verticalCenter: parent.verticalCenter
+                textFormat: Text.PlainText
+                text: String(modelData).toUpperCase()
+                  + (root.activeProfile === String(modelData) ? "  · ACTIVE" : "")
+                color: root.bar.foreground
+                font.family: root.bar.fontFamily
+                font.pixelSize: Style.font.body
+                font.bold: root.activeProfile === String(modelData)
+              }
+
+              MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onContainsMouseChanged: if (containsMouse) {
+                  root.cursorActive = true
+                  root.profileIndex = index
                 }
+                onClicked: root.setProfile(String(modelData))
               }
             }
           }
+        }
+
+        PanelStatusLine {
+          stateText: root.heroStatusText + " · " + Math.round(root.batteryFraction * 100) + "%"
+          foreground: root.bar.foreground
+          accent: Color.accent
+          fontFamily: root.bar.fontFamily
+          hints: [
+            { key: "↑↓", label: "NAV" },
+            { key: "ENTER", label: "PROFILE" },
+            { key: "R", label: "REFRESH" },
+            { key: "ESC", label: "CLOSE" }
+          ]
+        }
         }
       }
     }
