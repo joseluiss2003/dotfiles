@@ -276,7 +276,7 @@ BarWidget {
 
             Row {
               id: playbackControls
-              anchors.horizontalCenter: parent.horizontalCenter
+              anchors.left: parent.left
               anchors.bottom: parent.bottom
               anchors.bottomMargin: parent.height - artwork.height
               width: implicitWidth
