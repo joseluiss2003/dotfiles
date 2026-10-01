@@ -864,11 +864,6 @@ Column {
               }
             }
 
-            Item {
-              width: parent.width
-              height: Style.spacing.sectionGap
-            }
-
             Repeater {
               model: root.displayAudioSources
 
