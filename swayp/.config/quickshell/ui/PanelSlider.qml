@@ -16,7 +16,8 @@ Item {
   property bool dragging: false
   property real trackHeight: Math.max(6, Math.round(Style.spacing.controlHeight * 0.18))
   property real liveValue: value
-  property int segmentCount: 32
+  property int tickCount: 0
+  property int segmentCount: tickCount > 1 ? tickCount : 32
   property real segmentGap: Style.space(2)
 
   onValueChanged: if (!dragging) liveValue = value
