@@ -304,7 +304,7 @@ Panel {
         root.internalEnabled = String(lines[3] || "").trim() !== ""
         root.mirrorEnabled = String(lines[4] || "").trim() === root.externalMonitor && root.externalMonitor !== ""
         root.focusedMonitor = String(lines[5] || "").trim()
-        root.monitorScale = root.normalizeScale(String(lines[6] || "").trim())
+        root.monitorScale = String(lines[6] || "").trim()
         root.updateDisplays(String(lines[7] || "[]").trim())
       }
     }
@@ -825,4 +825,5 @@ Panel {
         root.toggleDisplay(monitorRow.display.name, monitorRow.display.enabled)
     }
   }
+}
 }
