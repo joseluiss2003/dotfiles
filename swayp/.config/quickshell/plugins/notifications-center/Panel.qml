@@ -370,7 +370,7 @@ Panel {
       borderSpec: Border.surfaceSpec(
         "notifications",
         "border",
-        Color.notifications.border,
+        Color.divider,
         Math.max(1, Style.spacing.compactGap)
       )
       radius: 0
@@ -389,7 +389,11 @@ Panel {
           Layout.preferredHeight: card.headerHeight
 
           PanelCliHeader {
-            anchors.fill: parent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: Style.popup.contentInset
+            anchors.rightMargin: Style.popup.contentInset
+            anchors.verticalCenter: parent.verticalCenter
             title: "Notifications"
             status: root.dnd
               ? "DO NOT DISTURB · " + root.notificationCount + " EVENTS"
@@ -492,7 +496,7 @@ Panel {
                   Text {
                     id: appName
                     anchors.left: urgencyMark.visible ? urgencyMark.right : parent.left
-                    anchors.leftMargin: urgencyMark.visible ? Style.spacing.xs : Style.spacing.md + Style.spacing.md
+                    anchors.leftMargin: urgencyMark.visible ? Style.spacing.xs : Style.spacing.md + Style.spacing.lg
                     anchors.right: timeLabel.left
                     anchors.rightMargin: Style.spacing.md
                     anchors.verticalCenter: parent.verticalCenter
@@ -551,7 +555,7 @@ Panel {
                 }
                 Text {
                   width: parent.width
-                  leftPadding: Style.spacing.md + Style.spacing.md
+                  leftPadding: Style.spacing.md + Style.spacing.lg
                   rightPadding: Style.spacing.md
                   textFormat: Text.PlainText
                   text: {
