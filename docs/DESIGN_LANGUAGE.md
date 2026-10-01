@@ -54,6 +54,17 @@ The visual language reserves a small set of compact state symbols:
 
 The exact glyphs remain style tokens so the semantic meaning is centralized.
 
+
+### 3.1 Binary controls stay textual
+
+Binary controls use the same state vocabulary instead of GUI switch tracks:
+
+- "● ON" — active;
+- "○ OFF" — inactive.
+
+The control remains interactive and keyboard-addressable, but its visual form is
+text-first. This keeps toggles inside the same CLI grammar as rows and headers.
+
 ### 4. Icons are semantic
 
 Nerd Font glyphs are kept in qs.ui.Icons. Plugins should ask for semantic icons
@@ -117,7 +128,9 @@ chrome.
 - qs.core.Border — border geometry and border semantics;
 - qs.ui.Icons — shared icon vocabulary;
 - qs.ui.CursorSurface — row selection/cursor affordance;
+- qs.ui.PanelCliHeader — compact popup/header grammar;
 - qs.ui.PanelSectionHeader — section-heading grammar;
+- qs.ui.ToggleSwitch — explicit CLI on/off state control;
 - plugin panels — layout and domain-specific information only.
 
 A plugin should extend these primitives before creating a parallel visual pattern.
