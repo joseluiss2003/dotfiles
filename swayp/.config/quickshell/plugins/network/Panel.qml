@@ -1850,6 +1850,7 @@ Panel {
             font.pixelSize: Style.font.caption
             font.bold: true
             width: Style.space(12)
+            height: idField.height
             verticalAlignment: Text.AlignVCenter
           }
 
@@ -1904,6 +1905,7 @@ Panel {
             font.pixelSize: Style.font.caption
             font.bold: true
             width: Style.space(12)
+            height: pwField.height
             verticalAlignment: Text.AlignVCenter
           }
 
