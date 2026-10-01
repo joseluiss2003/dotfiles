@@ -691,11 +691,11 @@ BarWidget {
       width: root.vertical ? Style.space(2) : Style.bar.iconCanvas
       height: root.vertical ? Style.bar.iconCanvas : Style.space(2)
       x: root.vertical
-        ? (root.position === "left" ? parent.width - width - Style.space(1) : Style.space(1))
+        ? (root.bar && root.bar.position === "left" ? parent.width - width - Style.space(1) : Style.space(1))
         : Math.round((parent.width - width) / 2)
       y: root.vertical
         ? Math.round((parent.height - height) / 2)
-        : (root.position === "top" ? root.barSize - height : 0)
+        : (root.bar && root.bar.position === "top" ? root.barSize - height : 0)
       z: 50
 
       Behavior on opacity {
