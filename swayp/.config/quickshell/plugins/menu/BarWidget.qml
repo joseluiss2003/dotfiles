@@ -114,12 +114,7 @@ BarWidget {
           fontFamily: root.bar.fontFamily
         }
 
-        PanelSeparator {
-          foreground: root.bar.foreground
-          opacity: 0.32
-        }
-
-        PanelSectionHeader {
+PanelSectionHeader {
           text: "SESSION"
           foreground: root.bar.foreground
           fontFamily: root.bar.fontFamily
