@@ -968,7 +968,7 @@ Panel {
       anchors.verticalCenter: parent.verticalCenter
       anchors.leftMargin: Style.spacing.sectionGap
       anchors.rightMargin: Style.spacing.sectionGap
-      implicitHeight: Math.max(deviceIcon.implicitHeight, info.implicitHeight, forgetBtn.implicitHeight)
+      implicitHeight: Math.max(info.implicitHeight, forgetBtn.implicitHeight)
 
 
       Column {
