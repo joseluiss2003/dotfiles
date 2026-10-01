@@ -430,7 +430,7 @@ BarWidget {
               width: parent.width
               implicitHeight: sourceText.implicitHeight + Style.spacing.xs
               hasCursor: root.selectedPlayerIndex === index
-              cursorMarkerVerticalOffset: -Math.round((Style.font.caption + Style.spacing.xs) / 2)
+              cursorMarkerVerticalOffset: -Style.spacing.sm
               foreground: root.bar.foreground
               fill: "transparent"
               currentFill: "transparent"
@@ -479,8 +479,12 @@ BarWidget {
               }
             }
           }
+
+          Item {
+            width: parent.width
+            height: Style.spacing.md
+          }
         }
       }
     }
-  }
-}
+  }}
