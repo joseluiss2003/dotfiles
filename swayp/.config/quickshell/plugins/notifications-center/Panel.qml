@@ -291,9 +291,13 @@ Panel {
       popup.availableCardHeight,
       card.headerHeight
         + Style.spacing.controlGap
-        + Math.min(
-          card.maxListHeight,
-          Math.max(notificationList.contentHeight + Style.space(16), Style.space(72))
+        + (
+          root.notificationCount === 0
+            ? Style.space(112)
+            : Math.min(
+                card.maxListHeight,
+                Math.max(notificationList.contentHeight + Style.space(16), Style.space(72))
+              )
         )
         + Style.spacing.controlGap
         + Style.popup.footerHeight
@@ -433,10 +437,12 @@ Panel {
     
         Item {
           Layout.fillWidth: true
-          Layout.preferredHeight: Math.min(
-            card.maxListHeight,
-            Math.max(notificationList.contentHeight + Style.space(16), Style.space(84))
-          )
+          Layout.preferredHeight: root.notificationCount === 0
+            ? Style.space(112)
+            : Math.min(
+                card.maxListHeight,
+                Math.max(notificationList.contentHeight + Style.space(16), Style.space(84))
+              )
     
           ListView {
             id: notificationList
@@ -580,14 +586,20 @@ Panel {
             foreground: Color.notifications.text
             accent: Color.accent
             fontFamily: root.fontFamily
-            hints: [
-              { key: "↑↓", label: "NAV" },
-              { key: "ENTER", label: "OPEN" },
-              { key: "D", label: root.dnd ? "ALLOW" : "SILENCE" },
-              { key: "C", label: "CLEAR" },
-              { key: "DEL", label: "REMOVE" },
-              { key: "ESC", label: "CLOSE" }
-            ]
+            hints: root.notificationCount === 0
+              ? [
+                  { key: "D", label: root.dnd ? "ALLOW" : "SILENCE" },
+                  { key: "C", label: "CLEAR" },
+                  { key: "ESC", label: "CLOSE" }
+                ]
+              : [
+                  { key: "↑↓", label: "NAV" },
+                  { key: "ENTER", label: "OPEN" },
+                  { key: "D", label: root.dnd ? "ALLOW" : "SILENCE" },
+                  { key: "C", label: "CLEAR" },
+                  { key: "DEL", label: "REMOVE" },
+                  { key: "ESC", label: "CLOSE" }
+                ]
           }
         }
         }
