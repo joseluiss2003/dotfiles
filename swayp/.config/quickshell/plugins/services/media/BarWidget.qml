@@ -103,7 +103,7 @@ BarWidget {
     focusTarget: keyCatcher
     padding: 0
     borderSpec: Border.surfaceSpec("media", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.space(360), panel.availableCardWidth)
+    contentWidth: Math.min(Style.space(344), panel.availableCardWidth)
     contentHeight: Math.min(panelColumn.implicitHeight, panel.availableCardHeight)
     gap: Style.popup.gap
     drawBackground: false
@@ -228,7 +228,7 @@ BarWidget {
         // turning the popup into a card-heavy media player.
         Item {
           width: parent.width
-          implicitHeight: Math.max(artwork.height, trackInfo.implicitHeight)
+          implicitHeight: artwork.height
 
           BorderSurface {
             id: artwork
@@ -278,8 +278,7 @@ BarWidget {
               font.pixelSize: Style.font.body
               font.bold: true
               width: parent.width
-              maximumLineCount: 2
-              wrapMode: Text.Wrap
+              maximumLineCount: 1
               elide: Text.ElideRight
             }
 
