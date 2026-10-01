@@ -387,75 +387,38 @@ Panel {
         Item {
           Layout.fillWidth: true
           Layout.preferredHeight: card.headerHeight
-    
+
+          PanelCliHeader {
+            anchors.fill: parent
+            title: "Notifications"
+            status: root.dnd
+              ? "DO NOT DISTURB · " + root.notificationCount + " EVENTS"
+              : root.notificationCount + (root.notificationCount === 1 ? " EVENT" : " EVENTS")
+            foreground: Color.notifications.text
+            fontFamily: root.fontFamily
+          }
+
           Text {
-            id: headerIcon
-            textFormat: Text.PlainText
-            text: root.dnd ? "󰂛" : "󰂚"
-            color: root.dnd ? Color.urgent : Color.foreground
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.display
-            anchors.left: parent.left
-            anchors.leftMargin: Style.spacing.panelGap
-            anchors.verticalCenter: parent.verticalCenter
-          }
-    
-          Column {
-            anchors.left: headerIcon.right
-            anchors.leftMargin: Style.spacing.xxl
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.compactGap
-    
-            Text {
-              text: "Notifications"
-              color: Color.notifications.text
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.title
-              font.bold: true
-            }
-    
-            Text {
-              text: root.dnd ? "DO NOT DISTURB" : "EVENT LOG"
-              color: Color.foreground
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-            }
-          }
-    
-          Row {
+            id: clearAllAction
             anchors.right: parent.right
             anchors.rightMargin: Style.spacing.panelGap
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.md
+            text: "CLEAR"
+            color: root.notificationCount > 0 ? Color.accent : Color.foreground
+            opacity: root.notificationCount > 0 ? 1.0 : 0.45
+            font.family: root.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
 
-            Text {
-              text: root.notificationCount + (root.notificationCount === 1 ? " NOTIFICATION" : " NOTIFICATIONS")
-              color: Color.notifications.countdown
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-            }
-
-            Text {
-              id: clearAllAction
-              text: "CLEAR"
-              color: root.notificationCount > 0 ? Color.accent : Color.foreground
-              opacity: root.notificationCount > 0 ? 1.0 : 0.45
-              font.family: root.fontFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-
-              MouseArea {
-                anchors.fill: parent
-                enabled: root.notificationCount > 0
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.clearAll()
-              }
+            MouseArea {
+              anchors.fill: parent
+              enabled: root.notificationCount > 0
+              cursorShape: Qt.PointingHandCursor
+              onClicked: root.clearAll()
             }
           }
         }
-    
+
         PanelSeparator {
           Layout.fillWidth: true
           Layout.leftMargin: Style.popup.contentInset
