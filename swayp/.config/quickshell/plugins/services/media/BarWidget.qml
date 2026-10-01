@@ -12,10 +12,6 @@ BarWidget {
   readonly property var sourcePlayers: mediaService ? mediaService.sourcePlayers : []
   readonly property bool hasPlaybackStream: !!(mediaService && activePlayer
     && mediaService.playerHasPlaybackStream(activePlayer))
-
-  // The bar indicator represents actual playback, not a stale MPRIS player.
-  // Some players keep their MPRIS object and track metadata alive briefly
-  // after the application closes, so metadata alone is not enough.
   readonly property bool hasMedia: activePlayer !== null
     && !!activePlayer.isPlaying
     && (activePlayer.trackTitle || activePlayer.trackArtist)
@@ -29,15 +25,36 @@ BarWidget {
     : ""
 
   property bool popupOpen: false
-  readonly property real openPanelIndicatorWidth: Style.bar.iconSlot
+  property int selectedPlayerIndex: 0
 
-  function close() { popupOpen = false }
-
-  // Media behaves like the other right-side applets: it only occupies space
-  // while a player exposes useful track metadata.
   visible: hasMedia
   implicitWidth: hasMedia ? Style.bar.iconSlot : 0
   implicitHeight: barSize
+
+  function close() {
+    popupOpen = false
+  }
+
+  function action(name) {
+    if (!mediaService || !activePlayer) return
+    mediaService.runAction(name, false, mediaService.playerKey(activePlayer))
+  }
+
+  function selectPlayerAt(index) {
+    if (!mediaService || index < 0 || index >= sourcePlayers.length) return
+    var player = sourcePlayers[index]
+    if (!player) return
+    selectedPlayerIndex = index
+    mediaService.selectPlayer(mediaService.playerKey(player))
+  }
+
+  onSourcePlayersChanged: {
+    if (sourcePlayers.length === 0) {
+      selectedPlayerIndex = 0
+      return
+    }
+    selectedPlayerIndex = Math.max(0, Math.min(selectedPlayerIndex, sourcePlayers.length - 1))
+  }
 
   WidgetButton {
     id: button
@@ -60,9 +77,9 @@ BarWidget {
     onPressed: function(b) {
       if (!root.activePlayer || !root.mediaService) return
       if (b === Qt.MiddleButton)
-        root.mediaService.runAction("next", false)
+        root.action("next")
       else if (b === Qt.RightButton)
-        root.mediaService.runAction("playPause", false)
+        root.action("playPause")
       else
         root.popupOpen = !root.popupOpen
     }
@@ -70,7 +87,10 @@ BarWidget {
     onWheelMoved: function(delta) {
       if (!root.activePlayer || !root.mediaService) return
       var step = delta > 0 ? 0.05 : -0.05
-      root.mediaService.adjustPlayerVolume(step, root.mediaService.playerKey(root.activePlayer))
+      root.mediaService.adjustPlayerVolume(
+        step,
+        root.mediaService.playerKey(root.activePlayer)
+      )
     }
   }
 
@@ -81,19 +101,11 @@ BarWidget {
     owner: root
     open: root.popupOpen
     focusTarget: keyCatcher
-
     padding: 0
     borderSpec: Border.surfaceSpec("media", "panel-wrapper", "transparent", 0)
-    contentWidth: Math.min(Style.space(332), panel.availableCardWidth)
-    contentHeight: Math.min(
-      Style.space(234) + (root.sourcePlayers.length > 1
-        ? Style.space(127 + Math.max(0, root.sourcePlayers.length - 2) * 42)
-        : 0),
-      panel.availableCardHeight
-    )
+    contentWidth: Math.min(Style.space(360), panel.availableCardWidth)
+    contentHeight: Math.min(panelColumn.implicitHeight, panel.availableCardHeight)
     gap: Style.popup.gap
-    // The media popup owns its card surface below; avoid drawing the
-    // KeyboardPanel wrapper a second time over the same translucent card.
     drawBackground: false
 
     Item {
@@ -107,28 +119,40 @@ BarWidget {
       }
 
       Keys.onSpacePressed: function(event) {
-        if (root.mediaService) root.mediaService.runAction("playPause", false, root.mediaService.playerKey(root.activePlayer))
+        root.action("playPause")
         event.accepted = true
       }
 
       Keys.onReturnPressed: function(event) {
-        if (root.mediaService) root.mediaService.runAction("playPause", false, root.mediaService.playerKey(root.activePlayer))
+        root.action("playPause")
         event.accepted = true
       }
 
       Keys.onLeftPressed: function(event) {
-        if (root.mediaService) root.mediaService.runAction("previous", false, root.mediaService.playerKey(root.activePlayer))
+        root.action("previous")
         event.accepted = true
       }
 
       Keys.onRightPressed: function(event) {
-        if (root.mediaService) root.mediaService.runAction("next", false, root.mediaService.playerKey(root.activePlayer))
+        root.action("next")
         event.accepted = true
       }
 
-      Component.onCompleted: {
-        if (root.popupOpen) Qt.callLater(function() { forceActiveFocus() })
+      Keys.onUpPressed: function(event) {
+        if (root.sourcePlayers.length > 0)
+          root.selectPlayerAt((root.selectedPlayerIndex - 1 + root.sourcePlayers.length)
+            % root.sourcePlayers.length)
+        event.accepted = true
       }
+
+      Keys.onDownPressed: function(event) {
+        if (root.sourcePlayers.length > 0)
+          root.selectPlayerAt((root.selectedPlayerIndex + 1) % root.sourcePlayers.length)
+        event.accepted = true
+      }
+
+      Component.onCompleted: if (root.popupOpen)
+        Qt.callLater(function() { forceActiveFocus() })
     }
 
     BorderSurface {
@@ -145,13 +169,15 @@ BarWidget {
       clip: true
 
       Column {
+        id: panelColumn
         anchors.fill: parent
-        spacing: 0
+        anchors.margins: Style.popup.contentInset
+        spacing: Style.spacing.panelGap
 
-        // Hero
+        // Compact hero: same grammar as Network / Bluetooth / Audio.
         Item {
           width: parent.width
-          height: Style.space(62)
+          implicitHeight: Math.max(heroIcon.implicitHeight, heroText.implicitHeight)
 
           Text {
             id: heroIcon
@@ -160,20 +186,20 @@ BarWidget {
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.display
             anchors.left: parent.left
-            anchors.leftMargin: Style.spacing.xxxl
             anchors.verticalCenter: parent.verticalCenter
           }
 
           Column {
+            id: heroText
             anchors.left: heroIcon.right
-            anchors.leftMargin: Style.spacing.sectionGap
+            anchors.leftMargin: Style.spacing.panelGap
+            anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             spacing: Style.spacing.compactGap
-            width: parent.width - heroIcon.width - Style.space(42)
 
             Text {
-              text: "Now Playing"
-              color: Color.text
+              text: "Media"
+              color: root.bar.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.title
               font.bold: true
@@ -182,13 +208,11 @@ BarWidget {
             }
 
             Text {
-              text: root.identity ? root.identity.toUpperCase() : "MEDIA"
-              color: Color.textMuted
-              opacity: Style.opacity.mutedText
+              text: root.identity ? root.identity.toUpperCase() : "NOW PLAYING"
+              color: Color.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
-              font.letterSpacing: 1.0
               elide: Text.ElideRight
               width: parent.width
             }
@@ -196,25 +220,24 @@ BarWidget {
         }
 
         PanelSeparator {
-          width: parent.width - Style.spacing.wideGap
-          x: Style.spacing.sectionGap
+          width: parent.width
           foreground: Color.popups.border
         }
 
-        // Track hero: artwork + metadata.
+        // Track information. Artwork stays small and functional instead of
+        // turning the popup into a card-heavy media player.
         Item {
           width: parent.width
-          height: Style.space(112)
+          implicitHeight: Math.max(artwork.height, trackInfo.implicitHeight)
 
           BorderSurface {
             id: artwork
-            width: Style.space(84)
-            height: Style.space(84)
+            width: Style.space(56)
+            height: Style.space(56)
             anchors.left: parent.left
-            anchors.leftMargin: Style.spacing.xxxl
             anchors.verticalCenter: parent.verticalCenter
             color: Color.controls.background
-            borderSpec: Border.controlSpec("normal", Color.controls.border, Color.controls.text)
+            borderSpec: Border.flat(Color.controls.border, Math.max(1, Style.spacing.compactGap))
             radius: 0
             clip: true
 
@@ -236,23 +259,23 @@ BarWidget {
               text: "󰝚"
               color: Color.foreground
               font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.display
+              font.pixelSize: Style.font.iconLarge
             }
           }
 
           Column {
+            id: trackInfo
             anchors.left: artwork.right
-            anchors.leftMargin: Style.spacing.xxxl
+            anchors.leftMargin: Style.spacing.panelGap
             anchors.right: parent.right
-            anchors.rightMargin: Style.spacing.xxxl
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.sm
+            spacing: Style.spacing.xs
 
             Text {
-              text: root.title || "Nothing playing"
+              text: root.title || "NOTHING PLAYING"
               color: Color.text
               font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.title
+              font.pixelSize: Style.font.body
               font.bold: true
               width: parent.width
               maximumLineCount: 2
@@ -261,19 +284,19 @@ BarWidget {
             }
 
             Text {
-              text: root.artist || "Unknown artist"
-              color: Color.text
+              text: root.artist || "UNKNOWN ARTIST"
+              color: Color.foreground
               opacity: Style.opacity.secondaryText
               font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.body
+              font.pixelSize: Style.font.caption
               width: parent.width
               elide: Text.ElideRight
-              visible: text !== ""
             }
 
             Text {
               text: root.album
               color: Color.foreground
+              opacity: Style.opacity.mutedText
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               width: parent.width
@@ -284,46 +307,98 @@ BarWidget {
         }
 
         PanelSeparator {
-          width: parent.width - Style.spacing.wideGap
-          x: Style.spacing.sectionGap
+          width: parent.width
           foreground: Color.popups.border
         }
 
-        // Controls: three quiet square controls, with the neutral hover language.
-        Item {
+        // Playback controls use text/glyph affordances rather than three
+        // separate cards. The play state is the only accented control.
+        Row {
           width: parent.width
-          height: Style.space(58)
+          height: Style.space(38)
+          spacing: Style.spacing.xxl
+          anchors.horizontalCenter: parent.horizontalCenter
 
-          Row {
-            anchors.centerIn: parent
-            spacing: Style.popup.gap
+          Item {
+            width: Style.space(38)
+            height: parent.height
 
-            MediaControl {
-              iconText: "󰒮"
+            Text {
+              anchors.centerIn: parent
+              text: "󰒮"
+              color: previousMouse.containsMouse ? Color.accent : Color.foreground
+              opacity: root.activePlayer && root.activePlayer.canGoPrevious ? 1.0 : 0.35
+              font.family: root.bar.fontFamily
+              font.pixelSize: Style.font.iconLarge
+            }
+
+            MouseArea {
+              id: previousMouse
+              anchors.fill: parent
               enabled: !!(root.activePlayer && root.activePlayer.canGoPrevious)
-              onClicked: if (root.mediaService)
-                root.mediaService.runAction("previous", false, root.mediaService.playerKey(root.activePlayer))
+              hoverEnabled: true
+              cursorShape: Qt.PointingHandCursor
+              onClicked: root.action("previous")
+            }
+          }
+
+          Item {
+            width: Style.space(46)
+            height: parent.height
+
+            Text {
+              anchors.centerIn: parent
+              text: root.playIcon
+              color: playMouse.containsMouse ? Color.accent : Color.foreground
+              opacity: root.activePlayer && (
+                root.activePlayer.canTogglePlaying
+                || root.activePlayer.canPlay
+                || root.activePlayer.canPause
+              ) ? 1.0 : 0.35
+              font.family: root.bar.fontFamily
+              font.pixelSize: Style.font.display
+              font.bold: true
             }
 
-            MediaControl {
-              iconText: root.playIcon
-              emphasized: true
-              enabled: !!(root.activePlayer && (root.activePlayer.canTogglePlaying
-                || root.activePlayer.canPlay || root.activePlayer.canPause))
-              onClicked: if (root.mediaService)
-                root.mediaService.runAction("playPause", false, root.mediaService.playerKey(root.activePlayer))
+            MouseArea {
+              id: playMouse
+              anchors.fill: parent
+              enabled: !!(root.activePlayer && (
+                root.activePlayer.canTogglePlaying
+                || root.activePlayer.canPlay
+                || root.activePlayer.canPause
+              ))
+              hoverEnabled: true
+              cursorShape: Qt.PointingHandCursor
+              onClicked: root.action("playPause")
+            }
+          }
+
+          Item {
+            width: Style.space(38)
+            height: parent.height
+
+            Text {
+              anchors.centerIn: parent
+              text: "󰒭"
+              color: nextMouse.containsMouse ? Color.accent : Color.foreground
+              opacity: root.activePlayer && root.activePlayer.canGoNext ? 1.0 : 0.35
+              font.family: root.bar.fontFamily
+              font.pixelSize: Style.font.iconLarge
             }
 
-            MediaControl {
-              iconText: "󰒭"
+            MouseArea {
+              id: nextMouse
+              anchors.fill: parent
               enabled: !!(root.activePlayer && root.activePlayer.canGoNext)
-              onClicked: if (root.mediaService)
-                root.mediaService.runAction("next", false, root.mediaService.playerKey(root.activePlayer))
+              hoverEnabled: true
+              cursorShape: Qt.PointingHandCursor
+              onClicked: root.action("next")
             }
           }
         }
 
-        // Optional player list. Kept compact and inset, like the other redesigned popups.
+        // Multiple MPRIS players become a compact TUI list.
         Column {
           id: playersSection
           width: parent.width
@@ -331,159 +406,81 @@ BarWidget {
           visible: root.sourcePlayers.length > 1
 
           PanelSeparator {
-            width: parent.width - Style.spacing.wideGap
-            x: Style.spacing.sectionGap
+            width: parent.width
             foreground: Color.popups.border
           }
 
-          Item {
-            width: parent.width
-            height: Style.space(30)
-
-            Text {
-              anchors.left: parent.left
-              anchors.leftMargin: Style.spacing.xxxl
-              anchors.verticalCenter: parent.verticalCenter
-              text: "PLAYERS"
-              color: Color.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-              font.letterSpacing: 1.0
-            }
+          PanelSectionHeader {
+            text: "PLAYERS"
+            foreground: root.bar.foreground
+            fontFamily: root.bar.fontFamily
           }
 
-          Column {
-            width: parent.width
-            spacing: Style.spacing.sm
-            bottomPadding: Style.spacing.controlGap
+          Repeater {
+            model: root.sourcePlayers
 
-            Repeater {
-              model: root.sourcePlayers
+            CursorSurface {
+              id: sourceRow
+              required property var modelData
+              required property int index
 
-              BorderSurface {
-                id: sourceRow
-                required property var modelData
+              readonly property var player: modelData
+              readonly property bool selected: root.activePlayer && player
+                && root.mediaService.playerKey(root.activePlayer) === root.mediaService.playerKey(player)
 
-                readonly property var player: modelData
-                readonly property bool selected: root.activePlayer && player
-                  && root.mediaService.playerKey(root.activePlayer) === root.mediaService.playerKey(player)
-                readonly property string sourceTitle: player
-                  ? (player.trackTitle || player.identity || player.desktopEntry || "Media source")
-                  : "Media source"
-                readonly property string sourceDetail: player && player.trackArtist
-                  ? player.trackArtist
-                  : (player && player.identity ? player.identity : "")
+              width: parent.width
+              implicitHeight: sourceText.implicitHeight + Style.spacing.sm
+              hasCursor: root.selectedPlayerIndex === index
+              foreground: root.bar.foreground
+              fill: "transparent"
+              currentFill: "transparent"
+              showCursorMarker: true
 
-                width: parent.width - Style.spacing.wideGap
-                x: Style.spacing.sectionGap
-                height: Style.space(38)
-                radius: 0
-                color: selected ? Color.controls.activeBackground : Color.controls.background
-                borderSpec: Border.flat(
-                  selected ? Color.controls.selectedBorder : Color.controls.border,
-                  Math.max(1, Style.spacing.compactGap)
-                )
+              Column {
+                id: sourceText
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.leftMargin: Style.spacing.panelGap
+                anchors.rightMargin: Style.spacing.md
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: Style.spacing.xs
 
-                Row {
-                  anchors.fill: parent
-                  anchors.leftMargin: Style.spacing.sm
-                  anchors.rightMargin: Style.spacing.sm
-                  spacing: Style.spacing.sm
-
-                  Text {
-                    text: player && player.isPlaying ? "󰏤" : "󰐊"
-                    color: Color.text
-                    opacity: selected ? 0.95 : 0.45
-                    font.family: root.bar.fontFamily
-                    font.pixelSize: Style.font.body
-                    width: Style.space(18)
-                    horizontalAlignment: Text.AlignHCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                  }
-
-                  Column {
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width - Style.space(25)
-                    spacing: Style.spacing.compactGap
-
-                    Text {
-                      text: sourceRow.sourceTitle
-                      color: Color.text
-                      font.family: root.bar.fontFamily
-                      font.pixelSize: Style.font.bodySmall
-                      font.bold: selected
-                      elide: Text.ElideRight
-                      width: parent.width
-                    }
-
-                    Text {
-                      text: sourceRow.sourceDetail
-                      color: Color.foreground
-                      font.family: root.bar.fontFamily
-                      font.pixelSize: Style.font.caption
-                      elide: Text.ElideRight
-                      width: parent.width
-                      visible: text !== ""
-                    }
-                  }
+                Text {
+                  text: (player && player.isPlaying ? "● " : "○ ")
+                    + String(player && (player.trackTitle || player.identity || player.desktopEntry) || "MEDIA")
+                  color: selected ? Color.foreground : Color.text
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.body
+                  font.bold: selected
+                  width: parent.width
+                  elide: Text.ElideRight
                 }
 
-                MouseArea {
-                  anchors.fill: parent
-                  hoverEnabled: true
-                  cursorShape: Qt.PointingHandCursor
-
-                  Rectangle {
-                    anchors.fill: parent
-                    z: -1
-                    color: Color.controls.hoverBackground
-                    visible: parent.containsMouse && !sourceRow.selected
-                  }
-
-                  onClicked: if (root.mediaService)
-                    root.mediaService.selectPlayer(root.mediaService.playerKey(sourceRow.player))
+                Text {
+                  text: player && player.trackArtist
+                    ? player.trackArtist
+                    : String(player && (player.identity || player.desktopEntry) || "")
+                  color: Color.foreground
+                  opacity: Style.opacity.secondaryText
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.caption
+                  width: parent.width
+                  elide: Text.ElideRight
+                  visible: text !== ""
                 }
+              }
+
+              MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onContainsMouseChanged: if (containsMouse) root.selectedPlayerIndex = index
+                onClicked: root.selectPlayerAt(index)
               }
             }
           }
         }
       }
-    }
-  }
-
-  component MediaControl: BorderSurface {
-    id: control
-    signal clicked()
-    required property string iconText
-    property bool emphasized: false
-
-    width: emphasized ? Style.space(54) : Style.space(44)
-    height: Style.space(38)
-    radius: 0
-    color: controlMouse.containsMouse
-      ? Color.controls.hoverBackground
-      : Color.controls.background
-    borderSpec: Border.flat(
-      controlMouse.containsMouse ? Color.controls.selectedBorder : Color.controls.border,
-      Math.max(1, Style.spacing.compactGap)
-    )
-    opacity: enabled ? 1.0 : 0.35
-
-    Text {
-      anchors.centerIn: parent
-      text: control.iconText
-      color: Color.controls.text
-      font.family: root.bar.fontFamily
-      font.pixelSize: control.emphasized ? Style.font.display : Style.font.iconLarge
-    }
-
-    MouseArea {
-      id: controlMouse
-      anchors.fill: parent
-      hoverEnabled: true
-      cursorShape: control.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-      onClicked: control.clicked()
     }
   }
 }
