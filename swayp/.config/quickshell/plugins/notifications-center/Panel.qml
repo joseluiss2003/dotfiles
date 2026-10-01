@@ -415,14 +415,7 @@ Panel {
           }
         }
 
-        PanelSeparator {
-          Layout.fillWidth: true
-          Layout.leftMargin: Style.popup.contentInset
-          Layout.rightMargin: Style.popup.contentInset
-          foreground: Color.notifications.border
-        }
-    
-        Item {
+Item {
           Layout.fillWidth: true
           visible: root.notificationCount > 0
           Layout.preferredHeight: Math.min(
