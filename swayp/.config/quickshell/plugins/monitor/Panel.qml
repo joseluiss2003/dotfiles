@@ -586,7 +586,6 @@ Panel {
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
                 font.bold: true
-                font.letterSpacing: 1.2
                 elide: Text.ElideRight
                 width: parent.width
               }
@@ -653,7 +652,10 @@ Panel {
                   root.ensureCursorVisible(brightnessRow)
 
               foreground: root.bar.foreground
-              outline: true
+              fill: "transparent"
+              currentFill: "transparent"
+              showCursorMarker: false
+              outline: false
 
               PanelSlider {
                 id: brightnessSlider
@@ -752,7 +754,10 @@ Panel {
                   root.ensureCursorVisible(textSizeRow)
 
               foreground: root.bar.foreground
-              outline: true
+              fill: "transparent"
+              currentFill: "transparent"
+              showCursorMarker: false
+              outline: false
 
               PanelSlider {
                 id: textSizeSlider
@@ -812,19 +817,10 @@ Panel {
 
             }
 
-            Grid {
+            Row {
               id: scaleRow
               width: parent.width
-              columns: root.scaleValues.length
-              spacing: Style.spacing.xs
-
-              readonly property real cellWidth:
-                root.scaleValues.length > 0
-                  ? (
-                      width -
-                      spacing * (columns - 1)
-                    ) / columns
-                  : 0
+              spacing: Style.spacing.md
 
               Repeater {
                 model: root.scaleValues
@@ -832,10 +828,9 @@ Panel {
                 ScalePill {
                   required property string modelData
                   required property int index
-
                   scaleValue: modelData
                   scaleIndex: index
-                  width: scaleRow.cellWidth
+                  width: implicitWidth
                 }
               }
             }
@@ -902,6 +897,21 @@ Panel {
             }
           }
 
+          PanelStatusLine {
+            stateText: root.displays.length > 0
+              ? root.displays.length + " DISPLAY" + (root.displays.length === 1 ? "" : "S")
+              : "NO DISPLAY"
+            foreground: root.bar.foreground
+            accent: Color.accent
+            fontFamily: root.bar.fontFamily
+            hints: [
+              { key: "↑↓", label: "NAV" },
+              { key: "←→", label: "ADJUST" },
+              { key: "ENTER", label: "APPLY" },
+              { key: "ESC", label: "CLOSE" }
+            ]
+          }
+
           Item {
             width: parent.width
             height: Style.spacing.sm
@@ -909,28 +919,47 @@ Panel {
         }
       }
     }
-  component ScalePill: Button {
+  component ScalePill: CursorSurface {
     id: pill
     required property string scaleValue
     required property int scaleIndex
 
-    text: root.effectiveScale(scaleValue) + "x"
-    fontSize: Style.font.caption
+    readonly property bool selected: root.cursorActive
+      && root.focusSection === "scale"
+      && root.selectedIndex === scaleIndex
+
+    hasCursor: selected
+    current: root.activeScaleIndex() === scaleIndex
     foreground: root.bar.foreground
-    fontFamily: root.bar.fontFamily
-    horizontalPadding: Style.spacing.sm
-    verticalPadding: Style.spacing.controlPaddingY
-    bordered: true
+    fill: "transparent"
+    currentFill: "transparent"
+    implicitWidth: scaleLabel.implicitWidth + Style.spacing.md
+    implicitHeight: scaleLabel.implicitHeight
 
-    active: root.activeScaleIndex() === scaleIndex
-    hasCursor: root.cursorActive && root.focusSection === "scale" && root.selectedIndex === scaleIndex
+    Text {
+      id: scaleLabel
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.verticalCenter: parent.verticalCenter
+      textFormat: Text.PlainText
+      text: root.effectiveScale(pill.scaleValue) + "x"
+      color: root.bar.foreground
+      font.family: root.bar.fontFamily
+      font.pixelSize: Style.font.body
+      font.bold: pill.current
+      horizontalAlignment: Text.AlignHCenter
+    }
 
-    onClicked: root.setScale(scaleValue)
-    onHovered: function(isHovered) {
-      if (!isHovered || root.reflowingText) return
-      root.cursorActive = true
-      root.focusSection = "scale"
-      root.selectedIndex = pill.scaleIndex
+    MouseArea {
+      anchors.fill: parent
+      hoverEnabled: true
+      cursorShape: Qt.PointingHandCursor
+      onContainsMouseChanged: if (containsMouse && !root.reflowingText) {
+        root.cursorActive = true
+        root.focusSection = "scale"
+        root.selectedIndex = pill.scaleIndex
+      }
+      onClicked: root.setScale(pill.scaleValue)
     }
   }
 
@@ -944,53 +973,33 @@ Panel {
 
     hasCursor: root.cursorActive && root.focusSection === "monitors" && root.selectedIndex === rowIndex
     onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(monitorRow)
-    current: isFocused
+    current: false
     foreground: root.bar.foreground
-    fill: Style.hoverFillFor(root.bar.foreground, Color.foreground)
-    currentFill: Style.selectedFillFor(root.bar.foreground, Color.foreground)
-    implicitHeight: monitorInner.implicitHeight + Style.spacing.xl
-    opacity: canToggle ? 1.0 : 0.45
+    fill: "transparent"
+    currentFill: "transparent"
+    implicitHeight: monitorLabel.implicitHeight
 
-    Row {
-      id: monitorInner
+    Text {
+      id: monitorLabel
       anchors.left: parent.left
       anchors.right: parent.right
+      anchors.leftMargin: Style.spacing.sectionGap + Style.spacing.md
+      anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.md
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: Style.spacing.inset
-      anchors.rightMargin: Style.spacing.inset
-      spacing: Style.spacing.controlGap
-
-      Text {
-        text: "󰍹"
-        color: root.bar.foreground
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.title
-        width: Style.space(22)
-        horizontalAlignment: Text.AlignHCenter
-        anchors.verticalCenter: parent.verticalCenter
-      }
-
-      Text {
-        textFormat: Text.PlainText
-        text: monitorRow.display.name
-        color: root.bar.foreground
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.body
-        elide: Text.ElideRight
-        width: parent.width - Style.space(22) - Style.spacing.panelGap - Style.space(16)
-        anchors.verticalCenter: parent.verticalCenter
-      }
-
-      Text {
-        textFormat: Text.PlainText
-        text: monitorRow.display.enabled ? "󰄬" : ""
-        color: root.bar.foreground
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.subtitle
-        width: Style.spacing.panelGap
-        horizontalAlignment: Text.AlignRight
-        anchors.verticalCenter: parent.verticalCenter
-      }
+      textFormat: Text.PlainText
+      text: monitorRow.display.name
+        + (monitorRow.display.enabled
+          ? "  · ON"
+          : "  · OFF")
+        + (monitorRow.isFocused
+          ? "  · FOCUSED"
+          : "")
+      color: root.bar.foreground
+      font.family: root.bar.fontFamily
+      font.pixelSize: Style.font.body
+      font.bold: monitorRow.isFocused
+      elide: Text.ElideRight
+      opacity: monitorRow.canToggle ? 1.0 : 0.45
     }
 
     MouseArea {
@@ -1002,8 +1011,8 @@ Panel {
         root.focusSection = "monitors"
         root.selectedIndex = monitorRow.rowIndex
       }
-      onClicked: if (monitorRow.canToggle) root.toggleDisplay(monitorRow.display.name, monitorRow.display.enabled)
+      onClicked: if (monitorRow.canToggle)
+        root.toggleDisplay(monitorRow.display.name, monitorRow.display.enabled)
     }
   }
-}
 }
