@@ -687,12 +687,7 @@ Panel {
 
         // Scrollable device list — capped so a noisy neighborhood doesn't
         // grow the popup past the screen.
-        PanelSeparator {
-          id: connectedSeparator
-          foreground: root.bar.foreground
-        }
-
-        Column {
+Column {
           id: connectedList
           visible: root.connectedDevices.length > 0
           width: parent.width
@@ -718,13 +713,7 @@ Panel {
           }
         }
 
-        PanelSeparator {
-          id: scrollSeparator
-          visible: root.connectedDevices.length > 0 && root.scrollRows.length > 0
-          foreground: root.bar.foreground
-        }
-
-        // ListView, not a Flickable: it owns the scroll position, so it keeps
+// ListView, not a Flickable: it owns the scroll position, so it keeps
         // the current row visible on j/k, re-clamps itself when discovery
         // shortens the list, and — because Contain only moves when a row is
         // actually clipped — never lurches under a hovering mouse.
@@ -766,13 +755,7 @@ Panel {
               width: parent.width
               spacing: Style.spacing.sectionGap
 
-              PanelSeparator {
-                visible: index > 0 && sectionTitle !== ""
-                height: visible ? implicitHeight : 0
-                foreground: root.bar.foreground
-              }
-
-              PanelSectionHeader {
+PanelSectionHeader {
                 visible: sectionTitle !== ""
                 height: visible ? implicitHeight : 0
                 text: sectionTitle
