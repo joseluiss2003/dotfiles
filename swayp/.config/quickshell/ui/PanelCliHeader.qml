@@ -17,7 +17,12 @@ Item {
   property alias statusOpacity: statusText.opacity
 
   width: parent ? parent.width : implicitWidth
-  implicitHeight: Style.popup.headerHeight
+  implicitHeight: Math.max(
+    titleText.implicitHeight,
+    statusText.implicitHeight,
+    trailingLoader.implicitHeight,
+    Style.font.body + Style.spacing.sm * 2
+  )
 
   Text {
     id: marker
