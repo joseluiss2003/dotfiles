@@ -195,8 +195,8 @@ BarWidget {
 
           BorderSurface {
             id: artwork
-            width: Style.space(112)
-            height: Style.space(112)
+            width: Style.space(100)
+            height: Style.space(100)
             anchors.left: parent.left
             anchors.top: parent.top
             color: Color.controls.background
