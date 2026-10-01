@@ -174,13 +174,6 @@ BarWidget {
         anchors.margins: Style.popup.contentInset
         spacing: Style.spacing.panelGap
 
-        // Media gets a tiny breathing gap above the CLI header without
-        // changing the shared popup framing used by the other panels.
-        Item {
-          width: parent.width
-          height: Style.spacing.sm
-        }
-
         PanelCliHeader {
           title: "Media"
           status: root.identity ? root.identity : "NOW PLAYING"
@@ -233,49 +226,58 @@ BarWidget {
             }
           }
 
-          Column {
+          Item {
             id: trackInfo
             anchors.left: artwork.right
             anchors.leftMargin: Style.spacing.panelGap
             anchors.right: parent.right
             anchors.top: parent.top
-            spacing: Style.spacing.xs
+            anchors.bottom: parent.bottom
 
-            Text {
-              text: root.title || "NOTHING PLAYING"
-              color: Color.text
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.body
-              font.bold: true
-              width: parent.width
-              maximumLineCount: 1
-              elide: Text.ElideRight
+            Column {
+              id: trackMetadata
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.top: parent.top
+              spacing: Style.spacing.xs
+
+              Text {
+                text: root.title || "NOTHING PLAYING"
+                color: Color.text
+                font.family: root.bar.fontFamily
+                font.pixelSize: Style.font.body
+                font.bold: true
+                width: parent.width
+                maximumLineCount: 1
+                elide: Text.ElideRight
+              }
+
+              Text {
+                text: root.artist || "UNKNOWN ARTIST"
+                color: Color.foreground
+                opacity: Style.opacity.secondaryText
+                font.family: root.bar.fontFamily
+                font.pixelSize: Style.font.caption
+                width: parent.width
+                elide: Text.ElideRight
+              }
+
+              Text {
+                text: root.album
+                color: Color.foreground
+                opacity: Style.opacity.mutedText
+                font.family: root.bar.fontFamily
+                font.pixelSize: Style.font.caption
+                width: parent.width
+                elide: Text.ElideRight
+                visible: text !== ""
+              }
             }
 
-            Text {
-              text: root.artist || "UNKNOWN ARTIST"
-              color: Color.foreground
-              opacity: Style.opacity.secondaryText
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.caption
-              width: parent.width
-              elide: Text.ElideRight
-            }
-
-            Text {
-              text: root.album
-              color: Color.foreground
-              opacity: Style.opacity.mutedText
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.caption
-              width: parent.width
-              elide: Text.ElideRight
-              visible: text !== ""
-            }
-
-            // Playback controls sit immediately below the metadata instead
-            // of consuming a full-width row underneath the artwork.
             Row {
+              id: playbackControls
+              anchors.right: parent.right
+              anchors.bottom: parent.bottom
               width: implicitWidth
               height: Style.space(38)
               spacing: Style.spacing.xxl
