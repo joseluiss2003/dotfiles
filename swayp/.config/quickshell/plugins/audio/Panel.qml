@@ -991,20 +991,7 @@ Panel {
             }
           }
 
-          PanelStatusLine {
-            stateText: "OUTPUT · " + Math.round(
-              (outputSlider.dragging ? outputSlider.liveValue : root.outputVolume) * 100
-            ) + "%" + (root.outputMuted ? " · MUTED" : "")
-            foreground: root.bar.foreground
-            accent: Color.accent
-            fontFamily: root.bar.fontFamily
-            hints: [
-              { key: "↑↓", label: "NAV" },
-              { key: "←→", label: "VOLUME" },
-              { key: "ENTER", label: "MUTE" },
-              { key: "ESC", label: "CLOSE" }
-            ]
-          }
+          
         }
       }
     }
