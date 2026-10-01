@@ -15,9 +15,16 @@ Row {
   property string text: ""
   property bool uppercase: true
 
+  width: parent ? parent.width : implicitWidth
+  implicitWidth: (leadingText.visible ? leadingText.implicitWidth + spacing : 0) + labelText.implicitWidth
+  implicitHeight: Math.max(
+    leadingText.visible ? leadingText.implicitHeight : 0,
+    labelText.implicitHeight
+  )
   spacing: Style.spacing.sm
 
   Text {
+    id: leadingText
     visible: root.leadingGlyph !== ""
     textFormat: Text.PlainText
     text: root.leadingGlyph
@@ -30,6 +37,7 @@ Row {
   }
 
   Text {
+    id: labelText
     textFormat: Text.PlainText
     text: root.uppercase ? String(root.text).toUpperCase() : root.text
     color: root.foreground
