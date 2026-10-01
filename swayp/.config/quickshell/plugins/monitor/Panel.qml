@@ -822,8 +822,8 @@ Panel {
       id: monitorLabel
       anchors.left: parent.left
       anchors.right: parent.right
-      anchors.leftMargin: Style.spacing.compactGap + Style.spacing.md
-      anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.md
+      anchors.leftMargin: Style.spacing.md + Style.spacing.md
+      anchors.rightMargin: Style.spacing.md
       anchors.verticalCenter: parent.verticalCenter
       textFormat: Text.PlainText
       text: monitorRow.display.name
