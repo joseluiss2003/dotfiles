@@ -77,7 +77,7 @@ BarWidget {
     open: root.popupOpen
     keyboardEnabled: false
     backgroundColor: Color.popups.background
-    contentWidth: panel.fittedContentWidth(Style.space(350))
+    contentWidth: panel.fittedContentWidth(Style.space(290))
     contentHeight: panel.fittedContentHeight(column.implicitHeight)
 
     PanelKeyCatcher {
