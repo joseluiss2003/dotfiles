@@ -1806,8 +1806,8 @@ Panel {
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.top: rowMouse.bottom
-      anchors.leftMargin: Style.spacing.sectionGap
-      anchors.rightMargin: Style.spacing.sectionGap
+      anchors.leftMargin: Style.spacing.sectionGap + Style.spacing.md
+      anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.md
       anchors.topMargin: Style.spacing.xs
       implicitHeight: passwordRows.implicitHeight
       height: implicitHeight
@@ -1839,6 +1839,17 @@ Panel {
           visible: row.isEnterprise && !row.isBusy && !row.isFailed
           width: parent.width
           spacing: Style.spacing.sm
+
+          Text {
+            textFormat: Text.PlainText
+            text: idField.activeFocus ? ">" : ""
+            color: Color.accent
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            width: Style.space(12)
+            verticalAlignment: Text.AlignVCenter
+          }
 
           Text {
             textFormat: Text.PlainText
@@ -1878,6 +1889,17 @@ Panel {
           id: passwordRow
           width: parent.width
           spacing: Style.spacing.sm
+
+          Text {
+            textFormat: Text.PlainText
+            text: pwField.activeFocus ? ">" : ""
+            color: Color.accent
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            width: Style.space(12)
+            verticalAlignment: Text.AlignVCenter
+          }
 
           Text {
             textFormat: Text.PlainText
