@@ -465,65 +465,17 @@ Panel {
           width: scrollArea.availableWidth
           spacing: Style.spacing.panelGap
 
-          // ---------- Hero: display icon + status ----------
-          Item {
-            width: parent.width
-            implicitHeight: Math.max(
-              heroIcon.implicitHeight,
-              heroLabels.implicitHeight
-            )
-
-            Text {
-              id: heroIcon
-              textFormat: Text.PlainText
-              text: root.displays.length > 1 ? "󰍺" : "󰍹"
-              color: root.bar.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.display
-              anchors.left: parent.left
-              anchors.verticalCenter: parent.verticalCenter
-            }
-
-            Column {
-              id: heroLabels
-              anchors.left: heroIcon.right
-              anchors.leftMargin: Style.spacing.panelGap
-              anchors.right: parent.right
-              anchors.verticalCenter: parent.verticalCenter
-              spacing: Style.spacing.compactGap
-
-              Text {
-                text: "Display"
-                color: root.bar.foreground
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.title
-                font.bold: true
-                elide: Text.ElideRight
-                width: parent.width
-              }
-
-              Text {
-                id: heroLabel
-                textFormat: Text.PlainText
-                text: {
-                  if (root.brightnessAvailable) {
-                    return root.brightnessName(
-                      brightnessSlider.dragging
-                        ? brightnessSlider.liveValue
-                        : root.brightnessPercent
-                    ).toUpperCase()
-                  }
-
-                  return "FIXED BRIGHTNESS"
-                }
-                color: Color.foreground
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.caption
-                font.bold: true
-                elide: Text.ElideRight
-                width: parent.width
-              }
-            }
+          PanelCliHeader {
+            title: "Display"
+            status: root.brightnessAvailable
+              ? root.brightnessName(
+                  brightnessSlider.dragging
+                    ? brightnessSlider.liveValue
+                    : root.brightnessPercent
+                )
+              : "FIXED BRIGHTNESS"
+            foreground: root.bar.foreground
+            fontFamily: root.bar.fontFamily
           }
 
           // ---------- Brightness ----------
