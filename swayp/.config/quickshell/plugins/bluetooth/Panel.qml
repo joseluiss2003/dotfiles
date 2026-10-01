@@ -769,25 +769,10 @@ Panel {
         ListView {
           id: deviceListView
           width: parent.width
-          height: {
-            if (contentHeight <= 0) return 0
-            var available = panel.availableCardHeight - panel.verticalContentInset
-            var fixed = heroBlock.implicitHeight
-                + (connectedSeparator.visible ? connectedSeparator.implicitHeight : 0)
-                + (connectedList.visible ? connectedList.implicitHeight : 0)
-                + (scrollSeparator.visible ? scrollSeparator.implicitHeight : 0)
-                + (emptyState.visible ? emptyState.implicitHeight : 0)
-                + statusLine.implicitHeight
-            var visibleBlocks = 1
-                + (connectedSeparator.visible ? 1 : 0)
-                + (connectedList.visible ? 1 : 0)
-                + (scrollSeparator.visible ? 1 : 0)
-                + (emptyState.visible ? 1 : 0)
-                + 1
-            var gaps = Math.max(0, visibleBlocks - 1) * Style.spacing.panelGap
-            var budget = Math.max(0, available - fixed - gaps)
-            return Math.round(Math.min(contentHeight, Style.space(400), budget))
-          }
+          // Keep a deliberate viewport so the footer always remains part
+          // of the panel composition. A busy Bluetooth environment scrolls;
+          // it must not push the status line out of the card.
+          height: Math.min(contentHeight, Style.space(220))
           spacing: Style.spacing.sectionGap
           clip: true
           boundsBehavior: Flickable.StopAtBounds
