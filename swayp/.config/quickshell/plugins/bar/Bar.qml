@@ -1908,7 +1908,7 @@ Item {
       readonly property int inset: Style.space(2)
 
       visible: opacity > 0
-      opacity: slot.panelOpen && !slot.dragSource ? 0.9 : 0
+      opacity: slot.panelOpen && slot.moduleName !== "swayp.tray" && !slot.dragSource ? 0.9 : 0
       color: Color.foreground
       radius: Math.min(width, height) / 2
       width: root.vertical ? Style.space(2) : slot.panelIndicatorExtent
