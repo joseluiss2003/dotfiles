@@ -1809,67 +1809,101 @@ Panel {
       anchors.leftMargin: Style.spacing.sectionGap
       anchors.rightMargin: Style.spacing.sectionGap
       anchors.topMargin: Style.spacing.xs
-      implicitHeight: passwordHeader.implicitHeight + Style.spacing.xs + passwordFields.implicitHeight
+      implicitHeight: passwordRows.implicitHeight
       height: implicitHeight
 
-      PanelSectionHeader {
-        id: passwordHeader
-        text: row.isEnterprise ? "IDENTITY / PASSPHRASE" : "PASSPHRASE"
-        foreground: root.bar.foreground
-        fontFamily: root.bar.fontFamily
-        anchors.left: parent.left
-        anchors.top: parent.top
-      }
-
       Column {
-        id: passwordFields
-        anchors.left: parent.left
-        anchors.right: connectPwBtn.left
-        anchors.top: passwordHeader.bottom
+        id: passwordRows
+        width: parent.width
         spacing: Style.spacing.xs
-        anchors.rightMargin: Style.spacing.inset
 
-        TextField {
-          id: idField
+        Row {
+          id: identityRow
           visible: row.isEnterprise && !row.isBusy && !row.isFailed
           width: parent.width
-          placeholderText: "Identity (user@domain)"
-          font.family: Style.font.family
-          font.pixelSize: Style.font.body
-          foreground: root.bar.foreground
-          horizontalPadding: Style.spacing.controlGap
-          verticalPadding: Style.spacing.xs
-          enabled: !row.isBusy
-          text: row.isPasswordOpen ? root.identityText : ""
+          spacing: Style.spacing.xs
 
-          onAccepted: pwField.forceActiveFocus()
-          onTextChanged: if (row.isPasswordOpen && text !== root.identityText) root.identityText = text
-          Keys.onEscapePressed: root.cancelPasswordPrompt()
+          Text {
+            textFormat: Text.PlainText
+            text: "> USER"
+            color: Color.accent
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            width: Style.space(42)
+            verticalAlignment: Text.AlignVCenter
+          }
 
-          onVisibleChanged: if (visible) Qt.callLater(forceActiveFocus)
-          Component.onCompleted: if (visible) Qt.callLater(forceActiveFocus)
+          TextField {
+            id: idField
+            width: parent.width - parent.children[0].width - identityRow.spacing
+            placeholderText: "user@domain"
+            font.family: Style.font.family
+            font.pixelSize: Style.font.body
+            foreground: root.bar.foreground
+            horizontalPadding: Style.spacing.controlGap
+            verticalPadding: Style.spacing.xs
+            enabled: !row.isBusy
+            text: row.isPasswordOpen ? root.identityText : ""
+
+            onAccepted: pwField.forceActiveFocus()
+            onTextChanged: if (row.isPasswordOpen && text !== root.identityText) root.identityText = text
+            Keys.onEscapePressed: root.cancelPasswordPrompt()
+
+            onVisibleChanged: if (visible) Qt.callLater(forceActiveFocus)
+            Component.onCompleted: if (visible) Qt.callLater(forceActiveFocus)
+          }
         }
 
-        TextField {
-          id: pwField
-          visible: !row.isBusy && !row.isFailed
+        Row {
+          id: passwordRow
           width: parent.width
-          password: true
-          placeholderText: "Passphrase"
-          font.family: Style.font.family
-          font.pixelSize: Style.font.body
-          foreground: root.bar.foreground
-          horizontalPadding: Style.spacing.controlGap
-          verticalPadding: Style.spacing.xs
-          enabled: !row.isBusy
-          text: row.isPasswordOpen ? root.passwordText : ""
+          spacing: Style.spacing.xs
 
-          onAccepted: row.submitCredentials()
-          onTextChanged: if (row.isPasswordOpen && text !== root.passwordText) root.passwordText = text
-          Keys.onEscapePressed: root.cancelPasswordPrompt()
+          Text {
+            textFormat: Text.PlainText
+            text: "> PASS"
+            color: Color.accent
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            width: Style.space(42)
+            verticalAlignment: Text.AlignVCenter
+          }
 
-          onVisibleChanged: if (visible && !row.isEnterprise) Qt.callLater(forceActiveFocus)
-          Component.onCompleted: if (visible && !row.isEnterprise) Qt.callLater(forceActiveFocus)
+          TextField {
+            id: pwField
+            visible: !row.isBusy && !row.isFailed
+            width: parent.width - parent.children[0].width - passwordRow.spacing - connectPwBtn.width - Style.spacing.xs
+            password: true
+            placeholderText: "••••••••"
+            font.family: Style.font.family
+            font.pixelSize: Style.font.body
+            foreground: root.bar.foreground
+            horizontalPadding: Style.spacing.controlGap
+            verticalPadding: Style.spacing.xs
+            enabled: !row.isBusy
+            text: row.isPasswordOpen ? root.passwordText : ""
+
+            onAccepted: row.submitCredentials()
+            onTextChanged: if (row.isPasswordOpen && text !== root.passwordText) root.passwordText = text
+            Keys.onEscapePressed: root.cancelPasswordPrompt()
+
+            onVisibleChanged: if (visible && !row.isEnterprise) Qt.callLater(forceActiveFocus)
+            Component.onCompleted: if (visible && !row.isEnterprise) Qt.callLater(forceActiveFocus)
+          }
+
+          PanelActionButton {
+            id: connectPwBtn
+            visible: !row.isBusy && !row.isFailed
+            width: Style.space(20)
+            size: Style.space(20)
+            iconText: Icons.check
+            tooltipText: "Connect"
+            foreground: root.bar.foreground
+            fontFamily: root.bar.fontFamily
+            onClicked: row.submitCredentials()
+          }
         }
 
         Text {
@@ -1883,19 +1917,7 @@ Panel {
           font.bold: true
         }
       }
-
-      PanelActionButton {
-        id: connectPwBtn
-        visible: !row.isBusy && !row.isFailed
-        anchors.right: parent.right
-        anchors.bottom: passwordFields.bottom
-        enabled: row.net && pwField.text.length > 0 && (!row.isEnterprise || idField.text.length > 0)
-        iconText: Icons.check
-        tooltipText: "Connect"
-        foreground: root.bar.foreground
-        fontFamily: root.bar.fontFamily
-        onClicked: row.submitCredentials()
-      }
+    }
     }
   }
 
