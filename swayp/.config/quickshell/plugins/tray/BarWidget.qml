@@ -695,7 +695,7 @@ BarWidget {
         : Math.round((parent.width - width) / 2)
       y: root.vertical
         ? Math.round((parent.height - height) / 2)
-        : (root.position === "top" ? parent.height - height : 0)
+        : (root.position === "top" ? root.barSize - height : 0)
       z: 50
 
       Behavior on opacity {
