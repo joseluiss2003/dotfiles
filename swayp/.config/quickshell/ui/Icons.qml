@@ -46,6 +46,7 @@ QtObject {
   readonly property string nightLight: "󰖔"
   readonly property string power: "󰐥"
   readonly property string lock: "󰌾"
+  readonly property string suspend: "󰒲"
   readonly property string logout: "󰍃"
   readonly property string reboot: "󰜉"
   readonly property string shutdown: "󰐥"
