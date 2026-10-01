@@ -428,8 +428,9 @@ BarWidget {
                 && root.mediaService.playerKey(root.activePlayer) === root.mediaService.playerKey(player)
 
               width: parent.width
-              implicitHeight: sourceText.implicitHeight + Style.spacing.sm
+              implicitHeight: sourceText.implicitHeight + Style.spacing.xs
               hasCursor: root.selectedPlayerIndex === index
+              cursorMarkerVerticalOffset: -Math.round((Style.font.caption + Style.spacing.xs) / 2)
               foreground: root.bar.foreground
               fill: "transparent"
               currentFill: "transparent"
