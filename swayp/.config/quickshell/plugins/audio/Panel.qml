@@ -687,80 +687,24 @@ Panel {
           width: scrollArea.availableWidth
           spacing: Style.spacing.panelGap
 
-          // ---------- Hero: speaker icon · title/status ----------
-          Item {
-            id: heroItem
-            width: parent.width
-            implicitHeight: Math.max(heroIcon.implicitHeight, heroLabels.implicitHeight, powerSwitch.implicitHeight)
-
-            // Status only — the switch owns muting, mouse and keyboard alike.
-            Text {
-              id: heroIcon
-              textFormat: Text.PlainText
-              text: root.outputIcon()
-              color: root.outputMuted ? Util.alpha(root.bar.foreground, 0.5) : root.bar.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.display
-              opacity: root.outputMuted ? 0.5 : 1.0
-              anchors.left: parent.left
-              anchors.verticalCenter: parent.verticalCenter
-            }
-
-            // Compact on/off switch on the trailing edge of the hero, and the
-            // header's only cursor target. Checked means something is still
-            // audible, so muting everything reads as switching audio off.
-            ToggleSwitch {
-              id: powerSwitch
-              checked: root.anyAudible
-              hasCursor: root.headerHasCursor
-              foreground: root.bar.foreground
-              anchors.right: parent.right
-              anchors.verticalCenter: parent.verticalCenter
-              onHovered: function(on) { if (on) root.setHeaderCursor() }
-              onToggled: root.toggleAllMuted()
-
-              PanelToolTip {
-                visible: powerSwitch.containsMouse
-                text: root.toggleHint
-                fontFamily: root.bar.fontFamily
-              }
-            }
-
-            Column {
-              id: heroLabels
-              anchors.left: heroIcon.right
-              anchors.leftMargin: Style.spacing.panelGap
-              anchors.right: parent.right
-              anchors.rightMargin: powerSwitch.width + Style.spacing.xxl
-              anchors.verticalCenter: parent.verticalCenter
-              spacing: Style.spacing.compactGap
-
-              Text {
-                text: "Audio"
-                color: root.bar.foreground
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.title
-                font.bold: true
-                elide: Text.ElideRight
-                width: parent.width
-              }
-
-              Text {
-                id: heroLabel
-                textFormat: Text.PlainText
-                text: "OUTPUT · " + Math.round(
-                  (outputSlider.dragging ? outputSlider.liveValue : root.outputVolume) * 100
-                ) + "%" + (root.outputMuted ? " · MUTED" : "")
-                color: Color.foreground
-                font.family: root.bar.fontFamily
-                font.pixelSize: Style.font.caption
-                font.bold: true
-                font.letterSpacing: 1.2
-                elide: Text.ElideRight
-                width: parent.width
+          PanelCliHeader {
+            title: "Audio"
+            status: "OUTPUT · " + Math.round(
+              (outputSlider.dragging ? outputSlider.liveValue : root.outputVolume) * 100
+            ) + "%" + (root.outputMuted ? " · MUTED" : "")
+            foreground: root.bar.foreground
+            fontFamily: root.bar.fontFamily
+            trailingControl: Component {
+              ToggleSwitch {
+                checked: root.anyAudible
+                hasCursor: root.headerHasCursor
+                foreground: root.bar.foreground
+                onHovered: function(on) { if (on) root.setHeaderCursor() }
+                onToggled: root.toggleAllMuted()
               }
             }
           }
+
 
           // ---- Output devices ----
           PanelSeparator {
