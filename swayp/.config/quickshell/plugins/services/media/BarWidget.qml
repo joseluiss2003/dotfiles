@@ -171,7 +171,10 @@ BarWidget {
       Column {
         id: panelColumn
         anchors.fill: parent
-        anchors.margins: Style.popup.contentInset
+        anchors.topMargin: 0
+        anchors.rightMargin: Style.popup.contentInset
+        anchors.bottomMargin: Style.popup.contentInset
+        anchors.leftMargin: Style.popup.contentInset
         spacing: Style.spacing.panelGap
 
         PanelCliHeader {
