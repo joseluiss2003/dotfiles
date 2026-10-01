@@ -9,6 +9,7 @@ Item {
 
   property string title: ""
   property string status: ""
+  property string iconText: Style.tui.headerMarker
   property color foreground: Color.foreground
   property color accent: Color.accent
   property string fontFamily: Style.font.family
@@ -28,7 +29,7 @@ Item {
   Text {
     id: marker
     textFormat: Text.PlainText
-    text: Style.tui.headerMarker
+    text: root.iconText
     color: root.accent
     font.family: root.fontFamily
     font.pixelSize: root.fontSize
