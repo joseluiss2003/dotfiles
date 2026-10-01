@@ -1131,7 +1131,7 @@ Panel {
               tooltipText: "Show QR code"
               foreground: root.bar.foreground
               fontFamily: root.bar.fontFamily
-              iconSize: Style.font.subtitle * 1.5
+              iconSize: Style.font.icon
               horizontalPadding: Style.spacing.sm
               verticalPadding: Style.spacing.compactGap
               hasCursor: root.qrHeaderHasCursor
@@ -1146,7 +1146,7 @@ Panel {
               tooltipText: "Run a speed test"
               foreground: root.bar.foreground
               fontFamily: root.bar.fontFamily
-              iconSize: Style.font.subtitle * 1.5
+              iconSize: Style.font.icon
               horizontalPadding: Style.spacing.sm
               verticalPadding: Style.spacing.compactGap
               hasCursor: root.speedHeaderHasCursor
