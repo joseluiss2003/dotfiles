@@ -446,10 +446,6 @@ PanelSectionHeader {
             }
           }
 
-          Item {
-            width: parent.width
-            height: Style.spacing.huge
-          }
         }
       }
     }
