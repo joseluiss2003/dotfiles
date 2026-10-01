@@ -14,6 +14,13 @@ BarWidget {
   property bool popupOpen: false
   property int selectedIndex: 0
   property bool cursorActive: false
+  readonly property var sessionActions: [
+    { label: "LOCK", icon: "󰌾" },
+    { label: "SUSPEND", icon: "󰒲" },
+    { label: "LOG OUT", icon: "󰍃" },
+    { label: "REBOOT", icon: "󰜉" },
+    { label: "POWER OFF", icon: "󰐥" }
+  ]
 
   function close() {
     popupOpen = false
@@ -100,11 +107,10 @@ BarWidget {
         anchors.top: parent.top
         spacing: Style.spacing.panelGap
 
-        // Compact hero: the popup identifies itself immediately without
-        // spending a full section on decorative text.
+        // Compact hero: same grammar as the other SwayP panels.
         Item {
           width: parent.width
-          implicitHeight: Style.space(48)
+          implicitHeight: Math.max(heroMark.implicitHeight, heroLabels.implicitHeight)
 
           OpticalGlyph {
             id: heroMark
@@ -119,6 +125,7 @@ BarWidget {
           }
 
           Column {
+            id: heroLabels
             anchors.left: heroMark.right
             anchors.leftMargin: Style.spacing.panelGap
             anchors.verticalCenter: parent.verticalCenter
@@ -134,140 +141,99 @@ BarWidget {
 
             Text {
               text: "SYSTEM SESSION"
-              color: root.bar.foreground
-              opacity: 0.58
+              color: Color.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
-              font.letterSpacing: 1.0
             }
           }
         }
 
         PanelSeparator {
           foreground: root.bar.foreground
-          opacity: 0.42
+          opacity: 0.32
         }
 
-        // The Quattro-style rhythm is intentionally compact: paired actions
-        // carry equal visual weight while the destructive action gets its own
-        // full-width row.
+        PanelSectionHeader {
+          text: "SESSION"
+          foreground: root.bar.foreground
+          fontFamily: root.bar.fontFamily
+        }
+
         Column {
           width: parent.width
-          spacing: Style.spacing.controlGap
+          spacing: Style.spacing.xs
 
-          Row {
-            width: parent.width
-            spacing: Style.spacing.controlGap
+          Repeater {
+            model: root.sessionActions
 
-            Button {
-              width: (parent.width - parent.spacing) / 2
-              height: Style.space(52)
-              iconText: "󰌾"
-              text: "Lock"
-              iconSize: Style.font.icon
-              fontSize: Style.font.bodySmall
-              foreground: root.bar.foreground
-              accent: root.bar.foreground
-              hasCursor: root.cursorActive && root.selectedIndex === 0
-              selectionBorderOnly: true
-              onClicked: root.lock()
-              onHovered: function(h) {
-                if (h) {
-                  root.cursorActive = true
-                  root.selectedIndex = 0
+            Item {
+              id: sessionRow
+              required property var modelData
+              required property int index
+
+              width: parent.width
+              height: Style.space(34)
+
+              CursorSurface {
+                anchors.fill: parent
+                hasCursor: root.cursorActive && root.selectedIndex === index
+                foreground: root.bar.foreground
+                fill: "transparent"
+                currentFill: "transparent"
+
+                Text {
+                  id: actionIcon
+                  textFormat: Text.PlainText
+                  text: modelData.icon
+                  color: index === 4 ? Color.error : root.bar.foreground
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.body
+                  width: Style.space(22)
+                  horizontalAlignment: Text.AlignHCenter
+                  verticalAlignment: Text.AlignVCenter
+                  anchors.left: parent.left
+                  anchors.leftMargin: Style.spacing.md
+                  anchors.verticalCenter: parent.verticalCenter
                 }
-              }
-            }
 
-            Button {
-              width: (parent.width - parent.spacing) / 2
-              height: Style.space(52)
-              iconText: "󰒲"
-              text: "Suspend"
-              iconSize: Style.font.icon
-              fontSize: Style.font.bodySmall
-              foreground: root.bar.foreground
-              accent: root.bar.foreground
-              hasCursor: root.cursorActive && root.selectedIndex === 1
-              selectionBorderOnly: true
-              onClicked: root.suspend()
-              onHovered: function(h) {
-                if (h) {
-                  root.cursorActive = true
-                  root.selectedIndex = 1
+                Text {
+                  textFormat: Text.PlainText
+                  text: modelData.label
+                  color: root.bar.foreground
+                  font.family: root.bar.fontFamily
+                  font.pixelSize: Style.font.body
+                  font.bold: index === 4
+                  anchors.left: actionIcon.right
+                  anchors.leftMargin: Style.spacing.md
+                  anchors.verticalCenter: parent.verticalCenter
                 }
-              }
-            }
-          }
 
-          Row {
-            width: parent.width
-            spacing: Style.spacing.controlGap
-
-            Button {
-              width: (parent.width - parent.spacing) / 2
-              height: Style.space(52)
-              iconText: "󰍃"
-              text: "Log out"
-              iconSize: Style.font.icon
-              fontSize: Style.font.bodySmall
-              foreground: root.bar.foreground
-              accent: root.bar.foreground
-              hasCursor: root.cursorActive && root.selectedIndex === 2
-              selectionBorderOnly: true
-              onClicked: root.logout()
-              onHovered: function(h) {
-                if (h) {
-                  root.cursorActive = true
-                  root.selectedIndex = 2
+                MouseArea {
+                  anchors.fill: parent
+                  hoverEnabled: true
+                  onContainsMouseChanged: if (containsMouse) {
+                    root.cursorActive = true
+                    root.selectedIndex = index
+                  }
+                  onClicked: root.activateAction(index)
                 }
-              }
-            }
-
-            Button {
-              width: (parent.width - parent.spacing) / 2
-              height: Style.space(52)
-              iconText: "󰜉"
-              text: "Reboot"
-              iconSize: Style.font.icon
-              fontSize: Style.font.bodySmall
-              foreground: root.bar.foreground
-              accent: root.bar.foreground
-              hasCursor: root.cursorActive && root.selectedIndex === 3
-              selectionBorderOnly: true
-              onClicked: root.reboot()
-              onHovered: function(h) {
-                if (h) {
-                  root.cursorActive = true
-                  root.selectedIndex = 3
-                }
-              }
-            }
-          }
-
-          Button {
-            width: parent.width
-            height: Style.space(46)
-            leftAlign: true
-            iconText: "󰐥"
-            text: "Power off"
-            iconSize: Style.font.icon
-            fontSize: Style.font.bodySmall
-            foreground: root.bar.foreground
-            accent: Color.error
-            hasCursor: root.cursorActive && root.selectedIndex === 4
-            selectionBorderOnly: true
-            onClicked: root.poweroff()
-            onHovered: function(h) {
-              if (h) {
-                root.cursorActive = true
-                root.selectedIndex = 4
               }
             }
           }
         }
 
+        PanelStatusLine {
+          stateText: "SYSTEM SESSION"
+          foreground: root.bar.foreground
+          accent: Color.accent
+          fontFamily: root.bar.fontFamily
+          hints: [
+            { key: "↑↓", label: "NAV" },
+            { key: "ENTER", label: "SELECT" },
+            { key: "ESC", label: "CLOSE" }
+          ]
+        }
       }
     }
   }
