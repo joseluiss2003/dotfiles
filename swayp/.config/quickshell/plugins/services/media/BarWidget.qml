@@ -317,9 +317,10 @@ BarWidget {
           height: Style.space(38)
           spacing: Style.spacing.xxl
           anchors.horizontalCenter: parent.horizontalCenter
+          anchors.horizontalCenterOffset: 0
 
           Item {
-            width: Style.space(38)
+            width: Style.space(34)
             height: parent.height
 
             Text {
@@ -342,7 +343,7 @@ BarWidget {
           }
 
           Item {
-            width: Style.space(46)
+            width: Style.space(40)
             height: parent.height
 
             Text {
@@ -482,7 +483,7 @@ BarWidget {
 
           Item {
             width: parent.width
-            height: Style.spacing.md
+            height: Style.spacing.xxl
           }
         }
       }
