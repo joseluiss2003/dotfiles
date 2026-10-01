@@ -183,7 +183,6 @@ BarWidget {
 
           PanelCliHeader {
             anchors.fill: parent
-            y: Style.spacing.xs / 2
             title: "Media"
             status: root.identity ? root.identity : "NOW PLAYING"
             foreground: root.bar.foreground
