@@ -174,6 +174,11 @@ BarWidget {
         anchors.margins: Style.popup.contentInset
         spacing: Style.spacing.panelGap
 
+        Item {
+          width: parent.width
+          height: Style.spacing.sm
+        }
+
         PanelCliHeader {
           title: "Media"
           status: root.identity ? root.identity : "NOW PLAYING"
@@ -276,7 +281,7 @@ BarWidget {
 
             Row {
               id: playbackControls
-              anchors.right: parent.right
+              anchors.left: parent.left
               anchors.bottom: parent.bottom
               width: implicitWidth
               height: Style.space(38)
