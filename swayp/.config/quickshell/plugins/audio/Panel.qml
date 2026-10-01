@@ -1028,14 +1028,15 @@ Panel {
     foreground: root.bar.foreground
     fill: "transparent"
     currentFill: "transparent"
-    implicitHeight: sinkLabel.implicitHeight + Style.spacing.xs
+    implicitHeight: sinkLabel.implicitHeight
 
     Text {
       id: sinkLabel
       anchors.left: parent.left
       anchors.right: parent.right
       anchors.leftMargin: Style.spacing.sectionGap + Style.spacing.md
-      anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.mdverticalCenter
+      anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.md
+      anchors.verticalCenter: parent.verticalCenter
       textFormat: Text.PlainText
       text: root.nodeLabel(sinkRow.node)
         + (sinkRow.isActive ? "  · DEFAULT" : "")
@@ -1072,7 +1073,7 @@ Panel {
     foreground: root.bar.foreground
     fill: "transparent"
     currentFill: "transparent"
-    implicitHeight: sourceLabel.implicitHeight + Style.spacing.xs
+    implicitHeight: sourceLabel.implicitHeight
 
     Text {
       id: sourceLabel
