@@ -43,17 +43,8 @@ Panel {
   //                  j/k walks each row.
   // Mouse hover on a target updates root state via the components' `hovered`
   // signal so keyboard cursor and pointer share one highlight.
-  readonly property var scalePresets: ["1", "1.25", "1.6", "2", "3", "4"]
-  readonly property var scaleValues: {
-    for (var i = 0; i < displays.length; i++) {
-      var display = displays[i]
-      if (display && display.focused)
-        return Model.availableScales(scalePresets, display.width, display.height)
-    }
-    return scalePresets
-  }
-  property string focusSection: "scale"
-  property int selectedIndex: 0
+  property string focusSection: "textsize"
+  property int selectedIndex: -1
   property bool cursorActive: false
 
   // Text size slider — curated macOS-style notches (px). The panel snaps to
@@ -78,7 +69,6 @@ Panel {
     var list = []
     if (brightnessAvailable) list.push("brightness")
     list.push("textsize")
-    list.push("scale")
     if (displays.length > 1) list.push("monitors")
     return list
   }
@@ -86,14 +76,13 @@ Panel {
   function sectionCount(section) {
     if (section === "brightness") return 0  // only the slider sentinel at -1
     if (section === "textsize") return 0    // slider sentinel at -1, like brightness
-    if (section === "scale") return scaleValues.length
     if (section === "monitors") return displays.length
     return 0
   }
 
   function sectionIsSingleRow(section) {
-    // brightness and text size are lone sliders; scale presets sit horizontally.
-    return section === "brightness" || section === "textsize" || section === "scale"
+    // Brightness and text size are lone sliders.
+    return section === "brightness" || section === "textsize"
   }
 
   function sectionFirstIndex(section) {
@@ -131,17 +120,6 @@ Panel {
     }
   }
 
-  // h/l: in scale section, walks the preset row; everywhere else, no-op
-  // because adjustBrightness handles horizontal motion on the brightness
-  // slider.
-  function moveCursorH(delta) {
-    if (focusSection !== "scale") return
-    var next = selectedIndex + delta
-    if (next < 0) next = 0
-    if (next > scaleValues.length - 1) next = scaleValues.length - 1
-    selectedIndex = next
-  }
-
   function adjustBrightness(delta) {
     if (focusSection !== "brightness") return
     if (!brightnessAvailable) return
@@ -149,15 +127,11 @@ Panel {
   }
 
   function activateCursor() {
-    if (focusSection === "scale" && selectedIndex >= 0 && selectedIndex < scaleValues.length) {
-      setScale(scaleValues[selectedIndex])
-      return
-    }
     if (focusSection === "monitors" && selectedIndex >= 0 && selectedIndex < displays.length) {
       var d = displays[selectedIndex]
       if (d) toggleDisplay(d.name, d.enabled)
     }
-    // brightness: no separate action; the slider value is the action.
+    // brightness/text size: the slider value is the action.
   }
 
   function clampCursor() {
@@ -308,14 +282,6 @@ Panel {
     if (!actionProc.running) actionProc.running = true
   }
 
-  function setScale(scale) {
-    // Scale is a display-wide preference in this panel. Sway accepts "*" as
-    // the output selector, so one action keeps every enabled output in sync
-    // instead of only changing whichever monitor currently has focus.
-    actionProc.command = ["swaymsg", "output", "*", "scale", String(scale)]
-    if (!actionProc.running) actionProc.running = true
-  }
-
   // ---- Text size (shell base font + GTK text-scaling, via one CLI) ----
   function nearestTextStop(px) {
     var best = 0
@@ -368,8 +334,8 @@ Panel {
         focusSection = "brightness"
         selectedIndex = -1
       } else {
-        focusSection = "scale"
-        selectedIndex = 0
+        focusSection = "textsize"
+        selectedIndex = -1
       }
       cursorActive = false
     }
@@ -377,7 +343,6 @@ Panel {
 
   onBrightnessAvailableChanged: clampCursor()
   onDisplaysChanged: clampCursor()
-  onScaleValuesChanged: clampCursor()
   onVisibleSectionsChanged: clampCursor()
 
   // Only poll while the panel is open; the bar glyph tracks monitor count via
@@ -791,51 +756,6 @@ Panel {
             }
           }
 
-          // ---------- Scale ----------
-          PanelSeparator {
-            foreground: root.bar.foreground
-          }
-
-          Column {
-            width: parent.width
-            spacing: Style.spacing.sectionGap
-
-            Item {
-              width: parent.width
-              implicitHeight: Math.max(
-                scaleHeader.implicitHeight
-              )
-
-              PanelSectionHeader {
-                id: scaleHeader
-                text: "SCALE"
-                foreground: root.bar.foreground
-                fontFamily: root.bar.fontFamily
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-              }
-
-            }
-
-            Row {
-              id: scaleRow
-              width: parent.width
-              spacing: Style.spacing.md
-
-              Repeater {
-                model: root.scaleValues
-
-                ScalePill {
-                  required property string modelData
-                  required property int index
-                  scaleValue: modelData
-                  scaleIndex: index
-                  width: implicitWidth
-                }
-              }
-            }
-          }
-
           // ---------- Displays ----------
           PanelSeparator {
             visible: root.displays.length > 1
@@ -919,50 +839,6 @@ Panel {
         }
       }
     }
-  component ScalePill: CursorSurface {
-    id: pill
-    required property string scaleValue
-    required property int scaleIndex
-
-    readonly property bool selected: root.cursorActive
-      && root.focusSection === "scale"
-      && root.selectedIndex === scaleIndex
-
-    hasCursor: selected
-    current: root.activeScaleIndex() === scaleIndex
-    foreground: root.bar.foreground
-    fill: "transparent"
-    currentFill: "transparent"
-    implicitWidth: scaleLabel.implicitWidth + Style.spacing.md
-    implicitHeight: scaleLabel.implicitHeight
-
-    Text {
-      id: scaleLabel
-      anchors.left: parent.left
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      textFormat: Text.PlainText
-      text: root.effectiveScale(pill.scaleValue) + "x"
-      color: root.bar.foreground
-      font.family: root.bar.fontFamily
-      font.pixelSize: Style.font.body
-      font.bold: pill.current
-      horizontalAlignment: Text.AlignHCenter
-    }
-
-    MouseArea {
-      anchors.fill: parent
-      hoverEnabled: true
-      cursorShape: Qt.PointingHandCursor
-      onContainsMouseChanged: if (containsMouse && !root.reflowingText) {
-        root.cursorActive = true
-        root.focusSection = "scale"
-        root.selectedIndex = pill.scaleIndex
-      }
-      onClicked: root.setScale(pill.scaleValue)
-    }
-  }
-
   component MonitorRow: CursorSurface {
     id: monitorRow
     required property var display
