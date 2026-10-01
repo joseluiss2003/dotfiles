@@ -445,8 +445,8 @@ BarWidget {
                 spacing: Style.spacing.xs
 
                 Text {
-                  text: (player && player.isPlaying ? "● " : "○ ")
-                    + String(player && (player.trackTitle || player.identity || player.desktopEntry) || "MEDIA")
+                  text: String(player && (player.trackTitle || player.identity || player.desktopEntry) || "MEDIA")
+                    + (player && player.isPlaying ? " · PLAYING" : "")
                   color: selected ? Color.foreground : Color.text
                   font.family: root.bar.fontFamily
                   font.pixelSize: Style.font.body
