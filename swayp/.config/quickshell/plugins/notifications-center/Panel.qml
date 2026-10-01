@@ -155,6 +155,9 @@ Panel {
     text = text.replace(/&amp;/gi, "&")
     text = text.replace(/&lt;/gi, "<")
     text = text.replace(/&gt;/gi, ">")
+    text = text.replace(/\bhttps?:\/\/\S+/gi, "")
+    text = text.replace(/\bwww\.\S+/gi, "")
+    text = text.replace(/\b(?:[a-z0-9-]+\.)+(?:com|net|org|io|es|dev|cloud|app|co|uk|de|fr|it)\b/gi, "")
     return text.replace(/\s+/g, " ").trim()
   }
 
@@ -478,7 +481,7 @@ Panel {
             anchors.bottomMargin: Style.spacing.controlGap
     
             model: centerModel
-            spacing: Style.spacing.controlGap
+            spacing: Style.spacing.md
             clip: true
             boundsBehavior: Flickable.StopAtBounds
     
@@ -513,22 +516,47 @@ Panel {
                   currentFill: "transparent"
 
                   Text {
-                    id: mainLine
+                    id: urgencyMark
+                    visible: row.urgency === 2
                     anchors.left: parent.left
-                    anchors.right: closeAction.left
                     anchors.leftMargin: Style.spacing.md + Style.spacing.md
-                    anchors.rightMargin: Style.spacing.sm
                     anchors.verticalCenter: parent.verticalCenter
                     textFormat: Text.PlainText
-                    text: (row.urgency === 2 ? "! " : "")
-                      + String(row.app || "SYSTEM").toUpperCase()
-                      + "  "
-                      + root.formatTime(row.timestamp)
-                    color: row.urgency === 2 ? Color.urgent : Color.notifications.text
+                    text: "!"
+                    color: Color.urgent
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.body
+                    font.bold: true
+                  }
+
+                  Text {
+                    id: appName
+                    anchors.left: urgencyMark.visible ? urgencyMark.right : parent.left
+                    anchors.leftMargin: urgencyMark.visible ? Style.spacing.xs : Style.spacing.md + Style.spacing.md
+                    anchors.right: timeLabel.left
+                    anchors.rightMargin: Style.spacing.md
+                    anchors.verticalCenter: parent.verticalCenter
+                    textFormat: Text.PlainText
+                    text: String(row.app || "SYSTEM").toUpperCase()
+                    color: Color.notifications.text
                     font.family: root.fontFamily
                     font.pixelSize: Style.font.body
                     font.bold: true
                     elide: Text.ElideRight
+                  }
+
+                  Text {
+                    id: timeLabel
+                    anchors.right: closeAction.left
+                    anchors.rightMargin: Style.spacing.md
+                    anchors.verticalCenter: parent.verticalCenter
+                    textFormat: Text.PlainText
+                    text: root.formatTime(row.timestamp)
+                    color: Color.notifications.text
+                    opacity: 0.82
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.caption
+                    font.bold: true
                   }
 
                   Text {
@@ -561,7 +589,6 @@ Panel {
                     onClicked: root.openSelected()
                   }
                 }
-
                 Text {
                   width: parent.width
                   leftPadding: Style.spacing.md + Style.spacing.md
