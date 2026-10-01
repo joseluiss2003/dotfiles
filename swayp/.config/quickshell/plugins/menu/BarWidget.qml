@@ -207,18 +207,6 @@ BarWidget {
             }
           }
         }
-
-        PanelStatusLine {
-          stateText: "SYSTEM SESSION"
-          foreground: root.bar.foreground
-          accent: Color.accent
-          fontFamily: root.bar.fontFamily
-          hints: [
-            { key: "↑↓", label: "NAV" },
-            { key: "ENTER", label: "SELECT" },
-            { key: "ESC", label: "CLOSE" }
-          ]
-        }
       }
     }
   }
