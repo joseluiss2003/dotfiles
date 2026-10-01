@@ -232,8 +232,8 @@ BarWidget {
 
           BorderSurface {
             id: artwork
-            width: Style.space(88)
-            height: Style.space(88)
+            width: Style.space(112)
+            height: Style.space(112)
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             color: Color.controls.background
@@ -303,11 +303,6 @@ BarWidget {
               visible: text !== ""
             }
           }
-        }
-
-        PanelSeparator {
-          width: parent.width
-          foreground: Color.popups.border
         }
 
         // Playback controls use text/glyph affordances rather than three
