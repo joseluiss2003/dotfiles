@@ -276,11 +276,7 @@ Panel {
         }
 
         // ---------- Power profile picker ----------
-        PanelSeparator {
-          foreground: root.bar.foreground
-        }
-
-        Column {
+Column {
           width: parent.width
           spacing: Style.spacing.xs
 
