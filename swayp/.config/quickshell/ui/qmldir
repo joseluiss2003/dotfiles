@@ -24,6 +24,7 @@ PanelKeyCatcher 1.0 PanelKeyCatcher.qml
 PanelHero 1.0 PanelHero.qml
 PanelSectionHeader 1.0 PanelSectionHeader.qml
 PanelSeparator 1.0 PanelSeparator.qml
+PanelStatusLine 1.0 PanelStatusLine.qml
 PanelSlider 1.0 PanelSlider.qml
 PanelToolTip 1.0 PanelToolTip.qml
 PluginBarApi 1.0 PluginBarApi.qml
