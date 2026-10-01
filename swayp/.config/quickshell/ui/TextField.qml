@@ -31,6 +31,8 @@ TextField {
   // `hovered` property (via onHoveredChanged) — we don't add a sibling
   // signal because the inherited property would shadow it.
   property bool hasCursor: false
+  // Terminal-native inline input: no control box, only a subtle baseline.
+  property bool terminalMode: false
 
   readonly property bool _focused: activeFocus
   readonly property bool _hot: hovered || hasCursor
@@ -44,14 +46,41 @@ TextField {
   selectedTextColor: foreground
   placeholderTextColor: Qt.darker(foreground, 1.6)
 
-  leftPadding: horizontalPadding + Border.left(_borderSpec)
-  rightPadding: horizontalPadding + Border.right(_borderSpec)
-  topPadding: verticalPadding + Border.top(_borderSpec)
-  bottomPadding: verticalPadding + Border.bottom(_borderSpec)
+  leftPadding: terminalMode
+    ? horizontalPadding
+    : horizontalPadding + Border.left(_borderSpec)
+  rightPadding: terminalMode
+    ? horizontalPadding
+    : horizontalPadding + Border.right(_borderSpec)
+  topPadding: terminalMode
+    ? verticalPadding
+    : verticalPadding + Border.top(_borderSpec)
+  bottomPadding: terminalMode
+    ? verticalPadding + Style.spacing.xs
+    : verticalPadding + Border.bottom(_borderSpec)
 
-  background: BorderSurface {
-    color: Style.controlFill(root._focused, root._hot, root.foreground, root.accent)
-    borderSpec: root._borderSpec
-    radius: Style.cornerRadius
+  background: terminalMode ? terminalBackground : standardBackground
+
+  Component {
+    id: terminalBackground
+    Item {
+      Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        height: 1
+        color: root._focused ? root.accent : root.foreground
+        opacity: root._focused ? 0.9 : 0.28
+      }
+    }
+  }
+
+  Component {
+    id: standardBackground
+    BorderSurface {
+      color: Style.controlFill(root._focused, root._hot, root.foreground, root.accent)
+      borderSpec: root._borderSpec
+      radius: Style.cornerRadius
+    }
   }
 }
