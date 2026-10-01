@@ -1373,10 +1373,10 @@ Panel {
             // plain verticalCenter would sit the switch visibly high.
             ToggleSwitch {
               id: bandAutoSwitch
-              trackHeight: Math.round(bandAutoLabel.font.pixelSize * 1.2)
+              trackHeight: Math.round(bandAutoLabel.fontSize * 1.2)
               cursorPad: Style.spacing.xs
               anchors.verticalCenter: bandAutoLabel.verticalCenter
-              anchors.verticalCenterOffset: Math.round(bandAutoLabel.topPadding / 2)
+              anchors.verticalCenterOffset: Math.round(bandAutoLabel.fontSize * 0.15)
               checked: !root.bandPinned
               busy: root.bandBusy
               hasCursor: root.cursorActive && root.focusSection === "band" && root.bandAutoFocused
