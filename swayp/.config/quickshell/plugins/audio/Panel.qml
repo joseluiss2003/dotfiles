@@ -802,10 +802,12 @@ Panel {
             CursorSurface {
               id: outputSliderRow
               width: parent.width
-              height: outputSlider.implicitHeight + Style.spacing.controlGap
+              height: outputSlider.implicitHeight
               hasCursor: root.cursorActive && root.focusSection === "output" && root.selectedIndex === -1
               onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(outputSliderRow)
               foreground: root.bar.foreground
+              fill: "transparent"
+              currentFill: "transparent"
               outline: false
 
               PanelSlider {
@@ -890,10 +892,12 @@ Panel {
               id: inputSliderRow
               visible: !!root.source
               width: parent.width
-              height: inputControls.implicitHeight + Style.spacing.controlGap
+              height: inputControls.implicitHeight
               hasCursor: root.cursorActive && root.focusSection === "input" && root.selectedIndex === -1
               onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(inputSliderRow)
               foreground: root.bar.foreground
+              fill: "transparent"
+              currentFill: "transparent"
               outline: false
 
               Column {
@@ -901,7 +905,7 @@ Panel {
                 anchors.fill: parent
                 anchors.leftMargin: Style.spacing.inset
                 anchors.rightMargin: Style.spacing.inset
-                spacing: Style.spacing.xs
+                spacing: 0
 
                 PanelSlider {
                   id: inputSlider
@@ -920,8 +924,8 @@ Panel {
 
                 Rectangle {
                   width: parent.width
-                  height: Math.max(Style.spacing.xs, Style.spacing.xs)
-                  color: Util.alpha(root.bar.foreground, 0.18)
+                  height: Style.space(2)
+                  color: Util.alpha(root.bar.foreground, 0.14)
                   opacity: root.inputMuted ? 0.35 : 1.0
 
                   Rectangle {
