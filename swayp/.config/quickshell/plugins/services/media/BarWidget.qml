@@ -313,7 +313,7 @@ BarWidget {
         // Playback controls use text/glyph affordances rather than three
         // separate cards. The play state is the only accented control.
         Row {
-          width: parent.width
+          width: implicitWidth
           height: Style.space(38)
           spacing: Style.spacing.xxl
           anchors.horizontalCenter: parent.horizontalCenter
