@@ -1738,7 +1738,7 @@ Item {
       id: horizontalModuleList
 
       Row {
-        spacing: (moduleListRoot.region === "left" || moduleListRoot.region === "right") ? Style.spacing.md : 0
+        spacing: (moduleListRoot.region === "left" || moduleListRoot.region === "right") ? Style.bar.iconGap : 0
 
         Repeater {
           model: moduleListRoot.entries
@@ -1756,7 +1756,7 @@ Item {
       id: verticalModuleList
 
       Column {
-        spacing: (moduleListRoot.region === "left" || moduleListRoot.region === "right") ? Style.spacing.md : 0
+        spacing: (moduleListRoot.region === "left" || moduleListRoot.region === "right") ? Style.bar.iconGap : 0
 
         Repeater {
           model: moduleListRoot.entries
@@ -1814,8 +1814,12 @@ Item {
       if (hint !== undefined && hint !== null && hint > 0) return Math.round(hint)
       return Math.max(Style.space(10), Math.round((root.vertical ? slot.height : slot.width) * 0.55))
     }
-    implicitWidth: activeItem && activeItem.visible ? (root.vertical ? root.barSize : activeItem.implicitWidth) : 0
-    implicitHeight: activeItem && activeItem.visible ? activeItem.implicitHeight : 0
+    implicitWidth: activeItem && activeItem.visible
+      ? (root.vertical ? root.barSize : Math.max(activeItem.implicitWidth, Style.bar.iconSlot))
+      : 0
+    implicitHeight: activeItem && activeItem.visible
+      ? (root.vertical ? Math.max(activeItem.implicitHeight, Style.bar.iconSlot) : activeItem.implicitHeight)
+      : 0
     width: implicitWidth
     height: implicitHeight
     z: modulePointer.dragging ? 100 : 0
