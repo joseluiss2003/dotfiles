@@ -401,6 +401,7 @@ QtObject {
     readonly property int iconSlot:       root.barToken("icon-slot",       27)
     readonly property int iconCanvas:     root.barToken("icon-canvas",     18)
     readonly property int iconFont:       root.barToken("icon-font",       15)
+    readonly property int iconGap:        root.spacing.md
     readonly property int statusSlot:     root.barToken("status-slot",     21)
   }
 
