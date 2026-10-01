@@ -277,8 +277,8 @@ BarWidget {
             Row {
               id: playbackControls
               anchors.left: parent.left
-              anchors.bottom: parent.bottom
-              anchors.bottomMargin: Style.spacing.md
+              anchors.top: trackMetadata.bottom
+              anchors.topMargin: Style.spacing.md
               width: implicitWidth
               height: Style.space(38)
               spacing: Style.spacing.xxl
