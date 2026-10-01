@@ -630,7 +630,7 @@ Panel {
     // Fixed composition height: the list is a viewport, not a sizing
   // source. This keeps the status line inside the card regardless of how
   // many BlueZ devices discovery returns.
-  contentHeight: panel.fittedContentHeight(Style.space(360))
+  contentHeight: panel.fittedContentHeight(Style.space(300))
 
     PanelKeyCatcher {
       id: keyCatcher
