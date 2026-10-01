@@ -1303,7 +1303,6 @@ Panel {
 
             ToggleSwitch {
               id: bandAutoSwitch
-              trackHeight: Math.round(bandAutoLabel.fontSize * 1.2)
               cursorPad: Style.spacing.xs
               anchors.right: parent.right
               anchors.verticalCenter: parent.verticalCenter
