@@ -1352,30 +1352,28 @@ Panel {
             anchors.verticalCenter: parent.verticalCenter
           }
 
-          Row {
+          Item {
             id: bandAutoRow
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.inset
+            width: bandAutoLabel.implicitWidth + Style.spacing.inset + bandAutoSwitch.implicitWidth
+            height: Math.max(bandAutoLabel.implicitHeight, bandAutoSwitch.implicitHeight)
 
             PanelSectionHeader {
               id: bandAutoLabel
               text: "AUTOMATIC"
               foreground: root.bar.foreground
               fontFamily: root.bar.fontFamily
+              anchors.left: parent.left
               anchors.verticalCenter: parent.verticalCenter
             }
 
-            // Sized off the label rather than the theme's control height so it
-            // reads as part of the header, and centred on the label's *glyphs*:
-            // PanelSectionHeader carries topPadding to protect Nerd Font
-            // overshoot, which pushes its text below its own box centre, so a
-            // plain verticalCenter would sit the switch visibly high.
             ToggleSwitch {
               id: bandAutoSwitch
               trackHeight: Math.round(bandAutoLabel.fontSize * 1.2)
               cursorPad: Style.spacing.xs
-              anchors.verticalCenter: bandAutoLabel.verticalCenter
+              anchors.right: parent.right
+              anchors.verticalCenter: parent.verticalCenter
               anchors.verticalCenterOffset: Math.round(bandAutoLabel.fontSize * 0.15)
               checked: !root.bandPinned
               busy: root.bandBusy
@@ -1473,6 +1471,25 @@ Panel {
       // gives us positionViewAtIndex for free, which is what keeps the
       // keyboard-selected row scrolled into view as j/k walk past the
       // visible window.
+      PanelStatusLine {
+        id: statusLine
+        stateText: root.restricted
+          ? "× LIMITED"
+          : (root.scanning
+            ? "● SCANNING"
+            : (root.kind === "disconnected" ? "○ DISCONNECTED" : "● CONNECTED"))
+        foreground: root.bar.foreground
+        accent: Color.accent
+        fontFamily: root.bar.fontFamily
+        hints: [
+          { key: "↑↓", label: "NAV" },
+          { key: "ENTER", label: "CONNECT" },
+          { key: "X", label: "FORGET" },
+          { key: "R", label: "REFRESH" },
+          { key: "ESC", label: "CLOSE" }
+        ]
+      }
+
       ListView {
         id: networkList
         visible: root.wifiStationAvailable
@@ -1683,17 +1700,9 @@ Panel {
       anchors.rightMargin: Style.spacing.sectionGap
       implicitHeight: Math.max(networkIcon.implicitHeight, networkInfo.implicitHeight, rightAction.implicitHeight) + Style.spacing.rowPaddingX
 
-      Text {
-        id: networkIcon
-        textFormat: Text.PlainText
-        text: row.net ? Model.connectionIcon("wifi", row.net.signal,
-          row.isConnected && root.kind === "wifi" ? root.connectivity : "", Icons) : ""
-        color: row.statusColor
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.title
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-      }
+      // The row's leading cursor marker is the navigation affordance.
+      // Network-specific glyphs stay in the hero; repeating them on every row
+      // would compete with the TUI selection marker.
 
       // The right edge shows a lock for networks that require credentials and
       // reveals Forget on hover. Known passwordless networks show Forget
@@ -1713,7 +1722,7 @@ Panel {
           width: parent.width
           anchors.verticalCenter: parent.verticalCenter
           horizontalAlignment: Text.AlignHCenter
-          text: row.forgetVisible ? "󰅙" : "󰌾"
+          text: row.forgetVisible ? "×" : "󰌾"
           color: row.forgetVisible ? root.bar.urgent : Color.foreground
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.subtitle
@@ -1749,8 +1758,7 @@ Panel {
       Column {
         id: networkInfo
         spacing: Style.spacing.compactGap
-        anchors.left: networkIcon.right
-        anchors.leftMargin: Style.spacing.sectionGap
+        anchors.left: parent.left
         anchors.right: rightAction.visible ? rightAction.left : parent.right
         anchors.rightMargin: rightAction.visible ? Style.spacing.controlGap : 0
         anchors.verticalCenter: parent.verticalCenter
