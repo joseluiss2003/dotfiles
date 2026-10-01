@@ -173,7 +173,6 @@ PanelSectionHeader {
       }
     }
   }
-  }
 
   onPopupOpenChanged: {
     if (popupOpen) {
