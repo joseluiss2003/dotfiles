@@ -1097,143 +1097,59 @@ Panel {
       anchors.top: parent.top
       spacing: Style.spacing.xxl
 
-      // ---------- Hero: network icon · SSID + state · actions ----------
-      Item {
-        width: parent.width
-        implicitHeight: Math.max(heroIcon.implicitHeight, heroLabels.implicitHeight, heroActions.implicitHeight)
+      PanelCliHeader {
+        title: heroSsid.title
+        status: heroMeta.text
+        foreground: root.bar.foreground
+        accent: root.restricted ? root.bar.urgent : Color.accent
+        fontFamily: root.bar.fontFamily
+        trailingControl: Component {
+          Row {
+            spacing: Style.spacing.md
 
-        // Status only — the switch owns toggling, mouse and keyboard alike.
-        Text {
-          id: heroIcon
-          textFormat: Text.PlainText
-          text: root.icon
-          color: root.restricted ? root.bar.urgent : root.bar.foreground
-          font.family: root.bar.fontFamily
-          font.pixelSize: Style.font.display
-          opacity: root.networkManagerAvailable ? 1.0 : 0.5
-          anchors.left: parent.left
-          anchors.verticalCenter: parent.verticalCenter
-        }
-
-        // Sharing belongs to the connected-network hero rather than the scan
-        // result row. The radio switch remains beside it as the other hero action.
-        RowLayout {
-          id: heroActions
-          spacing: Style.spacing.controlGap
-          anchors.right: parent.right
-          anchors.verticalCenter: parent.verticalCenter
-
-          Button {
-            id: qrAction
-            visible: root.canShareWifi
-            iconText: Icons.qrCode
-            tooltipText: "Show QR code"
-            foreground: root.bar.foreground
-            fontFamily: root.bar.fontFamily
-            iconSize: Style.font.subtitle * 1.5
-            horizontalPadding: Style.spacing.sm
-            verticalPadding: Style.spacing.compactGap
-            hasCursor: root.qrHeaderHasCursor
-            Layout.alignment: Qt.AlignVCenter
-            onHovered: function(on) { if (on) root.setHeaderCursor(root.qrHeaderIndex) }
-            onClicked: root.summonWifiQr()
-          }
-
-          Button {
-            id: speedAction
-            visible: root.canRunSpeedTest
-            iconText: Icons.speed
-            tooltipText: "Run a speed test"
-            foreground: root.bar.foreground
-            fontFamily: root.bar.fontFamily
-            iconSize: Style.font.subtitle * 1.5
-            horizontalPadding: Style.spacing.sm
-            verticalPadding: Style.spacing.compactGap
-            hasCursor: root.speedHeaderHasCursor
-            Layout.alignment: Qt.AlignVCenter
-            onHovered: function(on) { if (on) root.setHeaderCursor(root.speedHeaderIndex) }
-            onClicked: root.summonSpeedTest()
-          }
-
-          ToggleSwitch {
-            id: powerSwitch
-            visible: root.canToggleWifi
-            checked: Networking.wifiEnabled
-            hasCursor: root.toggleHeaderHasCursor
-            foreground: root.bar.foreground
-            Layout.alignment: Qt.AlignVCenter
-            onHovered: function(on) { if (on) root.setHeaderCursor(root.toggleHeaderIndex) }
-            onToggled: root.toggleNetwork()
-
-            PanelToolTip {
-              visible: powerSwitch.containsMouse
-              text: root.toggleHint
+            Button {
+              id: qrAction
+              visible: root.canShareWifi
+              iconText: Icons.qrCode
+              tooltipText: "Show QR code"
+              foreground: root.bar.foreground
               fontFamily: root.bar.fontFamily
+              iconSize: Style.font.subtitle * 1.5
+              horizontalPadding: Style.spacing.sm
+              verticalPadding: Style.spacing.compactGap
+              hasCursor: root.qrHeaderHasCursor
+              onHovered: function(on) { if (on) root.setHeaderCursor(root.qrHeaderIndex) }
+              onClicked: root.summonWifiQr()
+            }
+
+            Button {
+              id: speedAction
+              visible: root.canRunSpeedTest
+              iconText: Icons.speed
+              tooltipText: "Run a speed test"
+              foreground: root.bar.foreground
+              fontFamily: root.bar.fontFamily
+              iconSize: Style.font.subtitle * 1.5
+              horizontalPadding: Style.spacing.sm
+              verticalPadding: Style.spacing.compactGap
+              hasCursor: root.speedHeaderHasCursor
+              onHovered: function(on) { if (on) root.setHeaderCursor(root.speedHeaderIndex) }
+              onClicked: root.summonSpeedTest()
+            }
+
+            ToggleSwitch {
+              id: powerSwitch
+              visible: root.canToggleWifi
+              checked: Networking.wifiEnabled
+              hasCursor: root.toggleHeaderHasCursor
+              foreground: root.bar.foreground
+              onHovered: function(on) { if (on) root.setHeaderCursor(root.toggleHeaderIndex) }
+              onToggled: root.toggleNetwork()
             }
           }
         }
-
-        Column {
-          id: heroLabels
-          anchors.left: heroIcon.right
-          anchors.leftMargin: Style.spacing.panelGap
-          anchors.right: parent.right
-          anchors.rightMargin: heroActions.width > 0 ? heroActions.width + Style.spacing.xxl : 0
-          anchors.verticalCenter: parent.verticalCenter
-          spacing: Style.spacing.compactGap
-
-          // Link detail rides inline after the name — "Ethernet (2.5gbit)" —
-          // rather than in a pill, which crowded the on/off switch.
-          Text {
-            id: heroSsid
-            textFormat: Text.PlainText
-            width: parent.width
-
-            readonly property string title: {
-              // The HTTP restriction does not undo association. Show the live
-              // SSID even before route/details polling has returned anything.
-              if (root.kind === "wifi" && root.connectedWifiNetwork) return root.connectedWifiNetwork.name || "Wi-Fi"
-              if (root.info.type === "wifi") return root.info.ssid || "Wi-Fi"
-              if (root.info.type === "ethernet") return "Ethernet"
-              return root.info.iface || (root.kind === "disconnected" ? "Disconnected" : "No connection")
-            }
-            readonly property string detail: root.headerDetail()
-
-            text: heroSsid.detail !== "" ? heroSsid.title + " (" + heroSsid.detail + ")" : heroSsid.title
-            color: root.bar.foreground
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.title
-            font.bold: true
-            elide: Text.ElideRight
-          }
-
-          Text {
-            id: heroMeta
-            textFormat: Text.PlainText
-            width: parent.width
-            text: {
-              if (root.hasCaptivePortal) return "SIGN-IN REQUIRED"
-              if (root.restricted) return "LIMITED INTERNET ACCESS"
-              if (root.info.type === "wifi") {
-                if (root.canDisconnect) return root.connectionPhrase.toUpperCase()
-                if (root.kind === "disconnected") return "NOT CONNECTED"
-                return ""
-              }
-              if (root.info.type === "ethernet") return root.connectionPhrase.toUpperCase()
-              if (root.kind === "disconnected") return "NOT CONNECTED"
-              return ""
-            }
-            visible: text !== ""
-            color: root.restricted ? root.bar.urgent : Color.foreground
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-            font.letterSpacing: 1.2
-            elide: Text.ElideRight
-          }
-        }
-
       }
+
 
       Column {
         visible: root.hasCaptivePortal
