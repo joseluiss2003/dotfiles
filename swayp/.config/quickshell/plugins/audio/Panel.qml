@@ -1041,6 +1041,7 @@ Column {
     // TUI cursor belongs to the selectable application name, not the row's
     // overall center.
     cursorMarkerVerticalOffset: -(Style.spacing.xs + streamSlider.implicitHeight) / 2
+    cursorMarkerLeftMargin: Style.spacing.md
 
     Column {
       id: streamColumn
