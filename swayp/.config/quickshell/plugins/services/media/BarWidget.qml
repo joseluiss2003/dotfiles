@@ -280,7 +280,7 @@ BarWidget {
               anchors.bottom: parent.bottom
               anchors.bottomMargin: parent.height - artwork.height
               width: implicitWidth
-              height: Style.space(38)
+              height: Style.space(24)
               spacing: Style.spacing.xxl
 
               Item {
