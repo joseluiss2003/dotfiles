@@ -14,8 +14,6 @@ Column {
   property string fontFamily: Style.font.family
 
   width: parent ? parent.width : implicitWidth
-  implicitWidth: Math.max(stateTextText.implicitWidth, hintsRow.implicitWidth)
-  implicitHeight: separator.implicitHeight + spacing + hintsRow.implicitHeight
   spacing: Style.spacing.xs
 
   PanelSeparator {
