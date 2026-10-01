@@ -121,12 +121,8 @@ PanelSectionHeader {
           fontFamily: root.bar.fontFamily
         }
 
-        Column {
-          width: parent.width
-          spacing: Style.spacing.xs
-
-          Repeater {
-            model: root.sessionActions
+        Repeater {
+          model: root.sessionActions
 
             Item {
               id: sessionRow
@@ -176,6 +172,7 @@ PanelSectionHeader {
         }
       }
     }
+  }
   }
 
   onPopupOpenChanged: {
