@@ -1520,24 +1520,7 @@ Panel {
         }
       }
 
-      PanelStatusLine {
-        id: statusLine
-        stateText: root.restricted
-          ? "× LIMITED"
-          : (root.scanning
-            ? "● SCANNING"
-            : (root.kind === "disconnected" ? "○ DISCONNECTED" : "● CONNECTED"))
-        foreground: root.bar.foreground
-        accent: Color.accent
-        fontFamily: root.bar.fontFamily
-        hints: [
-          { key: "↑↓", label: "NAV" },
-          { key: "ENTER", label: "CONNECT" },
-          { key: "X", label: "FORGET" },
-          { key: "R", label: "REFRESH" },
-          { key: "ESC", label: "CLOSE" }
-        ]
-      }
+      
     }
     }
   }
