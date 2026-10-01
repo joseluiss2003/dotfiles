@@ -1734,19 +1734,43 @@ Item {
     width: item ? item.implicitWidth : 0
     height: item ? item.implicitHeight : 0
 
+    function moduleGapAfter(index, moduleName) {
+      if (index >= moduleListRoot.entries.length - 1) return 0
+      if (moduleListRoot.region !== "left" && moduleListRoot.region !== "right") return 0
+      // The tray already has the same visual rhythm internally. Its last
+      // icon therefore gets a slightly tighter handoff to the first applet.
+      if (moduleListRoot.region === "right" && moduleName === "swayp.tray")
+        return Style.space(2)
+      return Style.bar.iconGap
+    }
+
     Component {
       id: horizontalModuleList
 
       Row {
-        spacing: (moduleListRoot.region === "left" || moduleListRoot.region === "right") ? Style.bar.iconGap : 0
+        spacing: 0
 
         Repeater {
           model: moduleListRoot.entries
 
-          ModuleSlot {
+          Item {
             required property var modelData
-            entry: modelData
-            region: moduleListRoot.region
+            required property int index
+
+            readonly property real gapAfter: moduleListRoot.moduleGapAfter(
+              index, String(modelData.id || "")
+            )
+
+            width: moduleSlot.width + gapAfter
+            height: moduleSlot.height
+
+            ModuleSlot {
+              id: moduleSlot
+              entry: modelData
+              region: moduleListRoot.region
+              anchors.left: parent.left
+              anchors.verticalCenter: parent.verticalCenter
+            }
           }
         }
       }
@@ -1756,15 +1780,29 @@ Item {
       id: verticalModuleList
 
       Column {
-        spacing: (moduleListRoot.region === "left" || moduleListRoot.region === "right") ? Style.bar.iconGap : 0
+        spacing: 0
 
         Repeater {
           model: moduleListRoot.entries
 
-          ModuleSlot {
+          Item {
             required property var modelData
-            entry: modelData
-            region: moduleListRoot.region
+            required property int index
+
+            readonly property real gapAfter: moduleListRoot.moduleGapAfter(
+              index, String(modelData.id || "")
+            )
+
+            width: moduleSlot.width
+            height: moduleSlot.height + gapAfter
+
+            ModuleSlot {
+              id: moduleSlot
+              entry: modelData
+              region: moduleListRoot.region
+              anchors.top: parent.top
+              anchors.horizontalCenter: parent.horizontalCenter
+            }
           }
         }
       }
