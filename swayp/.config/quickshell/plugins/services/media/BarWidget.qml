@@ -277,8 +277,8 @@ BarWidget {
             Row {
               id: playbackControls
               anchors.left: parent.left
-              anchors.bottom: parent.bottom
-              anchors.bottomMargin: Style.spacing.md
+              anchors.top: artwork.bottom
+              anchors.topMargin: -Style.space(19)
               width: implicitWidth
               height: Style.space(38)
               spacing: Style.spacing.xxl
@@ -320,7 +320,7 @@ BarWidget {
                     || root.activePlayer.canPause
                   ) ? 1.0 : 0.35
                   font.family: root.bar.fontFamily
-                  font.pixelSize: Style.font.display
+                  font.pixelSize: Style.font.iconLarge
                   font.bold: true
                 }
 
