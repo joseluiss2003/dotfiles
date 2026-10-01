@@ -174,11 +174,17 @@ BarWidget {
         anchors.margins: Style.popup.contentInset
         spacing: Style.spacing.panelGap
 
-        PanelCliHeader {
-          title: "Media"
-          status: root.identity ? root.identity : "NOW PLAYING"
-          foreground: root.bar.foreground
-          fontFamily: root.bar.fontFamily
+        Item {
+          width: parent.width
+          implicitHeight: Style.font.body + Style.spacing.sm * 2 + Style.spacing.xs
+
+          PanelCliHeader {
+            anchors.fill: parent
+            title: "Media"
+            status: root.identity ? root.identity : "NOW PLAYING"
+            foreground: root.bar.foreground
+            fontFamily: root.bar.fontFamily
+          }
         }
 
         PanelSeparator {
