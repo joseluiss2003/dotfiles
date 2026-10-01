@@ -498,6 +498,7 @@ Column {
               PanelSectionHeader {
                 id: brightnessHeader
                 text: "BRIGHTNESS"
+                leadingGlyph: Icons.brightness
                 foreground: root.bar.foreground
                 fontFamily: root.bar.fontFamily
                 anchors.left: parent.left
@@ -590,6 +591,7 @@ Column {
               PanelSectionHeader {
                 id: textSizeHeader
                 text: "TEXT SIZE"
+                leadingGlyph: Icons.textSize
                 foreground: root.bar.foreground
                 fontFamily: root.bar.fontFamily
                 anchors.left: parent.left
@@ -683,6 +685,7 @@ Item {
               PanelSectionHeader {
                 id: displaysHeader
                 text: "DISPLAYS"
+                leadingGlyph: Icons.monitor
                 foreground: root.bar.foreground
                 fontFamily: root.bar.fontFamily
                 anchors.left: parent.left
