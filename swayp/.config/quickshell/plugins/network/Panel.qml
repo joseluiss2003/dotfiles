@@ -915,7 +915,7 @@ Panel {
       script: root.connectionPhraseIndex = (root.connectionPhraseIndex + 1) % root.connectionPhrases.length
     }
     PropertyAnimation {
-      target: heroMeta; property: "opacity"
+      target: cliHeader; property: "statusOpacity"
       to: 1.0; duration: Style.popup.contentFadeInDuration; easing.type: Easing.InQuad
     }
   }
