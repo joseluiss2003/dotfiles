@@ -685,6 +685,7 @@ Panel {
 
         // ---------- Hero: Bluetooth icon · status ----------
         Item {
+          id: heroBlock
           width: parent.width
           implicitHeight: Math.max(heroIcon.implicitHeight, heroLabels.implicitHeight, powerSwitch.implicitHeight)
 
@@ -758,6 +759,7 @@ Panel {
         // Scrollable device list — capped so a noisy neighborhood doesn't
         // grow the popup past the screen.
         PanelSeparator {
+          id: connectedSeparator
           foreground: root.bar.foreground
         }
 
@@ -788,6 +790,7 @@ Panel {
         }
 
         PanelSeparator {
+          id: scrollSeparator
           visible: root.connectedDevices.length > 0 && root.scrollRows.length > 0
           foreground: root.bar.foreground
         }
@@ -799,7 +802,25 @@ Panel {
         ListView {
           id: deviceListView
           width: parent.width
-          height: Math.min(contentHeight, Style.space(400))
+          height: {
+            if (contentHeight <= 0) return 0
+            var available = panel.availableCardHeight - panel.verticalContentInset
+            var fixed = heroBlock.implicitHeight
+                + (connectedSeparator.visible ? connectedSeparator.implicitHeight : 0)
+                + (connectedList.visible ? connectedList.implicitHeight : 0)
+                + (scrollSeparator.visible ? scrollSeparator.implicitHeight : 0)
+                + (emptyState.visible ? emptyState.implicitHeight : 0)
+                + statusLine.implicitHeight
+            var visibleBlocks = 1
+                + (connectedSeparator.visible ? 1 : 0)
+                + (connectedList.visible ? 1 : 0)
+                + (scrollSeparator.visible ? 1 : 0)
+                + (emptyState.visible ? 1 : 0)
+                + 1
+            var gaps = Math.max(0, visibleBlocks - 1) * Style.spacing.panelGap
+            var budget = Math.max(0, available - fixed - gaps)
+            return Math.round(Math.min(contentHeight, Style.space(400), budget))
+          }
           spacing: Style.spacing.sectionGap
           clip: true
           boundsBehavior: Flickable.StopAtBounds
@@ -858,6 +879,7 @@ Panel {
         }
 
         Text {
+          id: emptyState
           textFormat: Text.PlainText
           visible: root.connectedDevices.length === 0 && root.scrollRows.length === 0
           text: !root.adapter ? "No Bluetooth adapter"
@@ -871,6 +893,7 @@ Panel {
         }
 
         PanelStatusLine {
+          id: statusLine
           stateText: root.heroStatusText
           foreground: root.bar.foreground
           accent: Color.accent
