@@ -586,39 +586,6 @@ Panel {
     onTriggered: root.switchPendingAudioOutput()
   }
 
-  Timer {
-    id: phraseTimer
-    interval: 2800
-    running: root.opened && root.rotatingPhrases
-    repeat: true
-    onTriggered: phraseSwap.restart()
-  }
-
-  SequentialAnimation {
-    id: phraseSwap
-    PropertyAnimation {
-      target: heroStatus; property: "opacity"
-      to: 0.0; duration: Style.popup.contentFadeOutDuration; easing.type: Easing.OutQuad
-    }
-    ScriptAction {
-      script: root.phraseIndex = (root.phraseIndex + 1) % root.activePhrases.length
-    }
-    PropertyAnimation {
-      target: heroStatus; property: "opacity"
-      to: 1.0; duration: Style.popup.contentFadeInDuration; easing.type: Easing.InQuad
-    }
-  }
-
-  Connections {
-    target: root
-    function onRotatingPhrasesChanged() {
-      if (!root.rotatingPhrases) {
-        phraseSwap.stop()
-        heroStatus.opacity = 1.0
-      }
-    }
-  }
-
   // The bar toggle controls the live BlueZ adapter state directly.
   // Unlike rfkill, this keeps the Bluetooth controller present while powered
   // off, so Quickshell can continue to track the adapter and the system tray
