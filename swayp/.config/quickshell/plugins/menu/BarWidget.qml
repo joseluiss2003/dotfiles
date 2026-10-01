@@ -135,7 +135,6 @@ PanelSectionHeader {
               CursorSurface {
                 anchors.fill: parent
                 hasCursor: root.cursorActive && root.selectedIndex === index
-                onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(sessionRow)
                 current: false
                 foreground: root.bar.foreground
                 fill: "transparent"
