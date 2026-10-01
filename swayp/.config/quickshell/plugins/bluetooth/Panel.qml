@@ -695,6 +695,7 @@ Column {
 
           PanelSectionHeader {
             text: "CONNECTED"
+            leadingGlyph: Icons.bluetoothConnected
             foreground: root.bar.foreground
             fontFamily: root.bar.fontFamily
           }
@@ -759,6 +760,7 @@ PanelSectionHeader {
                 visible: sectionTitle !== ""
                 height: visible ? implicitHeight : 0
                 text: sectionTitle
+                leadingGlyph: Icons.bluetooth
                 foreground: root.bar.foreground
                 fontFamily: root.bar.fontFamily
               }
