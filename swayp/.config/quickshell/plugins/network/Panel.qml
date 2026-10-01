@@ -1818,19 +1818,46 @@ Panel {
         spacing: Style.spacing.xs
 
         Row {
-          id: identityRow
-          visible: row.isEnterprise && !row.isBusy && !row.isFailed
+          id: authHeader
           width: parent.width
           spacing: Style.spacing.xs
 
           Text {
             textFormat: Text.PlainText
-            text: "> USER"
+            text: ">"
             color: Color.accent
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.caption
             font.bold: true
-            width: Style.space(42)
+            verticalAlignment: Text.AlignVCenter
+          }
+
+          Text {
+            textFormat: Text.PlainText
+            text: row.isEnterprise ? "AUTHENTICATE / ENTERPRISE" : "AUTHENTICATE"
+            color: root.bar.foreground
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            verticalAlignment: Text.AlignVCenter
+          }
+        }
+
+        Row {
+          id: identityRow
+          visible: row.isEnterprise && !row.isBusy && !row.isFailed
+          width: parent.width
+          spacing: Style.spacing.sm
+
+          Text {
+            textFormat: Text.PlainText
+            text: "USER"
+            color: root.bar.foreground
+            opacity: 0.62
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            width: Style.space(34)
             verticalAlignment: Text.AlignVCenter
           }
 
@@ -1858,16 +1885,17 @@ Panel {
         Row {
           id: passwordRow
           width: parent.width
-          spacing: Style.spacing.xs
+          spacing: Style.spacing.sm
 
           Text {
             textFormat: Text.PlainText
-            text: "> PASS"
-            color: Color.accent
+            text: "PASS"
+            color: root.bar.foreground
+            opacity: 0.62
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.caption
             font.bold: true
-            width: Style.space(42)
+            width: Style.space(34)
             verticalAlignment: Text.AlignVCenter
           }
 
@@ -1917,6 +1945,7 @@ Panel {
           font.bold: true
         }
       }
+    }
     }
   }
 
