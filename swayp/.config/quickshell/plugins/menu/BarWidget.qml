@@ -77,7 +77,7 @@ BarWidget {
     open: root.popupOpen
     keyboardEnabled: false
     backgroundColor: Color.popups.background
-    contentWidth: panel.fittedContentWidth(Style.space(250))
+    contentWidth: panel.fittedContentWidth(Style.space(220))
     contentHeight: panel.fittedContentHeight(column.implicitHeight)
 
     PanelKeyCatcher {
@@ -105,7 +105,7 @@ BarWidget {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        spacing: Style.spacing.panelGap
+        spacing: Style.spacing.lg
 
         PanelCliHeader {
           title: "Power"
@@ -123,7 +123,7 @@ PanelSectionHeader {
 
         Column {
           width: parent.width
-          spacing: Style.spacing.inset
+          spacing: Style.spacing.compactGap
 
           Repeater {
             model: root.sessionActions
