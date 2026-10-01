@@ -748,10 +748,9 @@ Panel {
               Text {
                 id: heroLabel
                 textFormat: Text.PlainText
-                text: root.outputVolumeName(
-                  outputSlider.dragging ? outputSlider.liveValue : root.outputVolume,
-                  root.outputMuted
-                ).toUpperCase()
+                text: "OUTPUT · " + Math.round(
+                  (outputSlider.dragging ? outputSlider.liveValue : root.outputVolume) * 100
+                ) + "%" + (root.outputMuted ? " · MUTED" : "")
                 color: Color.foreground
                 font.family: root.bar.fontFamily
                 font.pixelSize: Style.font.caption
@@ -968,7 +967,7 @@ Panel {
             visible: root.displayAudioStreams.length > 0
 
             PanelSectionHeader {
-              text: "SOURCES"
+              text: "PLAYBACK"
               foreground: root.bar.foreground
               fontFamily: root.bar.fontFamily
             }
@@ -1001,45 +1000,30 @@ Panel {
     required property int rowIndex
 
     readonly property bool isActive: root.sink && node && root.sink.id === node.id
+
     hasCursor: root.cursorActive && root.focusSection === "output" && root.selectedIndex === rowIndex
     onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(sinkRow)
-    current: isActive
+    current: false
     foreground: root.bar.foreground
-    fill: root.hoverFill
-    currentFill: root.selectedFill
-    implicitHeight: sinkInner.implicitHeight + Style.spacing.xl
+    fill: "transparent"
+    currentFill: "transparent"
+    implicitHeight: sinkLabel.implicitHeight + Style.spacing.xs
 
-    Row {
-      id: sinkInner
+    Text {
+      id: sinkLabel
       anchors.left: parent.left
       anchors.right: parent.right
+      anchors.leftMargin: Style.spacing.sectionGap
+      anchors.rightMargin: Style.spacing.sectionGap
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: Style.spacing.inset
-      anchors.rightMargin: Style.spacing.inset
-      spacing: Style.spacing.controlGap
-
-      Text {
-        textFormat: Text.PlainText
-        text: root.sinkGlyph(sinkRow.node)
-        color: root.bar.foreground
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.title
-        width: Style.space(22)
-        horizontalAlignment: Text.AlignHCenter
-        anchors.verticalCenter: parent.verticalCenter
-      }
-
-      Text {
-        textFormat: Text.PlainText
-        text: root.nodeLabel(sinkRow.node)
-        color: root.bar.foreground
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.body
-        font.bold: sinkRow.isActive
-        elide: Text.ElideRight
-        width: parent.width - Style.space(22) - Style.spacing.controlGap
-        anchors.verticalCenter: parent.verticalCenter
-      }
+      textFormat: Text.PlainText
+      text: root.nodeLabel(sinkRow.node)
+        + (sinkRow.isActive ? "  · DEFAULT" : "")
+      color: root.bar.foreground
+      font.family: root.bar.fontFamily
+      font.pixelSize: Style.font.body
+      font.bold: sinkRow.isActive
+      elide: Text.ElideRight
     }
 
     MouseArea {
@@ -1055,52 +1039,36 @@ Panel {
     }
   }
 
-  // Input device row — sibling of SinkRow for the "input" section.
   component SourceRow: CursorSurface {
     id: sourceRow
     required property var node
     required property int rowIndex
 
     readonly property bool isActive: root.source && node && root.source.id === node.id
+
     hasCursor: root.cursorActive && root.focusSection === "input" && root.selectedIndex === rowIndex
     onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(sourceRow)
-    current: isActive
+    current: false
     foreground: root.bar.foreground
-    fill: root.hoverFill
-    currentFill: root.selectedFill
-    implicitHeight: sourceInner.implicitHeight + Style.spacing.xl
+    fill: "transparent"
+    currentFill: "transparent"
+    implicitHeight: sourceLabel.implicitHeight + Style.spacing.xs
 
-    Row {
-      id: sourceInner
+    Text {
+      id: sourceLabel
       anchors.left: parent.left
       anchors.right: parent.right
+      anchors.leftMargin: Style.spacing.sectionGap
+      anchors.rightMargin: Style.spacing.sectionGap
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: Style.spacing.inset
-      anchors.rightMargin: Style.spacing.inset
-      spacing: Style.spacing.controlGap
-
-      Text {
-        textFormat: Text.PlainText
-        text: root.sourceGlyph(sourceRow.node)
-        color: root.bar.foreground
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.title
-        width: Style.space(22)
-        horizontalAlignment: Text.AlignHCenter
-        anchors.verticalCenter: parent.verticalCenter
-      }
-
-      Text {
-        textFormat: Text.PlainText
-        text: root.nodeLabel(sourceRow.node)
-        color: root.bar.foreground
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.body
-        font.bold: sourceRow.isActive
-        elide: Text.ElideRight
-        width: parent.width - Style.space(22) - Style.spacing.controlGap
-        anchors.verticalCenter: parent.verticalCenter
-      }
+      textFormat: Text.PlainText
+      text: root.nodeLabel(sourceRow.node)
+        + (sourceRow.isActive ? "  · DEFAULT" : "")
+      color: root.bar.foreground
+      font.family: root.bar.fontFamily
+      font.pixelSize: Style.font.body
+      font.bold: sourceRow.isActive
+      elide: Text.ElideRight
     }
 
     MouseArea {
@@ -1116,10 +1084,6 @@ Panel {
     }
   }
 
-  // Per-app stream row — cursor target inside the "streams" section.
-  // The stream has its own slider inline, so h/l from the keyboard
-  // adjusts THIS stream's volume (not the global output) when the cursor
-  // sits on this row. Enter/Space mutes the stream.
   component StreamRow: CursorSurface {
     id: streamRow
     required property var node
@@ -1131,56 +1095,34 @@ Panel {
 
     hasCursor: root.cursorActive && root.focusSection === "streams" && root.selectedIndex === rowIndex
     onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(streamRow)
-    current: isActive
+    current: false
     foreground: root.bar.foreground
-    fill: root.hoverFill
-    currentFill: root.selectedFill
-    implicitHeight: streamColumn.implicitHeight + Style.spacing.xl
+    fill: "transparent"
+    currentFill: "transparent"
+    implicitHeight: streamColumn.implicitHeight + Style.spacing.xs
 
     Column {
       id: streamColumn
       anchors.left: parent.left
       anchors.right: parent.right
+      anchors.leftMargin: Style.spacing.sectionGap
+      anchors.rightMargin: Style.spacing.sectionGap
       anchors.verticalCenter: parent.verticalCenter
-      anchors.leftMargin: Style.spacing.inset
-      anchors.rightMargin: Style.spacing.inset
-      spacing: Style.spacing.compactGap
+      spacing: Style.spacing.xs
 
       Row {
         width: parent.width
-        spacing: Style.spacing.controlGap
-
-        Text {
-          id: streamMuteIcon
-          textFormat: Text.PlainText
-          text: streamRow.streamMuted ? Icons.volumeMuted : Icons.audio
-          color: root.bar.foreground
-          font.family: root.bar.fontFamily
-          font.pixelSize: Style.font.title
-          width: Style.space(22)
-          horizontalAlignment: Text.AlignHCenter
-          anchors.verticalCenter: parent.verticalCenter
-          opacity: streamRow.streamMuted ? 0.5 : 1.0
-
-          MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            onClicked: {
-              if (streamRow.node && streamRow.node.audio)
-                streamRow.node.audio.muted = !streamRow.node.audio.muted
-            }
-          }
-        }
+        spacing: Style.spacing.sm
 
         Text {
           textFormat: Text.PlainText
-          text: root.streamLabel(streamRow.node)
+          text: streamRow.streamMuted ? "MUTED" : root.streamLabel(streamRow.node)
           color: root.bar.foreground
           font.family: root.bar.fontFamily
           font.pixelSize: Style.font.body
           font.bold: streamRow.isActive
           elide: Text.ElideRight
-          width: parent.width - streamMuteIcon.width - streamPct.width - Style.space(16)
+          width: parent.width - streamPct.width - parent.spacing
           anchors.verticalCenter: parent.verticalCenter
         }
 
@@ -1200,14 +1142,13 @@ Panel {
       }
 
       PanelSlider {
-        bar: root.bar
+        bar: root
         width: parent.width
         minimum: 0
         maximum: 1.5
         step: 0.05
         value: streamRow.streamVolume
         opacity: streamRow.streamMuted ? 0.5 : 1.0
-
         onMoved: function(v) {
           if (streamRow.node && streamRow.node.audio) streamRow.node.audio.volume = v
         }
@@ -1230,4 +1171,5 @@ Panel {
       }
     }
   }
+
 }
