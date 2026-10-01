@@ -23,6 +23,7 @@ BorderSurface {
   property bool showCursorMarker: true
   property string cursorMarker: Style.tui.cursorMarker
   property color cursorMarkerColor: accent
+  property real cursorMarkerVerticalOffset: 0
 
   property color foreground: Color.bar.text
   property color accent: Color.accent
@@ -44,6 +45,7 @@ BorderSurface {
     anchors.left: parent.left
     anchors.leftMargin: Style.spacing.xs
     anchors.verticalCenter: parent.verticalCenter
+    anchors.verticalCenterOffset: root.cursorMarkerVerticalOffset
     z: 10
   }
   // Keyboard selection uses the marker + fill as its primary affordance.
