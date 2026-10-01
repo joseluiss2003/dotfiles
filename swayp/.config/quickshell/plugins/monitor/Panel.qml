@@ -479,7 +479,7 @@ Panel {
               text: root.displays.length > 1 ? "󰍺" : "󰍹"
               color: root.bar.foreground
               font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.display
+              font.pixelSize: Style.font.subtitle
               anchors.left: parent.left
               anchors.verticalCenter: parent.verticalCenter
             }
@@ -631,7 +631,7 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.spacing.inset
+            spacing: Style.spacing.xs
 
             Item {
               width: parent.width
