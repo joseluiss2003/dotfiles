@@ -1698,7 +1698,7 @@ Panel {
       anchors.top: parent.top
       anchors.leftMargin: Style.spacing.sectionGap
       anchors.rightMargin: Style.spacing.sectionGap
-      implicitHeight: Math.max(networkIcon.implicitHeight, networkInfo.implicitHeight, rightAction.implicitHeight) + Style.spacing.rowPaddingX
+      implicitHeight: Math.max(networkInfo.implicitHeight, rightAction.implicitHeight) + Style.spacing.rowPaddingX
 
       // The row's leading cursor marker is the navigation affordance.
       // Network-specific glyphs stay in the hero; repeating them on every row
