@@ -239,6 +239,32 @@ Panel {
     }))
   }
 
+  function brightnessName(percent) {
+    return Model.brightnessName(percent)
+  }
+
+  function updateDisplays(displaysJson) {
+    var parsed = Model.parseDisplays(displaysJson)
+    root.displays = parsed.displays
+    root.enabledDisplayCount = parsed.enabledDisplayCount
+  }
+
+  function toggleDisplay(name, enabled) {
+    if (!name) return
+    if (enabled && root.enabledDisplayCount <= 1) return
+
+    actionProc.command = enabled ? ["swaymsg", "output", name, "disable"] : ["swaymsg", "output", name, "enable"]
+    if (!actionProc.running) actionProc.running = true
+  }
+
+  function currentTextIndex() {
+    return textSizePreviewIndex >= 0 ? textSizePreviewIndex : nearestTextStop(Style.font.baseSize)
+  }
+
+  function displayedTextPx() {
+    return textSizePreviewIndex >= 0 ? textSizeStops[textSizePreviewIndex] : Style.font.baseSize
+  }
+
   function setTextSize(px) {
     textScaleProc.command = ["swayp-display-text-size", String(px)]
     if (!textScaleProc.running) textScaleProc.running = true
