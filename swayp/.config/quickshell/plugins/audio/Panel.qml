@@ -736,7 +736,7 @@ Column {
             CursorSurface {
               id: outputSliderRow
               width: parent.width
-              height: outputSlider.implicitHeight
+              height: Style.space(18)
               hasCursor: root.cursorActive && root.focusSection === "output" && root.selectedIndex === -1
               onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(outputSliderRow)
               foreground: root.bar.foreground
