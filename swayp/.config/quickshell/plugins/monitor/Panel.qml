@@ -799,10 +799,6 @@ Panel {
             ]
           }
 
-          Item {
-            width: parent.width
-            height: Style.spacing.xs
-          }
         }
       }
     }
