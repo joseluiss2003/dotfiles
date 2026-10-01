@@ -431,7 +431,7 @@ BarWidget {
               width: parent.width
               implicitHeight: sourceText.implicitHeight + Style.spacing.xs
               hasCursor: root.selectedPlayerIndex === index
-              cursorMarkerVerticalOffset: -Style.spacing.sm
+              cursorMarkerVerticalOffset: -(sourceText.implicitHeight - playerTitle.implicitHeight) / 2
               foreground: root.bar.foreground
               fill: "transparent"
               currentFill: "transparent"
@@ -447,6 +447,7 @@ BarWidget {
                 spacing: Style.spacing.xs
 
                 Text {
+                  id: playerTitle
                   text: String(player && (player.trackTitle || player.identity || player.desktopEntry) || "MEDIA")
                     + (player && player.isPlaying ? " · PLAYING" : "")
                   color: selected ? Color.foreground : Color.text
