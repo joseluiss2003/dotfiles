@@ -107,7 +107,10 @@ BarWidget {
     padding: 0
     borderSpec: Border.surfaceSpec("media", "panel-wrapper", "transparent", 0)
     contentWidth: Math.min(Style.space(344), panel.availableCardWidth)
-    contentHeight: Math.min(panelColumn.implicitHeight, panel.availableCardHeight)
+    contentHeight: Math.min(
+      panelColumn.implicitHeight + Style.popup.contentInset * 2,
+      panel.availableCardHeight
+    )
     gap: Style.popup.gap
     drawBackground: false
 
@@ -190,7 +193,7 @@ BarWidget {
         // This keeps the player row short and lets the players list move up.
         Item {
           width: parent.width
-          height: artwork.height + (root.sourcePlayers.length > 1 ? 0 : Style.popup.contentInset)
+          height: artwork.height
           implicitHeight: height
 
           BorderSurface {
