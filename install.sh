@@ -270,7 +270,7 @@ sudo install -Dm644 /dev/stdin /etc/greetd/config.toml <<'EOF'
 vt = 1
 
 [default_session]
-command = "tuigreet --time --remember --remember-session --sessions /usr/share/wayland-sessions"
+command = "tuigreet --time --remember --remember-session --sessions /usr/share/wayland-sessions --background matrix"
 user = "greeter"
 EOF
 
