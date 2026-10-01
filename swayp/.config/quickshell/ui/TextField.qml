@@ -59,28 +59,23 @@ TextField {
     ? verticalPadding + Style.spacing.xs
     : verticalPadding + Border.bottom(_borderSpec)
 
-  background: terminalMode ? terminalBackground : standardBackground
-
-  Component {
-    id: terminalBackground
-    Item {
-      Rectangle {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        height: 1
-        color: root._focused ? root.accent : root.foreground
-        opacity: root._focused ? 0.9 : 0.28
-      }
-    }
-  }
-
-  Component {
-    id: standardBackground
+  background: Item {
     BorderSurface {
+      visible: !root.terminalMode
+      anchors.fill: parent
       color: Style.controlFill(root._focused, root._hot, root.foreground, root.accent)
       borderSpec: root._borderSpec
       radius: Style.cornerRadius
+    }
+
+    Rectangle {
+      visible: root.terminalMode
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      height: 1
+      color: root._focused ? root.accent : root.foreground
+      opacity: root._focused ? 0.9 : 0.28
     }
   }
 }
