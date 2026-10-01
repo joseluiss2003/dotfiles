@@ -861,19 +861,7 @@ Panel {
           width: parent.width
         }
 
-        PanelStatusLine {
-          id: statusLine
-          stateText: root.heroStatusText
-          foreground: root.bar.foreground
-          accent: Color.accent
-          fontFamily: root.bar.fontFamily
-          hints: [
-            { key: "↑↓", label: "NAV" },
-            { key: "ENTER", label: root.adapter && root.adapter.enabled ? "CONNECT" : "TOGGLE" },
-            { key: "X", label: "FORGET" },
-            { key: "ESC", label: "CLOSE" }
-          ]
-        }
+        
       }
     }
   }
