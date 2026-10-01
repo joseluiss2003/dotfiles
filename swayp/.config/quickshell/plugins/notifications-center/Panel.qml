@@ -398,26 +398,32 @@ Panel {
             fontFamily: root.fontFamily
           }
 
-          Text {
-            id: clearAllAction
-            anchors.right: parent.right
-            anchors.rightMargin: Style.spacing.panelGap
-            anchors.verticalCenter: parent.verticalCenter
-            text: "CLEAR"
-            color: root.notificationCount > 0 ? Color.accent : Color.foreground
-            opacity: root.notificationCount > 0 ? 1.0 : 0.45
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
+          PanelCliHeader {
+            anchors.fill: parent
+            title: "Notifications"
+            status: root.dnd
+              ? "DO NOT DISTURB · " + root.notificationCount + " EVENTS"
+              : root.notificationCount + (root.notificationCount === 1 ? " EVENT" : " EVENTS")
+            foreground: Color.notifications.text
+            fontFamily: root.fontFamily
+            trailingControl: Component {
+              Text {
+                text: root.notificationCount > 0 ? "CLEAR" : "CLEAR"
+                color: root.notificationCount > 0 ? Color.accent : Color.foreground
+                opacity: root.notificationCount > 0 ? 1.0 : 0.45
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.caption
+                font.bold: true
 
-            MouseArea {
-              anchors.fill: parent
-              enabled: root.notificationCount > 0
-              cursorShape: Qt.PointingHandCursor
-              onClicked: root.clearAll()
+                MouseArea {
+                  anchors.fill: parent
+                  enabled: root.notificationCount > 0
+                  cursorShape: Qt.PointingHandCursor
+                  onClicked: root.clearAll()
+                }
+              }
             }
           }
-        }
 
         PanelSeparator {
           Layout.fillWidth: true
