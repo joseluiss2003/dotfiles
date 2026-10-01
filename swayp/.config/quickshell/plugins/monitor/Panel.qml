@@ -463,7 +463,7 @@ Panel {
         Column {
           id: panelColumn
           width: scrollArea.availableWidth
-          spacing: Style.spacing.compactGap
+          spacing: Style.spacing.panelGap
 
           // ---------- Hero: display icon + status ----------
           Item {
@@ -479,7 +479,7 @@ Panel {
               text: root.displays.length > 1 ? "󰍺" : "󰍹"
               color: root.bar.foreground
               font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.subtitle
+              font.pixelSize: Style.font.display
               anchors.left: parent.left
               anchors.verticalCenter: parent.verticalCenter
             }
@@ -487,7 +487,7 @@ Panel {
             Column {
               id: heroLabels
               anchors.left: heroIcon.right
-              anchors.leftMargin: Style.spacing.compactGap
+              anchors.leftMargin: Style.spacing.panelGap
               anchors.right: parent.right
               anchors.verticalCenter: parent.verticalCenter
               spacing: Style.spacing.compactGap
