@@ -367,12 +367,7 @@ Panel {
       anchors.fill: parent
     
       color: Color.notifications.background
-      borderSpec: Border.surfaceSpec(
-        "notifications",
-        "border",
-        Color.divider,
-        Math.max(1, Style.spacing.compactGap)
-      )
+      borderSpec: Border.none()
       radius: 0
       clip: true
     
