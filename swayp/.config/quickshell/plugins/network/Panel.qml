@@ -1824,24 +1824,55 @@ Panel {
 
           Text {
             textFormat: Text.PlainText
-            text: ">"
-            color: Color.accent
-            font.family: root.bar.fontFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
-            verticalAlignment: Text.AlignVCenter
-          }
-
-          Text {
-            textFormat: Text.PlainText
             text: row.isEnterprise ? "AUTHENTICATE / ENTERPRISE" : "AUTHENTICATE"
             color: root.bar.foreground
+            opacity: 0.72
             font.family: root.bar.fontFamily
             font.pixelSize: Style.font.caption
             font.bold: true
             verticalAlignment: Text.AlignVCenter
           }
         }
+
+        Row {
+          id: identityRow
+          visible: row.isEnterprise && !row.isBusy && !row.isFailed
+          width: parent.width
+          spacing: Style.spacing.sm
+
+          Text {
+            textFormat: Text.PlainText
+            text: "USER"
+            color: root.bar.foreground
+            opacity: 0.62
+            font.family: root.bar.fontFamily
+            font.pixelSize: Style.font.caption
+            font.bold: true
+            width: Style.space(34)
+            verticalAlignment: Text.AlignVCenter
+          }
+
+          TextField {
+            id: idField
+            width: parent.width - parent.children[0].width - identityRow.spacing
+            placeholderText: "user@domain"
+            font.family: Style.font.family
+            font.pixelSize: Style.font.body
+            foreground: root.bar.foreground
+            horizontalPadding: Style.spacing.controlGap
+            verticalPadding: Style.spacing.xs
+            enabled: !row.isBusy
+            text: row.isPasswordOpen ? root.identityText : ""
+
+            onAccepted: pwField.forceActiveFocus()
+            onTextChanged: if (row.isPasswordOpen && text !== root.identityText) root.identityText = text
+            Keys.onEscapePressed: root.cancelPasswordPrompt()
+
+            onVisibleChanged: if (visible) Qt.callLater(forceActiveFocus)
+            Component.onCompleted: if (visible) Qt.callLater(forceActiveFocus)
+          }
+        }
+
         Row {
           id: passwordRow
           width: parent.width
