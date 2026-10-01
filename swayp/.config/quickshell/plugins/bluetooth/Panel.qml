@@ -64,16 +64,16 @@ Panel {
   }
 
   readonly property string heroStatusText: {
-    if (!adapter) return "NO ADAPTER"
-    if (!adapter.enabled) return "RADIO OFF"
+    if (!adapter) return "× NO ADAPTER"
+    if (!adapter.enabled) return "○ RADIO OFF"
     if (adapter.discovering) {
       return connectedDevices.length > 0
-        ? "ON · " + connectedDevices.length + " CONNECTED · SCANNING"
-        : "ON · SCANNING"
+        ? "● " + connectedDevices.length + " CONNECTED · SCANNING"
+        : "● SCANNING"
     }
     return connectedDevices.length > 0
-      ? "ON · " + connectedDevices.length + " CONNECTED"
-      : "ON · READY"
+      ? "● " + connectedDevices.length + " CONNECTED"
+      : "○ READY"
   }
 
   // Single cursor model shared by keyboard and mouse. Sections:
@@ -716,11 +716,12 @@ Panel {
             spacing: Style.spacing.compactGap
 
             Text {
-              text: "Bluetooth"
+              text: "BLUETOOTH"
               color: root.bar.foreground
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.title
               font.bold: true
+              font.letterSpacing: 0.8
               elide: Text.ElideRight
               width: parent.width
             }
@@ -733,7 +734,7 @@ Panel {
               font.family: root.bar.fontFamily
               font.pixelSize: Style.font.caption
               font.bold: true
-              font.letterSpacing: 1.2
+              font.letterSpacing: 0.8
               elide: Text.ElideRight
               width: parent.width
             }
@@ -969,22 +970,11 @@ Panel {
       anchors.rightMargin: Style.spacing.sectionGap
       implicitHeight: Math.max(deviceIcon.implicitHeight, info.implicitHeight, forgetBtn.implicitHeight)
 
-      Text {
-        id: deviceIcon
-        textFormat: Text.PlainText
-        text: row.isConnected ? Icons.bluetoothConnected : Icons.bluetooth
-        color: row.statusColor
-        font.family: root.bar.fontFamily
-        font.pixelSize: Style.font.heading
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-      }
 
       Column {
         id: info
         spacing: Style.spacing.xs
-        anchors.left: deviceIcon.right
-        anchors.leftMargin: Style.spacing.sectionGap
+        anchors.left: parent.left
         anchors.right: forgetBtn.visible ? forgetBtn.left : parent.right
         anchors.rightMargin: forgetBtn.visible ? Style.spacing.controlGap : 0
         anchors.verticalCenter: parent.verticalCenter
@@ -1015,11 +1005,13 @@ Panel {
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         visible: row.showForgetButton
-        iconText: Icons.forget
+        iconText: "×"
         tooltipText: "Forget"
         foreground: root.bar.foreground
-        hoverColor: root.bar.foreground
+        hoverColor: Color.accent
         fontFamily: root.bar.fontFamily
+        fontSize: Style.font.bodySmall
+        size: Style.space(18)
         hasCursor: row.rowSelected && root.actionFocused
         onHovered: function(isHovered) {
           if (!isHovered) {
