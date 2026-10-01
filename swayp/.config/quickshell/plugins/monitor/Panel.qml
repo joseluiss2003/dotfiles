@@ -483,12 +483,7 @@ Panel {
           }
 
           // ---------- Brightness ----------
-          PanelSeparator {
-            visible: root.brightnessAvailable
-            foreground: root.bar.foreground
-          }
-
-          Column {
+Column {
             visible: root.brightnessAvailable
             width: parent.width
             spacing: Style.spacing.xs
@@ -581,11 +576,7 @@ Panel {
           }
 
           // ---------- Text size ----------
-          PanelSeparator {
-            foreground: root.bar.foreground
-          }
-
-          Column {
+Column {
             width: parent.width
             spacing: Style.spacing.xs
 
@@ -685,12 +676,7 @@ Panel {
             spacing: Style.spacing.xs
             visible: root.displays.length > 1
 
-            PanelSeparator {
-              foreground: root.bar.foreground
-              strength: 0.12
-            }
-
-            Item {
+Item {
               width: parent.width
               implicitHeight: Math.max(displaysHeader.implicitHeight, nightlightAction.implicitHeight)
 
