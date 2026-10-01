@@ -878,4 +878,161 @@ Panel {
     }
   }
 
+  component DeviceRow: CursorSurface {
+    id: row
+    required property var dev
+    required property int rowIndex
+    required property string sectionName
+    required property bool isDiscovered
+
+    readonly property bool isConnected: dev && dev.connected
+    readonly property int devState: dev && dev.state !== undefined ? dev.state : -1
+    readonly property string action: root.pendingAction(dev ? dev.address : "")
+    readonly property string actionTooltip: {
+      if (!dev) return ""
+      if (isConnected) return "Disconnect"
+      if (isDiscovered) return "Pair"
+      return "Connect"
+    }
+
+    readonly property bool rowSelected: root.cursorActive
+      && root.focusSection === sectionName
+      && root.selectedIndex === rowIndex
+    readonly property bool forgetAvailable: (sectionName === "known" || sectionName === "connected") && !isDiscovered
+    readonly property bool showForgetButton: forgetAvailable && (rowMouse.containsMouse || rowSelected)
+
+    hasCursor: rowSelected && !root.actionFocused
+    current: false
+    foreground: root.bar.foreground
+    fill: "transparent"
+    currentFill: "transparent"
+
+    readonly property string statusText: {
+      if (!dev) return ""
+      if (action === "forgetting") return "Forgetting…"
+      if (action === "disconnecting" || devState === 2) return "Disconnecting…"
+      if (isConnected) {
+        if (dev.batteryAvailable) return Math.round(dev.battery * 100) + "%"
+        return "Connected"
+      }
+      if (action === "connecting" || devState === 3 || dev.pairing === true)
+        return isDiscovered ? "Pairing…" : "Connecting…"
+      return ""
+    }
+
+    readonly property color statusColor: {
+      if (action !== "") return root.bar.foreground
+      if (isConnected) return root.bar.foreground
+      return Color.foreground
+    }
+
+    implicitHeight: rowBody.implicitHeight + Style.spacing.xs
+
+    MouseArea {
+      id: rowMouse
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      height: rowBody.implicitHeight
+      hoverEnabled: true
+      acceptedButtons: Qt.LeftButton | Qt.RightButton
+      cursorShape: row.dev ? Qt.PointingHandCursor : Qt.ArrowCursor
+
+      onContainsMouseChanged: if (containsMouse) {
+        root.cursorActive = true
+        root.focusSection = row.sectionName
+        root.selectedIndex = row.rowIndex
+        root.actionFocused = false
+      }
+
+      onClicked: function(mouse) {
+        var device = root.deviceFor(row)
+        if (!device) return
+        if (mouse.button === Qt.RightButton) {
+          if (row.isConnected) root.disconnectDevice(device)
+          else if (!row.isDiscovered) root.forgetDevice(device)
+          return
+        }
+        if (row.isConnected) root.disconnectDevice(device)
+        else root.connectDevice(device)
+      }
+    }
+
+    PanelToolTip {
+      visible: row.actionTooltip !== "" && rowMouse.containsMouse && !root.actionFocused
+      text: row.actionTooltip
+      fontFamily: root.bar.fontFamily
+    }
+
+    Item {
+      id: rowBody
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.top: parent.top
+      anchors.leftMargin: Style.spacing.sectionGap
+      anchors.rightMargin: Style.spacing.sectionGap
+      implicitHeight: Math.max(deviceInfo.implicitHeight, rightAction.implicitHeight) + Style.spacing.xs
+
+      Item {
+        id: rightAction
+        visible: row.showForgetButton
+        width: Style.space(22)
+        implicitHeight: forgetBtn.implicitHeight
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+
+        PanelActionButton {
+          id: forgetBtn
+          anchors.centerIn: parent
+          iconText: Icons.forget
+          tooltipText: "Forget"
+          foreground: root.bar.foreground
+          hoverColor: Color.accent
+          fontFamily: root.bar.fontFamily
+          fontSize: Style.font.bodySmall
+          size: Style.space(18)
+          hasCursor: row.rowSelected && root.actionFocused
+          onHovered: function(isHovered) {
+            if (!isHovered) {
+              if (rowMouse.containsMouse) root.actionFocused = false
+              return
+            }
+            root.cursorActive = true
+            root.focusSection = row.sectionName
+            root.selectedIndex = row.rowIndex
+            root.actionFocused = true
+          }
+          onClicked: {
+            var device = root.deviceFor(row)
+            if (!device) return
+            root.forgetDevice(device)
+          }
+        }
+      }
+
+      Column {
+        id: deviceInfo
+        spacing: Style.spacing.compactGap
+        anchors.left: parent.left
+        anchors.leftMargin: Style.spacing.md
+        anchors.right: rightAction.visible ? rightAction.left : parent.right
+        anchors.rightMargin: rightAction.visible ? Style.spacing.controlGap : 0
+        anchors.verticalCenter: parent.verticalCenter
+
+        Text {
+          textFormat: Text.PlainText
+          text: {
+            var name = root.deviceLabel(row.dev) || "Device"
+            return row.statusText !== "" ? name + "  · " + row.statusText.toUpperCase() : name
+          }
+          color: row.action !== "" ? row.statusColor : root.bar.foreground
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.body
+          elide: Text.ElideRight
+          width: parent.width
+        }
+      }
+    }
+  }
+
 }
