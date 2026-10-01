@@ -24,6 +24,7 @@ BorderSurface {
   property string cursorMarker: Style.tui.cursorMarker
   property color cursorMarkerColor: accent
   property real cursorMarkerVerticalOffset: 0
+  property real cursorMarkerLeftMargin: Style.spacing.xs
 
   property color foreground: Color.bar.text
   property color accent: Color.accent
@@ -43,7 +44,7 @@ BorderSurface {
     font.pixelSize: Style.font.body
     font.bold: true
     anchors.left: parent.left
-    anchors.leftMargin: Style.spacing.xs
+    anchors.leftMargin: root.cursorMarkerLeftMargin
     anchors.verticalCenter: parent.verticalCenter
     anchors.verticalCenterOffset: root.cursorMarkerVerticalOffset
     z: 10
