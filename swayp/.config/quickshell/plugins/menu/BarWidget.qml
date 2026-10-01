@@ -108,7 +108,7 @@ BarWidget {
         spacing: Style.spacing.panelGap
 
         PanelCliHeader {
-          title: "Power & Session"
+          title: "Power"
           status: "SESSION"
           foreground: root.bar.foreground
           fontFamily: root.bar.fontFamily
