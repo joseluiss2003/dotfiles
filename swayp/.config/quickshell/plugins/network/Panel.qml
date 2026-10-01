@@ -1595,11 +1595,7 @@ Panel {
     readonly property bool forgetFocused: isSelected && root.wifiActionFocused && canForget
     readonly property bool forgetVisible: canForget && (!requiresCredentials || forgetFocused || rightMouse.containsMouse)
 
-    hasCursor: root.cursorActive && isSelected && !root.wifiActionFocused
-    current: isConnected
-    foreground: root.bar.foreground
-    fill: root.hoverFill
-    currentFill: root.selectedFill
+false
     // Gate on the matching *Kind/*Reason being non-empty so a hidden-SSID
     // row (ssid == "") doesn't match the "" defaults of actionSsid etc.
     readonly property bool isBusy: root.actionKind !== "" && root.actionSsid === (net ? net.ssid : "")
