@@ -770,7 +770,7 @@ Panel {
       id: monitorLabel
       anchors.left: parent.left
       anchors.right: parent.right
-      anchors.leftMargin: Style.spacing.md + Style.spacing.xs
+      anchors.leftMargin: Style.spacing.md + Style.spacing.lg
       anchors.rightMargin: Style.spacing.md
       anchors.verticalCenter: parent.verticalCenter
       textFormat: Text.PlainText
