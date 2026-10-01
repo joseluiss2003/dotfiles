@@ -124,6 +124,18 @@ Item {
     root.selectTheme(next)
   }
 
+  function randomTheme() {
+    if (themeModel.count === 0) return
+
+    var next = Math.floor(Math.random() * themeModel.count)
+
+    // Avoid picking the currently selected theme when there is more than one.
+    if (themeModel.count > 1 && next === root.themeIndex)
+      next = (next + 1 + Math.floor(Math.random() * (themeModel.count - 1))) % themeModel.count
+
+    root.selectTheme(next)
+  }
+
   function carouselIndex(offset) {
     if (themeModel.count === 0) return -1
 
@@ -208,9 +220,9 @@ Item {
       "for dir in \"$1\"/*; do " +
       "  [ -d \"$dir\" ] || continue; " +
       "  id=$(basename \"$dir\"); " +
-      "  name=$(awk -F= '/^[[:space:]]*name[[:space:]]*=/{sub(/^[[:space:]]*/, \"\", $2); sub(/[[:space:]]*$/, \"\", $2); gsub(/^\"|\"$/, \"\", $2); print $2; exit}' \"$dir/theme.toml\" 2>/dev/null); " +
+      "  name=$(awk -F= '/^[[:space:]]*name[[:space:]]*=/{sub(/^[[:space:]]*/, \"\", $2); sub(/[[:space:]]*$/, \"\", $2); gsub(/^\\"|\\"$/, \"\", $2); print $2; exit}' \"$dir/theme.toml\" 2>/dev/null); " +
       "  [ -n \"$name\" ] || name=\"$id\"; " +
-      "  desc=$(awk -F= '/^[[:space:]]*description[[:space:]]*=/{sub(/^[[:space:]]*/, \"\", $2); sub(/[[:space:]]*$/, \"\", $2); gsub(/^\"|\"$/, \"\", $2); print $2; exit}' \"$dir/theme.toml\" 2>/dev/null); " +
+      "  desc=$(awk -F= '/^[[:space:]]*description[[:space:]]*=/{sub(/^[[:space:]]*/, \"\", $2); sub(/[[:space:]]*$/, \"\", $2); gsub(/^\\"|\\"$/, \"\", $2); print $2; exit}' \"$dir/theme.toml\" 2>/dev/null); " +
       "  preview=$(find \"$dir\" -maxdepth 1 -type f " +
       "    \\( -iname 'preview.jpg' -o -iname 'preview.jpeg' -o -iname 'preview.png' -o -iname 'preview.webp' -o -iname 'preview.svg' \\) -print 2>/dev/null | sort | head -n1); " +
       "  if [ -z \"$preview\" ]; then " +
@@ -312,6 +324,12 @@ Item {
 
         if (event.key === Qt.Key_Right) {
           root.moveTheme(1)
+          event.accepted = true
+          return
+        }
+
+        if (event.key === Qt.Key_R) {
+          root.randomTheme()
           event.accepted = true
           return
         }
@@ -543,7 +561,7 @@ Item {
           width: carousel.width
           text: applyProc.running
             ? "APPLYING…"
-            : "← →  SELECT    ENTER  APPLY    ESC  CLOSE"
+            : "← →  SELECT    R  RANDOM    ENTER  APPLY    ESC  CLOSE"
 
           color: root.muted
           font.family: Style.font.resolvedFamily
