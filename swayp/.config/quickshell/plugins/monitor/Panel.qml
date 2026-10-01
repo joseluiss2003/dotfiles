@@ -46,6 +46,9 @@ Panel {
   property string focusSection: "textsize"
   property int selectedIndex: -1
   property bool cursorActive: false
+  // Pointer hover moves the shared cursor without triggering scroll correction.
+  // Keyboard navigation opts back into ensureCursorVisible().
+  property bool cursorFromMouse: false
 
   // Text size slider — curated macOS-style notches (px). The panel snaps to
   // these stops; the CLI (swayp-display-text-size) accepts any integer in range.
@@ -437,6 +440,7 @@ Panel {
       id: keyCatcher
       anchors.fill: parent
       onMoveRequested: function(dx, dy) {
+        root.cursorFromMouse = false
         if (!root.cursorActive) { root.cursorActive = true; return }
         if (dy !== 0) root.moveCursor(dy)
         else if (dx !== 0) {
@@ -750,7 +754,7 @@ Panel {
     readonly property bool canToggle: display && (!display.enabled || root.enabledDisplayCount > 1)
 
     hasCursor: root.cursorActive && root.focusSection === "monitors" && root.selectedIndex === rowIndex
-    onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(monitorRow)
+    onHasCursorChanged: if (hasCursor && !root.cursorFromMouse) root.ensureCursorVisible(monitorRow)
     current: false
     foreground: root.bar.foreground
     fill: "transparent"
@@ -790,6 +794,7 @@ Panel {
       hoverEnabled: true
       cursorShape: monitorRow.canToggle ? Qt.PointingHandCursor : Qt.ArrowCursor
       onContainsMouseChanged: if (containsMouse && !root.reflowingText) {
+        root.cursorFromMouse = true
         root.cursorActive = true
         root.focusSection = "monitors"
         root.selectedIndex = monitorRow.rowIndex
