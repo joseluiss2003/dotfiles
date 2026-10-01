@@ -1855,6 +1855,7 @@ Panel {
           TextField {
             id: idField
             width: parent.width - parent.children[0].width - identityRow.spacing
+            terminalMode: true
             placeholderText: "user@domain"
             font.family: Style.font.family
             font.pixelSize: Style.font.body
