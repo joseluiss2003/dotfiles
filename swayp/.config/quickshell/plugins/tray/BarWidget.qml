@@ -29,7 +29,7 @@ BarWidget {
     return result
   }
   readonly property int trayItemExtent: Style.bar.iconSlot
-  readonly property int trayItemGap: Style.spacing.md
+  readonly property int trayItemGap: Style.bar.iconGap
 
   // Submenu drill-down state. QsMenuEntry.display() renders a *platform* menu,
   // which Quickshell refuses unless the shell root sets `//@ pragma
