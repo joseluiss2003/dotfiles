@@ -257,6 +257,16 @@ Panel {
     if (!actionProc.running) actionProc.running = true
   }
 
+  function nearestTextStop(px) {
+    var best = 0
+    var bestDist = 1e9
+    for (var i = 0; i < textSizeStops.length; i++) {
+      var d = Math.abs(textSizeStops[i] - px)
+      if (d < bestDist) { bestDist = d; best = i }
+    }
+    return best
+  }
+
   function currentTextIndex() {
     return textSizePreviewIndex >= 0 ? textSizePreviewIndex : nearestTextStop(Style.font.baseSize)
   }
@@ -453,7 +463,7 @@ Panel {
         Column {
           id: panelColumn
           width: scrollArea.availableWidth
-          spacing: Style.spacing.panelGap
+          spacing: Style.spacing.compactGap
 
           // ---------- Hero: display icon + status ----------
           Item {
@@ -477,7 +487,7 @@ Panel {
             Column {
               id: heroLabels
               anchors.left: heroIcon.right
-              anchors.leftMargin: Style.spacing.panelGap
+              anchors.leftMargin: Style.spacing.compactGap
               anchors.right: parent.right
               anchors.verticalCenter: parent.verticalCenter
               spacing: Style.spacing.compactGap
@@ -525,7 +535,7 @@ Panel {
           Column {
             visible: root.brightnessAvailable
             width: parent.width
-            spacing: Style.spacing.inset
+            spacing: Style.spacing.xs
 
             Item {
               width: parent.width
@@ -565,7 +575,6 @@ Panel {
               id: brightnessRow
               width: parent.width
               height: brightnessSlider.implicitHeight
-                + Style.spacing.controlGap
               hasCursor:
                 root.cursorActive &&
                 root.focusSection === "brightness" &&
@@ -666,7 +675,6 @@ Panel {
               id: textSizeRow
               width: parent.width
               height: textSizeSlider.implicitHeight
-                + Style.spacing.controlGap
 
               hasCursor:
                 root.cursorActive &&
@@ -723,7 +731,7 @@ Panel {
 
           Column {
             width: parent.width
-            spacing: Style.spacing.sectionGap
+            spacing: Style.spacing.compactGap
             visible: root.displays.length > 1
 
             Item {
@@ -793,7 +801,7 @@ Panel {
 
           Item {
             width: parent.width
-            height: Style.spacing.sm
+            height: Style.spacing.xs
           }
         }
       }
@@ -818,7 +826,7 @@ Panel {
       id: monitorLabel
       anchors.left: parent.left
       anchors.right: parent.right
-      anchors.leftMargin: Style.spacing.sectionGap + Style.spacing.md
+      anchors.leftMargin: Style.spacing.compactGap + Style.spacing.md
       anchors.rightMargin: Style.spacing.sectionGap + Style.spacing.md
       anchors.verticalCenter: parent.verticalCenter
       textFormat: Text.PlainText
