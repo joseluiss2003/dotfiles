@@ -291,9 +291,13 @@ Panel {
       popup.availableCardHeight,
       card.headerHeight
         + Style.spacing.controlGap
-        + Math.min(
-          card.maxListHeight,
-          Math.max(notificationList.contentHeight + Style.space(16), Style.space(72))
+        + (
+          root.notificationCount === 0
+            ? Style.space(112)
+            : Math.min(
+                card.maxListHeight,
+                Math.max(notificationList.contentHeight + Style.space(16), Style.space(72))
+              )
         )
         + Style.spacing.controlGap
         + Style.popup.footerHeight
@@ -535,8 +539,8 @@ Panel {
 
         Item {
           Layout.fillWidth: true
-          Layout.fillHeight: true
           visible: root.notificationCount === 0
+          Layout.preferredHeight: Style.space(112)
 
           Column {
             anchors.centerIn: parent
