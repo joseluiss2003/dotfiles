@@ -691,13 +691,13 @@ Item {
 
               Button {
                 id: nightlightAction
-                iconText: "󰔎"
+                iconText: Icons.nightLight
                 tooltipText: root.nightlightService && root.nightlightService.enabled
                   ? "Disable night light"
                   : "Enable night light"
                 foreground: root.bar.foreground
                 fontFamily: root.bar.fontFamily
-                iconSize: Style.font.subtitle * 1.5
+                iconSize: Style.font.icon
                 horizontalPadding: Style.spacing.sm
                 verticalPadding: Style.spacing.compactGap
                 bordered: false
