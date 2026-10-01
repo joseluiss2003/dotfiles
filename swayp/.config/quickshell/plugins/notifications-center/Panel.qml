@@ -195,17 +195,22 @@ Panel {
       root.notificationService.focusApp({ app: row.app })
   }
 
-  function clearSelected() {
-    if (!root.notificationService || selectedIndex < 0 || selectedIndex >= centerModel.count) return
-    var row = centerModel.get(selectedIndex)
-    if (!row) return
-    var active = root.activeIndex(row.originalId, row.timestamp)
+  function clearEntry(originalId, timestamp) {
+    if (!root.notificationService) return
+    var active = root.activeIndex(originalId, timestamp)
     if (active >= 0)
       root.notificationService.dismissPopup(active)
     root.notificationService.removeHistoryEntry({
-      originalId: row.originalId,
-      timestamp: row.timestamp
+      originalId: originalId,
+      timestamp: timestamp
     })
+  }
+
+  function clearSelected() {
+    if (selectedIndex < 0 || selectedIndex >= centerModel.count) return
+    var row = centerModel.get(selectedIndex)
+    if (!row) return
+    root.clearEntry(row.originalId, row.timestamp)
   }
 
   function toggleDnd() {
@@ -415,15 +420,36 @@ Panel {
             }
           }
     
-          Text {
+          Row {
             anchors.right: parent.right
             anchors.rightMargin: Style.spacing.panelGap
             anchors.verticalCenter: parent.verticalCenter
-            text: root.notificationCount + (root.notificationCount === 1 ? " NOTIFICATION" : " NOTIFICATIONS")
-            color: Color.notifications.countdown
-            font.family: root.fontFamily
-            font.pixelSize: Style.font.caption
-            font.bold: true
+            spacing: Style.spacing.md
+
+            Text {
+              text: root.notificationCount + (root.notificationCount === 1 ? " NOTIFICATION" : " NOTIFICATIONS")
+              color: Color.notifications.countdown
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.caption
+              font.bold: true
+            }
+
+            Text {
+              id: clearAllAction
+              text: "C  CLEAR"
+              color: root.notificationCount > 0 ? Color.accent : Color.foreground
+              opacity: root.notificationCount > 0 ? 1.0 : 0.45
+              font.family: root.fontFamily
+              font.pixelSize: Style.font.caption
+              font.bold: true
+
+              MouseArea {
+                anchors.fill: parent
+                enabled: root.notificationCount > 0
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.clearAll()
+              }
+            }
           }
         }
     
@@ -489,9 +515,9 @@ Panel {
                   Text {
                     id: mainLine
                     anchors.left: parent.left
-                    anchors.right: parent.right
+                    anchors.right: closeAction.left
                     anchors.leftMargin: Style.spacing.md + Style.spacing.md
-                    anchors.rightMargin: Style.spacing.md
+                    anchors.rightMargin: Style.spacing.sm
                     anchors.verticalCenter: parent.verticalCenter
                     textFormat: Text.PlainText
                     text: (row.urgency === 2 ? "! " : "")
@@ -505,8 +531,31 @@ Panel {
                     elide: Text.ElideRight
                   }
 
+                  Text {
+                    id: closeAction
+                    anchors.right: parent.right
+                    anchors.rightMargin: Style.spacing.md
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "×"
+                    color: root.selectedIndex === row.index ? Color.accent : Color.notifications.text
+                    opacity: root.selectedIndex === row.index ? 1.0 : 0.65
+                    font.family: root.fontFamily
+                    font.pixelSize: Style.font.body
+                    font.bold: true
+
+                    MouseArea {
+                      anchors.fill: parent
+                      anchors.margins: -Style.spacing.xs
+                      cursorShape: Qt.PointingHandCursor
+                      onClicked: root.clearEntry(row.originalId, row.timestamp)
+                    }
+                  }
+
                   MouseArea {
-                    anchors.fill: parent
+                    anchors.left: parent.left
+                    anchors.right: closeAction.left
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
                     hoverEnabled: true
                     onContainsMouseChanged: if (containsMouse) root.selectedIndex = row.index
                     onClicked: root.openSelected()
