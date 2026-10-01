@@ -356,7 +356,7 @@ Panel {
               required property var modelData
               required property int index
 
-              width: Style.space(220)
+              width: profileLabel.implicitWidth + Style.spacing.md + Style.spacing.md
               height: profileLabel.implicitHeight
               anchors.horizontalCenter: parent.horizontalCenter
 
@@ -373,9 +373,7 @@ Panel {
                   anchors.left: parent.left
                   anchors.right: parent.right
                   anchors.leftMargin: Style.spacing.md
-                  anchors.rightMargin: Style.spacing.md
                   anchors.verticalCenter: parent.verticalCenter
-                  horizontalAlignment: Text.AlignHCenter
                   textFormat: Text.PlainText
                   text: String(modelData).toUpperCase()
                     + (root.activeProfile === String(modelData) ? "  · ACTIVE" : "")
