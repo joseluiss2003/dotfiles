@@ -232,8 +232,8 @@ BarWidget {
 
           BorderSurface {
             id: artwork
-            width: Style.space(56)
-            height: Style.space(56)
+            width: Style.space(88)
+            height: Style.space(88)
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             color: Color.controls.background
@@ -439,7 +439,7 @@ BarWidget {
                 id: sourceText
                 anchors.left: parent.left
                 anchors.right: parent.right
-                anchors.leftMargin: Style.spacing.panelGap
+                anchors.leftMargin: Style.spacing.md
                 anchors.rightMargin: Style.spacing.md
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: Style.spacing.xs
