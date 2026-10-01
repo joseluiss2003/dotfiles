@@ -107,46 +107,11 @@ BarWidget {
         anchors.top: parent.top
         spacing: Style.spacing.panelGap
 
-        // Compact hero: same grammar as the other SwayP panels.
-        Item {
-          width: parent.width
-          implicitHeight: Math.max(heroMark.implicitHeight, heroLabels.implicitHeight)
-
-          OpticalGlyph {
-            id: heroMark
-            width: Style.space(34)
-            height: Style.space(34)
-            text: "󰐥"
-            color: root.bar.foreground
-            fontFamily: root.bar.fontFamily
-            fontSize: Style.font.display
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-          }
-
-          Column {
-            id: heroLabels
-            anchors.left: heroMark.right
-            anchors.leftMargin: Style.spacing.panelGap
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: Style.spacing.xs
-
-            Text {
-              text: "Power & Session"
-              color: root.bar.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.title
-              font.bold: true
-            }
-
-            Text {
-              text: "SYSTEM SESSION"
-              color: Color.foreground
-              font.family: root.bar.fontFamily
-              font.pixelSize: Style.font.caption
-              font.bold: true
-            }
-          }
+        PanelCliHeader {
+          title: "Power & Session"
+          status: "SESSION"
+          foreground: root.bar.foreground
+          fontFamily: root.bar.fontFamily
         }
 
         PanelSeparator {
