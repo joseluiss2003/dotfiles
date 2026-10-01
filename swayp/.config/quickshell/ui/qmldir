@@ -22,6 +22,7 @@ PanelActionButton 1.0 PanelActionButton.qml
 PanelController 1.0 PanelController.qml
 PanelKeyCatcher 1.0 PanelKeyCatcher.qml
 PanelHero 1.0 PanelHero.qml
+PanelCliHeader 1.0 PanelCliHeader.qml
 PanelSectionHeader 1.0 PanelSectionHeader.qml
 PanelSeparator 1.0 PanelSeparator.qml
 PanelStatusLine 1.0 PanelStatusLine.qml
