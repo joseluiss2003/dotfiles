@@ -469,7 +469,7 @@ Panel {
   }
   onRestrictedChanged: {
     connectionPhraseSwap.stop()
-    heroMeta.opacity = 1.0
+    cliHeader.statusOpacity = 1.0
   }
 
   function checkConnectivity() {
@@ -925,7 +925,7 @@ Panel {
     function onInfoChanged() {
       if (!(root.info.type === "ethernet" || (root.info.type === "wifi" && root.canDisconnect))) {
         connectionPhraseSwap.stop()
-        heroMeta.opacity = 1.0
+        cliHeader.statusOpacity = 1.0
       }
     }
   }
