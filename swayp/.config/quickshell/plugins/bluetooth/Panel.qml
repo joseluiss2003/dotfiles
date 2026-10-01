@@ -773,6 +773,10 @@ Panel {
           // of the panel composition. A busy Bluetooth environment scrolls;
           // it must not push the status line out of the card.
           height: Math.min(contentHeight, Style.space(220))
+          // Column/KeyboardPanel size from implicitHeight; keep the fixed
+          // viewport in that calculation so everything after the list
+          // (notably the terminal status line) remains inside the card.
+          implicitHeight: height
           spacing: Style.spacing.sectionGap
           clip: true
           boundsBehavior: Flickable.StopAtBounds
