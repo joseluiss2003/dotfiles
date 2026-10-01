@@ -729,6 +729,11 @@ Panel {
             spacing: Style.spacing.xs
             visible: root.displays.length > 1
 
+            PanelSeparator {
+              foreground: root.bar.foreground
+              strength: 0.12
+            }
+
             Item {
               width: parent.width
               implicitHeight: Math.max(displaysHeader.implicitHeight, nightlightAction.implicitHeight)
