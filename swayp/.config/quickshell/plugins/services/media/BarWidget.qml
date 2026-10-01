@@ -377,6 +377,7 @@ BarWidget {
 
 PanelSectionHeader {
             text: "PLAYERS"
+            leadingGlyph: Icons.media
             foreground: root.bar.foreground
             fontFamily: root.bar.fontFamily
           }
