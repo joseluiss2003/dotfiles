@@ -367,7 +367,7 @@ Panel {
       anchors.fill: parent
     
       color: Color.notifications.background
-      borderSpec: Border.none()
+      borderSpec: Border.surfaceSpec("popups", "border", Color.popups.border, Style.popup.borderWidth)
       radius: 0
       clip: true
     
