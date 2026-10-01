@@ -396,19 +396,9 @@ Panel {
               : root.notificationCount + (root.notificationCount === 1 ? " EVENT" : " EVENTS")
             foreground: Color.notifications.text
             fontFamily: root.fontFamily
-          }
-
-          PanelCliHeader {
-            anchors.fill: parent
-            title: "Notifications"
-            status: root.dnd
-              ? "DO NOT DISTURB · " + root.notificationCount + " EVENTS"
-              : root.notificationCount + (root.notificationCount === 1 ? " EVENT" : " EVENTS")
-            foreground: Color.notifications.text
-            fontFamily: root.fontFamily
             trailingControl: Component {
               Text {
-                text: root.notificationCount > 0 ? "CLEAR" : "CLEAR"
+                text: "CLEAR"
                 color: root.notificationCount > 0 ? Color.accent : Color.foreground
                 opacity: root.notificationCount > 0 ? 1.0 : 0.45
                 font.family: root.fontFamily
@@ -424,6 +414,7 @@ Panel {
               }
             }
           }
+        }
 
         PanelSeparator {
           Layout.fillWidth: true
