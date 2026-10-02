@@ -88,8 +88,8 @@ Item {
               anchors.horizontalCenter: parent.horizontalCenter
               anchors.top: parent.top
               anchors.topMargin: Style.space(43)
-              width: 220
-              height: 82
+              width: 250
+              height: 86
 
               property string value: root.weatherService && root.weatherService.available
                 ? Math.round(root.weatherService.temperature) + "C"
@@ -103,13 +103,13 @@ Item {
                   ctx.clearRect(0, 0, width, height)
                   ctx.fillStyle = Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, Color.accent.a)
 
-                  var digitW = 48
+                  var digitW = 50
                   var digitH = 76
                   var stroke = 11
-                  var gap = 5
-                  var degreeSize = 7
+                  var gap = 7
+                  var degreeSize = 9
                   var value = temperatureDisplay.value
-                  var totalW = digitW * 2 + gap * 3 + degreeSize + 16
+                  var totalW = digitW * 2 + gap * 3 + degreeSize + 18
                   var startX = (width - totalW) / 2
                   var top = (height - digitH) / 2
 
@@ -186,7 +186,7 @@ Item {
                   x += digitW + gap + 3
 
                   ctx.fillRect(x, top, degreeSize, degreeSize)
-                  x += degreeSize + 10
+                  x += degreeSize + 9
                   drawC(x)
                 }
               }
