@@ -13,52 +13,68 @@ Item {
   property int cellWidth: Math.max(8, Math.round(matrixFontSize * 0.72))
   property int cellHeight: Math.max(12, Math.round(matrixFontSize * 1.02))
   property var columns: []
+  property int frame: 0
   property string glyphs: "01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz<>+-=/*\\|:;.,~^[]{}#%&@?"
+
+  function newColumn(rows, startAbove) {
+    var trail = 4 + Math.floor(Math.random() * Math.max(5, Math.min(12, rows * 0.7)))
+    return {
+      head: startAbove
+        ? -2 - Math.random() * Math.max(3, rows * 0.8)
+        : -Math.random() * rows,
+      trail: trail,
+      speed: 0.11 + Math.random() * 0.16,
+      seed: Math.floor(Math.random() * 100000),
+      brightness: 0.78 + Math.random() * 0.22
+    }
+  }
 
   function resetColumns() {
     var rows = Math.max(1, Math.floor((widgetHeight - 64) / cellHeight))
     var count = Math.max(24, Math.floor((widgetWidth - 28) / cellWidth))
     var next = []
+
     for (var i = 0; i < count; i++) {
-      next.push({
-        head: -Math.random() * rows,
-        length: 5 + Math.floor(Math.random() * Math.max(5, rows * 0.75)),
-        speed: 0.10 + Math.random() * 0.18,
-        seed: Math.floor(Math.random() * 100000)
-      })
+      var column = newColumn(rows, false)
+      if (Math.random() < 0.22)
+        column.head -= Math.random() * rows * 0.75
+      next.push(column)
     }
+
+    frame = 0
     columns = next
   }
 
   function advance() {
     var rows = Math.max(1, Math.floor((root.widgetHeight - 64) / cellHeight))
     var next = []
+
+    frame++
+
     for (var i = 0; i < columns.length; i++) {
       var c = columns[i]
       var head = c.head + c.speed
-      if (head - c.length > rows + 1) {
-        head = -2 - Math.random() * Math.max(3, rows * 0.35)
-        c = {
-          head: head,
-          length: 5 + Math.floor(Math.random() * Math.max(5, rows * 0.75)),
-          speed: 0.10 + Math.random() * 0.18,
-          seed: Math.floor(Math.random() * 100000)
-        }
+
+      if (head - c.trail > rows + 1) {
+        c = newColumn(rows, true)
       } else {
         c = {
           head: head,
-          length: c.length,
+          trail: c.trail,
           speed: c.speed,
-          seed: c.seed
+          seed: c.seed,
+          brightness: c.brightness
         }
       }
+
       next.push(c)
     }
+
     columns = next
   }
 
-  function glyphFor(column, row) {
-    var seed = column.seed + row * 17 + Math.floor(column.head * 3)
+  function glyphFor(column, segment) {
+    var seed = column.seed + segment * 31 + Math.floor(column.head * 1.7)
     var index = Math.abs(seed * 13 + column.seed * 7) % glyphs.length
     return glyphs.charAt(index)
   }
@@ -122,30 +138,44 @@ Item {
             ctx.textBaseline = "top"
 
             var rows = Math.max(1, Math.floor(height / cellHeight))
+
             for (var i = 0; i < root.columns.length; i++) {
               var column = root.columns[i]
               var x = i * cellWidth
               if (x >= width) continue
 
               var head = column.head
-              var tail = Math.floor(head - column.length)
-              var fractionalOffset = (head - Math.floor(head)) * cellHeight
+              var first = Math.floor(head - column.trail)
+              var last = Math.ceil(head)
 
-              for (var row = Math.max(0, tail); row <= Math.min(rows, Math.ceil(head)); row++) {
-                var distance = head - row
-                if (distance < 0 || distance > column.length) continue
+              for (var segment = first; segment <= last; segment++) {
+                var distance = head - segment
+                if (distance < 0 || distance > column.trail) continue
 
-                var alpha = Math.max(0.08, 1.0 - (distance / column.length))
-                if (distance < 1.0) alpha = 1.0
-                else if (distance < 2.5) alpha = Math.min(1.0, alpha * 1.15)
+                var y = (segment - (head - Math.floor(head))) * cellHeight
+                if (y < -cellHeight || y > height) continue
+
+                var normalized = distance / Math.max(1, column.trail)
+                var alpha = Math.pow(1.0 - normalized, 1.55) * column.brightness
+
+                if (distance < 0.55) {
+                  alpha = Math.min(1.0, 0.98 * column.brightness)
+                } else if (distance < 1.6) {
+                  alpha = Math.min(0.82, alpha + 0.22)
+                }
+
+                var flicker = ((column.seed + segment * 17 + root.frame) % 29 === 0)
+                  ? 0.72
+                  : 1.0
 
                 ctx.fillStyle = Qt.rgba(
                   Color.accent.r,
                   Color.accent.g,
                   Color.accent.b,
-                  alpha * 0.95
+                  Math.max(0.035, alpha * 0.9 * flicker)
                 )
-                ctx.fillText(root.glyphFor(column, row), x, row * cellHeight + fractionalOffset)
+
+                ctx.fillText(root.glyphFor(column, segment), x, y)
               }
             }
           }
