@@ -89,17 +89,38 @@ Item {
         color: Util.alpha(Color.background, 0.92)
         borderSpec: Border.flat(Util.alpha(Color.accent, 0.68), 1)
 
+        Text {
+          id: header
+          x: Style.space(14)
+          y: Style.space(9)
+          text: "> matrix"
+          color: Color.foreground
+          font.family: Style.font.family
+          font.pixelSize: Style.fontPx(0.78)
+          z: 2
+        }
+
+        Text {
+          x: header.x + header.implicitWidth + Style.space(10)
+          y: header.y
+          text: "desktop"
+          color: Util.alpha(Color.muted, 0.62)
+          font.family: Style.font.family
+          font.pixelSize: Style.fontPx(0.72)
+          z: 2
+        }
+
         Canvas {
           id: matrixCanvas
           z: 1
           anchors.left: parent.left
           anchors.right: parent.right
-          anchors.top: parent.top
+          anchors.top: header.bottom
           anchors.bottom: footer.top
           anchors.leftMargin: Style.space(14)
           anchors.rightMargin: Style.space(14)
-          anchors.topMargin: Style.space(12)
-          anchors.bottomMargin: Style.space(4)
+          anchors.topMargin: Style.space(7)
+          anchors.bottomMargin: Style.space(12)
 
           onWidthChanged: root.resetColumns()
           onHeightChanged: root.resetColumns()
@@ -138,29 +159,6 @@ Item {
             }
           }
         }
-
-        Text {
-          id: footer
-          x: Style.space(14)
-          y: parent.height - implicitHeight - Style.space(8)
-          text: "> matrix"
-          color: Util.alpha(Color.foreground, 0.72)
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.78)
-          z: 2
-        }
-
-        Text {
-          x: footer.x + footer.implicitWidth + Style.space(10)
-          y: footer.y
-          text: "desktop"
-          color: Util.alpha(Color.muted, 0.62)
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.72)
-          z: 2
-        }
-      }
-
 
       Timer {
         interval: 55
