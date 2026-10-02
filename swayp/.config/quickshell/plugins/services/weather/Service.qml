@@ -14,8 +14,10 @@ Item {
   property bool loading: false
   property bool available: false
   property real temperature: 0
+  property real apparentTemperature: 0
   property real humidity: 0
   property real windSpeed: 0
+  property real precipitation: 0
   property int weatherCode: -1
   property string condition: "—"
   property string updatedAt: ""
@@ -67,8 +69,10 @@ Item {
       if (!current) throw new Error("missing current weather")
 
       root.temperature = Number(current.temperature_2m)
+      root.apparentTemperature = Number(current.apparent_temperature)
       root.humidity = Number(current.relative_humidity_2m)
       root.windSpeed = Number(current.wind_speed_10m)
+      root.precipitation = Number(current.precipitation)
       root.weatherCode = Number(current.weather_code)
       root.condition = root.conditionFor(root.weatherCode)
       root.updatedAt = String(current.time || "")
@@ -87,7 +91,7 @@ Item {
       "curl",
       "-fsSL",
       "--max-time", "10",
-      "https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&timezone=Europe%2FMadrid"
+      "https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation&timezone=Europe%2FMadrid"
     ]
 
     stdout: StdioCollector {
