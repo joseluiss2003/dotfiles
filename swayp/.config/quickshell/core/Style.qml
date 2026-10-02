@@ -214,6 +214,7 @@ QtObject {
   // the old pixel value through `Style.space(px)` (or `spaceReal(px)` for
   // fractional geometry); themes can make the shell denser or roomier
   // with `[spacing] scale`, or pin individual tokens.
+  property real quickshellScale: 1.15
   property real spacingScale: 1.0
   property bool spacingScaleWithFont: true
   property var spacingOverrides: ({})
@@ -222,7 +223,7 @@ QtObject {
   function spaceReal(px) {
     var n = Number(px)
     if (!isFinite(n) || n <= 0) return 0
-    return n * effectiveSpacingScale
+    return n * effectiveSpacingScale * quickshellScale
   }
 
   function space(px) {
@@ -341,13 +342,13 @@ QtObject {
   readonly property real fontScale: Math.max(1 / 12, fontBaseSize / 12)
 
   function fontPx(mult) {
-    return Math.max(1, Math.round(fontBaseSize * mult))
+    return Math.max(1, Math.round(fontBaseSize * mult * quickshellScale))
   }
 
   function fontToken(key, fallback) {
     var v = fontOverrides[key]
     var n = Number(v)
-    return (isFinite(n) && n > 0) ? Math.round(n) : fallback
+    return (isFinite(n) && n > 0) ? Math.max(1, Math.round(n * quickshellScale)) : fallback
   }
 
   function barToken(key, fallback) {
@@ -355,6 +356,7 @@ QtObject {
     var n = Number(v)
     var base = (isFinite(n) && n > 0) ? n : fallback
     if (barScaleWithFont) base *= fontScale
+    base *= quickshellScale
     return Math.max(1, Math.round(base))
   }
 
@@ -423,6 +425,7 @@ QtObject {
     var styleOut = {}
     var spacingOut = {}
     var nextBase = 12
+    var nextQuickshellScale = 1.15
     var nextSpacingScale = 1.0
     var nextSpacingScaleWithFont = true
     var nextBarScaleWithFont = true
@@ -445,6 +448,11 @@ QtObject {
           var b = parseInt(raw, 10)
           if (isFinite(b)) barOut[key] = b
         }
+      } else if (section === "quickshell") {
+        if (key === "scale") {
+          var q = parseFloat(raw)
+          if (isFinite(q)) nextQuickshellScale = q
+        }
       } else if (section === "spacing") {
         if (key === "scale-with-font") {
           nextSpacingScaleWithFont = boolToken(raw, nextSpacingScaleWithFont)
@@ -464,7 +472,10 @@ QtObject {
     // either — a theme that wants display-large = 64 should be allowed to
     // ship it.
     if (!isFinite(nextBase) || nextBase < 1) nextBase = 1
+    if (!isFinite(nextQuickshellScale) || nextQuickshellScale < 0.90) nextQuickshellScale = 1.15
+    if (nextQuickshellScale > 1.30) nextQuickshellScale = 1.30
     if (!isFinite(nextSpacingScale) || nextSpacingScale < 0) nextSpacingScale = 1.0
+    quickshellScale = nextQuickshellScale
     spacingScale = nextSpacingScale
     spacingScaleWithFont = nextSpacingScaleWithFont
     fontBaseSize = nextBase
