@@ -65,103 +65,104 @@ Item {
           anchors.bottom: parent.bottom
           anchors.leftMargin: Style.space(18)
           anchors.rightMargin: Style.space(18)
-          anchors.topMargin: Style.space(43)
-          anchors.bottomMargin: Style.space(15)
-          spacing: Style.space(9)
+          anchors.topMargin: Style.space(45)
+          anchors.bottomMargin: Style.space(14)
+
+          Item {
+            width: parent.width
+            height: 106
+
+            Text {
+              anchors.horizontalCenter: parent.horizontalCenter
+              anchors.top: parent.top
+              text: root.weatherService ? root.weatherService.locationName : "MADRID"
+              color: Util.alpha(Color.foreground, 0.68)
+              font.family: Style.font.family
+              font.pixelSize: Style.fontPx(0.72)
+              font.weight: Font.DemiBold
+            }
+
+            Text {
+              anchors.horizontalCenter: parent.horizontalCenter
+              anchors.top: parent.top
+              anchors.topMargin: Style.space(20)
+              text: root.valueOrDash(Math.round(root.weatherService.temperature) + "°C")
+              color: Color.accent
+              font.family: Style.font.family
+              font.pixelSize: Style.fontPx(2.45)
+              font.weight: Font.DemiBold
+            }
+
+            Text {
+              anchors.horizontalCenter: parent.horizontalCenter
+              anchors.top: parent.top
+              anchors.topMargin: Style.space(67)
+              text: root.weatherService ? root.weatherService.condition : "LOADING"
+              color: Color.foreground
+              font.family: Style.font.family
+              font.pixelSize: Style.fontPx(0.78)
+              font.weight: Font.DemiBold
+            }
+
+            Text {
+              anchors.horizontalCenter: parent.horizontalCenter
+              anchors.top: parent.top
+              anchors.topMargin: Style.space(84)
+              text: root.weatherService && root.weatherService.available
+                ? "FEELS " + Math.round(root.weatherService.apparentTemperature) + "°C"
+                : "FEELS —"
+              color: Util.alpha(Color.foreground, 0.5)
+              font.family: Style.font.family
+              font.pixelSize: Style.fontPx(0.64)
+            }
+          }
+
+          Item {
+            width: parent.width
+            height: 1
+          }
 
           Row {
             width: parent.width
-            spacing: Style.space(12)
-
-            Column {
-              width: parent.width * 0.58
-              spacing: Style.space(2)
-
-              Text {
-                text: root.weatherService ? root.weatherService.locationName : "MADRID"
-                color: Util.alpha(Color.foreground, 0.72)
-                font.family: Style.font.family
-                font.pixelSize: Style.fontPx(0.72)
-                font.weight: Font.DemiBold
-              }
-
-              Text {
-                text: root.valueOrDash(Math.round(root.weatherService.temperature) + "°C")
-                color: Color.accent
-                font.family: Style.font.family
-                font.pixelSize: Style.fontPx(2.25)
-                font.weight: Font.DemiBold
-              }
-            }
-
-            Column {
-              width: parent.width * 0.42 - Style.space(12)
-              anchors.verticalCenter: parent.verticalCenter
-              spacing: Style.space(3)
-
-              Text {
-                width: parent.width
-                text: root.weatherService
-                  ? root.weatherService.condition
-                  : "LOADING"
-                color: Color.foreground
-                font.family: Style.font.family
-                font.pixelSize: Style.fontPx(0.76)
-                font.weight: Font.DemiBold
-                wrapMode: Text.Wrap
-              }
-
-              Text {
-                text: root.weatherService && root.weatherService.available
-                  ? "FEELS " + Math.round(root.weatherService.apparentTemperature) + "°C"
-                  : "FEELS —"
-                color: Util.alpha(Color.foreground, 0.58)
-                font.family: Style.font.family
-                font.pixelSize: Style.fontPx(0.66)
-              }
-            }
-          }
-
-          Rectangle {
-            width: parent.width
-            height: 1
-            color: Util.alpha(Color.foreground, 0.12)
-          }
-
-          Grid {
-            width: parent.width
-            columns: 2
-            columnSpacing: Style.space(24)
-            rowSpacing: Style.space(9)
+            spacing: 0
 
             Text {
+              width: parent.width / 2
               text: "HUM    " + root.valueOrDash(Math.round(root.weatherService.humidity) + "%")
               color: Color.foreground
               font.family: Style.font.family
-              font.pixelSize: Style.fontPx(0.72)
+              font.pixelSize: Style.fontPx(0.7)
             }
 
             Text {
+              width: parent.width / 2
               text: "WIND   " + root.valueOrDash(Math.round(root.weatherService.windSpeed) + " km/h")
               color: Color.foreground
               font.family: Style.font.family
-              font.pixelSize: Style.fontPx(0.72)
+              font.pixelSize: Style.fontPx(0.7)
             }
+          }
+
+          Row {
+            width: parent.width
+            spacing: 0
 
             Text {
+              width: parent.width / 2
               text: "RAIN   " + root.valueOrDash(root.weatherService.precipitation.toFixed(1) + " mm")
               color: Color.foreground
               font.family: Style.font.family
-              font.pixelSize: Style.fontPx(0.72)
+              font.pixelSize: Style.fontPx(0.7)
             }
 
             Text {
+              width: parent.width / 2
               text: root.weatherService && root.weatherService.available
                 ? "UPDATE " + String(root.weatherService.updatedAt).split("T")[1].slice(0, 5)
                 : "UPDATE —"
               color: Color.foreground
               font.family: Style.font.family
-              font.pixelSize: Style.fontPx(0.72)
+              font.pixelSize: Style.fontPx(0.7)
             }
           }
 
@@ -176,7 +177,7 @@ Item {
               : root.weatherService && root.weatherService.available
                 ? "OPEN-METEO / CURRENT"
                 : "NO DATA"
-            color: Util.alpha(Color.foreground, 0.45)
+            color: Util.alpha(Color.foreground, 0.42)
             font.family: Style.font.family
             font.pixelSize: Style.fontPx(0.62)
           }
