@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Effects
 import qs.core
 import qs.ui
+import "../matrix"
 
 Item {
   id: root
@@ -164,14 +165,27 @@ Item {
 
   Rectangle {
     anchors.fill: parent
-    color: Color.bar.background
+    color: Util.alpha(Color.bar.background, 0.88)
+  }
 
-    Column {
+  MatrixRain {
+    id: matrixBackground
+    anchors.fill: parent
+    anchors.margins: 0
+    glyphColor: Color.success
+    glyphOpacity: 0.20
+    updateDelay: 4
+    z: 0
+  }
+
+  Column {
+
       anchors.horizontalCenter: parent.horizontalCenter
       anchors.verticalCenter: parent.verticalCenter
       anchors.horizontalCenterOffset: root.shakeOffset
       spacing: 40
       opacity: root.revealProgress
+      z: 1
       SwayPWordmark {
         width: 760
         height: 180
