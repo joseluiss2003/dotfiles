@@ -9,7 +9,7 @@ Item {
   id: root
 
   property var shell: null
-  property real widgetSize: 260
+  property real widgetSize: Style.space(260)
   property var weatherService: shell ? shell.firstPartyServiceFor("swayp.weather") : null
 
   function refreshService() {
