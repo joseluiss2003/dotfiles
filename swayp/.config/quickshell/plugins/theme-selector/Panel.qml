@@ -475,11 +475,7 @@ Item {
             }
 
             fillMode: Image.PreserveAspectCrop
-            // Decode at display size instead of the full-resolution screenshot.
-            // The selector never needs the original 1080p/1440p/4K pixels.
-            sourceSize.width: width
-            sourceSize.height: height
-            asynchronous: false
+            asynchronous: true
             cache: true
             smooth: true
           }
