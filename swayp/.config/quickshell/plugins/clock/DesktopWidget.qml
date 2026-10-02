@@ -71,11 +71,11 @@ Item {
 
           property string value: Qt.formatDateTime(root.displayDate, "HH:mm")
           property var segments: ({
-            "0": [true, true, true, false, true, true, true],
+            "0": [true, true, true, true, true, true, false],
             "1": [false, true, true, false, false, false, false],
             "2": [true, true, false, true, true, false, true],
             "3": [true, true, true, true, false, false, true],
-            "4": [false, true, true, true, false, true, false],
+            "4": [false, true, true, false, false, true, true],
             "5": [true, false, true, true, false, true, true],
             "6": [true, false, true, true, true, true, true],
             "7": [true, true, true, false, false, false, false],
@@ -85,7 +85,7 @@ Item {
 
           Row {
             anchors.centerIn: parent
-            spacing: Style.space(9)
+            spacing: Style.space(10)
 
             Repeater {
               model: clockDisplay.value.length
@@ -97,7 +97,7 @@ Item {
                 readonly property bool colon: glyph === ":"
 
                 width: colon ? 16 : 48
-                height: 92
+                height: 84
 
                 Repeater {
                   model: colon ? 2 : 7
@@ -109,22 +109,19 @@ Item {
                       ? true
                       : clockDisplay.segments[glyph][index]
 
-                    width: colon ? 8 : 40
-                    height: colon ? 8 : 10
-                    radius: 0
                     visible: active
                     color: Color.foreground
+                    radius: 0
+
+                    width: colon ? 8 : [40, 10, 10, 40, 10, 10, 40][index]
+                    height: colon ? 8 : [10, 36, 36, 10, 36, 36, 10][index]
 
                     x: colon
                       ? 4
-                      : [4, 38, 38, 4, 4, 4, 4][index]
+                      : [4, 38, 38, 4, 0, 0, 4][index]
                     y: colon
-                      ? (index === 0 ? 28 : 56)
-                      : [0, 8, 41, 84, 50, 8, 41][index]
-
-                    rotation: colon
-                      ? 0
-                      : [0, 90, 90, 0, 0, 0, 0][index]
+                      ? (index === 0 ? 26 : 50)
+                      : [0, 4, 44, 74, 44, 4, 37][index]
                   }
                 }
               }
