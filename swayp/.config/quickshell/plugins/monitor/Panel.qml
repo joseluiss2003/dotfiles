@@ -309,12 +309,12 @@ Panel {
 
     for (var i = 0; i < lines.length; i++) {
       var line = lines[i]
-      if (/^\\[quickshell\\]\\s*$/.test(line)) {
+      if (/^\[quickshell\]\s*$/.test(line)) {
         inSection = true
         out.push(line)
         continue
       }
-      if (/^\\[[^]]+\\]\\s*$/.test(line)) {
+      if (/^\[[^]]+\]\s*$/.test(line)) {
         if (inSection && !found) {
           out.push("scale = " + scale.toFixed(2))
           found = true
@@ -323,7 +323,7 @@ Panel {
         out.push(line)
         continue
       }
-      if (inSection && /^\\s*scale\\s*=/.test(line)) {
+      if (inSection && /^\s*scale\s*=/.test(line)) {
         if (!found) {
           out.push("scale = " + scale.toFixed(2))
           found = true
