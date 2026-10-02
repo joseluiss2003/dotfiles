@@ -23,7 +23,7 @@ SwayP is designed to be **Sway-native**, modular and maintainable. It takes arch
 - Multi-monitor-aware shell components.
 - Centralized semantic colors shared by Sway, Quickshell and applications.
 - Kitty, Zsh, Starship, Fastfetch and Fuzzel integration.
-- Maple Mono NF typography across Sway and Quickshell.
+- Centralized semantic typography, spacing and Quickshell scaling.
 - A reproducible Arch Linux installer using GNU Stow.
 - Optional desktop utilities through `./install.sh --extras`.
 
@@ -45,12 +45,18 @@ Themes are data-driven and generated from a single source of truth. The current 
 
 - Black Metal
 - Catppuccin
-- Catppuccin Latte
-- Flexoki Light
+- Everforest
 - Gruvbox
 - Kanagawa
+- Last Horizon
+- Lumon
+- Miasma
 - Osaka Jade
-- Rosé Pine Dawn
+- Oxocarbon
+- Ristretto
+- Rosé Pine
+- Tokyo Night
+- Ayu Mirage
 
 A theme can update the visual system across:
 
