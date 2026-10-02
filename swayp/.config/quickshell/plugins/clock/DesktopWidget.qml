@@ -73,10 +73,10 @@ Item {
               ctx.fillStyle = Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, Color.foreground.a)
 
               var value = clockDisplay.value
-              var digitW = 43
-              var digitH = 68
-              var stroke = 9
-              var gap = 5
+              var digitW = 48
+              var digitH = 76
+              var stroke = 11
+              var gap = 4
               var colonW = 11
               var totalW = digitW * 4 + gap * 3 + colonW + gap
               var startX = (width - totalW) / 2
