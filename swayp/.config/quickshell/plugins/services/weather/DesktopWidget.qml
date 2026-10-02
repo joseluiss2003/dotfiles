@@ -8,6 +8,7 @@ import qs.ui
 Item {
   id: root
 
+  property var shell: null
   property real widgetSize: 260
   property var weatherService: shell ? shell.firstPartyServiceFor("swayp.weather") : null
 
@@ -15,12 +16,8 @@ Item {
     weatherService = shell ? shell.firstPartyServiceFor("swayp.weather") : null
   }
 
+  onShellChanged: refreshService()
   Component.onCompleted: refreshService()
-
-  Connections {
-    target: shell
-    function onPluginIdChanged() { root.refreshService() }
-  }
 
   Variants {
     model: Quickshell.screens
