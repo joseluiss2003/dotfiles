@@ -215,8 +215,6 @@ Item {
               font.pixelSize: Style.fontPx(0.64)
             }
           }
-
-          }
         }
       }
     }
