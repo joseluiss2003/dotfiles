@@ -89,40 +89,17 @@ Item {
         color: Util.alpha(Color.background, 0.92)
         borderSpec: Border.flat(Util.alpha(Color.accent, 0.68), 1)
 
-        Text {
-          id: header
-          x: Style.space(14)
-          y: Style.space(9)
-          text: "MATRIX"
-          color: Color.foreground
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.92)
-          font.weight: Font.DemiBold
-          z: 2
-        }
-
-        Text {
-          x: width - implicitWidth - Style.space(14)
-          y: Style.space(9)
-          text: "LIVE"
-          color: Util.alpha(Color.accent, 0.82)
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.78)
-          font.weight: Font.Medium
-          z: 2
-        }
-
         Canvas {
           id: matrixCanvas
           z: 1
           anchors.left: parent.left
           anchors.right: parent.right
-          anchors.top: header.bottom
-          anchors.bottom: footer.top
+          anchors.top: parent.top
+          anchors.bottom: parent.bottom
           anchors.leftMargin: Style.space(14)
           anchors.rightMargin: Style.space(14)
-          anchors.topMargin: Style.space(7)
-          anchors.bottomMargin: Style.space(3)
+          anchors.topMargin: Style.space(12)
+          anchors.bottomMargin: Style.space(12)
 
           onWidthChanged: root.resetColumns()
           onHeightChanged: root.resetColumns()
