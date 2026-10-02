@@ -53,10 +53,12 @@ Panel {
   // Text size slider — curated macOS-style notches (px). The panel snaps to
   // these stops; the CLI (swayp-display-text-size) accepts any integer in range.
   readonly property var textSizeStops: [9, 10, 11, 12, 14, 16, 20]
+  readonly property var quickshellScaleStops: [0.90, 0.95, 1.00, 1.05, 1.10, 1.15, 1.20, 1.25, 1.30]
   // While a change is in flight, the chosen stop index overrides the live
   // base-size so the knob doesn't snap back during the file round-trip. -1 =
   // no pending change; follow Style.font.baseSize.
   property int textSizePreviewIndex: -1
+  property int quickshellScalePreviewIndex: -1
 
   // A text-size change reflows the whole panel (both font and spacing scale),
   // which slides rows under a stationary pointer and fires synthetic hover.
@@ -72,6 +74,7 @@ Panel {
     var list = []
     if (brightnessAvailable) list.push("brightness")
     list.push("textsize")
+    list.push("quickshell")
     if (displays.length > 1) list.push("monitors")
     return list
   }
@@ -79,17 +82,18 @@ Panel {
   function sectionCount(section) {
     if (section === "brightness") return 0  // only the slider sentinel at -1
     if (section === "textsize") return 0    // slider sentinel at -1, like brightness
+    if (section === "quickshell") return 0  // slider sentinel at -1, like brightness
     if (section === "monitors") return displays.length
     return 0
   }
 
   function sectionIsSingleRow(section) {
     // Brightness and text size are lone sliders.
-    return section === "brightness" || section === "textsize"
+    return section === "brightness" || section === "textsize" || section === "quickshell"
   }
 
   function sectionFirstIndex(section) {
-    if (section === "brightness" || section === "textsize") return -1
+    if (section === "brightness" || section === "textsize" || section === "quickshell") return -1
     return 0
   }
 
@@ -148,7 +152,7 @@ Panel {
     var count = sectionCount(focusSection)
     if (sectionIsSingleRow(focusSection)) {
       // brightness/text size use the -1 sentinel; scale clamps into the presets.
-      if (focusSection === "brightness" || focusSection === "textsize") selectedIndex = -1
+      if (focusSection === "brightness" || focusSection === "textsize" || focusSection === "quickshell") selectedIndex = -1
       else if (selectedIndex < 0 || selectedIndex >= count) selectedIndex = 0
       return
     }
@@ -278,6 +282,34 @@ Panel {
     return textSizePreviewIndex >= 0 ? textSizeStops[textSizePreviewIndex] : Style.font.baseSize
   }
 
+  function currentQuickshellScaleIndex() {
+    if (quickshellScalePreviewIndex >= 0) return quickshellScalePreviewIndex
+    var best = 0
+    var bestDist = 1e9
+    for (var i = 0; i < quickshellScaleStops.length; i++) {
+      var d = Math.abs(quickshellScaleStops[i] - Style.quickshellScale)
+      if (d < bestDist) { bestDist = d; best = i }
+    }
+    return best
+  }
+
+  function displayedQuickshellScale() {
+    return quickshellScaleStops[currentQuickshellScaleIndex()]
+  }
+
+  function setQuickshellScale(value) {
+    quickshellScaleProc.command = ["swayp-display-quickshell-scale", String(value)]
+    if (!quickshellScaleProc.running) quickshellScaleProc.running = true
+  }
+
+  function adjustQuickshellScale(deltaSteps) {
+    var idx = currentQuickshellScaleIndex() + deltaSteps
+    if (idx < 0) idx = 0
+    if (idx > quickshellScaleStops.length - 1) idx = quickshellScaleStops.length - 1
+    quickshellScalePreviewIndex = idx
+    setQuickshellScale(quickshellScaleStops[idx])
+  }
+
   function setTextSize(px) {
     textScaleProc.command = ["swayp-display-text-size", String(px)]
     if (!textScaleProc.running) textScaleProc.running = true
@@ -388,6 +420,11 @@ Panel {
     stdout: StdioCollector { waitForEnd: true }
   }
 
+  Process {
+    id: quickshellScaleProc
+    stdout: StdioCollector { waitForEnd: true }
+  }
+
   // Clears the hover-suppression flag once the reflow triggered by a text-size
   // change has settled.
   Timer {
@@ -402,6 +439,14 @@ Panel {
   // panel, so suppress hover for a beat while it lands.
   Connections {
     target: Style
+    function onQuickshellScaleChanged() {
+      if (root.quickshellScalePreviewIndex >= 0) {
+        var idx = root.currentQuickshellScaleIndex()
+        if (Math.abs(root.quickshellScaleStops[idx] - Style.quickshellScale) < 0.001)
+          root.quickshellScalePreviewIndex = -1
+      }
+    }
+
     function onFontBaseSizeChanged() {
       root.markReflowing()
       if (root.textSizePreviewIndex >= 0
@@ -446,6 +491,7 @@ Panel {
         else if (dx !== 0) {
           if (root.focusSection === "brightness") root.adjustBrightness(dx * 5)
           else if (root.focusSection === "textsize") root.adjustTextSize(dx)
+          else if (root.focusSection === "quickshell") root.adjustQuickshellScale(dx)
         }
       }
       onActivateRequested: if (root.cursorActive) root.activateCursor()
@@ -666,6 +712,78 @@ Column {
                 ) {
                   root.cursorActive = true
                   root.focusSection = "textsize"
+                  root.selectedIndex = -1
+                }
+              }
+            }
+          }
+
+          // ---------- Quickshell scale ----------
+          Column {
+            width: parent.width
+            spacing: Style.spacing.xs
+
+            Item {
+              width: parent.width
+              implicitHeight: Math.max(quickshellScaleHeader.implicitHeight, quickshellScaleValue.implicitHeight)
+
+              PanelSectionHeader {
+                id: quickshellScaleHeader
+                text: "QUICKSHELL SCALE"
+                leadingGlyph: Icons.monitor
+                foreground: root.bar.foreground
+                fontFamily: root.bar.fontFamily
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+              }
+
+              Text {
+                id: quickshellScaleValue
+                textFormat: Text.PlainText
+                text: Number(root.displayedQuickshellScale()).toFixed(2) + "×"
+                color: Color.foreground
+                font.family: root.bar.fontFamily
+                font.pixelSize: Style.font.caption
+                font.bold: true
+                anchors.right: parent.right
+                anchors.rightMargin: Style.spacing.inset
+                anchors.verticalCenter: parent.verticalCenter
+              }
+            }
+
+            CursorSurface {
+              id: quickshellScaleRow
+              width: parent.width
+              height: quickshellScaleSlider.implicitHeight
+              hasCursor: root.cursorActive && root.focusSection === "quickshell" && root.selectedIndex === -1
+              onHasCursorChanged: if (hasCursor) root.ensureCursorVisible(quickshellScaleRow)
+              foreground: root.bar.foreground
+              fill: "transparent"
+              currentFill: "transparent"
+              showCursorMarker: false
+              outline: false
+
+              PanelSlider {
+                id: quickshellScaleSlider
+                bar: root.bar
+                anchors.fill: parent
+                anchors.leftMargin: Style.spacing.inset
+                anchors.rightMargin: Style.spacing.inset
+                minimum: 0
+                maximum: root.quickshellScaleStops.length - 1
+                step: 1
+                integer: true
+                tickCount: root.quickshellScaleStops.length
+                value: root.currentQuickshellScaleIndex()
+                onReleased: function(v) {
+                  root.setQuickshellScale(root.quickshellScaleStops[Math.round(v)])
+                }
+              }
+
+              HoverHandler {
+                onHoveredChanged: if (hovered && !root.reflowingText) {
+                  root.cursorActive = true
+                  root.focusSection = "quickshell"
                   root.selectedIndex = -1
                 }
               }
