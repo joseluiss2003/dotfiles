@@ -116,7 +116,7 @@ Item {
           anchors.left: parent.left
           anchors.right: parent.right
           anchors.top: header.bottom
-          anchors.bottom: footer.top
+          anchors.bottom: parent.bottom
           anchors.leftMargin: Style.space(14)
           anchors.rightMargin: Style.space(14)
           anchors.topMargin: Style.space(7)
