@@ -19,6 +19,10 @@ Item {
   onShellChanged: refreshService()
   Component.onCompleted: refreshService()
 
+  function valueOrDash(value) {
+    return root.weatherService && root.weatherService.available ? value : "—"
+  }
+
   Variants {
     model: Quickshell.screens
 
@@ -57,83 +61,124 @@ Item {
         Column {
           anchors.left: parent.left
           anchors.right: parent.right
-          anchors.verticalCenter: parent.verticalCenter
+          anchors.top: parent.top
+          anchors.bottom: parent.bottom
           anchors.leftMargin: Style.space(18)
           anchors.rightMargin: Style.space(18)
-          spacing: Style.space(8)
-
-          Text {
-            width: parent.width
-            text: root.weatherService ? root.weatherService.locationName : "MADRID"
-            color: Color.foreground
-            font.family: Style.font.family
-            font.pixelSize: Style.fontPx(0.86)
-            font.weight: Font.DemiBold
-          }
+          anchors.topMargin: Style.space(43)
+          anchors.bottomMargin: Style.space(15)
+          spacing: Style.space(9)
 
           Row {
-            spacing: Style.space(10)
+            width: parent.width
+            spacing: Style.space(12)
 
-            Text {
-              text: root.weatherService && root.weatherService.available
-                ? Math.round(root.weatherService.temperature) + "°C"
-                : "—"
-              color: Color.success
-              font.family: Style.font.family
-              font.pixelSize: Style.fontPx(2.15)
-              font.weight: Font.DemiBold
+            Column {
+              width: parent.width * 0.58
+              spacing: Style.space(2)
+
+              Text {
+                text: root.weatherService ? root.weatherService.locationName : "MADRID"
+                color: Util.alpha(Color.foreground, 0.72)
+                font.family: Style.font.family
+                font.pixelSize: Style.fontPx(0.72)
+                font.weight: Font.DemiBold
+              }
+
+              Text {
+                text: root.valueOrDash(Math.round(root.weatherService.temperature) + "°C")
+                color: Color.accent
+                font.family: Style.font.family
+                font.pixelSize: Style.fontPx(2.25)
+                font.weight: Font.DemiBold
+              }
             }
 
-            Text {
+            Column {
+              width: parent.width * 0.42 - Style.space(12)
               anchors.verticalCenter: parent.verticalCenter
-              text: root.weatherService
-                ? root.weatherService.condition
-                : "LOADING"
-              color: Color.foreground
-              font.family: Style.font.family
-              font.pixelSize: Style.fontPx(0.78)
+              spacing: Style.space(3)
+
+              Text {
+                width: parent.width
+                text: root.weatherService
+                  ? root.weatherService.condition
+                  : "LOADING"
+                color: Color.foreground
+                font.family: Style.font.family
+                font.pixelSize: Style.fontPx(0.76)
+                font.weight: Font.DemiBold
+                wrapMode: Text.Wrap
+              }
+
+              Text {
+                text: root.weatherService && root.weatherService.available
+                  ? "FEELS " + Math.round(root.weatherService.apparentTemperature) + "°C"
+                  : "FEELS —"
+                color: Util.alpha(Color.foreground, 0.58)
+                font.family: Style.font.family
+                font.pixelSize: Style.fontPx(0.66)
+              }
             }
           }
 
           Rectangle {
             width: parent.width
             height: 1
-            color: Util.alpha(Color.foreground, 0.14)
+            color: Util.alpha(Color.foreground, 0.12)
           }
 
           Grid {
+            width: parent.width
             columns: 2
-            columnSpacing: Style.space(22)
-            rowSpacing: Style.space(7)
+            columnSpacing: Style.space(24)
+            rowSpacing: Style.space(9)
 
             Text {
-              text: "HUM  " + (root.weatherService && root.weatherService.available
-                ? Math.round(root.weatherService.humidity) + "%"
-                : "—")
+              text: "HUM    " + root.valueOrDash(Math.round(root.weatherService.humidity) + "%")
               color: Color.foreground
               font.family: Style.font.family
-              font.pixelSize: Style.fontPx(0.76)
+              font.pixelSize: Style.fontPx(0.72)
             }
 
             Text {
-              text: "WIND " + (root.weatherService && root.weatherService.available
-                ? Math.round(root.weatherService.windSpeed) + " km/h"
-                : "—")
+              text: "WIND   " + root.valueOrDash(Math.round(root.weatherService.windSpeed) + " km/h")
               color: Color.foreground
               font.family: Style.font.family
-              font.pixelSize: Style.fontPx(0.76)
+              font.pixelSize: Style.fontPx(0.72)
             }
+
+            Text {
+              text: "RAIN   " + root.valueOrDash(root.weatherService.precipitation.toFixed(1) + " mm")
+              color: Color.foreground
+              font.family: Style.font.family
+              font.pixelSize: Style.fontPx(0.72)
+            }
+
+            Text {
+              text: root.weatherService && root.weatherService.available
+                ? "UPDATE " + String(root.weatherService.updatedAt).split("T")[1].slice(0, 5)
+                : "UPDATE —"
+              color: Color.foreground
+              font.family: Style.font.family
+              font.pixelSize: Style.fontPx(0.72)
+            }
+          }
+
+          Item {
+            width: 1
+            height: 1
           }
 
           Text {
             text: root.weatherService && root.weatherService.loading
               ? "FETCHING..."
               : root.weatherService && root.weatherService.available
-                ? "OPEN-METEO"
+                ? "OPEN-METEO / CURRENT"
                 : "NO DATA"
-            color: Util.alpha(Color.foreground, 0.58)
+            color: Util.alpha(Color.foreground, 0.45)
             font.family: Style.font.family
-            font.pixelSize: Style.fontPx(0.66)
+            font.pixelSize: Style.fontPx(0.62)
           }
         }
       }
