@@ -23,7 +23,7 @@ Item {
       next.push({
         head: -Math.random() * rows,
         length: 5 + Math.floor(Math.random() * Math.max(5, rows * 0.75)),
-        speed: 0.65 + Math.random() * 1.35,
+        speed: 0.25 + Math.random() * 0.45,
         seed: Math.floor(Math.random() * 100000)
       })
     }
@@ -41,7 +41,7 @@ Item {
         c = {
           head: head,
           length: 5 + Math.floor(Math.random() * Math.max(5, rows * 0.75)),
-          speed: 0.65 + Math.random() * 1.35,
+          speed: 0.25 + Math.random() * 0.45,
           seed: Math.floor(Math.random() * 100000)
         }
       } else {
