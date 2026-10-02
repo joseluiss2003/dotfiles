@@ -91,7 +91,9 @@ A plugin may declare multiple kinds and entry points.
 The registry validates manifests and rejects unsafe absolute or parent-traversing entry points.
 
 ## Configuration
-The shell configuration is ~/.config/swayp/shell.json. The repository supplies defaults and the shell falls back to them when user configuration is invalid or unavailable.
+The current shell configuration is `~/.config/swayp/shell.toml`. Repository defaults are supplied under `swayp/.config/swayp/`.
+
+The Display panel exposes a Quickshell scale setting stored under `[quickshell]`. It is separate from Sway output scaling.
 
 Bar widgets are identified by plugin ID:
 
