@@ -1,4 +1,4 @@
-# SwayP 1.0 architecture
+# SwayP 1.5 architecture
 
 This is the short reference for how the SwayP 1.0 shell fits together. Update it when the architecture changes.
 
@@ -103,6 +103,18 @@ Bar widgets are identified by plugin ID:
 }
 ~~~
 
+## Desktop widgets
+
+The current desktop layer includes:
+
+- a large seven-segment CLI-style clock;
+- a large seven-segment CLI-style weather temperature display backed by a shared weather service;
+- a Matrix-style decorative widget.
+
+All three use centralized `Style` geometry scaling so their proportions remain coherent when Quickshell scale changes.
+
+The current top bar remains icon-oriented and intentionally conventional; the stronger TUI/CLI language is concentrated in panels and desktop widgets.
+
 ## Runtime state
 Persistent runtime state lives under ~/.local/state/swayp/. Examples include the active theme, palette and notification history.
 
@@ -120,3 +132,5 @@ Omarchy and its Quattro direction are an explicit architectural and visual refer
 - Generated files are never the source of truth.
 - Prefer small composable APIs over direct plugin coupling.
 - Do not add a daemon merely to pass data that can be generated or shared directly.
+- Do not introduce Hyprland-specific dependencies into the Sway line.
+- Do not create parallel plugin, IPC, color or style systems.
