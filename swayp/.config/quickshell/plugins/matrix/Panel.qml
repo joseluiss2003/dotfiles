@@ -129,6 +129,7 @@ Item {
 
               var head = column.head
               var tail = Math.floor(head - column.length)
+              var fractionalOffset = (head - Math.floor(head)) * cellHeight
 
               for (var row = Math.max(0, tail); row <= Math.min(rows, Math.ceil(head)); row++) {
                 var distance = head - row
@@ -144,7 +145,7 @@ Item {
                   Color.accent.b,
                   alpha * 0.95
                 )
-                ctx.fillText(root.glyphFor(column, row), x, row * cellHeight)
+                ctx.fillText(root.glyphFor(column, row), x, row * cellHeight + fractionalOffset)
               }
             }
           }
@@ -152,7 +153,7 @@ Item {
       }
 
       Timer {
-        interval: 55
+        interval: 16
         repeat: true
         running: true
 
