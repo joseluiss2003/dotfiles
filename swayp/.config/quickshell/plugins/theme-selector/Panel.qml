@@ -465,8 +465,10 @@ Item {
             anchors.fill: parent
             anchors.margins: selected ? 2 : 1
 
+            // Only decode previews that are currently visible in the carousel.
+            // This avoids loading every theme image when the selector opens.
             source: {
-              if (themeSlot < 0 || themeSlot >= themeModel.count)
+              if (!nearby || themeSlot < 0 || themeSlot >= themeModel.count)
                 return ""
               var path = String(themeModel.get(themeSlot).preview || "")
               return path.length > 0 ? Util.fileUrl(path) : ""
