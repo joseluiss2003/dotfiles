@@ -1464,7 +1464,7 @@ Component.onCompleted: {
 
         onStatusChanged: {
           if (status === Loader.Error) {
-            console.warn("desktop widget " + desktopWidgetEntry.pluginId + " failed to load:", errorString())
+            console.warn("desktop widget " + desktopWidgetEntry.pluginId + " failed to load:", this.errorString)
           }
         }
 
