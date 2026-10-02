@@ -83,15 +83,113 @@ Item {
               font.weight: Font.DemiBold
             }
 
-            Text {
+            Item {
+              id: temperatureDisplay
               anchors.horizontalCenter: parent.horizontalCenter
               anchors.top: parent.top
-              anchors.topMargin: Style.space(18)
-              text: root.valueOrDash(Math.round(root.weatherService.temperature) + "°C")
-              color: Color.accent
-              font.family: Style.font.family
-              font.pixelSize: Style.fontPx(2.45)
-              font.weight: Font.DemiBold
+              anchors.topMargin: Style.space(14)
+              width: 178
+              height: 48
+
+              property string value: root.weatherService && root.weatherService.available
+                ? Math.round(root.weatherService.temperature) + "C"
+                : "--C"
+
+              Canvas {
+                anchors.fill: parent
+
+                onPaint: {
+                  var ctx = getContext("2d")
+                  ctx.clearRect(0, 0, width, height)
+                  ctx.fillStyle = Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, Color.accent.a)
+
+                  var digitW = 28
+                  var digitH = 42
+                  var stroke = 6
+                  var gap = 5
+                  var degreeSize = 7
+                  var value = temperatureDisplay.value
+                  var totalW = digitW * 2 + gap * 3 + degreeSize + 16
+                  var startX = (width - totalW) / 2
+                  var top = (height - digitH) / 2
+
+                  function h(x, y, w) {
+                    ctx.fillRect(x, y, w, stroke)
+                  }
+
+                  function v(x, y, hgt) {
+                    ctx.fillRect(x, y, stroke, hgt)
+                  }
+
+                  function drawDigit(ch, x) {
+                    var right = x + digitW - stroke
+                    var mid = top + (digitH - stroke) / 2
+
+                    switch (ch) {
+                    case "0":
+                      v(x, top, digitH); v(right, top, digitH)
+                      h(x + stroke, top, digitW - stroke * 2)
+                      h(x + stroke, top + digitH - stroke, digitW - stroke * 2)
+                      break
+                    case "1":
+                      v(x + (digitW - stroke) / 2, top, digitH)
+                      break
+                    case "2":
+                      h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
+                      v(right, top + stroke, (digitH - stroke) / 2 - 2)
+                      v(x, mid + stroke, (digitH - stroke) / 2 - 2)
+                      break
+                    case "3":
+                      h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
+                      v(right, top + stroke, mid - top - stroke)
+                      v(right, mid + stroke, digitH - (mid - top) - stroke)
+                      break
+                    case "4":
+                      v(x, top, mid - top); h(x, mid, digitW); v(right, top, digitH)
+                      break
+                    case "5":
+                      h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
+                      v(x, top + stroke, mid - top - stroke)
+                      v(right, mid + stroke, digitH - (mid - top) - stroke)
+                      break
+                    case "6":
+                      h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
+                      v(x, top + stroke, digitH - stroke * 2)
+                      v(right, mid + stroke, digitH - (mid - top) - stroke)
+                      break
+                    case "7":
+                      h(x, top, digitW); v(right, top + stroke, digitH - stroke)
+                      break
+                    case "8":
+                      h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
+                      v(x, top + stroke, digitH - stroke * 2)
+                      v(right, top + stroke, digitH - stroke * 2)
+                      break
+                    case "9":
+                      h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
+                      v(x, top + stroke, mid - top - stroke)
+                      v(right, top + stroke, digitH - stroke * 2)
+                      break
+                    }
+                  }
+
+                  function drawC(x) {
+                    h(x + stroke, top, digitW - stroke)
+                    h(x + stroke, top + digitH - stroke, digitW - stroke)
+                    v(x, top + stroke, digitH - stroke * 2)
+                  }
+
+                  var x = startX
+                  drawDigit(value.charAt(0), x)
+                  x += digitW + gap
+                  drawDigit(value.charAt(1), x)
+                  x += digitW + gap + 3
+
+                  ctx.fillRect(x, top, degreeSize, degreeSize)
+                  x += degreeSize + 10
+                  drawC(x)
+                }
+              }
             }
 
             Text {
