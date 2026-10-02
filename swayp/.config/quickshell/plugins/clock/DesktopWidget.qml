@@ -110,9 +110,7 @@ Item {
                   h(x + stroke, top + digitH - stroke, digitW - stroke * 2)
                   break
                 case "1":
-                  h(x + 10, top, 20)
-                  v(x + 19, top + stroke, digitH - stroke)
-                  h(x + 12, top + digitH - stroke, 18)
+                  v(x + (digitW - stroke) / 2, top, digitH)
                   break
                 case "2":
                   h(x, top, digitW)
