@@ -719,8 +719,10 @@ BarWidget {
 
     TrayIcon {
       anchors.centerIn: parent
-      width: Style.bar.iconCanvas
-      height: Style.bar.iconCanvas
+      // Tray glyphs share the same optical size as the other bar icons.
+      // Keep the 27px slot, but use the centralized 14px icon token.
+      width: Style.bar.iconFont
+      height: Style.bar.iconFont
       icon: trayItemRoot.modelData.icon
     }
 
