@@ -109,7 +109,7 @@ Item {
                   var gap = 7
                   var degreeSize = 9
                   var value = temperatureDisplay.value
-                  var totalW = digitW * 2 + gap * 3 + degreeSize + 18
+                  var totalW = digitW * 3 + gap * 2 + degreeSize + 12
                   var startX = (width - totalW) / 2
                   var top = (height - digitH) / 2
 
@@ -128,8 +128,8 @@ Item {
                     switch (ch) {
                     case "0":
                       v(x, top, digitH); v(right, top, digitH)
-                      h(x + stroke, top, digitW - stroke * 2)
-                      h(x + stroke, top + digitH - stroke, digitW - stroke * 2)
+                      h(x, top, digitW)
+                      h(x, top + digitH - stroke, digitW)
                       break
                     case "1":
                       v(x + (digitW - stroke) / 2, top, digitH)
@@ -174,9 +174,9 @@ Item {
                   }
 
                   function drawC(x) {
-                    h(x + stroke, top, digitW - stroke)
-                    h(x + stroke, top + digitH - stroke, digitW - stroke)
-                    v(x, top + stroke, digitH - stroke * 2)
+                    h(x, top, digitW)
+                    h(x, top + digitH - stroke, digitW)
+                    v(x, top, digitH)
                   }
 
                   var x = startX
