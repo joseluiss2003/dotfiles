@@ -58,6 +58,17 @@ Item {
           font.weight: Font.DemiBold
         }
 
+        Text {
+          anchors.right: parent.right
+          anchors.rightMargin: Style.space(14)
+          y: Style.space(9)
+          text: root.weatherService ? root.weatherService.locationName : "HUELVA"
+          color: Util.alpha(Color.foreground, 0.62)
+          font.family: Style.font.family
+          font.pixelSize: Style.fontPx(0.68)
+          font.weight: Font.DemiBold
+        }
+
         Column {
           anchors.left: parent.left
           anchors.right: parent.right
@@ -72,16 +83,6 @@ Item {
           Item {
             width: parent.width
             height: 170
-
-            Text {
-              anchors.horizontalCenter: parent.horizontalCenter
-              anchors.top: parent.top
-              text: root.weatherService ? root.weatherService.locationName : "HUELVA"
-              color: Util.alpha(Color.foreground, 0.68)
-              font.family: Style.font.family
-              font.pixelSize: Style.fontPx(0.72)
-              font.weight: Font.DemiBold
-            }
 
             Item {
               id: temperatureDisplay
