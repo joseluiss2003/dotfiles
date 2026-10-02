@@ -359,10 +359,9 @@ Item {
       }
     }
 
-    MouseArea {
-      anchors.fill: parent
-      acceptedButtons: Qt.NoButton
-      onPositionChanged: root.wakeRequested()
-    }
+  MouseArea {
+    anchors.fill: parent
+    acceptedButtons: Qt.NoButton
+    onPositionChanged: root.wakeRequested()
   }
 }
