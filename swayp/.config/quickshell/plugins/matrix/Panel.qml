@@ -159,11 +159,13 @@ Item {
             }
           }
         }
+      }
 
       Timer {
         interval: 55
         repeat: true
         running: true
+
         onTriggered: {
           root.advance()
           matrixCanvas.requestPaint()
