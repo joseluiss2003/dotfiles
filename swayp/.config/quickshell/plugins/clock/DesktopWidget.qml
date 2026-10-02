@@ -8,12 +8,12 @@ Item {
   id: root
 
   property real widgetWidth: 520
-  property real widgetHeight: 88
+  property real widgetHeight: 190
   property date displayDate: clock.date
 
   SystemClock {
     id: clock
-    precision: SystemClock.Seconds
+    precision: SystemClock.Minutes
     onDateChanged: root.displayDate = date
   }
 
@@ -43,46 +43,27 @@ Item {
         borderSpec: Border.flat(Util.alpha(Color.accent, 0.68), 1)
 
         Text {
-          id: header
-          x: Style.space(14)
-          y: Style.space(9)
-          text: "> clock"
+          id: timeText
+          anchors.horizontalCenter: parent.horizontalCenter
+          anchors.top: parent.top
+          anchors.topMargin: Style.space(30)
+          text: Qt.formatDateTime(root.displayDate, "HH:mm")
           color: Color.foreground
           font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.78)
+          font.pixelSize: Style.fontPx(3.8)
           font.weight: Font.DemiBold
+          horizontalAlignment: Text.AlignHCenter
         }
 
         Text {
-          x: width - implicitWidth - Style.space(14)
-          y: header.y
-          text: "system"
-          color: Util.alpha(Color.muted, 0.62)
+          anchors.horizontalCenter: parent.horizontalCenter
+          anchors.top: timeText.bottom
+          anchors.topMargin: Style.space(2)
+          text: Qt.formatDateTime(root.displayDate, "dddd, MMMM d")
+          color: Util.alpha(Color.foreground, 0.72)
           font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.72)
-        }
-
-        Text {
-          anchors.left: parent.left
-          anchors.leftMargin: Style.space(14)
-          anchors.bottom: parent.bottom
-          anchors.bottomMargin: Style.space(9)
-          text: Qt.formatDateTime(root.displayDate, "HH:mm:ss")
-          color: Color.foreground
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(1.55)
-          font.weight: Font.DemiBold
-        }
-
-        Text {
-          anchors.right: parent.right
-          anchors.rightMargin: Style.space(14)
-          anchors.bottom: parent.bottom
-          anchors.bottomMargin: Style.space(12)
-          text: Qt.formatDateTime(root.displayDate, "ddd dd MMM yyyy").toUpperCase()
-          color: Util.alpha(Color.muted, 0.82)
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.76)
+          font.pixelSize: Style.fontPx(0.9)
+          horizontalAlignment: Text.AlignHCenter
         }
       }
     }
