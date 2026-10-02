@@ -7,8 +7,7 @@ Item {
   property int fontSize: Math.max(11, Style.fontPx(0.98))
   property int cellWidth: Math.max(8, Math.round(fontSize * 0.72))
   property int cellHeight: Math.max(12, Math.round(fontSize * 1.02))
-  property int updateDelay: 8
-  property real density: 1.0
+  property int updateDelay: 4
   property color glyphColor: Color.success
   property real glyphOpacity: 1.0
   property var columns: []
@@ -40,7 +39,7 @@ Item {
 
   function resetColumns() {
     var rows = Math.max(4, Math.floor(height / cellHeight))
-    var count = Math.max(1, Math.floor(width / (cellWidth / Math.max(0.5, root.density))))
+    var count = Math.max(1, Math.floor(width / cellWidth))
     var next = []
 
     for (var i = 0; i < count; i++) {
