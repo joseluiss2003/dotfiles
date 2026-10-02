@@ -13,71 +13,102 @@ Item {
   property int cellWidth: Math.max(8, Math.round(matrixFontSize * 0.72))
   property int cellHeight: Math.max(12, Math.round(matrixFontSize * 1.02))
   property var columns: []
-  property int frame: 0
-  property string glyphs: "01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz<>+-=/*\\|:;.,~^[]{}#%&@?"
+  property int tick: 0
+  property int updateDelay: 4
 
-  function newColumn(rows, startAbove) {
-    var trail = 4 + Math.floor(Math.random() * Math.max(5, Math.min(12, rows * 0.7)))
+  // CMatrix uses the printable ASCII range by default.
+  function randomGlyph() {
+    return String.fromCharCode(33 + Math.floor(Math.random() * 90))
+  }
+
+  function randomLength(rows) {
+    return 3 + Math.floor(Math.random() * Math.max(1, rows - 2))
+  }
+
+  function newColumn(rows) {
+    var streamLength = randomLength(rows)
+    var chars = []
+
+    for (var i = 0; i < streamLength; i++)
+      chars.push(randomGlyph())
+
     return {
-      head: startAbove
-        ? -2 - Math.random() * Math.max(3, rows * 0.8)
-        : -Math.random() * rows,
-      trail: trail,
-      speed: 0.055 + Math.random() * 0.08,
-      seed: Math.floor(Math.random() * 100000),
-      brightness: 0.78 + Math.random() * 0.22
+      head: -1,
+      length: streamLength,
+      spaces: 1 + Math.floor(Math.random() * rows),
+      update: 1 + Math.floor(Math.random() * 3),
+      chars: chars
     }
   }
 
   function resetColumns() {
-    var rows = Math.max(1, Math.floor((widgetHeight - 64) / cellHeight))
-    var count = Math.max(24, Math.floor((widgetWidth - 28) / cellWidth))
+    var rows = Math.max(4, Math.floor(matrixCanvas.height / cellHeight))
+    var count = Math.max(1, Math.floor(matrixCanvas.width / cellWidth))
     var next = []
 
     for (var i = 0; i < count; i++) {
-      var column = newColumn(rows, false)
-      if (Math.random() < 0.22)
-        column.head -= Math.random() * rows * 0.75
+      var column = newColumn(rows)
+
+      // Stagger the initial streams, like cmatrix's spaces[] state.
+      column.head = -column.spaces - 1
       next.push(column)
     }
 
-    frame = 0
+    tick = 0
     columns = next
+    matrixCanvas.requestPaint()
   }
 
   function advance() {
-    var rows = Math.max(1, Math.floor((root.widgetHeight - 64) / cellHeight))
+    var rows = Math.max(4, Math.floor(matrixCanvas.height / cellHeight))
     var next = []
 
-    frame++
+    tick++
+    if (tick > 4)
+      tick = 1
 
     for (var i = 0; i < columns.length; i++) {
-      var c = columns[i]
-      var head = c.head + c.speed
+      var column = columns[i]
 
-      if (head - c.trail > rows + 1) {
-        c = newColumn(rows, true)
-      } else {
-        c = {
-          head: head,
-          trail: c.trail,
-          speed: c.speed,
-          seed: c.seed,
-          brightness: c.brightness
-        }
+      // Per-column update cadence corresponds to cmatrix's updates[].
+      if (tick <= column.update) {
+        next.push(column)
+        continue
       }
 
-      next.push(c)
+      var head = column.head
+      var chars = column.chars.slice()
+
+      if (head < 0) {
+        head++
+      } else {
+        head++
+
+        // Grow the stream at the head; once it reaches its configured
+        // length, the oldest cell falls away from the tail.
+        chars.push(randomGlyph())
+        if (chars.length > column.length)
+          chars.shift()
+      }
+
+      // The complete stream has left the screen: respawn after a new gap.
+      if (head - column.length > rows) {
+        var replacement = newColumn(rows)
+        replacement.head = -replacement.spaces - 1
+        next.push(replacement)
+      } else {
+        next.push({
+          head: head,
+          length: column.length,
+          spaces: column.spaces,
+          update: column.update,
+          chars: chars
+        })
+      }
     }
 
     columns = next
-  }
-
-  function glyphFor(column, segment) {
-    var phase = Math.floor(column.head * 0.22)
-    var seed = column.seed + segment * 31 + phase * 7
-    var index = Math.abs(seed * 13 + column.seed * 7) % glyphs.length
-    return glyphs.charAt(index)
+    matrixCanvas.requestPaint()
   }
 
   Variants {
@@ -101,7 +132,6 @@ Item {
       WlrLayershell.layer: WlrLayer.Bottom
 
       BorderSurface {
-        id: surface
         anchors.fill: parent
         color: Util.alpha(Color.background, 0.92)
         borderSpec: Border.flat(Util.alpha(Color.accent, 0.68), 1)
@@ -128,6 +158,7 @@ Item {
           anchors.rightMargin: Style.space(14)
           anchors.topMargin: Style.space(7)
           anchors.bottomMargin: Style.space(12)
+          clip: true
 
           onWidthChanged: root.resetColumns()
           onHeightChanged: root.resetColumns()
@@ -138,54 +169,41 @@ Item {
             ctx.font = matrixFontSize + "px '" + Style.font.family + "'"
             ctx.textBaseline = "top"
 
-            for (var i = 0; i < root.columns.length; i++) {
-              var column = root.columns[i]
-              var x = i * cellWidth
-              if (x >= width) continue
+            var rows = Math.max(4, Math.floor(height / cellHeight))
 
-              var head = column.head
-              var first = Math.floor(head - column.trail)
-              var last = Math.ceil(head)
+            for (var xIndex = 0; xIndex < root.columns.length; xIndex++) {
+              var column = root.columns[xIndex]
+              var x = xIndex * cellWidth
 
-              for (var segment = first; segment <= last; segment++) {
-                var distance = head - segment
-                if (distance < 0 || distance > column.trail) continue
+              if (x >= width)
+                continue
 
-                var y = (segment - (head - Math.floor(head))) * cellHeight
-                if (y < -cellHeight || y > height) continue
+              var first = Math.max(0, column.head - column.length + 1)
+              var last = Math.min(rows - 1, column.head)
 
-                var normalized = distance / Math.max(1, column.trail)
-                var alpha = Math.pow(1.0 - normalized, 1.55) * column.brightness
+              for (var row = first; row <= last; row++) {
+                var bodyIndex = row - (column.head - column.length + 1)
 
-                if (distance < 0.55) {
-                  alpha = Math.min(1.0, 0.98 * column.brightness)
-                } else if (distance < 1.6) {
-                  alpha = Math.min(0.82, alpha + 0.22)
-                }
+                if (bodyIndex < 0 || bodyIndex >= column.chars.length)
+                  continue
 
-                ctx.fillStyle = Qt.rgba(
-                  Color.accent.r,
-                  Color.accent.g,
-                  Color.accent.b,
-                  Math.max(0.035, alpha * 0.9)
-                )
+                ctx.fillStyle = row === column.head
+                  ? Color.foreground
+                  : Color.accent
 
-                ctx.fillText(root.glyphFor(column, segment), x, y)
+                ctx.fillText(column.chars[bodyIndex], x, row * cellHeight)
               }
             }
           }
         }
       }
 
+      // CMatrix defaults to update delay 4 => 40 ms simulation ticks.
       Timer {
-        interval: 16
+        interval: root.updateDelay * 10
         repeat: true
         running: true
-
-        onTriggered: {
-          root.advance()
-          matrixCanvas.requestPaint()
-        }
+        onTriggered: root.advance()
       }
 
       Component.onCompleted: root.resetColumns()
