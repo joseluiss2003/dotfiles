@@ -16,7 +16,6 @@ Item {
   property int tick: 0
   property int updateDelay: 4
 
-  // CMatrix uses the printable ASCII range by default.
   function randomGlyph() {
     return String.fromCharCode(33 + Math.floor(Math.random() * 90))
   }
@@ -42,25 +41,23 @@ Item {
   }
 
   function resetColumns() {
-    var rows = Math.max(4, Math.floor(matrixCanvas.height / cellHeight))
-    var count = Math.max(1, Math.floor(matrixCanvas.width / cellWidth))
+    // Keep geometry independent from the nested Canvas id scope.
+    var rows = Math.max(4, Math.floor((widgetHeight - 64) / cellHeight))
+    var count = Math.max(1, Math.floor((widgetWidth - 28) / cellWidth))
     var next = []
 
     for (var i = 0; i < count; i++) {
       var column = newColumn(rows)
-
-      // Stagger the initial streams, like cmatrix's spaces[] state.
       column.head = -column.spaces - 1
       next.push(column)
     }
 
     tick = 0
     columns = next
-    matrixCanvas.requestPaint()
   }
 
   function advance() {
-    var rows = Math.max(4, Math.floor(matrixCanvas.height / cellHeight))
+    var rows = Math.max(4, Math.floor((widgetHeight - 64) / cellHeight))
     var next = []
 
     tick++
@@ -70,7 +67,6 @@ Item {
     for (var i = 0; i < columns.length; i++) {
       var column = columns[i]
 
-      // Per-column update cadence corresponds to cmatrix's updates[].
       if (tick <= column.update) {
         next.push(column)
         continue
@@ -83,19 +79,14 @@ Item {
         head++
       } else {
         head++
-
-        // Grow the stream at the head; once it reaches its configured
-        // length, the oldest cell falls away from the tail.
         chars.push(randomGlyph())
+
         if (chars.length > column.length)
           chars.shift()
       }
 
-      // The complete stream has left the screen: respawn after a new gap.
       if (head - column.length > rows) {
-        var replacement = newColumn(rows)
-        replacement.head = -replacement.spaces - 1
-        next.push(replacement)
+        next.push(newColumn(rows))
       } else {
         next.push({
           head: head,
@@ -108,7 +99,6 @@ Item {
     }
 
     columns = next
-    matrixCanvas.requestPaint()
   }
 
   Variants {
@@ -160,8 +150,15 @@ Item {
           anchors.bottomMargin: Style.space(12)
           clip: true
 
-          onWidthChanged: root.resetColumns()
-          onHeightChanged: root.resetColumns()
+          onWidthChanged: {
+            root.resetColumns()
+            requestPaint()
+          }
+
+          onHeightChanged: {
+            root.resetColumns()
+            requestPaint()
+          }
 
           onPaint: {
             var ctx = getContext("2d")
@@ -198,15 +195,20 @@ Item {
         }
       }
 
-      // CMatrix defaults to update delay 4 => 40 ms simulation ticks.
       Timer {
         interval: root.updateDelay * 10
         repeat: true
         running: true
-        onTriggered: root.advance()
+        onTriggered: {
+          root.advance()
+          matrixCanvas.requestPaint()
+        }
       }
 
-      Component.onCompleted: root.resetColumns()
+      Component.onCompleted: {
+        root.resetColumns()
+        matrixCanvas.requestPaint()
+      }
     }
   }
 }
