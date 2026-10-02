@@ -298,8 +298,52 @@ Panel {
   }
 
   function setQuickshellScale(value) {
-    quickshellScaleProc.command = ["swayp-display-quickshell-scale", String(value)]
-    if (!quickshellScaleProc.running) quickshellScaleProc.running = true
+    var scale = Number(value)
+    if (!isFinite(scale)) return
+    scale = Math.max(0.90, Math.min(1.30, scale))
+    var raw = quickshellConfigFile.text()
+    var lines = String(raw || "").split("\n")
+    var out = []
+    var inSection = false
+    var found = false
+
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i]
+      if (/^\\[quickshell\\]\\s*$/.test(line)) {
+        inSection = true
+        out.push(line)
+        continue
+      }
+      if (/^\\[[^]]+\\]\\s*$/.test(line)) {
+        if (inSection && !found) {
+          out.push("scale = " + scale.toFixed(2))
+          found = true
+        }
+        inSection = false
+        out.push(line)
+        continue
+      }
+      if (inSection && /^\\s*scale\\s*=/.test(line)) {
+        if (!found) {
+          out.push("scale = " + scale.toFixed(2))
+          found = true
+        }
+        continue
+      }
+      out.push(line)
+    }
+
+    if (inSection && !found) {
+      out.push("scale = " + scale.toFixed(2))
+      found = true
+    }
+    if (!found) {
+      if (out.length && String(out[out.length - 1]).trim() !== "") out.push("")
+      out.push("[quickshell]")
+      out.push("scale = " + scale.toFixed(2))
+    }
+
+    quickshellConfigFile.setText(out.join("\n"))
   }
 
   function adjustQuickshellScale(deltaSteps) {
@@ -420,9 +464,11 @@ Panel {
     stdout: StdioCollector { waitForEnd: true }
   }
 
-  Process {
-    id: quickshellScaleProc
-    stdout: StdioCollector { waitForEnd: true }
+  FileView {
+    id: quickshellConfigFile
+    path: Quickshell.env("HOME") + "/.config/swayp/shell.toml"
+    blockLoading: true
+    printErrors: false
   }
 
   // Clears the hover-suppression flag once the reflow triggered by a text-size
