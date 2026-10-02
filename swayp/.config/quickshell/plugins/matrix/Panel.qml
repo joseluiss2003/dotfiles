@@ -7,23 +7,23 @@ import qs.ui
 Item {
   id: root
 
-  property real widgetWidth: 390
-  property real widgetHeight: 270
-  property int matrixFontSize: Math.max(11, Style.fontPx(0.95))
-  property int cellWidth: Math.max(9, Math.round(matrixFontSize * 0.78))
-  property int cellHeight: Math.max(12, Math.round(matrixFontSize * 1.12))
+  property real widgetWidth: 520
+  property real widgetHeight: 190
+  property int matrixFontSize: Math.max(11, Style.fontPx(0.98))
+  property int cellWidth: Math.max(8, Math.round(matrixFontSize * 0.72))
+  property int cellHeight: Math.max(12, Math.round(matrixFontSize * 1.02))
   property var columns: []
   property string glyphs: "01ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
   function resetColumns() {
-    var rows = Math.max(1, Math.floor((widgetHeight - 78) / cellHeight))
-    var count = Math.max(16, Math.floor((widgetWidth - 28) / cellWidth))
+    var rows = Math.max(1, Math.floor((widgetHeight - 64) / cellHeight))
+    var count = Math.max(24, Math.floor((widgetWidth - 28) / cellWidth))
     var next = []
     for (var i = 0; i < count; i++) {
       next.push({
         head: -Math.random() * rows,
-        length: 4 + Math.floor(Math.random() * Math.max(4, rows * 0.45)),
-        speed: 0.45 + Math.random() * 1.15,
+        length: 5 + Math.floor(Math.random() * Math.max(5, rows * 0.75)),
+        speed: 0.65 + Math.random() * 1.35,
         seed: Math.floor(Math.random() * 100000)
       })
     }
@@ -31,7 +31,7 @@ Item {
   }
 
   function advance() {
-    var rows = Math.max(1, Math.floor((root.widgetHeight - 78) / cellHeight))
+    var rows = Math.max(1, Math.floor((root.widgetHeight - 64) / cellHeight))
     var next = []
     for (var i = 0; i < columns.length; i++) {
       var c = columns[i]
@@ -40,8 +40,8 @@ Item {
         head = -2 - Math.random() * Math.max(3, rows * 0.35)
         c = {
           head: head,
-          length: 4 + Math.floor(Math.random() * Math.max(4, rows * 0.45)),
-          speed: 0.45 + Math.random() * 1.15,
+          length: 5 + Math.floor(Math.random() * Math.max(5, rows * 0.75)),
+          speed: 0.65 + Math.random() * 1.35,
           seed: Math.floor(Math.random() * 100000)
         }
       } else {
@@ -98,6 +98,7 @@ Item {
           font.family: Style.font.family
           font.pixelSize: Style.fontPx(0.92)
           font.weight: Font.DemiBold
+          z: 2
         }
 
         Text {
@@ -108,10 +109,12 @@ Item {
           font.family: Style.font.family
           font.pixelSize: Style.fontPx(0.78)
           font.weight: Font.Medium
+          z: 2
         }
 
         Canvas {
           id: matrixCanvas
+          z: 1
           anchors.left: parent.left
           anchors.right: parent.right
           anchors.top: header.bottom
@@ -119,7 +122,7 @@ Item {
           anchors.leftMargin: Style.space(14)
           anchors.rightMargin: Style.space(14)
           anchors.topMargin: Style.space(7)
-          anchors.bottomMargin: Style.space(4)
+          anchors.bottomMargin: Style.space(3)
 
           onWidthChanged: root.resetColumns()
           onHeightChanged: root.resetColumns()
@@ -145,12 +148,13 @@ Item {
 
                 var alpha = Math.max(0.08, 1.0 - (distance / column.length))
                 if (distance < 1.0) alpha = 1.0
+                else if (distance < 2.5) alpha = Math.min(1.0, alpha * 1.15)
 
                 ctx.fillStyle = Qt.rgba(
                   Color.accent.r,
                   Color.accent.g,
                   Color.accent.b,
-                  alpha * 0.82
+                  alpha * 0.95
                 )
                 ctx.fillText(root.glyphFor(column, row), x, row * cellHeight)
               }
@@ -166,6 +170,7 @@ Item {
           color: Util.alpha(Color.foreground, 0.72)
           font.family: Style.font.family
           font.pixelSize: Style.fontPx(0.78)
+          z: 2
         }
 
         Text {
@@ -175,6 +180,7 @@ Item {
           color: Util.alpha(Color.muted, 0.62)
           font.family: Style.font.family
           font.pixelSize: Style.fontPx(0.72)
+          z: 2
         }
       }
 
