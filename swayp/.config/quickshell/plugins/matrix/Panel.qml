@@ -23,7 +23,7 @@ Item {
         ? -2 - Math.random() * Math.max(3, rows * 0.8)
         : -Math.random() * rows,
       trail: trail,
-      speed: 0.055 + Math.random() * 0.08,
+      speed: 34 + Math.random() * 42,
       seed: Math.floor(Math.random() * 100000),
       brightness: 0.78 + Math.random() * 0.22
     }
@@ -45,7 +45,7 @@ Item {
     columns = next
   }
 
-  function advance() {
+  function advance(deltaSeconds) {
     var rows = Math.max(1, Math.floor((root.widgetHeight - 64) / cellHeight))
     var next = []
 
@@ -53,7 +53,7 @@ Item {
 
     for (var i = 0; i < columns.length; i++) {
       var c = columns[i]
-      var head = c.head + c.speed
+      var head = c.head + (c.speed * deltaSeconds / cellHeight)
 
       if (head - c.trail > rows + 1) {
         c = newColumn(rows, true)
@@ -74,8 +74,6 @@ Item {
   }
 
   function glyphFor(column, segment) {
-    // Change characters occasionally, but not every frame, so the streams
-    // retain the characteristic terminal flicker without visual jitter.
     var phase = Math.floor(column.head * 0.22)
     var seed = column.seed + segment * 31 + phase * 7
     var index = Math.abs(seed * 13 + column.seed * 7) % glyphs.length
@@ -140,8 +138,6 @@ Item {
             ctx.font = matrixFontSize + "px '" + Style.font.family + "'"
             ctx.textBaseline = "top"
 
-            var rows = Math.max(1, Math.floor(height / cellHeight))
-
             for (var i = 0; i < root.columns.length; i++) {
               var column = root.columns[i]
               var x = i * cellWidth
@@ -181,13 +177,11 @@ Item {
         }
       }
 
-      Timer {
-        interval: 16
-        repeat: true
+      FrameAnimation {
         running: true
 
         onTriggered: {
-          root.advance()
+          root.advance(frameTime)
           matrixCanvas.requestPaint()
         }
       }
