@@ -196,6 +196,7 @@ Item {
                   function onForegroundChanged() { temperatureDisplayCanvas.requestPaint() }
                 }
               }
+            }
 
             Text {
               anchors.horizontalCenter: parent.horizontalCenter
