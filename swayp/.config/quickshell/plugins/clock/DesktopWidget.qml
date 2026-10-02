@@ -43,27 +43,47 @@ Item {
         borderSpec: Border.flat(Util.alpha(Color.accent, 0.68), 1)
 
         Text {
-          id: timeText
-          anchors.horizontalCenter: parent.horizontalCenter
-          anchors.top: parent.top
-          anchors.topMargin: Style.space(30)
-          text: Qt.formatDateTime(root.displayDate, "HH:mm")
+          id: header
+          x: Style.space(14)
+          y: Style.space(9)
+          text: "> clock"
           color: Color.foreground
           font.family: Style.font.family
-          font.pixelSize: Style.fontPx(3.8)
+          font.pixelSize: Style.fontPx(0.78)
           font.weight: Font.DemiBold
-          horizontalAlignment: Text.AlignHCenter
         }
 
         Text {
-          anchors.horizontalCenter: parent.horizontalCenter
-          anchors.top: timeText.bottom
-          anchors.topMargin: Style.space(2)
-          text: Qt.formatDateTime(root.displayDate, "dddd, MMMM d")
-          color: Util.alpha(Color.foreground, 0.72)
+          x: parent.width - implicitWidth - Style.space(14)
+          y: header.y
+          text: "time"
+          color: Util.alpha(Color.muted, 0.62)
           font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.9)
-          horizontalAlignment: Text.AlignHCenter
+          font.pixelSize: Style.fontPx(0.72)
+        }
+
+        Column {
+          anchors.centerIn: parent
+          spacing: Style.space(3)
+
+          Text {
+            width: parent.width
+            text: Qt.formatDateTime(root.displayDate, "HH:mm")
+            color: Color.foreground
+            font.family: Style.font.family
+            font.pixelSize: Style.fontPx(3.8)
+            font.weight: Font.DemiBold
+            horizontalAlignment: Text.AlignHCenter
+          }
+
+          Text {
+            width: parent.width
+            text: Qt.formatDateTime(root.displayDate, "dddd, MMMM d")
+            color: Util.alpha(Color.foreground, 0.72)
+            font.family: Style.font.family
+            font.pixelSize: Style.fontPx(0.88)
+            horizontalAlignment: Text.AlignHCenter
+          }
         }
       }
     }
