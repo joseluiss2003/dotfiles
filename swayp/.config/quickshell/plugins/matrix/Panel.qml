@@ -7,8 +7,8 @@ import qs.ui
 Item {
   id: root
 
-  property real widgetWidth: 530
-  property real widgetHeight: 190
+  property real widgetWidth: Style.space(530)
+  property real widgetHeight: Style.space(190)
   property int matrixFontSize: Math.max(11, Style.fontPx(0.98))
   property int cellWidth: Math.max(8, Math.round(matrixFontSize * 0.72))
   property int cellHeight: Math.max(12, Math.round(matrixFontSize * 1.02))
