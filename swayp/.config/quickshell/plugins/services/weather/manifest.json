@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "swayp.weather",
+  "name": "Weather",
+  "version": "1.0.0",
+  "author": "SwayP",
+  "description": "Shared weather service and desktop weather widget",
+  "kinds": [
+    "service",
+    "desktop-widget"
+  ],
+  "keepLoaded": true,
+  "entryPoints": {
+    "service": "Service.qml",
+    "desktopWidget": "DesktopWidget.qml"
+  }
+}
