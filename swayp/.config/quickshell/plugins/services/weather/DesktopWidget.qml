@@ -103,9 +103,9 @@ Item {
                   ctx.clearRect(0, 0, width, height)
                   ctx.fillStyle = Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, Color.accent.a)
 
-                  var digitW = 28
-                  var digitH = 42
-                  var stroke = 6
+                  var digitW = 38
+                  var digitH = 56
+                  var stroke = 9
                   var gap = 5
                   var degreeSize = 7
                   var value = temperatureDisplay.value
