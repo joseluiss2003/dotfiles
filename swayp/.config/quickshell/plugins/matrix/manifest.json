@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "swayp.matrix",
+  "name": "Matrix",
+  "version": "1.0.0",
+  "author": "SwayP",
+  "description": "Animated Matrix rain desktop widget",
+  "kinds": [
+    "desktop-widget"
+  ],
+  "entryPoints": {
+    "desktopWidget": "Panel.qml"
+  }
+}
