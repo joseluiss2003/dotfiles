@@ -63,15 +63,16 @@ Item {
         }
 
         Column {
-          anchors.centerIn: parent
-          spacing: Style.space(3)
+          width: parent.width
+          anchors.verticalCenter: parent.verticalCenter
+          spacing: Style.space(4)
 
           Text {
             width: parent.width
             text: Qt.formatDateTime(root.displayDate, "HH:mm")
             color: Color.foreground
             font.family: Style.font.family
-            font.pixelSize: Style.fontPx(3.8)
+            font.pixelSize: Style.fontPx(4.4)
             font.weight: Font.DemiBold
             horizontalAlignment: Text.AlignHCenter
           }
