@@ -41,7 +41,6 @@ Item {
   }
 
   function resetColumns() {
-    // Keep geometry independent from the nested Canvas id scope.
     var rows = Math.max(4, Math.floor((widgetHeight - 64) / cellHeight))
     var count = Math.max(1, Math.floor((widgetWidth - 28) / cellWidth))
     var next = []
@@ -185,8 +184,8 @@ Item {
                   continue
 
                 ctx.fillStyle = row === column.head
-                  ? Color.foreground
-                  : Color.accent
+                  ? Color.success
+                  : Color.success
 
                 ctx.fillText(column.chars[bodyIndex], x, row * cellHeight)
               }
