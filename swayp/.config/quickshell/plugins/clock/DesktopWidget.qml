@@ -78,7 +78,7 @@ Item {
             onPaint: {
               var ctx = getContext("2d")
               ctx.clearRect(0, 0, width, height)
-              ctx.fillStyle = Color.foreground
+              ctx.fillStyle = Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, Color.foreground.a)
 
               var value = clockDisplay.value
               var digitW = 48
