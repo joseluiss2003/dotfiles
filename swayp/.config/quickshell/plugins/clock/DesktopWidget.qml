@@ -8,7 +8,7 @@ import qs.ui
 Item {
   id: root
 
-  property real widgetSize: 260
+  property real widgetSize: Style.space(260)
   property date displayDate: clock.date
 
   SystemClock {
