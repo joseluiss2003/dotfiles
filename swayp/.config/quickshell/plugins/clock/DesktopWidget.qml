@@ -73,6 +73,7 @@ Item {
           property string value: Qt.formatDateTime(root.displayDate, "HH:mm")
 
           Canvas {
+            id: clockCanvas
             anchors.fill: parent
 
             onPaint: {
@@ -183,12 +184,12 @@ Item {
             Component.onCompleted: requestPaint()
             Connections {
               target: root
-              function onDisplayDateChanged() { clockDisplay.requestPaint() }
+              function onDisplayDateChanged() { clockCanvas.requestPaint() }
             }
 
             Connections {
               target: Color
-              function onForegroundChanged() { clockDisplay.requestPaint() }
+              function onForegroundChanged() { clockCanvas.requestPaint() }
             }
           }
         }
