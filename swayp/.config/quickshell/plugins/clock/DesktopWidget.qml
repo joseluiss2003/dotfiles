@@ -185,6 +185,11 @@ Item {
               target: root
               function onDisplayDateChanged() { clockDisplay.requestPaint() }
             }
+
+            Connections {
+              target: Color
+              function onForegroundChanged() { clockDisplay.requestPaint() }
+            }
           }
         }
 
