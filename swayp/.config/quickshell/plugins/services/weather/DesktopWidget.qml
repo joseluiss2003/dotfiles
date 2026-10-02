@@ -101,7 +101,7 @@ Item {
                 onPaint: {
                   var ctx = getContext("2d")
                   ctx.clearRect(0, 0, width, height)
-                  ctx.fillStyle = Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, Color.accent.a)
+                  ctx.fillStyle = Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, Color.foreground.a)
 
                   var digitW = 50
                   var digitH = 76
