@@ -13,7 +13,7 @@ Item {
   property int cellWidth: Math.max(8, Math.round(matrixFontSize * 0.72))
   property int cellHeight: Math.max(12, Math.round(matrixFontSize * 1.02))
   property var columns: []
-  property int frame: 0
+  property real animationTime: 0
   property string glyphs: "01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz<>+-=/*\\|:;.,~^[]{}#%&@?"
 
   function newColumn(rows, startAbove) {
@@ -25,7 +25,8 @@ Item {
       trail: trail,
       speed: 34 + Math.random() * 42,
       seed: Math.floor(Math.random() * 100000),
-      brightness: 0.78 + Math.random() * 0.22
+      brightness: 0.78 + Math.random() * 0.22,
+      startTime: root.animationTime
     }
   }
 
@@ -41,43 +42,37 @@ Item {
       next.push(column)
     }
 
-    frame = 0
     columns = next
   }
 
-  function advance(deltaSeconds) {
-    var rows = Math.max(1, Math.floor((root.widgetHeight - 64) / cellHeight))
-    var next = []
-
-    frame++
-
-    for (var i = 0; i < columns.length; i++) {
-      var c = columns[i]
-      var head = c.head + (c.speed * deltaSeconds / cellHeight)
-
-      if (head - c.trail > rows + 1) {
-        c = newColumn(rows, true)
-      } else {
-        c = {
-          head: head,
-          trail: c.trail,
-          speed: c.speed,
-          seed: c.seed,
-          brightness: c.brightness
-        }
-      }
-
-      next.push(c)
-    }
-
-    columns = next
+  function headFor(column) {
+    return column.head + (column.speed * (animationTime - column.startTime) / cellHeight)
   }
 
   function glyphFor(column, segment) {
-    var phase = Math.floor(column.head * 0.22)
+    var phase = Math.floor(headFor(column) * 0.22)
     var seed = column.seed + segment * 31 + phase * 7
     var index = Math.abs(seed * 13 + column.seed * 7) % glyphs.length
     return glyphs.charAt(index)
+  }
+
+  function advance(deltaSeconds) {
+    animationTime += deltaSeconds
+
+    var rows = Math.max(1, Math.floor((root.widgetHeight - 64) / cellHeight))
+    var changed = false
+    var next = columns.slice()
+
+    for (var i = 0; i < next.length; i++) {
+      var c = next[i]
+      if (headFor(c) - c.trail > rows + 1) {
+        next[i] = newColumn(rows, true)
+        changed = true
+      }
+    }
+
+    if (changed)
+      columns = next
   }
 
   Variants {
@@ -117,8 +112,8 @@ Item {
           z: 2
         }
 
-        Canvas {
-          id: matrixCanvas
+        Item {
+          id: matrixArea
           z: 1
           anchors.left: parent.left
           anchors.right: parent.right
@@ -128,49 +123,45 @@ Item {
           anchors.rightMargin: Style.space(14)
           anchors.topMargin: Style.space(7)
           anchors.bottomMargin: Style.space(12)
+          clip: true
 
-          onWidthChanged: root.resetColumns()
-          onHeightChanged: root.resetColumns()
+          Repeater {
+            model: root.columns
 
-          onPaint: {
-            var ctx = getContext("2d")
-            ctx.clearRect(0, 0, width, height)
-            ctx.font = matrixFontSize + "px '" + Style.font.family + "'"
-            ctx.textBaseline = "top"
+            delegate: Item {
+              required property var modelData
+              property real head: root.headFor(modelData)
 
-            for (var i = 0; i < root.columns.length; i++) {
-              var column = root.columns[i]
-              var x = i * cellWidth
-              if (x >= width) continue
+              x: index * root.cellWidth
+              width: root.cellWidth
+              height: matrixArea.height
 
-              var head = column.head
-              var first = Math.floor(head - column.trail)
-              var last = Math.ceil(head)
+              Repeater {
+                model: modelData.trail + 1
 
-              for (var segment = first; segment <= last; segment++) {
-                var distance = head - segment
-                if (distance < 0 || distance > column.trail) continue
+                delegate: Text {
+                  required property int index
 
-                var y = (segment - (head - Math.floor(head))) * cellHeight
-                if (y < -cellHeight || y > height) continue
-
-                var normalized = distance / Math.max(1, column.trail)
-                var alpha = Math.pow(1.0 - normalized, 1.55) * column.brightness
-
-                if (distance < 0.55) {
-                  alpha = Math.min(1.0, 0.98 * column.brightness)
-                } else if (distance < 1.6) {
-                  alpha = Math.min(0.82, alpha + 0.22)
+                  x: 0
+                  y: (index - (head - Math.floor(head))) * root.cellHeight
+                  text: root.glyphFor(modelData, index + Math.floor(head - modelData.trail))
+                  color: Qt.rgba(
+                    Color.accent.r,
+                    Color.accent.g,
+                    Color.accent.b,
+                    Math.max(
+                      0.035,
+                      Math.pow(
+                        1.0 - ((head - (index + Math.floor(head - modelData.trail))) / Math.max(1, modelData.trail)),
+                        1.55
+                      ) * modelData.brightness * 0.9
+                    )
+                  )
+                  font.family: Style.font.family
+                  font.pixelSize: root.matrixFontSize
+                  lineHeight: root.cellHeight
+                  renderType: Text.NativeRendering
                 }
-
-                ctx.fillStyle = Qt.rgba(
-                  Color.accent.r,
-                  Color.accent.g,
-                  Color.accent.b,
-                  Math.max(0.035, alpha * 0.9)
-                )
-
-                ctx.fillText(root.glyphFor(column, segment), x, y)
               }
             }
           }
@@ -179,11 +170,7 @@ Item {
 
       FrameAnimation {
         running: true
-
-        onTriggered: {
-          root.advance(frameTime)
-          matrixCanvas.requestPaint()
-        }
+        onTriggered: root.advance(frameTime)
       }
 
       Component.onCompleted: root.resetColumns()
