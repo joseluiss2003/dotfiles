@@ -23,7 +23,7 @@ Item {
         ? -2 - Math.random() * Math.max(3, rows * 0.8)
         : -Math.random() * rows,
       trail: trail,
-      speed: 0.11 + Math.random() * 0.16,
+      speed: 0.055 + Math.random() * 0.08,
       seed: Math.floor(Math.random() * 100000),
       brightness: 0.78 + Math.random() * 0.22
     }
@@ -74,7 +74,10 @@ Item {
   }
 
   function glyphFor(column, segment) {
-    var seed = column.seed + segment * 31 + Math.floor(column.head * 1.7)
+    // Change characters occasionally, but not every frame, so the streams
+    // retain the characteristic terminal flicker without visual jitter.
+    var phase = Math.floor(column.head * 0.22)
+    var seed = column.seed + segment * 31 + phase * 7
     var index = Math.abs(seed * 13 + column.seed * 7) % glyphs.length
     return glyphs.charAt(index)
   }
@@ -164,15 +167,11 @@ Item {
                   alpha = Math.min(0.82, alpha + 0.22)
                 }
 
-                var flicker = ((column.seed + segment * 17 + root.frame) % 29 === 0)
-                  ? 0.72
-                  : 1.0
-
                 ctx.fillStyle = Qt.rgba(
                   Color.accent.r,
                   Color.accent.g,
                   Color.accent.b,
-                  Math.max(0.035, alpha * 0.9 * flicker)
+                  Math.max(0.035, alpha * 0.9)
                 )
 
                 ctx.fillText(root.glyphFor(column, segment), x, y)
@@ -183,7 +182,7 @@ Item {
       }
 
       Timer {
-        interval: 33
+        interval: 16
         repeat: true
         running: true
 
