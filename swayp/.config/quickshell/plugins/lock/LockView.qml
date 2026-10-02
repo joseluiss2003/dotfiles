@@ -174,7 +174,8 @@ Item {
     anchors.margins: 0
     glyphColor: Color.success
     glyphOpacity: 0.20
-    updateDelay: 4
+    density: 0.55
+    updateDelay: 8
     z: 0
   }
 
