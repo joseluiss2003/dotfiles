@@ -7,9 +7,9 @@ Item {
 
   property var shell: null
 
-  readonly property string locationName: "MADRID"
-  readonly property real latitude: 40.4168
-  readonly property real longitude: -3.7038
+  readonly property string locationName: "HUELVA"
+  readonly property real latitude: 37.2614
+  readonly property real longitude: -6.9447
 
   property bool loading: false
   property bool available: false
@@ -18,6 +18,8 @@ Item {
   property real humidity: 0
   property real windSpeed: 0
   property real precipitation: 0
+  property real highTemperature: 0
+  property real lowTemperature: 0
   property int weatherCode: -1
   property string condition: "—"
   property string updatedAt: ""
@@ -66,13 +68,16 @@ Item {
     try {
       var data = JSON.parse(String(raw || ""))
       var current = data.current
-      if (!current) throw new Error("missing current weather")
+      var daily = data.daily
+      if (!current || !daily) throw new Error("missing weather data")
 
       root.temperature = Number(current.temperature_2m)
       root.apparentTemperature = Number(current.apparent_temperature)
       root.humidity = Number(current.relative_humidity_2m)
       root.windSpeed = Number(current.wind_speed_10m)
       root.precipitation = Number(current.precipitation)
+      root.highTemperature = Number(daily.temperature_2m_max[0])
+      root.lowTemperature = Number(daily.temperature_2m_min[0])
       root.weatherCode = Number(current.weather_code)
       root.condition = root.conditionFor(root.weatherCode)
       root.updatedAt = String(current.time || "")
@@ -91,7 +96,7 @@ Item {
       "curl",
       "-fsSL",
       "--max-time", "10",
-      "https://api.open-meteo.com/v1/forecast?latitude=40.4168&longitude=-3.7038&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation&timezone=Europe%2FMadrid"
+      "https://api.open-meteo.com/v1/forecast?latitude=37.2614&longitude=-6.9447&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,precipitation&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=Europe%2FMadrid"
     ]
 
     stdout: StdioCollector {
