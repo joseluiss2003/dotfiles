@@ -13,7 +13,7 @@ Item {
   property int cellWidth: Math.max(8, Math.round(matrixFontSize * 0.72))
   property int cellHeight: Math.max(12, Math.round(matrixFontSize * 1.02))
   property var columns: []
-  property string glyphs: "01ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  property string glyphs: "01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz<>+-=/*\\|:;.,~^[]{}#%&@?"
 
   function resetColumns() {
     var rows = Math.max(1, Math.floor((widgetHeight - 64) / cellHeight))
