@@ -130,21 +130,24 @@ Item {
 
             delegate: Item {
               required property var modelData
-              property real head: root.headFor(modelData)
+              required property int index
+              property var columnData: modelData
+              property real head: root.headFor(columnData)
 
               x: index * root.cellWidth
               width: root.cellWidth
               height: matrixArea.height
 
               Repeater {
-                model: modelData.trail + 1
+                model: columnData.trail + 1
 
                 delegate: Text {
                   required property int index
+                  property int segment: index + Math.floor(head - columnData.trail)
 
                   x: 0
                   y: (index - (head - Math.floor(head))) * root.cellHeight
-                  text: root.glyphFor(modelData, index + Math.floor(head - modelData.trail))
+                  text: root.glyphFor(columnData, segment)
                   color: Qt.rgba(
                     Color.accent.r,
                     Color.accent.g,
@@ -152,9 +155,9 @@ Item {
                     Math.max(
                       0.035,
                       Math.pow(
-                        1.0 - ((head - (index + Math.floor(head - modelData.trail))) / Math.max(1, modelData.trail)),
+                        1.0 - ((head - segment) / Math.max(1, columnData.trail)),
                         1.55
-                      ) * modelData.brightness * 0.9
+                      ) * columnData.brightness * 0.9
                     )
                   )
                   font.family: Style.font.family
