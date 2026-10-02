@@ -71,7 +71,7 @@ Item {
 
           Item {
             width: parent.width
-            height: 105
+            height: 170
 
             Text {
               anchors.horizontalCenter: parent.horizontalCenter
@@ -87,9 +87,9 @@ Item {
               id: temperatureDisplay
               anchors.horizontalCenter: parent.horizontalCenter
               anchors.top: parent.top
-              anchors.topMargin: Style.space(32)
-              width: 178
-              height: 48
+              anchors.topMargin: Style.space(43)
+              width: 220
+              height: 82
 
               property string value: root.weatherService && root.weatherService.available
                 ? Math.round(root.weatherService.temperature) + "C"
@@ -103,9 +103,9 @@ Item {
                   ctx.clearRect(0, 0, width, height)
                   ctx.fillStyle = Qt.rgba(Color.accent.r, Color.accent.g, Color.accent.b, Color.accent.a)
 
-                  var digitW = 38
-                  var digitH = 56
-                  var stroke = 9
+                  var digitW = 48
+                  var digitH = 76
+                  var stroke = 11
                   var gap = 5
                   var degreeSize = 7
                   var value = temperatureDisplay.value
@@ -195,7 +195,7 @@ Item {
             Text {
               anchors.horizontalCenter: parent.horizontalCenter
               anchors.top: parent.top
-              anchors.topMargin: Style.space(88)
+              anchors.topMargin: Style.space(128)
               text: root.weatherService ? root.weatherService.condition : "LOADING"
               color: Color.foreground
               font.family: Style.font.family
@@ -206,7 +206,7 @@ Item {
             Text {
               anchors.horizontalCenter: parent.horizontalCenter
               anchors.top: parent.top
-              anchors.topMargin: Style.space(136)
+              anchors.topMargin: Style.space(151)
               text: root.weatherService && root.weatherService.available
                 ? "FEELS " + Math.round(root.weatherService.apparentTemperature) + "°C"
                 : "FEELS —"
