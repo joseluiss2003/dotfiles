@@ -1,5 +1,5 @@
 //@ pragma UseQApplication
-//@ pragma DefaultEnv QT_SCALE_FACTOR = 1.25
+//@ pragma DefaultEnv QT_SCALE_FACTOR = 1.15
 import QtQuick
 import QtQml.Models
 import Quickshell
