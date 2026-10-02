@@ -161,26 +161,6 @@ Item {
         }
       }
 
-        Text {
-          id: footer
-          x: Style.space(14)
-          y: parent.height - implicitHeight - Style.space(8)
-          text: "> matrix"
-          color: Util.alpha(Color.foreground, 0.72)
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.78)
-          z: 2
-        }
-
-        Text {
-          x: footer.x + footer.implicitWidth + Style.space(10)
-          y: footer.y
-          text: "desktop"
-          color: Util.alpha(Color.muted, 0.62)
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.72)
-          z: 2
-        }
 
       Timer {
         interval: 55
