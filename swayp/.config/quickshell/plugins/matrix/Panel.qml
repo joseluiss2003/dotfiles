@@ -95,11 +95,11 @@ Item {
           anchors.left: parent.left
           anchors.right: parent.right
           anchors.top: parent.top
-          anchors.bottom: parent.bottom
+          anchors.bottom: footer.top
           anchors.leftMargin: Style.space(14)
           anchors.rightMargin: Style.space(14)
           anchors.topMargin: Style.space(12)
-          anchors.bottomMargin: Style.space(12)
+          anchors.bottomMargin: Style.space(4)
 
           onWidthChanged: root.resetColumns()
           onHeightChanged: root.resetColumns()
@@ -160,6 +160,27 @@ Item {
           z: 2
         }
       }
+
+        Text {
+          id: footer
+          x: Style.space(14)
+          y: parent.height - implicitHeight - Style.space(8)
+          text: "> matrix"
+          color: Util.alpha(Color.foreground, 0.72)
+          font.family: Style.font.family
+          font.pixelSize: Style.fontPx(0.78)
+          z: 2
+        }
+
+        Text {
+          x: footer.x + footer.implicitWidth + Style.space(10)
+          y: footer.y
+          text: "desktop"
+          color: Util.alpha(Color.muted, 0.62)
+          font.family: Style.font.family
+          font.pixelSize: Style.fontPx(0.72)
+          z: 2
+        }
 
       Timer {
         interval: 55
