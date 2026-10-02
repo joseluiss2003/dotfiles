@@ -4,12 +4,14 @@
   "name": "Clock",
   "version": "1.0.0",
   "author": "SwayP",
-  "description": "Date/time label with a calendar popup",
+  "description": "Date/time label with a calendar popup and CLI desktop clock",
   "kinds": [
-    "bar-widget"
+    "bar-widget",
+    "desktop-widget"
   ],
   "entryPoints": {
-    "barWidget": "BarWidget.qml"
+    "barWidget": "BarWidget.qml",
+    "desktopWidget": "DesktopWidget.qml"
   },
   "barWidget": {
     "displayName": "Clock",
