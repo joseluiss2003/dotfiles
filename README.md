@@ -1,4 +1,4 @@
-# SwayP 1.0
+# SwayP 1.5
 
 **SwayP** is a complete personal Wayland desktop shell built around **Sway + Quickshell**.
 
@@ -6,16 +6,17 @@ What started as a small project to customize a Sway desktop gradually grew into 
 
 SwayP is designed to be **Sway-native**, modular and maintainable. It takes architectural and visual inspiration from **[Omarchy](https://github.com/basecamp/omarchy), including its Quattro direction**, while remaining an independent project with its own architecture, plugin system and configuration model.
 
-> **SwayP 1.0**
+> **SwayP 1.5**
 >
-> A small customization project that became a complete desktop shell.
+> The current development line focuses on polishing SwayP's own visual language: compact TUI/CLI-inspired controls, semantic styling, reusable infrastructure and desktop widgets.
 
 ## What SwayP provides
 
 - **Sway** as the compositor and window-management layer.
 - **Quickshell** as the central desktop shell.
 - A top bar with workspaces, clock, system indicators and plugin widgets.
-- Panels and controls for audio, Bluetooth, network, power and other desktop services.
+- TUI-inspired panels and controls for audio, Bluetooth, network, power, displays and other desktop services.
+- Static desktop widgets for clock, weather and Matrix-style visualisation.
 - Notifications and a notification center.
 - Clipboard, OSD, tray, lockscreen and system utilities.
 - Visual theme and wallpaper selection.
@@ -214,7 +215,7 @@ No individual authorship credit is claimed in this documentation.
 
 **SwayP 1.0** represents the point where the project moved beyond personal dotfile customization and became a complete, reproducible desktop shell.
 
-The focus after 1.0 is maintenance, polishing and careful evolution rather than uncontrolled feature growth.
+The focus after 1.0 is maintenance, polishing and careful evolution. The `revamping/swayp-1.5` line concentrates on SwayP's own TUI/CLI visual language while keeping the bar icon-based and conventional.
 
 ## License
 
