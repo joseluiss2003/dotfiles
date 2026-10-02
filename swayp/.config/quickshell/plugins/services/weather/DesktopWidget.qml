@@ -96,12 +96,13 @@ Item {
                 : "--C"
 
               Canvas {
+                id: temperatureDisplayCanvas
                 anchors.fill: parent
 
                 onPaint: {
                   var ctx = getContext("2d")
                   ctx.clearRect(0, 0, width, height)
-                  ctx.fillStyle = Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, Color.foreground.a)
+                  ctx.fillStyle = Color.foreground
 
                   var digitW = 50
                   var digitH = 76
@@ -189,8 +190,12 @@ Item {
                   x += degreeSize + 9
                   drawC(x)
                 }
+
+                Connections {
+                  target: Color
+                  function onForegroundChanged() { temperatureDisplayCanvas.requestPaint() }
+                }
               }
-            }
 
             Text {
               anchors.horizontalCenter: parent.horizontalCenter
