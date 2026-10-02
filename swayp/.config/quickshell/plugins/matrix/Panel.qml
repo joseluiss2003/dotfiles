@@ -100,16 +100,6 @@ Item {
           z: 2
         }
 
-        Text {
-          x: header.x + header.implicitWidth + Style.space(10)
-          y: header.y
-          text: "desktop"
-          color: Util.alpha(Color.muted, 0.62)
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.72)
-          z: 2
-        }
-
         Canvas {
           id: matrixCanvas
           z: 1
