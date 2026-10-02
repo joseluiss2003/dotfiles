@@ -1389,6 +1389,96 @@ Component.onCompleted: {
     }
   }
 
+  // -------------------------------------------------------- desktop widgets
+
+  // Desktop widgets are persistent first-party surfaces mounted on the
+  // layer-shell Bottom layer. They are intentionally separate from bar
+  // widgets and summoned panels: they do not reserve space and do not take
+  // keyboard focus.
+  property var desktopWidgetEntries: []
+  property var desktopWidgetLoaders: ({})
+
+  function computeDesktopWidgetEntries() {
+    var out = []
+    var plugins = shell.pluginRegistry.installedPlugins
+    for (var id in plugins) {
+      var m = plugins[id]
+      if (!m || !Array.isArray(m.kinds) || m.kinds.indexOf("desktop-widget") === -1) continue
+      if (!shell.pluginRegistry.isEnabled(id)) continue
+      var sourceUrl = shell.pluginRegistry.entryPointUrl(m, "desktopWidget")
+      if (!sourceUrl) {
+        console.warn("Desktop widget " + id + " has no desktopWidget entry point")
+        continue
+      }
+      out.push({ id: id, manifest: m, sourceUrl: sourceUrl })
+    }
+    return out
+  }
+
+  function unloadDesktopWidgets() {
+    for (var id in desktopWidgetLoaders) {
+      var loader = desktopWidgetLoaders[id]
+      if (loader && loader.item && typeof loader.item.destroy === "function") loader.item.destroy()
+    }
+    desktopWidgetLoaders = ({})
+    desktopWidgetEntries = []
+  }
+
+  function registerDesktopWidgetLoader(pluginId, loader) {
+    var next = ({})
+    for (var key in desktopWidgetLoaders) next[key] = desktopWidgetLoaders[key]
+    next[pluginId] = loader
+    desktopWidgetLoaders = next
+  }
+
+  Connections {
+    target: shell.pluginRegistry
+    function onPluginsChanged() {
+      if (!shell.pluginReloading) shell.desktopWidgetEntries = shell.computeDesktopWidgetEntries()
+    }
+  }
+
+  Instantiator {
+    model: shell.desktopWidgetEntries
+    active: true
+
+    delegate: QtObject {
+      id: desktopWidgetEntry
+      required property var modelData
+      readonly property string pluginId: modelData.id
+      readonly property var manifest: modelData.manifest
+      readonly property string sourceUrl: modelData.sourceUrl
+
+      property Loader widgetLoader: Loader {
+        source: desktopWidgetEntry.sourceUrl
+        active: desktopWidgetEntry.sourceUrl !== ""
+        asynchronous: true
+
+        onLoaded: {
+          if (!item) return
+          if ("shell" in item) item.shell = shell.pluginShellFor(desktopWidgetEntry.manifest)
+          if ("manifest" in item) item.manifest = shell.publicPluginManifest(desktopWidgetEntry.manifest)
+          if ("pluginRegistry" in item) item.pluginRegistry = shell.pluginRegistryFor(desktopWidgetEntry.manifest)
+          shell.registerDesktopWidgetLoader(desktopWidgetEntry.pluginId, this)
+        }
+
+        onStatusChanged: {
+          if (status === Loader.Error) {
+            console.warn("desktop widget " + desktopWidgetEntry.pluginId + " failed to load:", errorString())
+          }
+        }
+
+        Component.onDestruction: {
+          var next = ({})
+          for (var key in shell.desktopWidgetLoaders) {
+            if (key !== desktopWidgetEntry.pluginId) next[key] = shell.desktopWidgetLoaders[key]
+          }
+          shell.desktopWidgetLoaders = next
+        }
+      }
+    }
+  }
+
   // ---------------------------------------------------------- plugin loader
 
   // Mirror plugin registry state into BarWidgetRegistry whenever it changes.
@@ -1481,6 +1571,7 @@ Component.onCompleted: {
     shell.unloadPanels()
     shell.unloadPluginServices()
     shell.unloadPluginWidgets()
+    shell.unloadDesktopWidgets()
     Qt.callLater(shell.finishPluginReload)
   }
 
@@ -1510,6 +1601,7 @@ Component.onCompleted: {
       shell.pluginReloading = false
       shell._syncServices()
       shell.panelEntries = shell.computePanelEntries()
+      shell.desktopWidgetEntries = shell.computeDesktopWidgetEntries()
       shell.syncPluginWidgets()
     }
   }
