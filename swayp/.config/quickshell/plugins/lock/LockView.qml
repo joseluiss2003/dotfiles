@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Effects
 import qs.core
 import qs.ui
-import "../matrix"
 
 Item {
   id: root
@@ -166,17 +165,6 @@ Item {
   Rectangle {
     anchors.fill: parent
     color: Util.alpha(Color.bar.background, 0.88)
-  }
-
-  MatrixRain {
-    id: matrixBackground
-    anchors.fill: parent
-    anchors.margins: 0
-    glyphColor: Color.success
-    glyphOpacity: 0.20
-    density: 0.55
-    updateDelay: 8
-    z: 0
   }
 
   Column {
