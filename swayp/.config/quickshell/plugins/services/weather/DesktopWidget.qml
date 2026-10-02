@@ -87,7 +87,7 @@ Item {
               id: temperatureDisplay
               anchors.horizontalCenter: parent.horizontalCenter
               anchors.top: parent.top
-              anchors.topMargin: Style.space(14)
+              anchors.topMargin: Style.space(32)
               width: 178
               height: 48
 
@@ -195,7 +195,7 @@ Item {
             Text {
               anchors.horizontalCenter: parent.horizontalCenter
               anchors.top: parent.top
-              anchors.topMargin: Style.space(66)
+              anchors.topMargin: Style.space(88)
               text: root.weatherService ? root.weatherService.condition : "LOADING"
               color: Color.foreground
               font.family: Style.font.family
@@ -206,7 +206,7 @@ Item {
             Text {
               anchors.horizontalCenter: parent.horizontalCenter
               anchors.top: parent.top
-              anchors.topMargin: Style.space(83)
+              anchors.topMargin: Style.space(136)
               text: root.weatherService && root.weatherService.available
                 ? "FEELS " + Math.round(root.weatherService.apparentTemperature) + "°C"
                 : "FEELS —"
