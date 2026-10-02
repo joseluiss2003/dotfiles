@@ -55,7 +55,6 @@ Item {
       next.push(c)
     }
     columns = next
-    matrixCanvas.requestPaint()
   }
 
   function glyphFor(column, row) {
