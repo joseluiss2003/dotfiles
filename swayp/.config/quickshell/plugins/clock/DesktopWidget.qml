@@ -82,11 +82,11 @@ Item {
               ctx.fillStyle = Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, Color.foreground.a)
 
               var value = clockDisplay.value
-              var digitW = 48
-              var digitH = 76
-              var stroke = 10
-              var gap = 8
-              var colonW = 16
+              var digitW = 42
+              var digitH = 68
+              var stroke = 8
+              var gap = 7
+              var colonW = 14
               var totalW = digitW * 4 + gap * 3 + colonW + gap
               var startX = (width - totalW) / 2
               var top = (height - digitH) / 2
@@ -171,8 +171,8 @@ Item {
               for (var i = 0; i < value.length; i++) {
                 var ch = value.charAt(i)
                 if (ch === ":") {
-                  ctx.fillRect(x + 4, top + 22, 8, 8)
-                  ctx.fillRect(x + 4, top + 46, 8, 8)
+                  ctx.fillRect(x + 4, top + 20, 7, 7)
+                  ctx.fillRect(x + 4, top + 41, 7, 7)
                   x += colonW + gap
                 } else {
                   drawDigit(ch, x)
