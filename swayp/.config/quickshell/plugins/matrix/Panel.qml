@@ -83,7 +83,6 @@ Item {
 
       color: "transparent"
       exclusionMode: ExclusionMode.Ignore
-      keyboardFocus: WlrKeyboardFocus.None
       WlrLayershell.layer: WlrLayer.Bottom
 
       BorderSurface {
