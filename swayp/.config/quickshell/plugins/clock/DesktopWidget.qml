@@ -66,26 +66,26 @@ Item {
           id: clockDisplay
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.verticalCenter: parent.verticalCenter
-          width: 360
-          height: 84
+          width: 330
+          height: 92
 
           property string value: Qt.formatDateTime(root.displayDate, "HH:mm")
-          property var glyphs: ({
-            "0": ["11111","10001","10011","10101","11001","10001","11111"],
-            "1": ["00100","01100","00100","00100","00100","00100","01110"],
-            "2": ["11110","00001","00001","01110","10000","10000","11111"],
-            "3": ["11110","00001","00001","01110","00001","00001","11110"],
-            "4": ["10010","10010","10010","11111","00010","00010","00010"],
-            "5": ["11111","10000","10000","11110","00001","00001","11110"],
-            "6": ["01110","10000","10000","11110","10001","10001","01110"],
-            "7": ["11111","00001","00010","00100","01000","01000","01000"],
-            "8": ["01110","10001","10001","01110","10001","10001","01110"],
-            "9": ["01110","10001","10001","01111","00001","00001","01110"]
+          property var segments: ({
+            "0": [true, true, true, false, true, true, true],
+            "1": [false, true, true, false, false, false, false],
+            "2": [true, true, false, true, true, false, true],
+            "3": [true, true, true, true, false, false, true],
+            "4": [false, true, true, true, false, true, false],
+            "5": [true, false, true, true, false, true, true],
+            "6": [true, false, true, true, true, true, true],
+            "7": [true, true, true, false, false, false, false],
+            "8": [true, true, true, true, true, true, true],
+            "9": [true, true, true, true, false, true, true]
           })
 
           Row {
             anchors.centerIn: parent
-            spacing: Style.space(8)
+            spacing: Style.space(9)
 
             Repeater {
               model: clockDisplay.value.length
@@ -96,28 +96,35 @@ Item {
                 readonly property string glyph: clockDisplay.value.charAt(index)
                 readonly property bool colon: glyph === ":"
 
-                width: colon ? 14 : 42
-                height: 84
+                width: colon ? 16 : 48
+                height: 92
 
                 Repeater {
-                  model: colon ? 2 : 35
+                  model: colon ? 2 : 7
 
                   delegate: Rectangle {
                     required property int index
 
-                    readonly property int row: colon ? index * 4 + 1 : Math.floor(index / 5)
-                    readonly property int column: colon ? 1 : index % 5
                     readonly property bool active: colon
                       ? true
-                      : clockDisplay.glyphs[glyph] && clockDisplay.glyphs[glyph][row].charAt(column) === "1"
+                      : clockDisplay.segments[glyph][index]
 
-                    width: colon ? 7 : 7
-                    height: colon ? 7 : 7
-                    x: colon ? 3 : column * 8
-                    y: colon ? (index === 0 ? 24 : 52) : row * 11
+                    width: colon ? 8 : 40
+                    height: colon ? 8 : 10
                     radius: 0
                     visible: active
                     color: Color.foreground
+
+                    x: colon
+                      ? 4
+                      : [4, 38, 38, 4, 4, 4, 4][index]
+                    y: colon
+                      ? (index === 0 ? 28 : 56)
+                      : [0, 8, 41, 84, 50, 8, 41][index]
+
+                    rotation: colon
+                      ? 0
+                      : [0, 90, 90, 0, 0, 0, 0][index]
                   }
                 }
               }
