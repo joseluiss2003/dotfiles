@@ -66,76 +66,125 @@ Item {
           id: clockDisplay
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.verticalCenter: parent.verticalCenter
+          anchors.verticalCenterOffset: -Style.space(3)
           width: 360
-          height: 82
+          height: 92
 
           property string value: Qt.formatDateTime(root.displayDate, "HH:mm")
-          property var segments: ({
-            "0": [true, true, true, true, true, true, false],
-            "1": [false, true, true, false, false, false, false],
-            "2": [true, true, false, true, true, false, true],
-            "3": [true, true, true, true, false, false, true],
-            "4": [false, true, true, false, false, true, true],
-            "5": [true, false, true, true, false, true, true],
-            "6": [true, false, true, true, true, true, true],
-            "7": [true, true, true, false, false, false, false],
-            "8": [true, true, true, true, true, true, true],
-            "9": [true, true, true, true, false, true, true]
-          })
 
-          Row {
-            anchors.centerIn: parent
-            spacing: Style.space(7)
+          Canvas {
+            anchors.fill: parent
 
-            Repeater {
-              model: clockDisplay.value.length
+            onPaint: {
+              var ctx = getContext("2d")
+              ctx.clearRect(0, 0, width, height)
+              ctx.fillStyle = Color.foreground
 
-              delegate: Item {
-                required property int index
+              var value = clockDisplay.value
+              var digitW = 48
+              var digitH = 76
+              var stroke = 10
+              var gap = 8
+              var colonW = 16
+              var totalW = digitW * 4 + gap * 3 + colonW + gap
+              var startX = (width - totalW) / 2
+              var top = (height - digitH) / 2
 
-                readonly property string glyph: clockDisplay.value.charAt(index)
-                readonly property bool isOne: glyph === "1"
-                readonly property bool colon: glyph === ":"
+              function h(x, y, w) {
+                ctx.fillRect(x, y, w, stroke)
+              }
 
-                width: colon ? 16 : 50
-                height: 76
+              function v(x, y, hgt) {
+                ctx.fillRect(x, y, stroke, hgt)
+              }
 
-                Rectangle {
-                  visible: isOne
-                  x: 21
-                  y: 6
-                  width: 9
-                  height: 64
-                  color: Color.foreground
-                  radius: 0
-                }
+              function drawDigit(ch, x) {
+                var right = x + digitW - stroke
+                var mid = top + (digitH - stroke) / 2
 
-                Repeater {
-                  model: colon ? 2 : 7
-
-                  delegate: Rectangle {
-                    required property int index
-
-                    readonly property bool active: colon
-                      ? true
-                      : (!isOne && clockDisplay.segments[glyph][index])
-
-                    visible: active
-                    color: Color.foreground
-                    radius: 0
-
-                    width: colon ? 8 : [42, 9, 9, 42, 9, 9, 42][index]
-                    height: colon ? 8 : [9, 34, 34, 9, 34, 34, 9][index]
-
-                    x: colon
-                      ? 4
-                      : [4, 37, 37, 4, 0, 0, 4][index]
-                    y: colon
-                      ? (index === 0 ? 26 : 50)
-                      : [0, 4, 40, 67, 40, 4, 34][index]
-                  }
+                switch (ch) {
+                case "0":
+                  v(x, top, digitH)
+                  v(right, top, digitH)
+                  h(x + stroke, top, digitW - stroke * 2)
+                  h(x + stroke, top + digitH - stroke, digitW - stroke * 2)
+                  break
+                case "1":
+                  v(right, top, digitH)
+                  h(x + stroke, top, digitW - stroke)
+                  break
+                case "2":
+                  h(x, top, digitW)
+                  h(x, mid, digitW)
+                  h(x, top + digitH - stroke, digitW)
+                  v(right, top + stroke, (digitH - stroke) / 2 - 2)
+                  v(x, mid + stroke, (digitH - stroke) / 2 - 2)
+                  break
+                case "3":
+                  h(x, top, digitW)
+                  h(x, mid, digitW)
+                  h(x, top + digitH - stroke, digitW)
+                  v(right, top + stroke, mid - top - stroke)
+                  v(right, mid + stroke, digitH - (mid - top) - stroke)
+                  break
+                case "4":
+                  v(x, top, mid - top)
+                  h(x, mid, digitW)
+                  v(right, top, digitH)
+                  break
+                case "5":
+                  h(x, top, digitW)
+                  h(x, mid, digitW)
+                  h(x, top + digitH - stroke, digitW)
+                  v(x, top + stroke, mid - top - stroke)
+                  v(right, mid + stroke, digitH - (mid - top) - stroke)
+                  break
+                case "6":
+                  h(x, top, digitW)
+                  h(x, mid, digitW)
+                  h(x, top + digitH - stroke, digitW)
+                  v(x, top + stroke, digitH - stroke * 2)
+                  v(right, mid + stroke, digitH - (mid - top) - stroke)
+                  break
+                case "7":
+                  h(x, top, digitW)
+                  v(right, top + stroke, digitH - stroke)
+                  break
+                case "8":
+                  h(x, top, digitW)
+                  h(x, mid, digitW)
+                  h(x, top + digitH - stroke, digitW)
+                  v(x, top + stroke, digitH - stroke * 2)
+                  v(right, top + stroke, digitH - stroke * 2)
+                  break
+                case "9":
+                  h(x, top, digitW)
+                  h(x, mid, digitW)
+                  h(x, top + digitH - stroke, digitW)
+                  v(x, top + stroke, mid - top - stroke)
+                  v(right, top + stroke, digitH - stroke * 2)
+                  break
                 }
               }
+
+              var x = startX
+              for (var i = 0; i < value.length; i++) {
+                var ch = value.charAt(i)
+                if (ch === ":") {
+                  ctx.fillRect(x + 4, top + 22, 8, 8)
+                  ctx.fillRect(x + 4, top + 46, 8, 8)
+                  x += colonW + gap
+                } else {
+                  drawDigit(ch, x)
+                  x += digitW + gap
+                }
+              }
+            }
+
+            Component.onCompleted: requestPaint()
+            Connections {
+              target: root
+              function onDisplayDateChanged() { clockDisplay.requestPaint() }
             }
           }
         }
