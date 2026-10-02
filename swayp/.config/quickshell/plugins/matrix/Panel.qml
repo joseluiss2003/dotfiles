@@ -28,11 +28,10 @@ Item {
       })
     }
     columns = next
-    matrixCanvas.requestPaint()
   }
 
   function advance() {
-    var rows = Math.max(1, Math.floor((matrixCanvas.height - 4) / cellHeight))
+    var rows = Math.max(1, Math.floor((root.widgetHeight - 78) / cellHeight))
     var next = []
     for (var i = 0; i < columns.length; i++) {
       var c = columns[i]
@@ -73,8 +72,8 @@ Item {
       required property var modelData
 
       screen: modelData
-      width: root.widgetWidth
-      height: root.widgetHeight
+      implicitWidth: root.widgetWidth
+      implicitHeight: root.widgetHeight
 
       anchors.right: true
       anchors.bottom: true
@@ -184,7 +183,10 @@ Item {
         interval: 55
         repeat: true
         running: true
-        onTriggered: root.advance()
+        onTriggered: {
+          root.advance()
+          matrixCanvas.requestPaint()
+        }
       }
 
       Component.onCompleted: root.resetColumns()
