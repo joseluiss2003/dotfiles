@@ -1,14 +1,14 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+
 import qs.core
 import qs.ui
 
 Item {
   id: root
 
-  property real widgetWidth: 520
-  property real widgetHeight: 190
+  property real widgetSize: 260
   property date displayDate: clock.date
 
   SystemClock {
@@ -25,13 +25,13 @@ Item {
       required property var modelData
 
       screen: modelData
-      implicitWidth: root.widgetWidth
-      implicitHeight: root.widgetHeight
+      implicitWidth: root.widgetSize
+      implicitHeight: root.widgetSize
 
       anchors.right: true
       anchors.bottom: true
       margins.right: Style.space(24)
-      margins.bottom: Style.space(28) + Style.space(190) + Style.space(10)
+      margins.bottom: Style.space(190) + Style.space(10) + Style.space(28)
 
       color: "transparent"
       exclusionMode: ExclusionMode.Ignore
@@ -57,8 +57,8 @@ Item {
           id: clockDisplay
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.verticalCenter: parent.verticalCenter
-          anchors.verticalCenterOffset: -Style.space(3)
-          width: 360
+          anchors.verticalCenterOffset: -Style.space(7)
+          width: 230
           height: 92
 
           property string value: Qt.formatDateTime(root.displayDate, "HH:mm")
@@ -73,11 +73,11 @@ Item {
               ctx.fillStyle = Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, Color.foreground.a)
 
               var value = clockDisplay.value
-              var digitW = 42
-              var digitH = 68
-              var stroke = 8
-              var gap = 7
-              var colonW = 14
+              var digitW = 38
+              var digitH = 62
+              var stroke = 7
+              var gap = 5
+              var colonW = 11
               var totalW = digitW * 4 + gap * 3 + colonW + gap
               var startX = (width - totalW) / 2
               var top = (height - digitH) / 2
@@ -96,8 +96,7 @@ Item {
 
                 switch (ch) {
                 case "0":
-                  v(x, top, digitH)
-                  v(right, top, digitH)
+                  v(x, top, digitH); v(right, top, digitH)
                   h(x + stroke, top, digitW - stroke * 2)
                   h(x + stroke, top + digitH - stroke, digitW - stroke * 2)
                   break
@@ -105,53 +104,38 @@ Item {
                   v(x + (digitW - stroke) / 2, top, digitH)
                   break
                 case "2":
-                  h(x, top, digitW)
-                  h(x, mid, digitW)
-                  h(x, top + digitH - stroke, digitW)
+                  h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
                   v(right, top + stroke, (digitH - stroke) / 2 - 2)
                   v(x, mid + stroke, (digitH - stroke) / 2 - 2)
                   break
                 case "3":
-                  h(x, top, digitW)
-                  h(x, mid, digitW)
-                  h(x, top + digitH - stroke, digitW)
+                  h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
                   v(right, top + stroke, mid - top - stroke)
                   v(right, mid + stroke, digitH - (mid - top) - stroke)
                   break
                 case "4":
-                  v(x, top, mid - top)
-                  h(x, mid, digitW)
-                  v(right, top, digitH)
+                  v(x, top, mid - top); h(x, mid, digitW); v(right, top, digitH)
                   break
                 case "5":
-                  h(x, top, digitW)
-                  h(x, mid, digitW)
-                  h(x, top + digitH - stroke, digitW)
+                  h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
                   v(x, top + stroke, mid - top - stroke)
                   v(right, mid + stroke, digitH - (mid - top) - stroke)
                   break
                 case "6":
-                  h(x, top, digitW)
-                  h(x, mid, digitW)
-                  h(x, top + digitH - stroke, digitW)
+                  h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
                   v(x, top + stroke, digitH - stroke * 2)
                   v(right, mid + stroke, digitH - (mid - top) - stroke)
                   break
                 case "7":
-                  h(x, top, digitW)
-                  v(right, top + stroke, digitH - stroke)
+                  h(x, top, digitW); v(right, top + stroke, digitH - stroke)
                   break
                 case "8":
-                  h(x, top, digitW)
-                  h(x, mid, digitW)
-                  h(x, top + digitH - stroke, digitW)
+                  h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
                   v(x, top + stroke, digitH - stroke * 2)
                   v(right, top + stroke, digitH - stroke * 2)
                   break
                 case "9":
-                  h(x, top, digitW)
-                  h(x, mid, digitW)
-                  h(x, top + digitH - stroke, digitW)
+                  h(x, top, digitW); h(x, mid, digitW); h(x, top + digitH - stroke, digitW)
                   v(x, top + stroke, mid - top - stroke)
                   v(right, top + stroke, digitH - stroke * 2)
                   break
@@ -162,8 +146,8 @@ Item {
               for (var i = 0; i < value.length; i++) {
                 var ch = value.charAt(i)
                 if (ch === ":") {
-                  ctx.fillRect(x + 4, top + 20, 7, 7)
-                  ctx.fillRect(x + 4, top + 41, 7, 7)
+                  ctx.fillRect(x + 2, top + 18, 6, 6)
+                  ctx.fillRect(x + 2, top + 38, 6, 6)
                   x += colonW + gap
                 } else {
                   drawDigit(ch, x)
@@ -173,6 +157,7 @@ Item {
             }
 
             Component.onCompleted: requestPaint()
+
             Connections {
               target: root
               function onDisplayDateChanged() { clockCanvas.requestPaint() }
@@ -188,11 +173,11 @@ Item {
         Text {
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.top: clockDisplay.bottom
-          anchors.topMargin: Style.space(9)
+          anchors.topMargin: Style.space(7)
           text: Qt.formatDateTime(root.displayDate, "dddd, MMMM d")
           color: Util.alpha(Color.foreground, 0.72)
           font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.82)
+          font.pixelSize: Style.fontPx(0.76)
           horizontalAlignment: Text.AlignHCenter
         }
       }
