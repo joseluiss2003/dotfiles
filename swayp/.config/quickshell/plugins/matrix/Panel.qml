@@ -81,7 +81,6 @@ Item {
       margins.bottom: Style.space(28)
 
       color: "transparent"
-      aboveWindows: false
       exclusionMode: ExclusionMode.Ignore
       keyboardFocus: WlrKeyboardFocus.None
       WlrLayershell.layer: WlrLayer.Bottom
