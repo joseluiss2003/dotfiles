@@ -66,7 +66,7 @@ Item {
           id: clockDisplay
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.verticalCenter: parent.verticalCenter
-          width: 330
+          width: 360
           height: 92
 
           property string value: Qt.formatDateTime(root.displayDate, "HH:mm")
@@ -85,7 +85,7 @@ Item {
 
           Row {
             anchors.centerIn: parent
-            spacing: Style.space(10)
+            spacing: Style.space(7)
 
             Repeater {
               model: clockDisplay.value.length
@@ -94,10 +94,21 @@ Item {
                 required property int index
 
                 readonly property string glyph: clockDisplay.value.charAt(index)
+                readonly property bool isOne: glyph === "1"
                 readonly property bool colon: glyph === ":"
 
-                width: colon ? 16 : 48
+                width: colon ? 16 : 52
                 height: 84
+
+                Rectangle {
+                  visible: isOne
+                  x: 22
+                  y: 8
+                  width: 12
+                  height: 72
+                  color: Color.foreground
+                  radius: 0
+                }
 
                 Repeater {
                   model: colon ? 2 : 7
@@ -107,21 +118,21 @@ Item {
 
                     readonly property bool active: colon
                       ? true
-                      : clockDisplay.segments[glyph][index]
+                      : (!isOne && clockDisplay.segments[glyph][index])
 
                     visible: active
                     color: Color.foreground
                     radius: 0
 
-                    width: colon ? 8 : [40, 10, 10, 40, 10, 10, 40][index]
-                    height: colon ? 8 : [10, 36, 36, 10, 36, 36, 10][index]
+                    width: colon ? 8 : [44, 10, 10, 44, 10, 10, 44][index]
+                    height: colon ? 8 : [10, 38, 38, 10, 38, 38, 10][index]
 
                     x: colon
                       ? 4
-                      : [4, 38, 38, 4, 0, 0, 4][index]
+                      : [4, 42, 42, 4, 0, 0, 4][index]
                     y: colon
                       ? (index === 0 ? 26 : 50)
-                      : [0, 4, 44, 74, 44, 4, 37][index]
+                      : [0, 4, 46, 80, 46, 4, 40][index]
                   }
                 }
               }
