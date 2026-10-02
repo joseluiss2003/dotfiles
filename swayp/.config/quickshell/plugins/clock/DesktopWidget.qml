@@ -53,15 +53,6 @@ Item {
           font.weight: Font.DemiBold
         }
 
-        Text {
-          x: parent.width - implicitWidth - Style.space(14)
-          y: header.y
-          text: "time"
-          color: Util.alpha(Color.muted, 0.62)
-          font.family: Style.font.family
-          font.pixelSize: Style.fontPx(0.72)
-        }
-
         Item {
           id: clockDisplay
           anchors.horizontalCenter: parent.horizontalCenter
