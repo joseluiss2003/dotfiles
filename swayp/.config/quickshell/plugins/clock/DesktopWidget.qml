@@ -67,7 +67,7 @@ Item {
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.verticalCenter: parent.verticalCenter
           width: 360
-          height: 92
+          height: 82
 
           property string value: Qt.formatDateTime(root.displayDate, "HH:mm")
           property var segments: ({
@@ -97,15 +97,15 @@ Item {
                 readonly property bool isOne: glyph === "1"
                 readonly property bool colon: glyph === ":"
 
-                width: colon ? 16 : 52
-                height: 84
+                width: colon ? 16 : 50
+                height: 76
 
                 Rectangle {
                   visible: isOne
-                  x: 22
-                  y: 8
-                  width: 12
-                  height: 72
+                  x: 21
+                  y: 6
+                  width: 9
+                  height: 64
                   color: Color.foreground
                   radius: 0
                 }
@@ -124,15 +124,15 @@ Item {
                     color: Color.foreground
                     radius: 0
 
-                    width: colon ? 8 : [44, 10, 10, 44, 10, 10, 44][index]
-                    height: colon ? 8 : [10, 38, 38, 10, 38, 38, 10][index]
+                    width: colon ? 8 : [42, 9, 9, 42, 9, 9, 42][index]
+                    height: colon ? 8 : [9, 34, 34, 9, 34, 34, 9][index]
 
                     x: colon
                       ? 4
-                      : [4, 42, 42, 4, 0, 0, 4][index]
+                      : [4, 37, 37, 4, 0, 0, 4][index]
                     y: colon
                       ? (index === 0 ? 26 : 50)
-                      : [0, 4, 46, 80, 46, 4, 40][index]
+                      : [0, 4, 40, 67, 40, 4, 34][index]
                   }
                 }
               }
@@ -143,7 +143,7 @@ Item {
         Text {
           anchors.horizontalCenter: parent.horizontalCenter
           anchors.top: clockDisplay.bottom
-          anchors.topMargin: Style.space(5)
+          anchors.topMargin: Style.space(9)
           text: Qt.formatDateTime(root.displayDate, "dddd, MMMM d")
           color: Util.alpha(Color.foreground, 0.72)
           font.family: Style.font.family
