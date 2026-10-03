@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=clin
+GenericName=Notes
+Comment=Obsidian-inspired terminal note manager
+Exec=kitty --class=swayp-tui-clin -e clin
+Terminal=false
+Icon=accessories-notes
+Categories=Office;Utility;ConsoleOnly;
+Keywords=notes;markdown;obsidian;tui;terminal;
+StartupNotify=false
