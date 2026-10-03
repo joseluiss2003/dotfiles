@@ -165,6 +165,24 @@ window, dialog, popover, menu, .background {{
   background-color: @swayp-bg;
   color: @swayp-fg;
 }}
+.sidebar, .navigation-sidebar, placessidebar, placesview, .places-sidebar, 
+.navigation-sidebar.view, .navigation-sidebar row, .navigation-sidebar > row {{
+  background-color: @swayp-surface;
+  color: @swayp-fg;
+}}
+
+.sidebar row:selected, .navigation-sidebar row:selected, placessidebar row:selected,
+.places-sidebar row:selected {{
+  background-color: @swayp-selection;
+  color: @swayp-fg;
+}}
+
+.sidebar row:hover, .navigation-sidebar row:hover, placessidebar row:hover,
+.places-sidebar row:hover {{
+  background-color: @swayp-selection;
+  color: @swayp-fg;
+}}
+
 headerbar, .titlebar, .toolbar {{
   background-color: @swayp-surface;
   color: @swayp-fg;
