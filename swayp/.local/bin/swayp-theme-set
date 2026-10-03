@@ -329,7 +329,46 @@ button, entry, spinbutton, combobox {{
   box-shadow: none;
 }}
 
-notebook, frame, list, row, .view {{
+/* GTK3 content surfaces: keep viewports and model views on the
+ * SwayP background instead of letting Adwaita's light content surface leak
+ * through applications such as virt-manager. */
+viewport,
+scrolledwindow,
+scrolledwindow > viewport,
+treeview,
+treeview.view,
+iconview,
+iconview.view,
+textview,
+textview.view,
+.view,
+.content-view,
+list,
+listview,
+row,
+frame {{
+  background-color: @swayp-bg;
+  background-image: none;
+  color: @swayp-fg;
+}}
+
+viewport.view,
+scrolledwindow.viewport,
+treeview.view {{
+  background-color: @swayp-bg;
+  color: @swayp-fg;
+}}
+
+treeview.view:selected,
+iconview.view:selected,
+list row:selected,
+row:selected {{
+  background-color: @swayp-selection;
+  color: @swayp-fg;
+}}
+
+notebook,
+frame {{
   color: @swayp-fg;
 }}
 
