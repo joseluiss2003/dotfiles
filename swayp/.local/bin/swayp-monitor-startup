@@ -1,0 +1,55 @@
+#!/bin/sh
+set -eu
+
+CONFIG_FILE="${HOME}/.config/swayp/outputs.json"
+
+[ -f "$CONFIG_FILE" ] || exit 0
+command -v swaymsg >/dev/null 2>&1 || exit 0
+command -v jq >/dev/null 2>&1 || exit 0
+
+outputs="$(swaymsg -t get_outputs -r)"
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+
+jq -r '
+  .outputs // {} |
+  to_entries[] |
+  [
+    .key,
+    (.value.mode.width // 0),
+    (.value.mode.height // 0),
+    (.value.mode.refresh // 0),
+    (.value.position.x // 0),
+    (.value.position.y // 0),
+    (.value.scale // 1),
+    (.value.transform // "normal"),
+    (.value.adaptive_sync // ""),
+    (.value.power // "")
+  ] |
+  @tsv
+' "$CONFIG_FILE" > "$tmp"
+
+while IFS="$(printf '\t')" read -r output width height refresh x y scale transform adaptive_sync power; do
+    [ -n "$output" ] || continue
+
+    if ! printf '%s\n' "$outputs" | jq -e --arg name "$output" '.[] | select(.name == $name)' >/dev/null; then
+        continue
+    fi
+
+    if [ "$width" -gt 0 ] && [ "$height" -gt 0 ] && [ "$refresh" -gt 0 ]; then
+        hz="$(awk -v refresh="$refresh" 'BEGIN { printf "%.3f", refresh / 1000 }')"
+        swaymsg output "$output" mode "${width}x${height}@${hz}Hz" >/dev/null
+    fi
+
+    swaymsg output "$output" pos "$x" "$y" >/dev/null
+    swaymsg output "$output" scale "$scale" >/dev/null
+    swaymsg output "$output" transform "$transform" >/dev/null
+
+    case "$adaptive_sync" in
+        on|off) swaymsg output "$output" adaptive_sync "$adaptive_sync" >/dev/null ;;
+    esac
+
+    case "$power" in
+        on|off) swaymsg output "$output" power "$power" >/dev/null ;;
+    esac
+done < "$tmp"
