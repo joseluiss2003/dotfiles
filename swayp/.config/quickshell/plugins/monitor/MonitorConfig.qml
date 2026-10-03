@@ -146,173 +146,240 @@ Column {
     onRunningChanged: if (!running && root.refreshState) root.refreshState()
   }
 
-  Item {
+  // Compact display editor: details stay hidden until a display is selected.
+  Column {
     width: parent.width
-    height: Style.space(28)
+    spacing: Style.spacing.xs
 
-    Text {
-      anchors.left: parent.left
-      anchors.verticalCenter: parent.verticalCenter
-      text: "MODE"
-      color: root.foreground
-      font.family: root.bar.fontFamily
-      font.pixelSize: Style.font.caption
-      font.bold: true
-    }
+    Item {
+      width: parent.width
+      height: Style.space(24)
 
-    Row {
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: Style.spacing.xs
-
-      Button { text: "‹"; bordered: true; verticalPadding: 2; horizontalPadding: 7; onClicked: root.setResolution(-1) }
-      Button {
-        text: root.resolutions.length ? (root.currentResolution().width + "×" + root.currentResolution().height) : "N/A"
-        bordered: true
-        verticalPadding: 2
-        horizontalPadding: 8
-        onClicked: root.applyMode()
-      }
-      Button { text: "›"; bordered: true; verticalPadding: 2; horizontalPadding: 7; onClicked: root.setResolution(1) }
-
-      Button { text: "‹"; bordered: true; verticalPadding: 2; horizontalPadding: 7; onClicked: { root.setRefresh(-1); root.applyMode() } }
-      Button { text: root.refreshRates.length ? (Number(root.refreshRates[root.refreshIndex]).toFixed(3) + " Hz") : "N/A"; bordered: true; verticalPadding: 2; horizontalPadding: 8; onClicked: root.applyMode() }
-      Button { text: "›"; bordered: true; verticalPadding: 2; horizontalPadding: 7; onClicked: { root.setRefresh(1); root.applyMode() } }
-    }
-  }
-
-  Item {
-    width: parent.width
-    height: Style.space(28)
-
-    Text {
-      anchors.left: parent.left
-      anchors.verticalCenter: parent.verticalCenter
-      text: "POSITION"
-      color: root.foreground
-      font.family: root.bar.fontFamily
-      font.pixelSize: Style.font.caption
-      font.bold: true
-    }
-
-    Row {
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: Style.spacing.xs
-
-      TextField {
-        id: xField
-        width: Style.space(74)
-        height: Style.space(28)
-        text: String(display?.x || 0)
-        validator: IntValidator { bottom: -32768; top: 32767 }
+      Text {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        text: String(root.display?.name || "DISPLAY")
         color: root.foreground
         font.family: root.bar.fontFamily
         font.pixelSize: Style.font.caption
-        selectByMouse: true
+        font.bold: true
       }
-      TextField {
-        id: yField
-        width: Style.space(74)
-        height: Style.space(28)
-        text: String(display?.y || 0)
-        validator: IntValidator { bottom: -32768; top: 32767 }
+
+      Text {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        text: root.display?.currentMode
+          ? (root.display.currentMode.width + "×" + root.display.currentMode.height
+             + "  ·  " + Number(root.display.currentMode.refresh / 1000).toFixed(3) + " Hz")
+          : ""
+        color: root.foreground
+        opacity: 0.65
+        font.family: root.bar.fontFamily
+        font.pixelSize: Style.font.caption
+      }
+    }
+
+    Item {
+      width: parent.width
+      height: Style.space(30)
+
+      Text {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        text: "MODE"
         color: root.foreground
         font.family: root.bar.fontFamily
         font.pixelSize: Style.font.caption
-        selectByMouse: true
+        font.bold: true
       }
-      Button { text: "APPLY"; bordered: true; verticalPadding: 2; onClicked: root.applyPosition() }
+
+      Row {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Style.spacing.xs
+
+        Button { text: "‹"; bordered: true; verticalPadding: 2; horizontalPadding: 6; onClicked: root.setResolution(-1) }
+        Button {
+          text: root.resolutions.length
+            ? (root.currentResolution().width + "×" + root.currentResolution().height)
+            : "N/A"
+          bordered: true
+          verticalPadding: 2
+          horizontalPadding: 8
+          onClicked: root.applyMode()
+        }
+        Button { text: "›"; bordered: true; verticalPadding: 2; horizontalPadding: 6; onClicked: root.setResolution(1) }
+        Button { text: "‹"; bordered: true; verticalPadding: 2; horizontalPadding: 6; onClicked: { root.setRefresh(-1); root.applyMode() } }
+        Button {
+          text: root.refreshRates.length
+            ? Number(root.refreshRates[root.refreshIndex]).toFixed(3) + " Hz"
+            : "N/A"
+          bordered: true
+          verticalPadding: 2
+          horizontalPadding: 8
+          onClicked: root.applyMode()
+        }
+        Button { text: "›"; bordered: true; verticalPadding: 2; horizontalPadding: 6; onClicked: { root.setRefresh(1); root.applyMode() } }
+      }
+    }
+
+    Item {
+      width: parent.width
+      height: Style.space(30)
+
+      Text {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        text: "POSITION"
+        color: root.foreground
+        font.family: root.bar.fontFamily
+        font.pixelSize: Style.font.caption
+        font.bold: true
+      }
+
+      Row {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Style.spacing.xs
+
+        Text {
+          anchors.verticalCenter: xField.verticalCenter
+          text: "X"
+          color: root.foreground
+          opacity: 0.6
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.caption
+        }
+        TextField {
+          id: xField
+          width: Style.space(58)
+          height: Style.space(28)
+          text: String(display?.x || 0)
+          validator: IntValidator { bottom: -32768; top: 32767 }
+          color: root.foreground
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.caption
+          selectByMouse: true
+        }
+        Text {
+          anchors.verticalCenter: yField.verticalCenter
+          text: "Y"
+          color: root.foreground
+          opacity: 0.6
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.caption
+        }
+        TextField {
+          id: yField
+          width: Style.space(58)
+          height: Style.space(28)
+          text: String(display?.y || 0)
+          validator: IntValidator { bottom: -32768; top: 32767 }
+          color: root.foreground
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.caption
+          selectByMouse: true
+        }
+        Button { text: "APPLY"; bordered: true; verticalPadding: 2; horizontalPadding: 8; onClicked: root.applyPosition() }
+      }
+    }
+
+    Item {
+      width: parent.width
+      height: Style.space(30)
+
+      Text {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        text: "LAYOUT"
+        color: root.foreground
+        font.family: root.bar.fontFamily
+        font.pixelSize: Style.font.caption
+        font.bold: true
+      }
+
+      Row {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Style.spacing.xs
+
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: "ROT"
+          color: root.foreground
+          opacity: 0.6
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.caption
+        }
+        Button { text: "‹"; bordered: true; verticalPadding: 2; horizontalPadding: 6; onClicked: root.cycleTransform(-1) }
+        Button {
+          text: String(root.display?.transform || "normal").toUpperCase()
+          bordered: true
+          verticalPadding: 2
+          horizontalPadding: 8
+          onClicked: root.cycleTransform(1)
+        }
+        Button { text: "›"; bordered: true; verticalPadding: 2; horizontalPadding: 6; onClicked: root.cycleTransform(1) }
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: "SCALE"
+          color: root.foreground
+          opacity: 0.6
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.caption
+        }
+        Button {
+          text: Number(root.display?.scale || 1).toFixed(2) + "×"
+          bordered: true
+          verticalPadding: 2
+          horizontalPadding: 8
+          onClicked: root.cycleScale(1)
+        }
+      }
+    }
+
+    Item {
+      width: parent.width
+      height: Style.space(30)
+
+      Text {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        text: "DISPLAY"
+        color: root.foreground
+        font.family: root.bar.fontFamily
+        font.pixelSize: Style.font.caption
+        font.bold: true
+      }
+
+      Row {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        spacing: Style.spacing.xs
+
+        Text {
+          anchors.verticalCenter: parent.verticalCenter
+          text: "VRR"
+          color: root.foreground
+          opacity: 0.6
+          font.family: root.bar.fontFamily
+          font.pixelSize: Style.font.caption
+        }
+        Button {
+          visible: !!root.display?.adaptiveSyncSupported
+          text: String(root.display?.adaptiveSync || "unsupported").toUpperCase()
+          bordered: true
+          verticalPadding: 2
+          horizontalPadding: 8
+          onClicked: root.run("adaptive-sync", [String(root.display.adaptiveSync === "enabled" ? "off" : "on")])
+        }
+        Button {
+          text: root.display?.power ? "POWER OFF" : "POWER ON"
+          bordered: true
+          verticalPadding: 2
+          horizontalPadding: 8
+          onClicked: root.run("power", [root.display?.power ? "off" : "on"])
+        }
+      }
     }
   }
-
-  Item {
-    width: parent.width
-    height: Style.space(28)
-
-    Text {
-      anchors.left: parent.left
-      anchors.verticalCenter: parent.verticalCenter
-      text: "TRANSFORM"
-      color: root.foreground
-      font.family: root.bar.fontFamily
-      font.pixelSize: Style.font.caption
-      font.bold: true
-    }
-
-    Row {
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: Style.spacing.xs
-      Button { text: "‹"; bordered: true; verticalPadding: 2; horizontalPadding: 7; onClicked: root.cycleTransform(-1) }
-      Button { text: String(root.display?.transform || "normal").toUpperCase(); bordered: true; verticalPadding: 2; horizontalPadding: 8; onClicked: root.cycleTransform(1) }
-      Button { text: "›"; bordered: true; verticalPadding: 2; horizontalPadding: 7; onClicked: root.cycleTransform(1) }
-    }
-  }
-
-  Item {
-    width: parent.width
-    height: Style.space(28)
-
-    Text {
-      anchors.left: parent.left
-      anchors.verticalCenter: parent.verticalCenter
-      text: "SCALE"
-      color: root.foreground
-      font.family: root.bar.fontFamily
-      font.pixelSize: Style.font.caption
-      font.bold: true
-    }
-
-    Button {
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      text: Number(root.display?.scale || 1).toFixed(2) + "×"
-      bordered: true
-      verticalPadding: 2
-      horizontalPadding: 10
-      onClicked: root.cycleScale(1)
-    }
-  }
-
-  Item {
-    width: parent.width
-    height: Style.space(28)
-
-    Text {
-      anchors.left: parent.left
-      anchors.verticalCenter: parent.verticalCenter
-      text: "VRR"
-      color: root.foreground
-      font.family: root.bar.fontFamily
-      font.pixelSize: Style.font.caption
-      font.bold: true
-    }
-
-    Button {
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      visible: !!root.display?.adaptiveSyncSupported
-      text: String(root.display?.adaptiveSync || "unsupported").toUpperCase()
-      bordered: true
-      verticalPadding: 2
-      horizontalPadding: 10
-      onClicked: root.run("adaptive-sync", [String(root.display.adaptiveSync === "enabled" ? "off" : "on")])
-    }
-  }
-
-  Item {
-    width: parent.width
-    height: Style.space(30)
-
-    Button {
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      text: root.display?.power ? "POWER OFF" : "POWER ON"
-      bordered: true
-      verticalPadding: 2
-      horizontalPadding: 10
-      onClicked: root.run("power", [root.display?.power ? "off" : "on"])
-    }
-  }
-}
