@@ -623,6 +623,11 @@ if command -v gsettings >/dev/null 2>&1; then
     fi
 
     gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME" >/dev/null 2>&1 || true
+    # GTK/GNOME reads the active icon theme from GSettings independently of
+    # gtk-3.0/settings.ini. Keep it synchronized with the generated YAMIS theme.
+    if [ -d "$HOME/.local/share/icons/YAMIS-SwayP" ]; then
+        gsettings set org.gnome.desktop.interface icon-theme "YAMIS-SwayP" >/dev/null 2>&1 || true
+    fi
     gsettings set org.gnome.desktop.interface color-scheme "$GTK_TARGET_SCHEME" >/dev/null 2>&1 || true
 fi
 
