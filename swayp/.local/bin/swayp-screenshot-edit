@@ -7,6 +7,10 @@ mkdir -p "$dir"
 
 file="$dir/screenshot-$(date '+%Y-%m-%d_%H-%M-%S').png"
 
-grim -g "$(slurp)" "$file"
-wl-copy < "$file"
-pinta "$file"
+grim -t ppm -g "$(slurp)" - | satty \
+  --filename - \
+  --fullscreen \
+  --copy-command wl-copy \
+  --output-filename "$file" \
+  --actions-on-enter save-to-clipboard,save-to-file \
+  --actions-on-escape exit
