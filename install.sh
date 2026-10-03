@@ -123,7 +123,6 @@ EXTRAS_PACKAGES=(
   tree
   usbutils
   wget
-  yazi
   zoxide
 )
 
@@ -177,8 +176,6 @@ if [[ "$EXTRAS" == true ]]; then
     "$AUR_HELPER" -S --needed fresh-editor-bin cliamp
 
     echo
-    echo "==> Instalando Obsidian..."
-    "$AUR_HELPER" -S --needed obsidian
 fi
 
 echo "==> Activando servicios..."
@@ -300,7 +297,7 @@ echo "========================================"
 echo
 echo "Dependencias SwayP instaladas: ${#PACKAGES[@]}"
 if [[ "$EXTRAS" == true ]]; then
-    echo "Utilidades extra instaladas: ${#EXTRAS_PACKAGES[@]} + fresh-editor-bin + cliamp + Obsidian"
+    echo "Utilidades extra instaladas: ${#EXTRAS_PACKAGES[@]} + fresh-editor-bin + cliamp"
 else
     echo "Extras personales: omitidos (usa --extras)"
 fi
