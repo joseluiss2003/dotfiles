@@ -367,6 +367,44 @@ row:selected {{
   color: @swayp-fg;
 }}
 
+/* GTK3 application chrome: menus, toolbars and split-pane surfaces. */
+menubar,
+menubar > item,
+menubar > item > submenu,
+toolbar,
+toolbar > button,
+toolbar > toolitem,
+statusbar,
+statusbar > frame,
+paned,
+paned > separator,
+expander,
+searchbar,
+searchbar > revealer,
+headerbar,
+headerbar.background {{
+  background-color: @swayp-surface;
+  background-image: none;
+  color: @swayp-fg;
+  border-color: @swayp-muted;
+  box-shadow: none;
+}}
+
+menubar > item:hover,
+menubar > item:focus,
+toolbar > button:hover,
+toolbar > button:focus,
+toolbar > button:checked {{
+  background-color: @swayp-selection;
+  color: @swayp-fg;
+}}
+
+toolbar button image,
+menubar image,
+toolbar image {{
+  color: @swayp-fg;
+}}
+
 notebook,
 frame {{
   color: @swayp-fg;
