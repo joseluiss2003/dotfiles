@@ -78,6 +78,7 @@ PACKAGES=(
   swayidle
   swaylock
   ttf-dejavu
+  ttf-jetbrains-mono-nerd
   ttf-liberation
   upower
   wireplumber
@@ -95,7 +96,7 @@ PACKAGES=(
 )
 
 # Optional desktop utilities. Install with: ./install.sh --extras
-# Maple Mono NF, clin and cliamp, and Obsidian are distributed through the AUR;
+# clin, cliamp, and Obsidian are distributed through the AUR;
 # the installer reuses an existing yay/paru helper for these packages.
 EXTRAS_PACKAGES=(
   bat
@@ -144,20 +145,23 @@ for command in sudo; do
     fi
 done
 
-echo "==> Comprobando helper AUR..."
-
 AUR_HELPER=""
-if command -v yay >/dev/null 2>&1; then
-    AUR_HELPER="yay"
-elif command -v paru >/dev/null 2>&1; then
-    AUR_HELPER="paru"
-else
-    echo "ERROR: SwayP requiere un helper AUR (yay o paru) para instalar Maple Mono NF." >&2
-    echo "       Instala yay o paru y vuelve a ejecutar ./install.sh." >&2
-    exit 1
-fi
 
-echo "    ✓ Helper AUR: $AUR_HELPER"
+if [[ "$EXTRAS" == true ]]; then
+    echo "==> Comprobando helper AUR..."
+
+    if command -v yay >/dev/null 2>&1; then
+        AUR_HELPER="yay"
+    elif command -v paru >/dev/null 2>&1; then
+        AUR_HELPER="paru"
+    else
+        echo "ERROR: Los extras de SwayP requieren un helper AUR (yay o paru)." >&2
+        echo "       Instala yay o paru y vuelve a ejecutar ./install.sh --extras." >&2
+        exit 1
+    fi
+
+    echo "    ✓ Helper AUR: $AUR_HELPER"
+fi
 
 echo "==> Instalando dependencias de SwayP..."
 sudo pacman -S --needed "${PACKAGES[@]}"
@@ -256,16 +260,14 @@ cd "$DOTFILES_DIR"
 stow -t "$HOME" "$STOW_PACKAGE"
 
 echo
-echo "==> Instalando Maple Mono NF..."
+echo "==> Comprobando JetBrains Mono Nerd Font..."
 
-"$AUR_HELPER" -S --needed maplemono-nf
-
-if ! fc-match -f '%{family}\n' 'Maple Mono NF' | grep -qx 'Maple Mono NF'; then
-    echo "ERROR: Fontconfig no detecta Maple Mono NF después de la instalación." >&2
+if ! fc-match -f '%{family}\n' 'JetBrainsMono Nerd Font' | grep -qx 'JetBrainsMono Nerd Font'; then
+    echo "ERROR: Fontconfig no detecta JetBrainsMono Nerd Font después de la instalación." >&2
     exit 1
 fi
 
-echo "    ✓ Maple Mono NF disponible para SwayP."
+echo "    ✓ JetBrainsMono Nerd Font disponible para SwayP."
 
 echo
 echo "==> Configurando greetd + tuigreet..."
