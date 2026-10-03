@@ -92,12 +92,10 @@ hide_edge_borders none
 ### =========================
 ### Window switcher
 
-# SwayP MRU Alt+Tab. Sway handles the key lifecycle; Quickshell renders
-# the overlay and owns the MRU window list.
+# SwayP MRU Alt+Tab. Sway only opens the switcher; once open,
+# Quickshell owns Tab/Escape/Alt-release so the key lifecycle is reliable.
 bindsym --no-repeat Alt+Tab exec qs ipc call swayp.alt-switch next
 bindsym --no-repeat Alt+Shift+Tab exec qs ipc call swayp.alt-switch previous
-bindsym --release Alt exec qs ipc call swayp.alt-switch commit
-bindsym Alt+Escape exec qs ipc call swayp.alt-switch cancel
 
 ### =========================
 ### Basic actions
