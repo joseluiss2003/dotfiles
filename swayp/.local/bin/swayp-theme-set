@@ -137,17 +137,19 @@ border={accent}ff
 width=2
 radius=0
 """)
-# GTK 3/4 styling uses Adwaita as the native base and overrides
+# GTK 3/4 styling uses the matching Adwaita light/dark base and overrides
 # SwayP semantic colors from this same theme source.
 gtk_dir = os.path.join(os.environ["HOME"], ".config")
 os.makedirs(os.path.join(gtk_dir, "gtk-3.0"), exist_ok=True)
 os.makedirs(os.path.join(gtk_dir, "gtk-4.0"), exist_ok=True)
 
+gtk_mode = c.get("mode", "dark")
+gtk_theme = "Adwaita-dark" if gtk_mode == "dark" else "Adwaita"
 gtk_settings = f"""[Settings]
-gtk-theme-name=Adwaita
+gtk-theme-name={gtk_theme}
 gtk-icon-theme-name=Adwaita
 gtk-font-name=Sans 10
-gtk-application-prefer-dark-theme={"1" if c.get("mode", "dark") == "dark" else "0"}
+gtk-application-prefer-dark-theme={"1" if gtk_mode == "dark" else "0"}
 """
 for version in ("gtk-3.0", "gtk-4.0"):
     with open(os.path.join(gtk_dir, version, "settings.ini"), "w") as f:
