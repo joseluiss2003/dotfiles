@@ -33,8 +33,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Core dependencies: required by SwayP itself or by features wired into the
-# shipped Sway/Quickshell configuration.
+# shipped Sway/Quickshell configuration. adw-gtk-theme provides the GTK3
+# Adwaita/libadwaita-compatible base used by the semantic SwayP GTK palette.
 PACKAGES=(
+  adw-gtk-theme
   awww
   bluez
   bluez-utils
