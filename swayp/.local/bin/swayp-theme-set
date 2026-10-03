@@ -227,34 +227,64 @@ filechooser row {{
 }}
 
 filechooser headerbar,
+filechooser headerbar.background,
 filechooser .titlebar,
 filechooser toolbar,
 filechooser .toolbar,
 filechooser .path-bar,
 filechooser .location-bar {{
   background-color: @swayp-surface;
+  background-image: none;
   color: @swayp-fg;
+  border-color: @swayp-muted;
+  box-shadow: none;
 }}
 
 filechooser button,
+filechooser button.flat,
+filechooser button.suggested-action,
+filechooser button.destructive-action,
 filechooser combobox,
+filechooser combobox button,
 filechooser entry {{
   background-color: @swayp-surface;
+  background-image: none;
   color: @swayp-fg;
   border-color: @swayp-muted;
+  border-image: none;
+  box-shadow: none;
+}}
+
+filechooser button.suggested-action {{
+  background-color: @swayp-accent;
+  color: @swayp-bg;
 }}
 
 filechooser button:hover,
 filechooser button:focus,
-filechooser button:checked {{
+filechooser button:checked,
+filechooser button.flat:hover,
+filechooser button.flat:focus,
+filechooser combobox button:hover {{
   background-color: @swayp-selection;
+  background-image: none;
   color: @swayp-fg;
 }}
 
 filechooser entry:focus {{
   background-color: @swayp-surface;
+  background-image: none;
   color: @swayp-fg;
   border-color: @swayp-accent;
+  box-shadow: none;
+}}
+
+filechooser .path-bar button,
+filechooser .location-bar button {{
+  background-color: @swayp-surface;
+  background-image: none;
+  color: @swayp-fg;
+  border-image: none;
 }}
 
 filechooser treeview.view:selected,
