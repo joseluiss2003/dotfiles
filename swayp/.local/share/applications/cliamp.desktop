@@ -5,7 +5,7 @@ GenericName=Music Player
 Comment=Terminal music player inspired by Winamp
 Exec=kitty --class=swayp-tui-cliamp -e cliamp
 Terminal=false
-Icon=multimedia-player
+Icon=swayp-cliamp
 Categories=AudioVideo;Audio;Music;ConsoleOnly;
 Keywords=music;audio;player;spotify;tui;terminal;
 StartupNotify=false
