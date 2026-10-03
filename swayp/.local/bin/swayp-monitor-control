@@ -1,0 +1,55 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    printf '%s\n' "usage: swaysp-monitor-control <output> <action> [args...]" >&2
+    exit 2
+}
+
+[ "$#" -ge 2 ] || usage
+
+output="$1"
+action="$2"
+shift 2
+
+case "$action" in
+    mode)
+        [ "$#" -eq 3 ] || usage
+        swaymsg output "$output" mode "$1x$2@$3Hz"
+        ;;
+    position)
+        [ "$#" -eq 2 ] || usage
+        swaymsg output "$output" pos "$1" "$2"
+        ;;
+    scale)
+        [ "$#" -eq 1 ] || usage
+        swaymsg output "$output" scale "$1"
+        ;;
+    transform)
+        [ "$#" -eq 1 ] || usage
+        case "$1" in
+            normal|90|180|270|flipped|flipped-90|flipped-180|flipped-270) ;;
+            *) usage ;;
+        esac
+        swaymsg output "$output" transform "$1"
+        ;;
+    adaptive-sync)
+        [ "$#" -eq 1 ] || usage
+        case "$1" in
+            on|off) ;;
+            *) usage ;;
+        esac
+        swaymsg output "$output" adaptive_sync "$1"
+        ;;
+    power)
+        [ "$#" -eq 1 ] || usage
+        case "$1" in
+            on|off) ;;
+            *) usage ;;
+        esac
+        swaymsg output "$output" power "$1"
+        ;;
+    *)
+        usage
+        ;;
+esac
