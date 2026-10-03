@@ -9,7 +9,7 @@ usage() {
 Usage: ./install.sh [--extras]
 
 Options:
-  --extras         Install personal desktop utilities and Obsidian
+  --extras         Install personal desktop utilities
   -h, --help       Show this help
 EOF
 }
@@ -98,8 +98,8 @@ PACKAGES=(
 )
 
 # Optional desktop utilities. Install with: ./install.sh --extras
-# fresh-editor, cliamp, and Obsidian are distributed through the AUR;
-# the installer reuses an existing yay/paru helper for these packages.
+# fresh-editor and cliamp are distributed through the AUR; the installer
+# reuses an existing yay/paru helper for these packages.
 EXTRAS_PACKAGES=(
   bat
   btop
@@ -119,7 +119,6 @@ EXTRAS_PACKAGES=(
   pavucontrol
   ripgrep
   rsync
-  spotify-player
   tree
   usbutils
   wget
