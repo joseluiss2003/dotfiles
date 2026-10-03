@@ -56,7 +56,7 @@ Column {
   function run(action, args) {
     var output = String(display?.name || "")
     if (!output) return
-    var command = ["swayp-monitor-control", output, action].concat(args || [])
+    var command = [Quickshell.env("HOME") + "/.local/bin/swayp-monitor-control", output, action].concat(args || [])
     controlProc.command = command
     controlProc.running = true
   }
