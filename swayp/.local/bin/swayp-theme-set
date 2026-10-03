@@ -152,7 +152,7 @@ color_outline="{muted}"
 """)
 # Generate a private YAMIS variant for Fuzzel. YAMIS SVGs use currentColor,
 # so replacing that token at theme-apply time lets Fuzzel render the same
-# monochrome artwork in SwayP's semantic accent without touching the user's
+# monochrome artwork in SwayP's semantic foreground without touching the user's
 # original YAMIS installation.
 icons_source_candidates = [
     os.path.join(os.environ["HOME"], ".local", "share", "icons", "YAMIS"),
@@ -183,7 +183,7 @@ if yamis_source:
             try:
                 with open(path, "r", encoding="utf-8") as f:
                     svg = f.read()
-                tinted = svg.replace("currentColor", accent)
+                tinted = svg.replace("currentColor", fg)
                 if tinted != svg:
                     with open(path, "w", encoding="utf-8") as f:
                         f.write(tinted)
