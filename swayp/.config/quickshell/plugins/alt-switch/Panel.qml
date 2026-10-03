@@ -18,10 +18,10 @@ Item {
   property var mru: []
   property int cycleSerial: 0
 
-  readonly property int cardWidth: Style.space(720)
-  readonly property int cardHeight: Style.space(190)
-  readonly property int itemWidth: Style.space(132)
-  readonly property int itemHeight: Style.space(128)
+  readonly property int cardWidth: Style.space(620)
+  readonly property int cardHeight: Style.space(166)
+  readonly property int itemWidth: Style.space(112)
+  readonly property int itemHeight: Style.space(108)
 
   function windowTitle(toplevel) {
     var title = String(toplevel ? toplevel.title || "" : "").trim()
@@ -167,6 +167,42 @@ Item {
 
   Component.onCompleted: root.syncMru()
 
+  Item {
+    id: keyCatcher
+    anchors.fill: parent
+    focus: root.open
+    Keys.priority: Keys.BeforeItem
+
+    Keys.onPressed: function(event) {
+      if (!root.open) return
+
+      if (event.key === Qt.Key_Tab) {
+        root.cycle((event.modifiers & Qt.ShiftModifier) ? -1 : 1)
+        event.accepted = true
+        return
+      }
+
+      if (event.key === Qt.Key_Backtab) {
+        root.cycle(-1)
+        event.accepted = true
+        return
+      }
+
+      if (event.key === Qt.Key_Escape) {
+        root.cancel()
+        event.accepted = true
+        return
+      }
+    }
+
+    Keys.onReleased: function(event) {
+      if (root.open && event.key === Qt.Key_Alt) {
+        root.commit()
+        event.accepted = true
+      }
+    }
+  }
+
   Variants {
     model: root.open ? Quickshell.screens : []
 
@@ -181,7 +217,7 @@ Item {
 
         WlrLayershell.namespace: "swayp-alt-switch"
         WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
         anchors {
           top: true
@@ -208,16 +244,16 @@ Item {
               Util.alpha(Color.accent, 0.72),
               1
             )
-            padding: Style.space(12)
+            padding: Style.space(10)
             radius: 0
 
             ColumnLayout {
               anchors.fill: parent
-              spacing: Style.space(8)
+              spacing: Style.space(6)
 
               RowLayout {
                 Layout.fillWidth: true
-                Layout.preferredHeight: Style.space(22)
+                Layout.preferredHeight: Style.space(20)
 
                 Text {
                   text: "> alt-tab"
@@ -245,7 +281,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 orientation: ListView.Horizontal
-                spacing: Style.space(8)
+                spacing: Style.space(6)
                 clip: true
                 interactive: false
                 model: root.windows
@@ -272,7 +308,7 @@ Item {
                         : Util.alpha(Color.outline, 0.38),
                       selected ? 1 : 1
                     )
-                    padding: Style.space(8)
+                    padding: Style.space(6)
                     radius: 0
 
                     ColumnLayout {
@@ -281,11 +317,11 @@ Item {
 
                       Image {
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: Style.space(42)
-                        Layout.preferredHeight: Style.space(42)
+                        Layout.preferredWidth: Style.space(34)
+                        Layout.preferredHeight: Style.space(34)
                         source: root.iconSource(modelData)
-                        sourceSize.width: Style.space(42)
-                        sourceSize.height: Style.space(42)
+                        sourceSize.width: Style.space(34)
+                        sourceSize.height: Style.space(34)
                         fillMode: Image.PreserveAspectFit
                         smooth: true
                       }
