@@ -218,6 +218,22 @@ window, dialog, popover, menu, .background {{
   opacity: 1;
 }}
 
+/* Keep secondary Nautilus chrome readable without making it as bright as
+ * the current location. */
+.nautilus-window placessidebar.sidebar row.sidebar-row label,
+.nautilus-window placessidebar.sidebar row.sidebar-row image,
+.nautilus-window .navigation-sidebar row.sidebar-row label,
+.nautilus-window .navigation-sidebar row.sidebar-row image {{
+  color: @swayp-fg;
+  opacity: 0.88;
+}}
+
+.nautilus-window .view label,
+.nautilus-window .view image {{
+  color: @swayp-fg;
+  opacity: 0.92;
+}}
+
 /* Keyboard/mouse selection: keep the theme's selection hue but give it
  * enough solid area to survive dark palettes such as Osaka Jade. */
 .nautilus-window placessidebar.sidebar row.sidebar-row:selected,
@@ -362,14 +378,14 @@ filechooser row:selected {{
 headerbar, .titlebar, .toolbar {{
   background-color: @swayp-surface;
   color: @swayp-fg;
-  border-color: @swayp-muted;
+  border-color: transparent;
   box-shadow: none;
 }}
 button, entry, spinbutton, combobox {{
   background-color: @swayp-surface;
   background-image: none;
   color: @swayp-fg;
-  border-color: @swayp-muted;
+  border-color: transparent;
   border-image: none;
   box-shadow: none;
 }}
@@ -431,7 +447,7 @@ headerbar.background {{
   background-color: @swayp-surface;
   background-image: none;
   color: @swayp-fg;
-  border-color: @swayp-muted;
+  border-color: transparent;
   box-shadow: none;
 }}
 
