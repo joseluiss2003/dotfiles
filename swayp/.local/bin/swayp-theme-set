@@ -36,7 +36,7 @@ GENERATED_DIR="${HOME}/.config/swayp/generated"
 mkdir -p "$STATE_DIR" "$GENERATED_DIR" "$(dirname "$PERSISTENT_THEME_FILE")"
 
 python3 - "$THEME_DIR/colors.toml" "$PALETTE_STAGED_OUTPUT" "$GENERATED_DIR" "$THEME" <<'PY'
-import json, os, sys, tomllib, colorsys, shutil, subprocess
+import json, os, sys, tomllib, colorsys, shutil, subprocess, re
 
 colors_path, palette_path, generated_dir, theme = sys.argv[1:]
 with open(colors_path, "rb") as f:
@@ -184,6 +184,7 @@ if yamis_source:
                 with open(path, "r", encoding="utf-8") as f:
                     svg = f.read()
                 tinted = svg.replace("currentColor", fg)
+                tinted = re.sub(r'class="ColorScheme-Text"', 'fill="' + fg + '"', tinted)
                 if tinted != svg:
                     with open(path, "w", encoding="utf-8") as f:
                         f.write(tinted)
