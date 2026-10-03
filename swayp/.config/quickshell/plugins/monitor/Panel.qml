@@ -882,22 +882,31 @@ Item {
             Repeater {
               model: root.displays
 
-                      MonitorRow {
+              delegate: Item {
                 required property var modelData
                 required property int index
 
                 width: panelColumn.width
-                display: modelData
-                rowIndex: index
-              }
+                height: monitorRow.implicitHeight
+                  + (monitorConfig.visible ? monitorConfig.implicitHeight + Style.spacing.xs : 0)
 
-              MonitorConfig {
-                visible: root.selectedDisplayIndex === index
-                width: panelColumn.width
-                display: modelData
-                bar: root.bar
-                foreground: root.bar.foreground
-                refreshState: root.refresh
+                MonitorRow {
+                  id: monitorRow
+                  width: parent.width
+                  display: modelData
+                  rowIndex: index
+                }
+
+                MonitorConfig {
+                  id: monitorConfig
+                  y: monitorRow.height + Style.spacing.xs
+                  visible: root.selectedDisplayIndex === index
+                  width: parent.width
+                  display: modelData
+                  bar: root.bar
+                  foreground: root.bar.foreground
+                  refreshState: root.refresh
+                }
               }
             }
           }
