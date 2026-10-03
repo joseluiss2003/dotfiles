@@ -9,6 +9,7 @@ Column {
   required property var display
   required property var bar
   property color foreground: Color.foreground
+  property var refreshState: null
   property int resolutionIndex: 0
   property int refreshIndex: 0
 
@@ -36,6 +37,8 @@ Column {
       }
     }
     resolutionIndex = best
+    if (xField) xField.text = String(display.x || 0)
+    if (yField) yField.text = String(display.y || 0)
 
     var rates = ModelDataHelper.refreshRatesFor(display.modes || [], currentResolution())
     var rateBest = 0
@@ -138,7 +141,7 @@ Column {
   Process {
     id: controlProc
     stdout: StdioCollector { waitForEnd: true }
-    onRunningChanged: if (!running) root.bar?.shell?.ipcCall?.("swayp.monitor", "state")
+    onRunningChanged: if (!running && root.refreshState) root.refreshState()
   }
 
   Item {
@@ -170,7 +173,9 @@ Column {
       }
       Button { text: "›"; bordered: true; verticalPadding: 2; horizontalPadding: 7; onClicked: root.setResolution(1) }
 
+      Button { text: "‹"; bordered: true; verticalPadding: 2; horizontalPadding: 7; onClicked: { root.setRefresh(-1); root.applyMode() } }
       Button { text: root.refreshRates.length ? (Number(root.refreshRates[root.refreshIndex]).toFixed(3) + " Hz") : "N/A"; bordered: true; verticalPadding: 2; horizontalPadding: 8; onClicked: root.applyMode() }
+      Button { text: "›"; bordered: true; verticalPadding: 2; horizontalPadding: 7; onClicked: { root.setRefresh(1); root.applyMode() } }
     }
   }
 
