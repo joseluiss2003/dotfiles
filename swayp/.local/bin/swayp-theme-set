@@ -172,6 +172,21 @@ os.makedirs(os.path.join(gtk_dir, "gtk-4.0"), exist_ok=True)
 
 gtk_mode = c.get("mode", "dark")
 gtk_theme = "Adwaita-dark" if gtk_mode == "dark" else "Adwaita"
+adw_theme = "adw-gtk3-dark" if gtk_mode == "dark" else "adw-gtk3"
+
+# Arch ships the GTK3 libadwaita port as adw-gtk-theme. Prefer it when
+# installed, while keeping a stock Adwaita fallback for systems that have not
+# run the updated SwayP installer yet.
+for theme_root in (
+    os.path.join(os.environ["HOME"], ".themes"),
+    os.path.join(os.environ["HOME"], ".local", "share", "themes"),
+    "/usr/share/themes",
+    "/usr/local/share/themes",
+):
+    if os.path.isdir(os.path.join(theme_root, adw_theme)):
+        gtk_theme = adw_theme
+        break
+
 gtk_settings = f"""[Settings]
 gtk-theme-name={gtk_theme}
 gtk-icon-theme-name=Adwaita
