@@ -13,8 +13,8 @@ Column {
   property int resolutionIndex: 0
   property int refreshIndex: 0
 
-  readonly property var resolutions: ModelDataHelper.uniqueResolutions(display ? display.modes : [])
-  readonly property var refreshRates: ModelDataHelper.refreshRatesFor(display ? display.modes : [], currentResolution())
+  readonly property var resolutions: modelDataHelper.uniqueResolutions(display ? display.modes : [])
+  readonly property var refreshRates: modelDataHelper.refreshRatesFor(display ? display.modes : [], currentResolution())
   readonly property var transforms: ["normal", "90", "180", "270", "flipped", "flipped-90", "flipped-180", "flipped-270"]
   readonly property var scales: [1, 1.25, 1.5, 1.75, 2]
 
@@ -40,7 +40,7 @@ Column {
     if (xField) xField.text = String(display.x || 0)
     if (yField) yField.text = String(display.y || 0)
 
-    var rates = ModelDataHelper.refreshRatesFor(display.modes || [], currentResolution())
+    var rates = modelDataHelper.refreshRatesFor(display.modes || [], currentResolution())
     var rateBest = 0
     for (var j = 0; j < rates.length; j++) {
       if (Math.abs(Number(rates[j]) - Number(current.refresh) / 1000) < 0.01) {
@@ -107,7 +107,7 @@ Column {
   Component.onCompleted: syncSelection()
 
   QtObject {
-    id: ModelDataHelper
+    id: modelDataHelper
     function uniqueResolutions(modes) {
       var out = []
       var seen = {}
