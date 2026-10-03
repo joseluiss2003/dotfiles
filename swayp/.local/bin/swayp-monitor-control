@@ -2,7 +2,7 @@
 set -eu
 
 usage() {
-    printf '%s\n' "usage: swaysp-monitor-control <output> <action> [args...]" >&2
+    printf '%s\n' "usage: swayp-monitor-control <output> <action> [args...]" >&2
     exit 2
 }
 
