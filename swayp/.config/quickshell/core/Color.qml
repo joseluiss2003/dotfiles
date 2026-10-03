@@ -66,6 +66,8 @@ QtObject {
         magenta: root.themeMagenta,
         cyan: root.themeCyan,
         brightForeground: root.themeBrightForeground,
+        lightForeground: root.themeLightForeground,
+        muted: root.themeMuted,
         darkBackground: root.themeDarkBackground,
         darkerBackground: root.themeDarkerBackground,
         lighterBackground: root.themeLighterBackground,
@@ -92,7 +94,7 @@ QtObject {
 
   readonly property color themeBackground: animatedColor("background", paletteValid ? colorFromValue(semanticValue("background", paletteColors[0]), Qt.rgba(0.07, 0.07, 0.07, 1)) : Qt.rgba(0.07, 0.07, 0.07, 1))
   readonly property color themeForeground: animatedColor("foreground", paletteValid ? colorFromValue(semanticValue("foreground", paletteColors[7]), Qt.rgba(1, 1, 1, 1)) : Qt.rgba(1, 1, 1, 1))
-  readonly property color themeMuted: themeForeground
+  readonly property color themeMuted: animatedColor("muted", paletteValid ? colorFromValue(semanticValue("muted", paletteColors[8]), themeForeground) : themeForeground)
   readonly property color themeRed: animatedColor("red", paletteValid ? colorFromValue(paletteColors[1], Qt.rgba(1, 0.33, 0.33, 1)) : Qt.rgba(1, 0.33, 0.33, 1))
   readonly property color themeGreen: animatedColor("green", paletteValid ? colorFromValue(paletteColors[2], Qt.rgba(0.31, 0.98, 0.48, 1)) : Qt.rgba(0.31, 0.98, 0.48, 1))
   readonly property color themeYellow: animatedColor("yellow", paletteValid ? colorFromValue(paletteColors[3], Qt.rgba(0.95, 0.85, 0.30, 1)) : Qt.rgba(0.95, 0.85, 0.30, 1))
@@ -103,7 +105,7 @@ QtObject {
   readonly property color themeDarkBackground: animatedColor("darkBackground", paletteValid ? colorFromValue(semanticValue("dark_background", paletteColors[0]), themeBackground) : themeBackground)
   readonly property color themeDarkerBackground: animatedColor("darkerBackground", paletteValid ? colorFromValue(semanticValue("darker_background", paletteColors[0]), themeBackground) : themeBackground)
   readonly property color themeLighterBackground: animatedColor("lighterBackground", paletteValid ? colorFromValue(semanticValue("lighter_background", paletteColors[0]), themeBackground) : themeBackground)
-  readonly property color themeLightForeground: themeForeground
+  readonly property color themeLightForeground: animatedColor("lightForeground", paletteValid ? colorFromValue(semanticValue("light_foreground", themeBrightForeground), themeBrightForeground) : themeBrightForeground)
 
   // The theme's own accent remains authoritative; do not derive or replace it.
   readonly property color themeAccent: animatedColor("accent", paletteValid ? colorFromValue(semanticValue("accent", themeBlue), themeBlue) : themeBlue)
@@ -121,7 +123,7 @@ QtObject {
   readonly property color themeTint: mix(themeGreen, themeCyan, 0.50)
   readonly property color themeBackgroundDeep: themeDarkerBackground
   readonly property color themeSurfaceTinted: themeLighterBackground
-  readonly property color themeSurfaceAltTinted: themeLighterBackground
+  readonly property color themeSurfaceAltTinted: mix(themeBackground, themeLighterBackground, 0.68)
   readonly property color themeElevatedTinted: themeLighterBackground
 
   // Keep the bar on the same base background as Sway and Kitty so the
@@ -159,12 +161,12 @@ QtObject {
   readonly property color success: themeGreen
   readonly property color warning: themeYellow
   readonly property color info: themeCyan
-  readonly property color outline: themeMuted
+  readonly property color outline: Util.alpha(themeMuted, 0.78)
   readonly property color outlineStrong: themeLightForeground
   readonly property color divider: Util.alpha(themeForeground, 0.16)
   readonly property color hover: Util.alpha(themeAccent, 0.16)
   readonly property color active: Util.alpha(themeAccent, 0.24)
-  readonly property color selection: Util.alpha(themeSelection, 0.30)
+  readonly property color selection: Util.alpha(themeSelection, 0.58)
   readonly property color error: themeRed
 
   property var shellValues: ({})
