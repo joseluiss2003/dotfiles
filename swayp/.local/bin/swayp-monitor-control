@@ -1,9 +1,75 @@
 #!/bin/sh
 set -eu
 
+CONFIG_DIR="${HOME}/.config/swayp"
+CONFIG_FILE="${CONFIG_DIR}/outputs.json"
+
 usage() {
     printf '%s\n' "usage: swayp-monitor-control <output> <action> [args...]" >&2
     exit 2
+}
+
+persist_output() {
+    output_name="$1"
+    mkdir -p "$CONFIG_DIR"
+
+    current="$(swaymsg -t get_outputs -r)"
+    tmp="$(mktemp "${CONFIG_FILE}.XXXXXX")"
+    trap 'rm -f "$tmp"' EXIT
+
+    if [ -f "$CONFIG_FILE" ]; then
+        config="$(cat "$CONFIG_FILE")"
+    else
+        config='{"version":1,"outputs":{}}'
+    fi
+
+    printf '%s\n' "$config" |
+        jq -e . >/dev/null 2>&1 || config='{"version":1,"outputs":{}}'
+
+    printf '%s\n' "$current" |
+        jq --arg name "$output_name" --argjson config "$config" '
+            .[] |
+            select(.name == $name) |
+            {
+                name: .name,
+                mode: {
+                    width: (.current_mode.width // 0),
+                    height: (.current_mode.height // 0),
+                    refresh: (.current_mode.refresh // 0)
+                },
+                position: {
+                    x: (.rect.x // 0),
+                    y: (.rect.y // 0)
+                },
+                scale: (.scale // 1),
+                transform: (.transform // "normal"),
+                adaptive_sync: (
+                    if .adaptive_sync_status == "enabled" then "on"
+                    elif .adaptive_sync_status == "disabled" then "off"
+                    else null
+                    end
+                ),
+                power: (
+                    if .power == true then "on"
+                    elif .power == false then "off"
+                    else null
+                    end
+                )
+            } as $state |
+            ($config.outputs // {}) + {
+                ($name): (
+                    $state |
+                    with_entries(select(.value != null))
+                )
+            } |
+            {
+                version: 1,
+                outputs: .
+            }
+        ' > "$tmp"
+
+    mv -f "$tmp" "$CONFIG_FILE"
+    trap - EXIT
 }
 
 [ "$#" -ge 2 ] || usage
@@ -53,3 +119,5 @@ case "$action" in
         usage
         ;;
 esac
+
+persist_output "$output"
