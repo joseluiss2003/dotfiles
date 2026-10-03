@@ -73,8 +73,24 @@ printf '%s\n' "$outputs" |
                 enabled: (.active // false),
                 focused: (.focused // false),
                 scale: (.scale // 1),
-                width: (.current_mode.width // 0),
-                height: (.current_mode.height // 0),
+                x: (.rect.x // 0),
+                y: (.rect.y // 0),
+                transform: (.transform // "normal"),
+                power: (.power // false),
+                adaptiveSyncSupported: (.features.adaptive_sync // false),
+                adaptiveSync: (.adaptive_sync_status // "unsupported"),
+                currentMode: {
+                    width: (.current_mode.width // 0),
+                    height: (.current_mode.height // 0),
+                    refresh: (.current_mode.refresh // 0)
+                },
+                modes: (
+                    [.modes[]? |
+                        select((.width // 0) > 0 and (.height // 0) > 0 and (.refresh // 0) > 0)
+                    ] |
+                    unique_by([.width, .height, .refresh]) |
+                    sort_by(.width, .height, .refresh)
+                ),
                 make: (.make // ""),
                 model: (.model // ""),
                 serial: (.serial // "")
