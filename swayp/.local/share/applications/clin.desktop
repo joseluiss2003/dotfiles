@@ -5,7 +5,7 @@ GenericName=Notes
 Comment=Obsidian-inspired terminal note manager
 Exec=kitty --class=swayp-tui-clin -e clin
 Terminal=false
-Icon=accessories-notes
+Icon=swayp-clin
 Categories=Office;Utility;ConsoleOnly;
 Keywords=notes;markdown;obsidian;tui;terminal;
 StartupNotify=false
