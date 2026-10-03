@@ -897,6 +897,7 @@ Item {
                 display: modelData
                 bar: root.bar
                 foreground: root.bar.foreground
+                refreshState: root.refresh
               }
             }
           }
