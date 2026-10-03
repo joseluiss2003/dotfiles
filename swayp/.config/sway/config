@@ -136,6 +136,7 @@ for_window [app_id="^swayp-tui-(clin|cliamp)$"] floating enable, border pixel 1,
 exec awww-daemon
 exec env PATH="$HOME/.local/bin:$PATH" swayp-theme-set
 exec env PATH="$HOME/.local/bin:$PATH" wallpaper-startup
+exec sh "$HOME/.local/bin/swayp-monitor-startup"
 exec env PATH="$HOME/.local/bin:$PATH" qs
 exec playerctld daemon
 
