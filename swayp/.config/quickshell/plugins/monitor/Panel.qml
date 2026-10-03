@@ -27,7 +27,7 @@ Panel {
   property string monitorScale: ""
   property var displays: []
   property int enabledDisplayCount: 0
-  property int selectedDisplayIndex: 0
+  property int selectedDisplayIndex: -1
   readonly property var nightlightService: bar?.shell?.firstPartyServiceFor("swayp.nightlight")
 
   // Carry sub-notch touchpad deltas between wheel events.
@@ -136,7 +136,8 @@ Panel {
 
   function activateCursor() {
     if (focusSection === "monitors" && selectedIndex >= 0 && selectedIndex < displays.length) {
-      root.selectedDisplayIndex = selectedIndex
+      root.selectedDisplayIndex =
+        root.selectedDisplayIndex === selectedIndex ? -1 : selectedIndex
     }
     // brightness/text size: the slider value is the action.
   }
@@ -378,6 +379,7 @@ Panel {
   // the cursor until hover or the first navigation key.
   onOpenedChanged: {
     if (opened) {
+      selectedDisplayIndex = -1
       refresh()
       if (brightnessAvailable) {
         focusSection = "brightness"
@@ -969,8 +971,12 @@ Item {
         root.selectedIndex = monitorRow.rowIndex
       }
       onClicked: {
-        root.selectedDisplayIndex = monitorRow.rowIndex
-        if (!monitorRow.display.enabled) root.toggleDisplay(monitorRow.display.name, false)
+        root.selectedDisplayIndex =
+          root.selectedDisplayIndex === monitorRow.rowIndex
+            ? -1
+            : monitorRow.rowIndex
+        if (!monitorRow.display.enabled)
+          root.toggleDisplay(monitorRow.display.name, false)
       }
     }
   }
