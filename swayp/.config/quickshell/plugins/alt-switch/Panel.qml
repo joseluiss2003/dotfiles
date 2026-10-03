@@ -208,7 +208,7 @@ Item {
 
     delegate: Component {
       PanelWindow {
-        required property var modelData
+        property var modelData
 
         screen: modelData
         visible: root.open
@@ -284,16 +284,16 @@ Item {
                 spacing: Style.space(6)
                 clip: true
                 interactive: false
-                model: root.windows
+                model: root.windows.length ? root.windows : []
 
                 delegate: Item {
-                  required property var modelData
-                  required property int index
+                  property var modelData
+                  property int index: 0
 
                   width: root.itemWidth
                   height: root.itemHeight
 
-                  readonly property bool selected: index === root.selectedIndex
+                  readonly property bool selected: Number(index) === root.selectedIndex
 
                   BorderSurface {
                     anchors.fill: parent
@@ -356,12 +356,23 @@ Item {
                   opacity: selected ? 1.0 : 0.78
                 }
 
-                onCurrentIndexChanged: {
-                  if (currentIndex !== root.selectedIndex)
-                    currentIndex = root.selectedIndex
+                onModelChanged: {
+                  if (root.windows.length > 0)
+                    currentIndex = Math.max(0, Math.min(root.selectedIndex, root.windows.length - 1))
                 }
 
-                Component.onCompleted: currentIndex = root.selectedIndex
+                Connections {
+                  target: root
+                  function onSelectedIndexChanged() {
+                    if (root.windows.length > 0)
+                      list.currentIndex = Math.max(0, Math.min(root.selectedIndex, root.windows.length - 1))
+                  }
+                }
+
+                Component.onCompleted: {
+                  if (root.windows.length > 0)
+                    currentIndex = root.selectedIndex
+                }
               }
             }
           }
