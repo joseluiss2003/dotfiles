@@ -212,6 +212,63 @@ window, dialog, popover, menu, .background {{
   color: @swayp-fg;
 }}
 
+/* GTK FileChooser: keep the portal dialog fully inside the SwayP palette. */
+filechooser,
+filechooser .view,
+filechooser treeview,
+filechooser treeview.view,
+filechooser iconview,
+filechooser list,
+filechooser row {
+  background-color: @swayp-bg;
+  color: @swayp-fg;
+}
+
+filechooser headerbar,
+filechooser .titlebar,
+filechooser toolbar,
+filechooser .toolbar,
+filechooser .path-bar,
+filechooser .location-bar {
+  background-color: @swayp-surface;
+  color: @swayp-fg;
+}
+
+filechooser button,
+filechooser combobox,
+filechooser entry {
+  background-color: @swayp-surface;
+  color: @swayp-fg;
+  border-color: @swayp-muted;
+}
+
+filechooser button:hover,
+filechooser button:focus,
+filechooser button:checked {
+  background-color: @swayp-selection;
+  color: @swayp-fg;
+}
+
+filechooser entry:focus {
+  background-color: @swayp-surface;
+  color: @swayp-fg;
+  border-color: @swayp-accent;
+}
+
+filechooser treeview.view:selected,
+filechooser iconview:selected,
+filechooser row:selected {
+  background-color: @swayp-selection;
+  color: @swayp-fg;
+}
+
+filechooser .sidebar,
+filechooser .navigation-sidebar,
+filechooser placessidebar {
+  background-color: @swayp-surface;
+  color: @swayp-fg;
+}
+
 headerbar, .titlebar, .toolbar {{
   background-color: @swayp-surface;
   color: @swayp-fg;
