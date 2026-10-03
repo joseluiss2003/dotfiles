@@ -27,6 +27,7 @@ Panel {
   property string monitorScale: ""
   property var displays: []
   property int enabledDisplayCount: 0
+  property int selectedDisplayIndex: 0
   readonly property var nightlightService: bar?.shell?.firstPartyServiceFor("swayp.nightlight")
 
   // Carry sub-notch touchpad deltas between wheel events.
@@ -75,7 +76,7 @@ Panel {
     if (brightnessAvailable) list.push("brightness")
     list.push("textsize")
     list.push("quickshell")
-    if (displays.length > 1) list.push("monitors")
+    if (displays.length > 0) list.push("monitors")
     return list
   }
 
@@ -135,8 +136,7 @@ Panel {
 
   function activateCursor() {
     if (focusSection === "monitors" && selectedIndex >= 0 && selectedIndex < displays.length) {
-      var d = displays[selectedIndex]
-      if (d) toggleDisplay(d.name, d.enabled)
+      root.selectedDisplayIndex = selectedIndex
     }
     // brightness/text size: the slider value is the action.
   }
@@ -391,7 +391,7 @@ Panel {
   }
 
   onBrightnessAvailableChanged: clampCursor()
-  onDisplaysChanged: clampCursor()
+  onDisplaysChanged: { clampCursor(); if (selectedDisplayIndex >= displays.length) selectedDisplayIndex = Math.max(0, displays.length - 1) }
   onVisibleSectionsChanged: clampCursor()
 
   // Only poll while the panel is open; the bar glyph tracks monitor count via
@@ -882,7 +882,7 @@ Item {
             Repeater {
               model: root.displays
 
-              MonitorRow {
+                      MonitorRow {
                 required property var modelData
                 required property int index
 
@@ -890,10 +890,16 @@ Item {
                 display: modelData
                 rowIndex: index
               }
+
+              MonitorConfig {
+                visible: root.selectedDisplayIndex === index
+                width: panelColumn.width
+                display: modelData
+                bar: root.bar
+                foreground: root.bar.foreground
+              }
             }
           }
-
-          
 
         }
       }
@@ -952,8 +958,10 @@ Item {
         root.focusSection = "monitors"
         root.selectedIndex = monitorRow.rowIndex
       }
-      onClicked: if (monitorRow.canToggle)
-        root.toggleDisplay(monitorRow.display.name, monitorRow.display.enabled)
+      onClicked: {
+        root.selectedDisplayIndex = monitorRow.rowIndex
+        if (!monitorRow.display.enabled) root.toggleDisplay(monitorRow.display.name, false)
+      }
     }
   }
 }
