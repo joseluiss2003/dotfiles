@@ -672,19 +672,24 @@ PY
 # session-wide GTK settings to reload the active theme so already-running
 # GTK applications can recompute their styles without a Sway reload.
 if command -v gsettings >/dev/null 2>&1; then
+    # The GTK settings were just generated above; read them back here instead
+    # of relying on Python-only variables that do not exist in this shell.
+    GTK_THEME="$(sed -n 's/^gtk-theme-name=//p' "$HOME/.config/gtk-3.0/settings.ini" | sed -n '1p')"
+    GTK_PREFER_DARK="$(sed -n 's/^gtk-application-prefer-dark-theme=//p' "$HOME/.config/gtk-3.0/settings.ini" | sed -n '1p')"
+
     GTK_TARGET_SCHEME="prefer-dark"
     GTK_ALT_THEME="Adwaita"
-    [ "$gtk_mode" = "dark" ] || {
+    [ "$GTK_PREFER_DARK" = "1" ] || {
         GTK_TARGET_SCHEME="prefer-light"
         GTK_ALT_THEME="Adwaita-dark"
     }
 
     CURRENT_GTK_THEME="$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null || true)"
-    if [ "$CURRENT_GTK_THEME" = "'$gtk_theme'" ]; then
+    if [ "$CURRENT_GTK_THEME" = "'$GTK_THEME'" ]; then
         gsettings set org.gnome.desktop.interface gtk-theme "$GTK_ALT_THEME" >/dev/null 2>&1 || true
     fi
 
-    gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" >/dev/null 2>&1 || true
+    gsettings set org.gnome.desktop.interface gtk-theme "$GTK_THEME" >/dev/null 2>&1 || true
     gsettings set org.gnome.desktop.interface color-scheme "$GTK_TARGET_SCHEME" >/dev/null 2>&1 || true
 fi
 
