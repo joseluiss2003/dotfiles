@@ -98,7 +98,7 @@ PACKAGES=(
 )
 
 # Optional desktop utilities. Install with: ./install.sh --extras
-# clin, cliamp, and Obsidian are distributed through the AUR;
+# fresh-editor, cliamp, and Obsidian are distributed through the AUR;
 # the installer reuses an existing yay/paru helper for these packages.
 EXTRAS_PACKAGES=(
   bat
@@ -107,7 +107,6 @@ EXTRAS_PACKAGES=(
   fd
   file-roller
   firefox
-  gedit
   git
   imv
   less
@@ -175,7 +174,7 @@ if [[ "$EXTRAS" == true ]]; then
 
     echo
     echo "==> Instalando TUI apps..."
-    "$AUR_HELPER" -S --needed clin-rs-bin cliamp
+    "$AUR_HELPER" -S --needed fresh-editor-bin cliamp
 
     echo
     echo "==> Instalando Obsidian..."
@@ -301,7 +300,7 @@ echo "========================================"
 echo
 echo "Dependencias SwayP instaladas: ${#PACKAGES[@]}"
 if [[ "$EXTRAS" == true ]]; then
-    echo "Utilidades extra instaladas: ${#EXTRAS_PACKAGES[@]} + clin-rs-bin + cliamp + Obsidian"
+    echo "Utilidades extra instaladas: ${#EXTRAS_PACKAGES[@]} + fresh-editor-bin + cliamp + Obsidian"
 else
     echo "Extras personales: omitidos (usa --extras)"
 fi
