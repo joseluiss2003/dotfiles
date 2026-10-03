@@ -189,7 +189,7 @@ for theme_root in (
 
 gtk_settings = f"""[Settings]
 gtk-theme-name={gtk_theme}
-gtk-icon-theme-name=Adwaita
+gtk-icon-theme-name=yet-another-monochrome-icon-set
 gtk-font-name=Sans 10
 gtk-application-prefer-dark-theme={"1" if gtk_mode == "dark" else "0"}
 """
