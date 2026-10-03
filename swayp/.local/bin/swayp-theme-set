@@ -214,7 +214,81 @@ window, dialog, popover, menu, .background {{
   color: @swayp-fg;
 }}
 
-/* GTK FileChooser: keep the portal dialog fully inside the SwayP palette. */
+/* GTK FileChooser: the dialog itself is a .filechooser window.
+ * Its headerbar/action area are siblings of the inner filechooser widget,
+ * so target the dialog root explicitly instead of assuming they are
+ * descendants of the inner filechooser CSS node. */
+.filechooser,
+.filechooser.background {{
+  background-color: @swayp-bg;
+  color: @swayp-fg;
+}}
+
+.filechooser headerbar,
+.filechooser headerbar.background,
+.filechooser .titlebar,
+.filechooser toolbar,
+.filechooser .toolbar,
+.filechooser .path-bar,
+.filechooser .location-bar,
+.filechooser .dialog-action-area,
+.filechooser .dialog-action-box {{
+  background-color: @swayp-surface;
+  background-image: none;
+  color: @swayp-fg;
+  border-color: @swayp-muted;
+  box-shadow: none;
+}}
+
+.filechooser button,
+.filechooser button.flat,
+.filechooser button.suggested-action,
+.filechooser button.default,
+.filechooser combobox,
+.filechooser combobox button,
+.filechooser entry,
+.filechooser spinbutton {{
+  background-color: @swayp-surface;
+  background-image: none;
+  color: @swayp-fg;
+  border-color: @swayp-muted;
+  border-image: none;
+  box-shadow: none;
+}}
+
+.filechooser button.suggested-action,
+.filechooser button.default {{
+  background-color: @swayp-accent;
+  color: @swayp-bg;
+}}
+
+.filechooser button:hover,
+.filechooser button:focus,
+.filechooser button:checked,
+.filechooser button.flat:hover,
+.filechooser button.flat:focus,
+.filechooser combobox button:hover {{
+  background-color: @swayp-selection;
+  background-image: none;
+  color: @swayp-fg;
+}}
+
+.filechooser entry:focus {{
+  background-color: @swayp-surface;
+  background-image: none;
+  color: @swayp-fg;
+  border-color: @swayp-accent;
+  box-shadow: none;
+}}
+
+.filechooser .path-bar button,
+.filechooser .location-bar button {{
+  background-color: @swayp-surface;
+  background-image: none;
+  color: @swayp-fg;
+  border-image: none;
+}}
+
 filechooser,
 filechooser .view,
 filechooser treeview,
@@ -226,78 +300,17 @@ filechooser row {{
   color: @swayp-fg;
 }}
 
-filechooser headerbar,
-filechooser headerbar.background,
-filechooser .titlebar,
-filechooser toolbar,
-filechooser .toolbar,
-filechooser .path-bar,
-filechooser .location-bar {{
+filechooser .sidebar,
+filechooser .navigation-sidebar,
+filechooser placessidebar {{
   background-color: @swayp-surface;
-  background-image: none;
   color: @swayp-fg;
-  border-color: @swayp-muted;
-  box-shadow: none;
-}}
-
-filechooser button,
-filechooser button.flat,
-filechooser button.suggested-action,
-filechooser button.destructive-action,
-filechooser combobox,
-filechooser combobox button,
-filechooser entry {{
-  background-color: @swayp-surface;
-  background-image: none;
-  color: @swayp-fg;
-  border-color: @swayp-muted;
-  border-image: none;
-  box-shadow: none;
-}}
-
-filechooser button.suggested-action {{
-  background-color: @swayp-accent;
-  color: @swayp-bg;
-}}
-
-filechooser button:hover,
-filechooser button:focus,
-filechooser button:checked,
-filechooser button.flat:hover,
-filechooser button.flat:focus,
-filechooser combobox button:hover {{
-  background-color: @swayp-selection;
-  background-image: none;
-  color: @swayp-fg;
-}}
-
-filechooser entry:focus {{
-  background-color: @swayp-surface;
-  background-image: none;
-  color: @swayp-fg;
-  border-color: @swayp-accent;
-  box-shadow: none;
-}}
-
-filechooser .path-bar button,
-filechooser .location-bar button {{
-  background-color: @swayp-surface;
-  background-image: none;
-  color: @swayp-fg;
-  border-image: none;
 }}
 
 filechooser treeview.view:selected,
 filechooser iconview:selected,
 filechooser row:selected {{
   background-color: @swayp-selection;
-  color: @swayp-fg;
-}}
-
-filechooser .sidebar,
-filechooser .navigation-sidebar,
-filechooser placessidebar {{
-  background-color: @swayp-surface;
   color: @swayp-fg;
 }}
 
