@@ -9,7 +9,9 @@ file="$dir/screenshot-$(date '+%Y-%m-%d_%H-%M-%S').png"
 
 grim -t ppm -g "$(slurp)" - | satty \
   --filename - \
-  --fullscreen \
+  --resize 1100x800 \
+  --floating-hack \
+  --app-id org.satty.Satty \
   --copy-command wl-copy \
   --output-filename "$file" \
   --actions-on-enter save-to-clipboard,save-to-file \
