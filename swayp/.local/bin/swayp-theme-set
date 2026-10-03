@@ -320,12 +320,38 @@ headerbar, .titlebar, .toolbar {{
   border-color: @swayp-muted;
   box-shadow: none;
 }}
-button, entry, spinbutton, combobox, notebook, frame, list, row, .view {{
+button, entry, spinbutton, combobox {{
+  background-color: @swayp-surface;
+  background-image: none;
+  color: @swayp-fg;
+  border-color: @swayp-muted;
+  border-image: none;
+  box-shadow: none;
+}}
+
+notebook, frame, list, row, .view {{
   color: @swayp-fg;
 }}
+
 button:hover, button:focus, button:checked, modelbutton:hover, menuitem:hover,
 entry:focus, selection, *:selected {{
   background-color: @swayp-selection;
+  background-image: none;
+  color: @swayp-fg;
+}}
+
+button.suggested-action, button.default {{
+  background-color: @swayp-accent;
+  color: @swayp-bg;
+}}
+
+dialog {{
+  color: @swayp-fg;
+}}
+
+dialog > box,
+dialog .dialog-action-area {{
+  background-color: @swayp-surface;
   color: @swayp-fg;
 }}
 link, .link {{ color: @swayp-accent; }}
