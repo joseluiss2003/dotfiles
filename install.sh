@@ -168,6 +168,10 @@ if [[ "$EXTRAS" == true ]]; then
     sudo pacman -S --needed "${EXTRAS_PACKAGES[@]}"
 
     echo
+    echo "==> Instalando TUI apps..."
+    "$AUR_HELPER" -S --needed clin-rs-bin cliamp
+
+    echo
     echo "==> Instalando Obsidian..."
     "$AUR_HELPER" -S --needed obsidian
 fi
@@ -293,7 +297,7 @@ echo "========================================"
 echo
 echo "Dependencias SwayP instaladas: ${#PACKAGES[@]}"
 if [[ "$EXTRAS" == true ]]; then
-    echo "Utilidades extra instaladas: ${#EXTRAS_PACKAGES[@]} + Obsidian"
+    echo "Utilidades extra instaladas: ${#EXTRAS_PACKAGES[@]} + clin-rs-bin + cliamp + Obsidian"
 else
     echo "Extras personales: omitidos (usa --extras)"
 fi
